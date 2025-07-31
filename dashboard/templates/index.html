@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Household Resilience Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏠 Household Resilience Monitor</h1>
+            <div class="status-bar">
+                <span id="last-update">Last Update: Loading...</span>
+                <span id="system-status" class="status-indicator">●</span>
+            </div>
+        </header>
+
+        <!-- Alert Banner -->
+        <div id="alert-banner" class="alert-banner hidden">
+            <h2>🚨 TIGHTEN-UP ALERT ACTIVE</h2>
+            <p><span id="red-count">0</span> Red Conditions Detected - Immediate Action Required</p>
+            <a href="/emergency" class="action-button">View Emergency Procedures</a>
+        </div>
+
+        <!-- Main Status Grid -->
+        <main>
+            <div class="indicators-grid" id="indicators-grid">
+                <!-- Indicators will be populated by JavaScript -->
+            </div>
+
+            <!-- Summary Section -->
+            <div class="summary-section">
+                <div class="summary-card">
+                    <h3>System Summary</h3>
+                    <div class="summary-content">
+                        <div class="summary-item">
+                            <span class="label">Overall Status:</span>
+                            <span id="overall-status" class="value">Loading...</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Active Alerts:</span>
+                            <span id="active-alerts" class="value">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Monitoring Since:</span>
+                            <span class="value">{{ monitoring_since or 'Today' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Quick Actions</h3>
+                    <div class="button-group">
+                        <button onclick="refreshStatus()" class="action-button">🔄 Refresh Now</button>
+                        <a href="/emergency" class="action-button">📋 Emergency Plan</a>
+                        <button onclick="testAlert()" class="action-button">🔔 Test Alert</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Threshold Information -->
+            <div class="threshold-info">
+                <h3>What This System Does</h3>
+                <p class="info-text" style="margin-bottom: 20px;">
+                    Think of this as an early warning system - like a smoke detector for society. 
+                    It watches 6 different "canary in the coal mine" indicators that historically 
+                    signal when big disruptions might be coming. When multiple canaries stop singing 
+                    (2+ red alerts), it's time to make sure your family has basics covered.
+                </p>
+                
+                <h4>Alert Colors Mean:</h4>
+                <div class="threshold-legend">
+                    <div class="legend-item">
+                        <span class="indicator green">●</span>
+                        <span><strong>Green:</strong> All good - business as usual</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="indicator amber">●</span>
+                        <span><strong>Amber:</strong> Keep an eye on this - starting to shift</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="indicator red">●</span>
+                        <span><strong>Red:</strong> This is concerning - prepare accordingly</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="indicator unknown">●</span>
+                        <span><strong>Gray:</strong> Can't get data right now</span>
+                    </div>
+                </div>
+                
+                <div class="alert-box" style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <strong>🚨 The TIGHTEN-UP Rule:</strong><br>
+                    When ANY 2 indicators turn RED at the same time, you'll get an email alert. 
+                    This means: top off gas tanks, get some cash, charge devices, and check your 
+                    emergency supplies. Not panic - just common-sense preparation.
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Based on H1-H6 Risk Analysis Framework | 
+               <a href="/emergency">Emergency Procedures</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>
