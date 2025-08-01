@@ -70,6 +70,9 @@ class ConfigLoader:
             'TELEGRAM_BOT_TOKEN': 'notifications.telegram.bot_token',
             'TELEGRAM_CHAT_ID': 'notifications.telegram.chat_id',
             'SMTP_PASSWORD': 'notifications.email.smtp_password',
+            'FRED_API_KEY': 'fred_api_key',
+            'NEWS_API_KEY': 'news_api_key',
+            'ALPHA_VANTAGE_API_KEY': 'alpha_vantage_key',
         }
         
         for env_var, config_key in env_mappings.items():
