@@ -23,7 +23,7 @@ trip_wires:
     
   ice_detention:
     name: "ICE Detention Bed Fill Rate"
-    enabled: true
+    enabled: false
     source_type: "manual"  # Requires weekly PDF processing
     thresholds:
       green: 0.65     # < 65%
@@ -33,7 +33,7 @@ trip_wires:
     
   taiwan_exclusion:
     name: "PLA Taiwan Exclusion Zone"
-    enabled: true
+    enabled: false
     source_type: "rss_social"
     sources:
       - "https://twitter.com/CSIS_Taiwan"
@@ -59,7 +59,7 @@ trip_wires:
     
   dod_autonomy:
     name: "DoD Auto-Execute Wording"
-    enabled: true
+    enabled: false
     source_type: "government_data"
     url: "https://sam.gov"
     search_terms: ["decision authority autonomous"]
@@ -71,7 +71,7 @@ trip_wires:
     
   mbridge_crude:
     name: "mBridge Gulf Crude Settlement"
-    enabled: true
+    enabled: false
     source_type: "financial_report"
     sources:
       - "BIS Project mBridge"
@@ -109,7 +109,7 @@ trip_wires:
     
   pharmacy_shortage:
     name: "Critical Drug Shortages"
-    enabled: true
+    enabled: false
     source_type: "government_data"
     url: "https://www.fda.gov/drugs/drug-shortages"
     thresholds:
@@ -120,7 +120,7 @@ trip_wires:
     
   school_closures:
     name: "School District Closures"
-    enabled: true
+    enabled: false
     source_type: "aggregated"
     sources:
       - "Major district websites"
@@ -133,7 +133,7 @@ trip_wires:
     
   agi_milestones:
     name: "AGI Development Milestones"
-    enabled: true
+    enabled: false
     source_type: "composite"
     sources:
       - "arXiv AI papers"
@@ -208,7 +208,7 @@ trip_wires:
 
 # Alert system configuration
 alerts:
-  tighten_up_threshold: 5  # Number of red alerts to trigger "TIGHTEN-UP" (31% of 16 indicators)
+  tighten_up_threshold: 3  # Number of red alerts to trigger "TIGHTEN-UP" (33% of 9 indicators)
   notification_methods:
     - email
     - desktop
