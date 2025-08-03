@@ -47,7 +47,11 @@ class ThreatAnalyzer:
             'pharmacy_shortage': 'PharmacyShortage',
             'school_closures': 'SchoolClosures',
             'agi_milestones': 'AGIMilestones',
-            'labor_displacement': 'LaborDisplacement'
+            'labor_displacement': 'LaborDisplacement',
+            'grocery_cpi': 'GroceryCPI',
+            'cisa_cyber': 'CISACyber',
+            'grid_outages': 'GridOutages',
+            'gdp_growth': 'GDPGrowth'
         }
         
         for config_name, collector_name in name_mapping.items():
