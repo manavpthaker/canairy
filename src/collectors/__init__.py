@@ -18,6 +18,10 @@ from .pharmacy_shortage import PharmacyShortageCollector
 from .school_closures import SchoolClosureCollector
 from .agi_milestones import AGIMilestoneCollector
 from .labor_displacement import LaborDisplacementCollector
+from .grocery_cpi import GroceryCPICollector
+from .cisa_cyber import CISACyberCollector
+from .grid_outage import GridOutageCollector
+from .gdp_growth import GDPGrowthCollector
 
 __all__ = [
     'BaseCollector',
@@ -33,4 +37,8 @@ __all__ = [
     'SchoolClosureCollector',
     'AGIMilestoneCollector',
     'LaborDisplacementCollector',
+    'GroceryCPICollector',
+    'CISACyberCollector',
+    'GridOutageCollector',
+    'GDPGrowthCollector',
 ]
