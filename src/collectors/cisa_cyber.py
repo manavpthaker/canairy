@@ -18,7 +18,7 @@ class CISACyberCollector(BaseCollector):
     
     def __init__(self, config):
         super().__init__(config)
-        self.name = "CISA Cyber Threats"
+        self._name = "CISA Cyber Threats"
         self.logger = logging.getLogger(__name__)
         
     def collect(self) -> Dict[str, Any]:

@@ -20,7 +20,7 @@ class GridOutageCollector(BaseCollector):
     
     def __init__(self, config):
         super().__init__(config)
-        self.name = "Grid Outages"
+        self._name = "Grid Outages"
         self.logger = logging.getLogger(__name__)
         
     def collect(self) -> Dict[str, Any]:

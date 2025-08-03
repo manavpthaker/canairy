@@ -16,7 +16,7 @@ class GDPGrowthCollector(BaseCollector):
     
     def __init__(self, config):
         super().__init__(config)
-        self.name = "GDP Growth"
+        self._name = "GDP Growth"
         self.logger = logging.getLogger(__name__)
         
     def collect(self) -> Dict[str, Any]:
