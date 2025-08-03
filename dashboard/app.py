@@ -44,24 +44,54 @@ app.config['SECRET_KEY'] = 'household-resilience-2024'
 import os
 config_path = os.path.join(os.path.dirname(__file__), "..", "config", "config.yaml")
 config = ConfigLoader(config_path)
-collectors = {
-    'Treasury': TreasuryCollector(config),
-    'ICEDetention': ICEDetentionCollector(config),
-    'TaiwanZone': TaiwanZoneCollector(config),
-    'HormuzRisk': HormuzRiskCollector(config),
-    'DoDAutonomy': DoDAutonomyCollector(config),
-    'MBridge': MBridgeCollector(config),
-    'JoblessClaims': JoblessClaimsCollector(config),
-    'LuxuryCollapse': LuxuryCollapseCollector(config),
-    'PharmacyShortage': PharmacyShortageCollector(config),
-    'SchoolClosures': SchoolClosureCollector(config),
-    'AGIMilestones': AGIMilestoneCollector(config),
-    'LaborDisplacement': LaborDisplacementCollector(config),
-    'GroceryCPI': GroceryCPICollector(config),
-    'CISACyber': CISACyberCollector(config),
-    'GridOutages': GridOutageCollector(config),
-    'GDPGrowth': GDPGrowthCollector(config)
+# Initialize collectors based on enabled status in config
+all_collectors = {
+    'Treasury': TreasuryCollector,
+    'ICEDetention': ICEDetentionCollector,
+    'TaiwanZone': TaiwanZoneCollector,
+    'HormuzRisk': HormuzRiskCollector,
+    'DoDAutonomy': DoDAutonomyCollector,
+    'MBridge': MBridgeCollector,
+    'JoblessClaims': JoblessClaimsCollector,
+    'LuxuryCollapse': LuxuryCollapseCollector,
+    'PharmacyShortage': PharmacyShortageCollector,
+    'SchoolClosures': SchoolClosureCollector,
+    'AGIMilestones': AGIMilestoneCollector,
+    'LaborDisplacement': LaborDisplacementCollector,
+    'GroceryCPI': GroceryCPICollector,
+    'CISACyber': CISACyberCollector,
+    'GridOutages': GridOutageCollector,
+    'GDPGrowth': GDPGrowthCollector
 }
+
+# Only initialize enabled collectors
+collectors = {}
+trip_wire_config = config.config.get('trip_wires', {})
+
+# Map config names to collector names
+config_to_collector = {
+    'treasury_tail': 'Treasury',
+    'ice_detention': 'ICEDetention',
+    'taiwan_exclusion': 'TaiwanZone',
+    'hormuz_risk': 'HormuzRisk',
+    'dod_autonomy': 'DoDAutonomy',
+    'mbridge_crude': 'MBridge',
+    'jobless_claims': 'JoblessClaims',
+    'luxury_collapse': 'LuxuryCollapse',
+    'pharmacy_shortage': 'PharmacyShortage',
+    'school_closures': 'SchoolClosures',
+    'agi_milestones': 'AGIMilestones',
+    'labor_displacement': 'LaborDisplacement',
+    'grocery_cpi': 'GroceryCPI',
+    'cisa_cyber': 'CISACyber',
+    'grid_outages': 'GridOutages',
+    'gdp_growth': 'GDPGrowth'
+}
+
+for config_name, collector_name in config_to_collector.items():
+    if config_name in trip_wire_config and trip_wire_config[config_name].get('enabled', True):
+        if collector_name in all_collectors:
+            collectors[collector_name] = all_collectors[collector_name](config)
 threat_analyzer = ThreatAnalyzer(config)
 
 # Cache for latest readings
