@@ -77,7 +77,10 @@ function getDataSourceBadge(indicator) {
     let badgeClass = 'mock';
     let badgeText = 'MOCK';
     
-    if (source.includes('API') || source === 'news_analysis') {
+    if (source.includes('API') || source === 'news_analysis' || 
+        source === 'CISA_KEV' || source === 'DOE_OE417' || 
+        source === 'BLS_API' || source === 'FRED_API' ||
+        source === 'alpha_vantage_api') {
         badgeClass = 'live';
         badgeText = 'LIVE';
     } else if (source === 'manual_input') {
@@ -106,7 +109,11 @@ function createIndicatorCard(indicator) {
         'PharmacyShortage': 'Medicine Shortages',
         'SchoolClosures': 'Schools Closing',
         'AGIMilestones': 'AI Progress to AGI',
-        'LaborDisplacement': 'Jobs Lost to AI'
+        'LaborDisplacement': 'Jobs Lost to AI',
+        'GroceryCPI': 'Food Inflation',
+        'CISACyber': 'Cyber Threats',
+        'GridOutages': 'Power Grid Failures',
+        'GDPGrowth': 'Economic Growth'
     };
     
     const descriptions = {
@@ -121,7 +128,11 @@ function createIndicatorCard(indicator) {
         'PharmacyShortage': 'Critical medications unavailable at pharmacies',
         'SchoolClosures': 'Major school districts closed (not for weather)',
         'AGIMilestones': 'How close AI is to human-level capabilities across all domains',
-        'LaborDisplacement': 'Percentage of jobs being automated away by AI systems'
+        'LaborDisplacement': 'Percentage of jobs being automated away by AI systems',
+        'GroceryCPI': 'How fast grocery prices are rising (3-month annualized)',
+        'CISACyber': 'Critical cyber vulnerabilities discovered in last 90 days',
+        'GridOutages': 'Major power outages affecting >50k customers this quarter',
+        'GDPGrowth': 'Economic growth rate - higher is better (positive indicator)'
     };
     
     const whyItMatters = {
@@ -136,7 +147,11 @@ function createIndicatorCard(indicator) {
         'PharmacyShortage': 'No meds → mental health crisis → social breakdown',
         'SchoolClosures': 'Parents cant work → economic disruption → cascade effects',
         'AGIMilestones': 'Near AGI = job obsolescence → social upheaval → need new systems',
-        'LaborDisplacement': 'Mass unemployment → no income → cant pay bills → social collapse'
+        'LaborDisplacement': 'Mass unemployment → no income → cant pay bills → social collapse',
+        'GroceryCPI': 'Food too expensive → families struggle → social unrest → supply chain breaks',
+        'CISACyber': 'Critical systems vulnerable → infrastructure attacks → services offline',
+        'GridOutages': 'No power → no heat/cooling → no refrigeration → cant work from home',
+        'GDPGrowth': 'Strong economy = more jobs → stability → less risk (GREEN is good!)'
     };
     
     card.innerHTML = `
