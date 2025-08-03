@@ -158,10 +158,57 @@ trip_wires:
       amber: 20       # 20-35%
       red: 35         # > 35% (mass unemployment)
     unit: "displacement_index"
+    
+  grocery_cpi:
+    name: "Grocery CPI (3-mo annualized)"
+    enabled: true
+    source_type: "api"
+    url: "https://api.bls.gov/publicAPI/v2/timeseries/data/CUUR0000SAF11"
+    thresholds:
+      green: 4        # < 4% annualized
+      amber: 8        # 4-8%
+      red: 999        # > 8% (severe inflation)
+    unit: "percent"
+    
+  cisa_cyber:
+    name: "CISA Security Bulletins (90d)"
+    enabled: true
+    source_type: "api"
+    url: "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+    thresholds:
+      green: 2        # ≤ 2 KEVs in 90 days
+      amber: 5        # 3-5 KEVs
+      red: 999        # > 5 KEVs (active threats)
+    unit: "vulnerabilities"
+    
+  grid_outages:
+    name: "Grid Outages (>50k customers/qtr)"
+    enabled: true
+    source_type: "csv"
+    url: "https://www.oe.netl.doe.gov/OE417_annual_summary.csv"
+    thresholds:
+      green: 1        # 0-1 major outage
+      amber: 2        # 2 outages
+      red: 999        # ≥ 3 outages (grid stress)
+    unit: "outages"
+    
+  gdp_growth:
+    name: "GDP Growth (positive indicator)"
+    enabled: true
+    source_type: "api"
+    url: "https://api.stlouisfed.org/fred/series/observations"
+    # This is a POSITIVE indicator - not a threat
+    # Green flag when GDP ≥4% AND 10yr <4% for 2 quarters
+    thresholds:
+      green: 4        # GDP ≥ 4% is good
+      amber: 2        # GDP 2-4% is neutral
+      red: 0          # GDP < 2% is concerning
+    unit: "percent"
+    indicator_type: "positive"
 
 # Alert system configuration
 alerts:
-  tighten_up_threshold: 4  # Number of red alerts to trigger "TIGHTEN-UP" (33% of 12 indicators)
+  tighten_up_threshold: 5  # Number of red alerts to trigger "TIGHTEN-UP" (31% of 16 indicators)
   notification_methods:
     - email
     - desktop

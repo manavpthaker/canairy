@@ -28,7 +28,11 @@ from collectors import (
     PharmacyShortageCollector,
     SchoolClosureCollector,
     AGIMilestoneCollector,
-    LaborDisplacementCollector
+    LaborDisplacementCollector,
+    GroceryCPICollector,
+    CISACyberCollector,
+    GridOutageCollector,
+    GDPGrowthCollector
 )
 from processors.threat_analyzer import ThreatAnalyzer
 from utils.config_loader import ConfigLoader
@@ -52,7 +56,11 @@ collectors = {
     'PharmacyShortage': PharmacyShortageCollector(config),
     'SchoolClosures': SchoolClosureCollector(config),
     'AGIMilestones': AGIMilestoneCollector(config),
-    'LaborDisplacement': LaborDisplacementCollector(config)
+    'LaborDisplacement': LaborDisplacementCollector(config),
+    'GroceryCPI': GroceryCPICollector(config),
+    'CISACyber': CISACyberCollector(config),
+    'GridOutages': GridOutageCollector(config),
+    'GDPGrowth': GDPGrowthCollector(config)
 }
 threat_analyzer = ThreatAnalyzer(config)
 
@@ -116,7 +124,7 @@ def get_status():
     
     # Check for TIGHTEN-UP condition
     red_count = sum(1 for level in threat_levels.values() if level == "red")
-    tighten_up = red_count >= 2
+    tighten_up = red_count >= config.get_alert_config().get('tighten_up_threshold', 5)
     
     # Update cache
     latest_data = {
