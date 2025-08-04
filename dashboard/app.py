@@ -239,6 +239,11 @@ def procedures():
     """Emergency procedures page (alias)."""
     return render_template('emergency.html')
 
+@app.route('/framework')
+def framework():
+    """H1-H6 Risk Analysis Framework page."""
+    return render_template('framework.html')
+
 @app.route('/manual-input')
 def manual_input():
     """Manual data input page."""

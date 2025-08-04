@@ -3,114 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Household Resilience Monitor</title>
+    <title>Brown Man Bunker</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <div>
-                    <h1>🏠 Household Resilience Monitor</h1>
-                    <p class="tagline">Real-time tracking of societal risk indicators</p>
-                </div>
-                <div class="status-bar">
-                    <span id="last-update">Last Update: Loading...</span>
-                    <span id="system-status" class="status-indicator">●</span>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <h1>Brown Man Bunker</h1>
+            <p class="tagline">Trip-Wire Monitoring System</p>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- System Status -->
+            <div class="sidebar-card">
+                <h3>System Status</h3>
+                <div class="status-content">
+                    <div class="status-item">
+                        <span class="label">Overall Status:</span>
+                        <span id="overall-status" class="value">Loading...</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Active Alerts:</span>
+                        <span id="active-alerts" class="value red">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Last Update:</span>
+                        <span id="last-update" class="value">Loading...</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">System:</span>
+                        <span id="system-status" class="status-indicator green">● Online</span>
+                    </div>
                 </div>
             </div>
-        </header>
 
-        <!-- Alert Banner -->
-        <div id="alert-banner" class="alert-banner hidden">
-            <h2>🚨 TIGHTEN-UP ALERT ACTIVE</h2>
-            <p><span id="red-count">0</span> Red Conditions Detected - Immediate Action Required</p>
-            <a href="/emergency" class="action-button">View Emergency Procedures</a>
-        </div>
+            <!-- Quick Actions -->
+            <div class="sidebar-card">
+                <h3>Quick Actions</h3>
+                <div class="action-list">
+                    <button onclick="refreshStatus()" class="sidebar-button">🔄 Refresh Now</button>
+                    <a href="/emergency" class="sidebar-button">📋 Emergency Plan</a>
+                    <a href="/framework" class="sidebar-button">📖 Risk Framework</a>
+                    <a href="/manual-input" class="sidebar-button">✏️ Manual Input</a>
+                    <button onclick="testAlert()" class="sidebar-button">🔔 Test Alert</button>
+                </div>
+            </div>
 
-        <!-- Main Status Grid -->
-        <main>
+            <!-- TIGHTEN-UP Rule -->
+            <div class="sidebar-card alert-info">
+                <h3>🚨 TIGHTEN-UP Rule</h3>
+                <p>
+                    When ANY 3 indicators turn RED, you'll get an alert. 
+                    This means: top off gas, get cash, charge devices, check supplies.
+                </p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Alert Banner -->
+            <div id="alert-banner" class="alert-banner hidden">
+                <h2>🚨 TIGHTEN-UP ALERT ACTIVE</h2>
+                <p><span id="red-count">0</span> Red Conditions Detected - Immediate Action Required</p>
+                <a href="/emergency" class="action-button">View Emergency Procedures</a>
+            </div>
+            <!-- Indicators Grid -->
             <div class="indicators-grid" id="indicators-grid">
                 <!-- Indicators will be populated by JavaScript -->
             </div>
 
-            <!-- Summary Section -->
-            <div class="summary-section">
-                <div class="summary-card">
-                    <h3>System Summary</h3>
-                    <div class="summary-content">
-                        <div class="summary-item">
-                            <span class="label">Overall Status:</span>
-                            <span id="overall-status" class="value">Loading...</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="label">Active Alerts:</span>
-                            <span id="active-alerts" class="value">0</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="label">Monitoring Since:</span>
-                            <span class="value">{{ monitoring_since or 'Today' }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="summary-card">
-                    <h3>Quick Actions</h3>
-                    <div class="button-group">
-                        <button onclick="refreshStatus()" class="action-button">🔄 Refresh Now</button>
-                        <a href="/emergency" class="action-button">📋 Emergency Plan</a>
-                        <a href="/manual-input" class="action-button">✏️ Manual Input</a>
-                        <button onclick="testAlert()" class="action-button">🔔 Test Alert</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Threshold Information -->
-            <div class="threshold-info">
-                <h3>What This System Does</h3>
-                <p class="info-text" style="margin-bottom: 20px;">
-                    Think of this as an early warning system - like a smoke detector for society. 
-                    It watches 9 different "canary in the coal mine" indicators that historically 
-                    signal when big disruptions might be coming. When multiple canaries stop singing 
-                    (2+ red alerts), it's time to make sure your family has basics covered.
-                </p>
-                
-                <h4>Alert Colors Mean:</h4>
-                <div class="threshold-legend">
-                    <div class="legend-item">
-                        <span class="indicator green">●</span>
-                        <span><strong>Green:</strong> All good - business as usual</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="indicator amber">●</span>
-                        <span><strong>Amber:</strong> Keep an eye on this - starting to shift</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="indicator red">●</span>
-                        <span><strong>Red:</strong> This is concerning - prepare accordingly</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="indicator unknown">●</span>
-                        <span><strong>Gray:</strong> Can't get data right now</span>
-                    </div>
-                </div>
-                
-                <div class="alert-box" style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin-top: 20px;">
-                    <strong>🚨 The TIGHTEN-UP Rule:</strong><br>
-                    When ANY 3 indicators turn RED at the same time, you'll get an email alert. 
-                    This means: top off gas tanks, get some cash, charge devices, and check your 
-                    emergency supplies. Not panic - just common-sense preparation.
-                </div>
-            </div>
         </main>
-
-        <footer>
-            <p>Based on H1-H6 Risk Analysis Framework | 
-               <a href="/emergency">Emergency Procedures</a>
-            </p>
-        </footer>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Based on <a href="/framework">H1-H6 Risk Analysis Framework</a> | 
+           <a href="/emergency">Emergency Procedures</a> | 
+           <a href="#" onclick="showLegend()">Alert Legend</a>
+        </p>
+    </footer>
 
     <!-- Modal for Indicator Details -->
     <div id="indicator-modal" class="modal">
