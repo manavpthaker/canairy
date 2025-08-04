@@ -27,11 +27,12 @@ async function refreshStatus() {
 function updateDashboard(data) {
     // Update last update time
     const lastUpdate = new Date(data.timestamp);
-    document.getElementById('last-update').textContent = 
-        `Last Update: ${lastUpdate.toLocaleString()}`;
+    const lastUpdateEl = document.getElementById('last-update');
+    lastUpdateEl.textContent = lastUpdate.toLocaleTimeString();
     
     // Update system status indicator
     const statusIndicator = document.getElementById('system-status');
+    statusIndicator.textContent = '● Online';
     statusIndicator.className = 'status-indicator green';
     
     // Update alert banner
@@ -48,10 +49,11 @@ function updateDashboard(data) {
     } else {
         alertBanner.classList.add('hidden');
         overallStatus.textContent = 'Normal Monitoring';
-        overallStatus.className = 'value green';
+        overallStatus.className = 'value';
     }
     
     activeAlerts.textContent = data.red_count;
+    activeAlerts.className = data.red_count > 0 ? 'value red' : 'value';
     
     // Update indicators grid
     updateIndicators(data.indicators);
@@ -166,12 +168,6 @@ function createIndicatorCard(indicator) {
             ${indicator.value}
             ${getDataSourceBadge(indicator)}
         </div>
-        <div class="indicator-details">
-            <div class="what-is-it">${descriptions[indicator.name] || ''}</div>
-            <div class="why-it-matters">
-                <strong>Why it matters:</strong> ${whyItMatters[indicator.name] || ''}
-            </div>
-        </div>
         <div class="indicator-threshold">
             Status: <strong class="${indicator.level}">${indicator.level.toUpperCase()}</strong>
         </div>
@@ -191,11 +187,13 @@ function testAlert() {
 // Show error message
 function showError(message) {
     const lastUpdate = document.getElementById('last-update');
-    lastUpdate.textContent = `Error: ${message}`;
-    lastUpdate.style.color = 'var(--danger-color)';
+    lastUpdate.textContent = 'Error';
     
     const statusIndicator = document.getElementById('system-status');
+    statusIndicator.textContent = '● Offline';
     statusIndicator.className = 'status-indicator red';
+    
+    console.error('Dashboard error:', message);
 }
 
 // Modal Functions
@@ -445,4 +443,75 @@ function getIndicatorDetails(indicatorName) {
         },
         references: []
     };
+}
+
+// Show Risk Framework (redirect to page)
+function showFramework() {
+    window.location.href = '/framework';
+}
+
+// Show Alert Legend Modal
+function showLegend() {
+    const modal = document.getElementById('indicator-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    
+    modalTitle.textContent = 'Understanding Alert Levels';
+    
+    modalBody.innerHTML = `
+        <div class="modal-section">
+            <h3>🚦 Alert Color System</h3>
+            <p>Each indicator is monitored continuously and assigned a color based on predefined thresholds:</p>
+        </div>
+
+        <div class="modal-section">
+            <div class="threshold-levels" style="grid-template-columns: 1fr;">
+                <div class="threshold-level green" style="text-align: left; padding: 20px;">
+                    <strong style="font-size: 1.25rem; margin-bottom: 8px;">🟢 GREEN - Normal Operations</strong>
+                    <p style="margin-top: 8px;">Everything is functioning within expected parameters. No action needed. Continue normal activities.</p>
+                </div>
+                
+                <div class="threshold-level amber" style="text-align: left; padding: 20px;">
+                    <strong style="font-size: 1.25rem; margin-bottom: 8px;">🟡 AMBER - Elevated Concern</strong>
+                    <p style="margin-top: 8px;">Conditions are shifting beyond normal ranges. Pay attention to this indicator. Consider reviewing your preparedness supplies.</p>
+                </div>
+                
+                <div class="threshold-level red" style="text-align: left; padding: 20px;">
+                    <strong style="font-size: 1.25rem; margin-bottom: 8px;">🔴 RED - Immediate Attention</strong>
+                    <p style="margin-top: 8px;">Significant deviation from normal. This indicator suggests potential disruption. Take preparedness actions if multiple indicators are red.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <h3>🚨 The TIGHTEN-UP Protocol</h3>
+            <p>When ANY 3 indicators simultaneously reach RED status:</p>
+            <ul>
+                <li>You will receive an email alert</li>
+                <li>The dashboard will show "TIGHTEN-UP ACTIVE"</li>
+                <li>This is your signal to implement basic preparedness measures</li>
+                <li>Not a cause for panic - just prudent preparation</li>
+            </ul>
+        </div>
+
+        <div class="modal-section">
+            <h3>📊 Data Source Types</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+                <div>
+                    <span class="data-source live">LIVE</span>
+                    <span style="margin-left: 12px;">Real-time data from APIs and automated sources</span>
+                </div>
+                <div>
+                    <span class="data-source manual">MANUAL</span>
+                    <span style="margin-left: 12px;">Requires periodic manual input</span>
+                </div>
+                <div>
+                    <span class="data-source mock">MOCK</span>
+                    <span style="margin-left: 12px;">Simulated data for testing</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.classList.add('active');
 }
