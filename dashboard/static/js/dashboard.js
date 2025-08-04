@@ -96,6 +96,9 @@ function createIndicatorCard(indicator) {
     const card = document.createElement('div');
     card.className = `indicator-card status-${indicator.level}`;
     
+    // Add click handler for modal
+    card.addEventListener('click', () => showIndicatorDetails(indicator));
+    
     // Get friendly names
     const friendlyNames = {
         'Treasury': 'Treasury Market',
@@ -193,4 +196,253 @@ function showError(message) {
     
     const statusIndicator = document.getElementById('system-status');
     statusIndicator.className = 'status-indicator red';
+}
+
+// Modal Functions
+function showIndicatorDetails(indicator) {
+    const modal = document.getElementById('indicator-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    
+    // Get indicator metadata
+    const metadata = currentData?.indicators?.find(i => i.name === indicator.name)?.metadata || {};
+    
+    // Get detailed information
+    const details = getIndicatorDetails(indicator.name);
+    
+    // Set title
+    modalTitle.textContent = details.title || indicator.name;
+    
+    // Build modal content
+    modalBody.innerHTML = `
+        <div class="modal-section">
+            <h3>📊 Current Status</h3>
+            <div class="current-status">
+                <div class="status-value">
+                    <span class="value">${indicator.value}</span>
+                    <span class="status-badge ${indicator.level}">${indicator.level}</span>
+                    ${getDataSourceBadge(indicator)}
+                </div>
+                <p class="status-description">${metadata.description || ''}</p>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <h3>🔍 What We're Tracking</h3>
+            <p>${details.whatWeTrack}</p>
+        </div>
+
+        <div class="modal-section">
+            <h3>❓ Why This Matters</h3>
+            <p>${details.whyItMatters}</p>
+        </div>
+
+        <div class="modal-section">
+            <h3>📈 Threshold Levels</h3>
+            <div class="threshold-levels">
+                <div class="threshold-level green">
+                    <strong>Green</strong>
+                    <span>${details.thresholds.green}</span>
+                </div>
+                <div class="threshold-level amber">
+                    <strong>Amber</strong>
+                    <span>${details.thresholds.amber}</span>
+                </div>
+                <div class="threshold-level red">
+                    <strong>Red</strong>
+                    <span>${details.thresholds.red}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <h3>📚 References & Sources</h3>
+            <ul>
+                ${details.references.map(ref => `<li><a href="${ref.url}" target="_blank">${ref.text}</a></li>`).join('')}
+            </ul>
+        </div>
+
+        ${metadata.source ? `
+        <div class="modal-section">
+            <h3>🔗 Data Source</h3>
+            <p>Source: ${metadata.source}</p>
+            ${metadata.api_url ? `<p><a href="${metadata.api_url}" target="_blank">View API Documentation</a></p>` : ''}
+        </div>
+        ` : ''}
+    `;
+    
+    // Show modal
+    modal.classList.add('active');
+}
+
+function closeModal() {
+    const modal = document.getElementById('indicator-modal');
+    modal.classList.remove('active');
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// Close modal on background click
+document.getElementById('indicator-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'indicator-modal') {
+        closeModal();
+    }
+});
+
+// Get detailed information for each indicator
+function getIndicatorDetails(indicatorName) {
+    const details = {
+        'Treasury': {
+            title: '📈 Treasury Market Volatility',
+            whatWeTrack: 'We monitor the 10-year Treasury yield volatility, specifically the "auction tail" in basis points. This measures the difference between the highest accepted yield and the average yield at Treasury auctions. A larger tail indicates weaker demand and potential market stress.',
+            whyItMatters: 'Treasury markets are the foundation of the global financial system. When volatility spikes, it signals that even the "safest" investments are experiencing uncertainty. This often precedes broader financial instability, bank stress, and credit crunches that can affect your savings, mortgage rates, and overall economic stability.',
+            thresholds: {
+                green: '< 3 basis points',
+                amber: '3-7 basis points',
+                red: '> 7 basis points'
+            },
+            references: [
+                { text: 'FRED - 10-Year Treasury Data', url: 'https://fred.stlouisfed.org/series/DGS10' },
+                { text: 'Treasury Direct Auction Results', url: 'https://www.treasurydirect.gov/instit/annceresult/press/press_auctionresults.htm' },
+                { text: 'Understanding Treasury Auctions', url: 'https://www.newyorkfed.org/markets/treasury-securities' }
+            ]
+        },
+        'HormuzRisk': {
+            title: '🚢 Strait of Hormuz Risk',
+            whatWeTrack: 'We track war risk insurance premiums for vessels transiting the Strait of Hormuz, through which 21% of global oil passes. We monitor news reports for military activity, shipping threats, and insurance rate changes.',
+            whyItMatters: 'Any disruption to Hormuz would immediately spike oil prices globally. Within days, gas prices would surge, shipping costs would skyrocket, and inflation would accelerate. This affects everything from your commute costs to grocery prices, as transportation costs ripple through the entire economy.',
+            thresholds: {
+                green: '< 1.5% premium',
+                amber: '1.5-4% premium',
+                red: '> 4% premium'
+            },
+            references: [
+                { text: 'Lloyd\'s List - Shipping Insurance', url: 'https://lloydslist.com' },
+                { text: 'EIA - Strait of Hormuz Facts', url: 'https://www.eia.gov/international/analysis/regions-of-interest/Strait_of_Hormuz' },
+                { text: 'War Risk Insurance Explained', url: 'https://www.agcs.allianz.com/news-and-insights/expert-risk-articles/war-risk-insurance.html' }
+            ]
+        },
+        'JoblessClaims': {
+            title: '📊 Unemployment Claims Surge',
+            whatWeTrack: 'Weekly initial unemployment insurance claims (seasonally adjusted) from the Department of Labor. This is the most timely indicator of layoffs spreading across the economy.',
+            whyItMatters: 'A surge in jobless claims is the canary in the coal mine for recession. When claims spike, it means mass layoffs are underway. This leads to reduced consumer spending, mortgage defaults, and a downward spiral that can trigger bank failures and economic collapse.',
+            thresholds: {
+                green: '< 250,000 claims',
+                amber: '250,000-275,000 claims',
+                red: '> 350,000 claims'
+            },
+            references: [
+                { text: 'DOL Weekly Claims Report', url: 'https://www.dol.gov/ui/data' },
+                { text: 'FRED - Initial Claims Data', url: 'https://fred.stlouisfed.org/series/ICSA' },
+                { text: 'Understanding Jobless Claims', url: 'https://www.bls.gov/news.release/empsit.nr0.htm' }
+            ]
+        },
+        'LuxuryCollapse': {
+            title: '💎 Luxury Market Collapse',
+            whatWeTrack: 'Stock performance of luxury goods companies (Ralph Lauren, Tapestry, etc.) as a proxy for wealthy consumer sentiment. We calculate a collapse index based on recent price movements.',
+            whyItMatters: 'When the wealthy stop buying luxury goods, they know something the rest of us don\'t. This "smart money" indicator often precedes major market crashes by 3-6 months. If they\'re battening down the hatches, you should too.',
+            thresholds: {
+                green: '< 15 on index',
+                amber: '15-25 on index',
+                red: '> 40 on index'
+            },
+            references: [
+                { text: 'Alpha Vantage Stock API', url: 'https://www.alphavantage.co/documentation/' },
+                { text: 'Luxury Goods as Economic Indicator', url: 'https://www.mckinsey.com/industries/retail/our-insights/state-of-luxury' },
+                { text: 'Veblen Goods Theory', url: 'https://www.investopedia.com/terms/v/veblen-good.asp' }
+            ]
+        },
+        'LaborDisplacement': {
+            title: '🤖 AI Job Displacement',
+            whatWeTrack: 'Employment trends in information and professional services sectors, comparing year-over-year changes to identify AI-driven job losses. We use FRED employment data to calculate displacement rates.',
+            whyItMatters: 'Mass technological unemployment would devastate the economy. When AI replaces large numbers of workers simultaneously, it creates a cascade: no jobs → no income → can\'t pay bills → mass defaults → economic collapse. This is the "great displacement" risk.',
+            thresholds: {
+                green: '< 20% displacement rate',
+                amber: '20-35% displacement rate',
+                red: '> 35% displacement rate'
+            },
+            references: [
+                { text: 'FRED Employment Data', url: 'https://fred.stlouisfed.org/series/USINFO' },
+                { text: 'MIT Work of the Future', url: 'https://workofthefuture.mit.edu/' },
+                { text: 'AI Impact on Employment', url: 'https://www.brookings.edu/research/automation-and-artificial-intelligence-how-machines-affect-people-and-places/' }
+            ]
+        },
+        'GroceryCPI': {
+            title: '🛒 Food Inflation Rate',
+            whatWeTrack: 'The Consumer Price Index for "Food at home" from the Bureau of Labor Statistics. We calculate the 3-month annualized rate to identify rapid food price acceleration.',
+            whyItMatters: 'Food inflation hits everyone immediately. When grocery prices spiral upward, families struggle to afford basics. This leads to social unrest, hoarding behavior, and supply chain disruptions that can quickly spiral out of control.',
+            thresholds: {
+                green: '< 4% annualized',
+                amber: '4-8% annualized',
+                red: '> 8% annualized'
+            },
+            references: [
+                { text: 'BLS CPI Report', url: 'https://www.bls.gov/cpi/' },
+                { text: 'Food Price Index Data', url: 'https://www.bls.gov/cpi/factsheets/food.htm' },
+                { text: 'Historical Food Inflation', url: 'https://www.ers.usda.gov/data-products/food-price-outlook/' }
+            ]
+        },
+        'CISACyber': {
+            title: '🔒 Critical Cyber Threats',
+            whatWeTrack: 'Known Exploited Vulnerabilities (KEV) catalog from CISA. We count critical vulnerabilities discovered in the past 90 days that are being actively exploited in the wild.',
+            whyItMatters: 'A surge in exploited vulnerabilities means hackers are successfully attacking critical infrastructure. This can lead to power outages, water system failures, financial system disruptions, and supply chain attacks that directly impact daily life.',
+            thresholds: {
+                green: '≤ 2 KEVs in 90 days',
+                amber: '3-5 KEVs in 90 days',
+                red: '> 5 KEVs in 90 days'
+            },
+            references: [
+                { text: 'CISA KEV Catalog', url: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog' },
+                { text: 'Understanding CVEs', url: 'https://www.cve.org/About/Overview' },
+                { text: 'Infrastructure Security', url: 'https://www.cisa.gov/topics/critical-infrastructure-security-and-resilience' }
+            ]
+        },
+        'GridOutages': {
+            title: '⚡ Power Grid Failures',
+            whatWeTrack: 'Major power outages affecting more than 50,000 customers, as reported to the Department of Energy (Form OE-417). We count incidents per quarter to identify grid stress.',
+            whyItMatters: 'Without power, modern life stops. No heat/AC, no refrigeration, no internet, no working from home. Multiple major outages signal grid instability that could lead to cascading failures, especially during extreme weather or cyber attacks.',
+            thresholds: {
+                green: '0-1 major outage/quarter',
+                amber: '2 outages/quarter',
+                red: '≥ 3 outages/quarter'
+            },
+            references: [
+                { text: 'DOE Electric Disturbance Events', url: 'https://www.oe.netl.doe.gov/OE417_annual_summary.aspx' },
+                { text: 'Grid Reliability Metrics', url: 'https://www.nerc.com/pa/RAPA/Pages/default.aspx' },
+                { text: 'Power Outage Tracker', url: 'https://poweroutage.us/' }
+            ]
+        },
+        'GDPGrowth': {
+            title: '📈 Economic Growth (Positive)',
+            whatWeTrack: 'Real GDP growth rate from the Bureau of Economic Analysis. Unlike other indicators, this is POSITIVE - higher values are good. We also check if 10-year Treasury yields are below 4% for a "goldilocks" scenario.',
+            whyItMatters: 'Strong economic growth with low interest rates means more jobs, wage growth, and stability. This reduces all other risks. When GDP is above 4% and rates are low, it\'s a green flag that the economy can absorb shocks.',
+            thresholds: {
+                green: '≥ 4% GDP growth',
+                amber: '2-4% GDP growth',
+                red: '< 2% GDP growth'
+            },
+            references: [
+                { text: 'BEA GDP Releases', url: 'https://www.bea.gov/data/gdp' },
+                { text: 'FRED GDP Data', url: 'https://fred.stlouisfed.org/series/A191RL1Q225SBEA' },
+                { text: 'Understanding GDP', url: 'https://www.imf.org/external/pubs/ft/fandd/basics/gdp.htm' }
+            ]
+        }
+    };
+    
+    return details[indicatorName] || {
+        title: indicatorName,
+        whatWeTrack: 'Monitoring this indicator for changes.',
+        whyItMatters: 'This indicator helps assess systemic risks.',
+        thresholds: {
+            green: 'Low risk',
+            amber: 'Medium risk',
+            red: 'High risk'
+        },
+        references: []
+    };
 }
