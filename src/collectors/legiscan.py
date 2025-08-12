@@ -123,3 +123,9 @@ class LegiScanCollector(BaseCollector):
                 'note': 'Using mock data - set LEGISCAN_API_KEY for real data'
             }
         }
+    
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        """Validate LegiScan data."""
+        if not data:
+            return False
+        return 'value' in data and isinstance(data['value'], (int, float))

@@ -101,3 +101,9 @@ class OFACDesignationsCollector(BaseCollector):
         except Exception as e:
             self.logger.error(f"Failed to process OFAC data: {e}")
             return 0
+    
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        """Validate OFAC data."""
+        if not data:
+            return False
+        return 'value' in data and isinstance(data['value'], (int, float))

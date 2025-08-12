@@ -192,6 +192,97 @@ h1 {
     padding: 20px;
 }
 
+/* Phase display card */
+.phase-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 2px solid #333;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.phase-card h3 {
+    color: #4fc3f7;
+    margin-bottom: 1rem;
+}
+
+.phase-content {
+    text-align: center;
+}
+
+.phase-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #4fc3f7;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 20px rgba(79, 195, 247, 0.5);
+}
+
+.phase-number.phase-0,
+.phase-number.phase-1,
+.phase-number.phase-2 {
+    color: #66bb6a;
+    text-shadow: 0 0 20px rgba(102, 187, 106, 0.5);
+}
+
+.phase-number.phase-3,
+.phase-number.phase-4 {
+    color: #ffa726;
+    text-shadow: 0 0 20px rgba(255, 167, 38, 0.5);
+}
+
+.phase-number.phase-5,
+.phase-number.phase-6,
+.phase-number.phase-7,
+.phase-number.phase-8,
+.phase-number.phase-9 {
+    color: #ef5350;
+    text-shadow: 0 0 20px rgba(239, 83, 80, 0.5);
+}
+
+.phase-name {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+}
+
+.phase-actions {
+    margin-top: 1.5rem;
+    text-align: left;
+}
+
+.phase-actions h4 {
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.phase-action-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.phase-action-list li {
+    padding: 0.5rem 0;
+    color: #bbb;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    border-bottom: 1px solid #333;
+}
+
+.phase-action-list li:last-child {
+    border-bottom: none;
+}
+
+.phase-card.medium-phase {
+    border-color: #ffa726;
+}
+
+.phase-card.high-phase {
+    border-color: #ef5350;
+    animation: pulse-red 2s infinite;
+}
+
 /* Alert Banner */
 .alert-banner {
     background: linear-gradient(135deg, var(--danger-color), #dc2626);

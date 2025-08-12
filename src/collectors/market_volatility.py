@@ -93,3 +93,9 @@ class MarketVolatilityCollector(BaseCollector):
         # For now, we'll consider Tuesdays-Thursdays as potential data days
         weekday = datetime.now().weekday()
         return weekday in [1, 2, 3]  # Tuesday, Wednesday, Thursday
+    
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        """Validate market volatility data."""
+        if not data:
+            return False
+        return 'value' in data and isinstance(data['value'], (int, float))
