@@ -30,6 +30,10 @@ from .who_disease import WHODiseaseCollector
 from .crea_oil import CREAOilCollector
 from .ofac_designations import OFACDesignationsCollector
 from .ai_layoffs import AILayoffsCollector
+from .mbridge_settlements import MBridgeSettlementsCollector
+from .jodi_oil import JODIOilCollector
+from .ai_ransomware import AIRansomwareCollector
+from .deepfake_shocks import DeepfakeShocksCollector
 
 __all__ = [
     'BaseCollector',
@@ -57,4 +61,8 @@ __all__ = [
     'CREAOilCollector',
     'OFACDesignationsCollector',
     'AILayoffsCollector',
+    'MBridgeSettlementsCollector',
+    'JODIOilCollector',
+    'AIRansomwareCollector',
+    'DeepfakeShocksCollector',
 ]

@@ -118,3 +118,9 @@ class ACLEDProtestsCollector(BaseCollector):
                 'note': 'Using mock data - set ACLED_API_KEY and ACLED_EMAIL for real data'
             }
         }
+    
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        """Validate ACLED data."""
+        if not data:
+            return False
+        return 'value' in data and isinstance(data['value'], (int, float))

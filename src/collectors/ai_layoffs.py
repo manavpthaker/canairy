@@ -87,3 +87,9 @@ class AILayoffsCollector(BaseCollector):
             base += random.randint(5000, 10000)
         
         return base
+    
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        """Validate AI layoff data."""
+        if not data:
+            return False
+        return 'value' in data and isinstance(data['value'], (int, float))

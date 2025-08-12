@@ -36,6 +36,7 @@ class ThreatAnalyzer:
         
         # Map config names to collector names
         name_mapping = {
+            # Original names
             'treasury_tail': 'Treasury',
             'ice_detention': 'ICEDetention',
             'taiwan_exclusion': 'TaiwanZone',
@@ -51,7 +52,30 @@ class ThreatAnalyzer:
             'grocery_cpi': 'GroceryCPI',
             'cisa_cyber': 'CISACyber',
             'grid_outages': 'GridOutages',
-            'gdp_growth': 'GDPGrowth'
+            'gdp_growth': 'GDPGrowth',
+            # New phase-based names
+            'econ_01_treasury_tail': 'Treasury',
+            'econ_02_grocery_cpi': 'GroceryCPI',
+            'job_01_strike_days': 'StrikeTracker',
+            'power_01_ai_surveillance': 'LegiScan',
+            'cyber_01_cisa_kev': 'CISACyber',
+            'civil_01_acled_protests': 'ACLEDProtests',
+            'grid_01_pjm_outages': 'GridOutages',
+            'market_01_intraday_swing': 'MarketVolatility',
+            'bio_01_h2h_countries': 'WHODisease',
+            'oil_01_russian_brics': 'CREAOil',
+            'oil_02_mbridge_settlements': 'MBridgeSettlements',
+            'oil_03_ofac_designations': 'OFACDesignations',
+            'oil_04_refinery_ratio': 'JODIOil',
+            'labor_ai_01_layoffs': 'AILayoffs',
+            'cyber_02_ai_ransomware': 'AIRansomware',
+            'info_02_deepfake_shocks': 'DeepfakeShocks',
+            'compute_01_training_cost': 'EpochCompute',
+            'green_g1_gdp_rates': 'GDPGrowth',
+            'cult_trend_01_twitter': 'TwitterCult',
+            'cult_meme_01_tokens': 'EtherscanTokens',
+            'cult_event_01_protests': 'ACLEDCult',
+            'cult_media_01_trends': 'GoogleTrendsAI'
         }
         
         for config_name, collector_name in name_mapping.items():

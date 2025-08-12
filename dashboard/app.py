@@ -32,9 +32,23 @@ from collectors import (
     GroceryCPICollector,
     CISACyberCollector,
     GridOutageCollector,
-    GDPGrowthCollector
+    GDPGrowthCollector,
+    StrikeTrackerCollector,
+    LegiScanCollector,
+    ACLEDProtestsCollector,
+    MarketVolatilityCollector,
+    WHODiseaseCollector,
+    CREAOilCollector,
+    OFACDesignationsCollector,
+    AILayoffsCollector,
+    MBridgeSettlementsCollector,
+    JODIOilCollector,
+    AIRansomwareCollector,
+    DeepfakeShocksCollector
 )
 from processors.threat_analyzer import ThreatAnalyzer
+from processors.phase_manager import PhaseManager
+from processors.stale_handler import StaleDataHandler
 from utils.config_loader import ConfigLoader
 
 app = Flask(__name__)
@@ -61,7 +75,19 @@ all_collectors = {
     'GroceryCPI': GroceryCPICollector,
     'CISACyber': CISACyberCollector,
     'GridOutages': GridOutageCollector,
-    'GDPGrowth': GDPGrowthCollector
+    'GDPGrowth': GDPGrowthCollector,
+    'StrikeTracker': StrikeTrackerCollector,
+    'LegiScan': LegiScanCollector,
+    'ACLEDProtests': ACLEDProtestsCollector,
+    'MarketVolatility': MarketVolatilityCollector,
+    'WHODisease': WHODiseaseCollector,
+    'CREAOil': CREAOilCollector,
+    'OFACDesignations': OFACDesignationsCollector,
+    'AILayoffs': AILayoffsCollector,
+    'MBridgeSettlements': MBridgeSettlementsCollector,
+    'JODIOil': JODIOilCollector,
+    'AIRansomware': AIRansomwareCollector,
+    'DeepfakeShocks': DeepfakeShocksCollector
 }
 
 # Only initialize enabled collectors
@@ -70,6 +96,7 @@ trip_wire_config = config.config.get('trip_wires', {})
 
 # Map config names to collector names
 config_to_collector = {
+    # Original indicators
     'treasury_tail': 'Treasury',
     'ice_detention': 'ICEDetention',
     'taiwan_exclusion': 'TaiwanZone',
@@ -85,7 +112,25 @@ config_to_collector = {
     'grocery_cpi': 'GroceryCPI',
     'cisa_cyber': 'CISACyber',
     'grid_outages': 'GridOutages',
-    'gdp_growth': 'GDPGrowth'
+    'gdp_growth': 'GDPGrowth',
+    # New phase-based indicators
+    'econ_01_treasury_tail': 'Treasury',
+    'econ_02_grocery_cpi': 'GroceryCPI',
+    'job_01_strike_days': 'StrikeTracker',
+    'power_01_ai_surveillance': 'LegiScan',
+    'cyber_01_cisa_kev': 'CISACyber',
+    'civil_01_acled_protests': 'ACLEDProtests',
+    'grid_01_pjm_outages': 'GridOutages',
+    'market_01_intraday_swing': 'MarketVolatility',
+    'bio_01_h2h_countries': 'WHODisease',
+    'oil_01_russian_brics': 'CREAOil',
+    'oil_02_mbridge_settlements': 'MBridgeSettlements',
+    'oil_03_ofac_designations': 'OFACDesignations',
+    'oil_04_refinery_ratio': 'JODIOil',
+    'labor_ai_01_layoffs': 'AILayoffs',
+    'cyber_02_ai_ransomware': 'AIRansomware',
+    'info_02_deepfake_shocks': 'DeepfakeShocks',
+    'green_g1_gdp_rates': 'GDPGrowth'  # Green flag indicator using GDP collector
 }
 
 for config_name, collector_name in config_to_collector.items():
@@ -93,6 +138,8 @@ for config_name, collector_name in config_to_collector.items():
         if collector_name in all_collectors:
             collectors[collector_name] = all_collectors[collector_name](config)
 threat_analyzer = ThreatAnalyzer(config)
+phase_manager = PhaseManager(config)
+stale_handler = StaleDataHandler(config)
 
 # Cache for latest readings
 latest_data = {
@@ -141,6 +188,9 @@ def get_status():
         # Otherwise collect fresh data
         try:
             reading = collector.collect()
+            # Check for staleness
+            if reading:
+                reading = stale_handler.check_staleness(reading)
             current_readings[name] = reading
             # Save to history
             if reading:
@@ -152,9 +202,20 @@ def get_status():
     # Analyze threat levels
     threat_levels = threat_analyzer.analyze(current_readings)
     
+    # Apply stale data forced levels
+    for name, reading in current_readings.items():
+        if reading and reading.get('metadata', {}).get('stale'):
+            original_level = threat_levels.get(name, 'unknown')
+            threat_levels[name] = stale_handler.apply_stale_level(
+                original_level, reading.get('metadata', {})
+            )
+    
     # Check for TIGHTEN-UP condition
     red_count = sum(1 for level in threat_levels.values() if level == "red")
-    tighten_up = red_count >= config.get_alert_config().get('tighten_up_threshold', 5)
+    tighten_up = red_count >= config.get_alert_config().get('tighten_up_threshold', 2)
+    
+    # Evaluate current phase
+    current_phase, phase_info = phase_manager.evaluate_phase(current_readings, threat_levels)
     
     # Update cache
     latest_data = {
@@ -210,7 +271,9 @@ def get_status():
         'timestamp': latest_data['last_update'],
         'tighten_up': tighten_up,
         'red_count': red_count,
-        'indicators': indicators
+        'indicators': indicators,
+        'current_phase': current_phase,
+        'phase_info': phase_info
     })
 
 @app.route('/api/history')
@@ -243,6 +306,11 @@ def procedures():
 def framework():
     """H1-H6 Risk Analysis Framework page."""
     return render_template('framework.html')
+
+@app.route('/executive')
+def executive():
+    """Executive summary dashboard."""
+    return render_template('executive.html')
 
 @app.route('/manual-input')
 def manual_input():

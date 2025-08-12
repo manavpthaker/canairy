@@ -107,3 +107,9 @@ class CREAOilCollector(BaseCollector):
         import random
         # Simulate BRICS share between 55-75%
         return round(random.uniform(55, 75), 1)
+    
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        """Validate CREA oil data."""
+        if not data:
+            return False
+        return 'value' in data and isinstance(data['value'], (int, float))

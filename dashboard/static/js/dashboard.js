@@ -55,6 +55,11 @@ function updateDashboard(data) {
     activeAlerts.textContent = data.red_count;
     activeAlerts.className = data.red_count > 0 ? 'value red' : 'value';
     
+    // Update phase information if available
+    if (data.current_phase !== undefined && data.phase_info) {
+        updatePhaseDisplay(data.current_phase, data.phase_info);
+    }
+    
     // Update indicators grid
     updateIndicators(data.indicators);
 }
@@ -82,7 +87,13 @@ function getDataSourceBadge(indicator) {
     if (source.includes('API') || source === 'news_analysis' || 
         source === 'CISA_KEV' || source === 'DOE_OE417' || 
         source === 'BLS_API' || source === 'FRED_API' ||
-        source === 'alpha_vantage_api') {
+        source === 'alpha_vantage_api' || source === 'cornell_ilr' ||
+        source === 'legiscan_api' || source === 'ACLED_API' ||
+        source === 'yahoo_finance' || source === 'WHO_RSS' ||
+        source === 'CREA_tracker' || source === 'OFAC_SDN' ||
+        source === 'layoffs_tracker' || source === 'BIS_mBridge' ||
+        source === 'JODI_API' || source === 'CISA_ICS' || 
+        source === 'composite') {
         badgeClass = 'live';
         badgeText = 'LIVE';
     } else if (source === 'manual_input') {
@@ -429,6 +440,186 @@ function getIndicatorDetails(indicatorName) {
                 { text: 'FRED GDP Data', url: 'https://fred.stlouisfed.org/series/A191RL1Q225SBEA' },
                 { text: 'Understanding GDP', url: 'https://www.imf.org/external/pubs/ft/fandd/basics/gdp.htm' }
             ]
+        },
+        'StrikeTracker': {
+            title: '🪧 Labor Strike Activity',
+            whatWeTrack: 'Total days of work stoppages from Cornell ILR Strike Tracker. We sum all strike days across the month to measure labor unrest intensity.',
+            whyItMatters: 'Rising strike activity signals economic stress and potential supply chain disruptions. Major strikes can halt production, shipping, and services - leading to shortages and price spikes.',
+            thresholds: {
+                green: '< 100,000 worker-days/month',
+                amber: '100,000-500,000 worker-days',
+                red: '> 500,000 worker-days'
+            },
+            references: [
+                { text: 'Cornell ILR Strike Tracker', url: 'https://striketracker.ilr.cornell.edu/' },
+                { text: 'BLS Work Stoppage Data', url: 'https://www.bls.gov/wsp/' },
+                { text: 'Labor Action Tracker', url: 'https://www.nlrb.gov/reports/nlrb-case-activity-reports/representation-cases/intake' }
+            ]
+        },
+        'LegiScan': {
+            title: '👁️ AI Surveillance Laws',
+            whatWeTrack: 'State and federal bills containing AI surveillance keywords tracked via LegiScan API. We count new bills introduced per month.',
+            whyItMatters: 'Rapid increase in AI surveillance legislation signals government preparation for social control. This often precedes restrictions on movement, financial surveillance, and erosion of privacy rights.',
+            thresholds: {
+                green: '< 3 bills/month',
+                amber: '3-10 bills/month',
+                red: '> 10 bills/month'
+            },
+            references: [
+                { text: 'LegiScan Bill Tracking', url: 'https://legiscan.com/' },
+                { text: 'EFF Surveillance Self-Defense', url: 'https://ssd.eff.org/' },
+                { text: 'AI Now Institute', url: 'https://ainowinstitute.org/' }
+            ]
+        },
+        'ACLEDProtests': {
+            title: '🚨 US Protest Activity',
+            whatWeTrack: 'Daily average of protests, riots, and civil unrest events from ACLED (Armed Conflict Location & Event Data). 7-day rolling average.',
+            whyItMatters: 'Escalating protests can quickly spiral into supply disruptions, curfews, and economic shutdowns. High protest activity often precedes government crackdowns and emergency declarations.',
+            thresholds: {
+                green: '< 25 protests/day',
+                amber: '25-75 protests/day',
+                red: '> 75 protests/day'
+            },
+            references: [
+                { text: 'ACLED Dashboard', url: 'https://acleddata.com/dashboard/' },
+                { text: 'US Crisis Monitor', url: 'https://acleddata.com/special-projects/us-crisis-monitor/' },
+                { text: 'Protest Tracking Methodology', url: 'https://acleddata.com/resources/methodology/' }
+            ]
+        },
+        'MarketVolatility': {
+            title: '📊 Bond Market Shock',
+            whatWeTrack: '10-year Treasury yield intraday swings on major data release days (CPI, FOMC, NFP). Measured in basis points.',
+            whyItMatters: 'Extreme bond volatility signals that even "safe" investments are unstable. This is a critical early warning of financial system stress that precedes bank failures and credit freezes.',
+            thresholds: {
+                green: '< 20 basis points',
+                amber: '20-29 basis points',
+                red: '≥ 30 basis points (CRITICAL)'
+            },
+            references: [
+                { text: 'Yahoo Finance 10Y Yield', url: 'https://finance.yahoo.com/quote/%5ETNX' },
+                { text: 'Bond Market Association', url: 'https://www.sifma.org/resources/research/' },
+                { text: 'Fed Economic Data', url: 'https://fred.stlouisfed.org/' }
+            ]
+        },
+        'WHODisease': {
+            title: '🦠 Disease Outbreak Alert',
+            whatWeTrack: 'Countries reporting novel human-to-human disease transmission in WHO Disease Outbreak News. 14-day window. US case triggers automatic red.',
+            whyItMatters: 'New H2H transmission means potential pandemic. Early warning allows stocking medicines, N95s, and supplies before panic buying empties shelves.',
+            thresholds: {
+                green: '0 countries with H2H',
+                amber: '1-2 countries',
+                red: '≥ 3 countries OR any US case'
+            },
+            references: [
+                { text: 'WHO Disease Outbreak News', url: 'https://www.who.int/emergencies/disease-outbreak-news' },
+                { text: 'CDC Current Outbreaks', url: 'https://www.cdc.gov/outbreaks/' },
+                { text: 'ProMED Mail', url: 'https://promedmail.org/' }
+            ]
+        },
+        'CREAOil': {
+            title: '🛢️ Russian Oil to BRICS',
+            whatWeTrack: 'Percentage of Russian crude oil exports going to BRICS nations, from CREA (Centre for Research on Energy and Clean Air) tracker.',
+            whyItMatters: 'High BRICS share means petrodollar weakening. This threatens USD reserve status, potentially triggering currency crisis and import price shocks.',
+            thresholds: {
+                green: '< 60% to BRICS',
+                amber: '60-75% to BRICS',
+                red: '> 75% to BRICS'
+            },
+            references: [
+                { text: 'CREA Russia Tracker', url: 'https://energyandcleanair.org/russia-sanctions/' },
+                { text: 'EIA Oil Market Analysis', url: 'https://www.eia.gov/petroleum/' },
+                { text: 'BRICS Economic Data', url: 'https://www.brics2023.gov.za/' }
+            ]
+        },
+        'OFACDesignations': {
+            title: '⚖️ Oil Sanctions Escalation',
+            whatWeTrack: 'New OFAC sanctions on India/China entities involved in oil/energy trade. 30-day count from Treasury SDN list.',
+            whyItMatters: 'Sanctions escalation can trigger retaliation, supply disruptions, and accelerate de-dollarization. This directly impacts energy prices and availability.',
+            thresholds: {
+                green: '0 new designations',
+                amber: '1-5 designations',
+                red: '> 5 designations'
+            },
+            references: [
+                { text: 'OFAC SDN List', url: 'https://sanctionssearch.ofac.treas.gov/' },
+                { text: 'Treasury Sanctions Programs', url: 'https://home.treasury.gov/policy-issues/financial-sanctions/sanctions-programs-and-country-information' },
+                { text: 'Sanctions Compliance', url: 'https://www.treasury.gov/resource-center/sanctions/Pages/default.aspx' }
+            ]
+        },
+        'AILayoffs': {
+            title: '🤖 AI-Driven Layoffs',
+            whatWeTrack: 'Monthly count of workers laid off explicitly due to AI/automation, aggregated from WARN notices and layoff trackers.',
+            whyItMatters: 'Mass AI displacement creates economic cascade: widespread unemployment → reduced spending → business failures → financial crisis. This is the "great replacement" risk.',
+            thresholds: {
+                green: '< 5,000 workers/month',
+                amber: '5,000-25,000 workers',
+                red: '> 25,000 workers'
+            },
+            references: [
+                { text: 'Layoffs.fyi Tracker', url: 'https://layoffs.fyi/' },
+                { text: 'WARN Notice Search', url: 'https://www.dol.gov/agencies/eta/layoffs/warn' },
+                { text: 'AI Impact Research', url: 'https://www.mckinsey.com/featured-insights/future-of-work/ai-automation-and-the-future-of-work' }
+            ]
+        },
+        'MBridgeSettlements': {
+            title: '💱 mBridge Energy Payments',
+            whatWeTrack: 'Daily settlement volumes for energy transactions on the BIS mBridge platform (USD millions/day). Tracks shift away from dollar-based oil trade.',
+            whyItMatters: 'When oil trades bypass the dollar, US loses financial leverage and sanctions power. High mBridge volumes signal petrodollar collapse risk, leading to currency crisis and import shocks.',
+            thresholds: {
+                green: '< $50M/day',
+                amber: '$50-300M/day',
+                red: '> $300M/day'
+            },
+            references: [
+                { text: 'BIS mBridge Project', url: 'https://www.bis.org/about/bisih/topics/cbdc/mbridge.htm' },
+                { text: 'mBridge Report', url: 'https://www.bis.org/publ/othp65.htm' },
+                { text: 'CBDC Tracker', url: 'https://www.atlanticcouncil.org/cbdctracker/' }
+            ]
+        },
+        'JODIOil': {
+            title: '🏭 BRICS/OECD Refinery Ratio',
+            whatWeTrack: 'Ratio of refinery capacity between India+China vs OECD countries from JODI oil data. Higher ratio means BRICS controls more global refining.',
+            whyItMatters: 'When BRICS refining dominates, they control fuel prices and availability. This shifts global energy power eastward, weakening Western energy security.',
+            thresholds: {
+                green: '< 1.2 ratio',
+                amber: '1.2-1.4 ratio',
+                red: '> 1.4 ratio'
+            },
+            references: [
+                { text: 'JODI Oil Database', url: 'https://www.jodidata.org/' },
+                { text: 'IEA Oil Market Report', url: 'https://www.iea.org/reports/oil-market-report' },
+                { text: 'OPEC Monthly Report', url: 'https://www.opec.org/opec_web/en/publications/338.htm' }
+            ]
+        },
+        'AIRansomware': {
+            title: '🔓 AI-Powered Ransomware',
+            whatWeTrack: 'Count of ransomware attacks using AI tools for automation/evasion in last 90 days. Data from CISA ICS advisories with AI keywords.',
+            whyItMatters: 'AI makes ransomware faster, smarter, and harder to stop. Surge in AI ransomware means critical infrastructure attacks that could shut down power, water, hospitals.',
+            thresholds: {
+                green: '≤ 3 incidents/90 days',
+                amber: '4-6 incidents',
+                red: '> 6 incidents'
+            },
+            references: [
+                { text: 'CISA ICS Advisories', url: 'https://www.cisa.gov/news-events/cybersecurity-advisories/ics-advisories' },
+                { text: 'Ransomware Task Force', url: 'https://securityandtechnology.org/ransomwaretaskforce/' },
+                { text: 'IC3 Ransomware', url: 'https://www.ic3.gov/Media/Y2023/PSA230510' }
+            ]
+        },
+        'DeepfakeShocks': {
+            title: '🎭 Deepfake Market Shocks',
+            whatWeTrack: 'Quarterly count of market volatility events triggered by deepfake videos/audio. Monitors news + market correlation for AI-generated content causing >5% swings.',
+            whyItMatters: 'Deepfakes can crash stocks, trigger bank runs, or start wars in minutes. As AI improves, these "truth bombs" become undetectable and catastrophic.',
+            thresholds: {
+                green: '0 events/quarter',
+                amber: '1 event',
+                red: '≥ 2 events (CRITICAL)'
+            },
+            references: [
+                { text: 'Deepfake Detection Challenge', url: 'https://ai.facebook.com/datasets/dfdc/' },
+                { text: 'SEC Market Manipulation', url: 'https://www.sec.gov/newsroom/press-releases' },
+                { text: 'Synthetic Media Research', url: 'https://www.partnershiponai.org/synthetic-media-framework/' }
+            ]
         }
     };
     
@@ -443,6 +634,63 @@ function getIndicatorDetails(indicatorName) {
         },
         references: []
     };
+}
+
+// Update phase display in sidebar
+function updatePhaseDisplay(currentPhase, phaseInfo) {
+    // Check if phase display exists, if not create it
+    let phaseCard = document.getElementById('phase-display');
+    if (!phaseCard) {
+        // Create phase display card
+        const sidebar = document.querySelector('.sidebar');
+        const systemStatusCard = document.querySelector('.sidebar-card');
+        
+        phaseCard = document.createElement('div');
+        phaseCard.id = 'phase-display';
+        phaseCard.className = 'sidebar-card phase-card';
+        phaseCard.innerHTML = `
+            <h3>📍 Current Phase</h3>
+            <div class="phase-content">
+                <div class="phase-number">0</div>
+                <div class="phase-name">Loading...</div>
+                <div class="phase-actions">
+                    <h4>Recommended Actions:</h4>
+                    <ul class="phase-action-list"></ul>
+                </div>
+            </div>
+        `;
+        
+        // Insert after system status card
+        sidebar.insertBefore(phaseCard, systemStatusCard.nextSibling);
+    }
+    
+    // Update phase display
+    const phaseNumber = phaseCard.querySelector('.phase-number');
+    const phaseName = phaseCard.querySelector('.phase-name');
+    const actionList = phaseCard.querySelector('.phase-action-list');
+    
+    phaseNumber.textContent = currentPhase;
+    phaseNumber.className = `phase-number phase-${currentPhase}`;
+    phaseName.textContent = phaseInfo.name || `Phase ${currentPhase}`;
+    
+    // Update actions
+    actionList.innerHTML = '';
+    if (phaseInfo.actions && phaseInfo.actions.length > 0) {
+        phaseInfo.actions.forEach(action => {
+            const li = document.createElement('li');
+            li.textContent = action;
+            actionList.appendChild(li);
+        });
+    }
+    
+    // Add phase-specific styling
+    if (currentPhase >= 5) {
+        phaseCard.classList.add('high-phase');
+    } else if (currentPhase >= 3) {
+        phaseCard.classList.add('medium-phase');
+    } else {
+        phaseCard.classList.remove('high-phase', 'medium-phase');
+    }
 }
 
 // Show Risk Framework (redirect to page)

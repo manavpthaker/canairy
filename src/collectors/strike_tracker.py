@@ -95,3 +95,9 @@ class StrikeTrackerCollector(BaseCollector):
         except Exception as e:
             self.logger.error(f"Failed to parse strike data: {e}")
             return None
+    
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        """Validate strike data."""
+        if not data:
+            return False
+        return 'value' in data and isinstance(data['value'], (int, float))
