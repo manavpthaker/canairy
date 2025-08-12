@@ -22,6 +22,14 @@ from .grocery_cpi import GroceryCPICollector
 from .cisa_cyber import CISACyberCollector
 from .grid_outage import GridOutageCollector
 from .gdp_growth import GDPGrowthCollector
+from .strike_tracker import StrikeTrackerCollector
+from .legiscan import LegiScanCollector
+from .acled_protests import ACLEDProtestsCollector
+from .market_volatility import MarketVolatilityCollector
+from .who_disease import WHODiseaseCollector
+from .crea_oil import CREAOilCollector
+from .ofac_designations import OFACDesignationsCollector
+from .ai_layoffs import AILayoffsCollector
 
 __all__ = [
     'BaseCollector',
@@ -41,4 +49,12 @@ __all__ = [
     'CISACyberCollector',
     'GridOutageCollector',
     'GDPGrowthCollector',
+    'StrikeTrackerCollector',
+    'LegiScanCollector',
+    'ACLEDProtestsCollector',
+    'MarketVolatilityCollector',
+    'WHODiseaseCollector',
+    'CREAOilCollector',
+    'OFACDesignationsCollector',
+    'AILayoffsCollector',
 ]
