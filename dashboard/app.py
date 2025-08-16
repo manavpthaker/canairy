@@ -44,7 +44,19 @@ from collectors import (
     MBridgeSettlementsCollector,
     JODIOilCollector,
     AIRansomwareCollector,
-    DeepfakeShocksCollector
+    DeepfakeShocksCollector,
+    GlobalConflictCollector,
+    TaiwanPLACollector,
+    NATOReadinessCollector,
+    NuclearTestsCollector,
+    RussiaNATOCollector,
+    DefenseSpendingCollector,
+    DCControlCollector,
+    GuardMetrosCollector,
+    ICEDetentionsCollector,
+    DHSRemovalCollector,
+    HillLegislationCollector,
+    LibertyLitigationCollector
 )
 from processors.threat_analyzer import ThreatAnalyzer
 from processors.phase_manager import PhaseManager
@@ -87,7 +99,19 @@ all_collectors = {
     'MBridgeSettlements': MBridgeSettlementsCollector,
     'JODIOil': JODIOilCollector,
     'AIRansomware': AIRansomwareCollector,
-    'DeepfakeShocks': DeepfakeShocksCollector
+    'DeepfakeShocks': DeepfakeShocksCollector,
+    'GlobalConflict': GlobalConflictCollector,
+    'TaiwanPLA': TaiwanPLACollector,
+    'NATOReadiness': NATOReadinessCollector,
+    'NuclearTests': NuclearTestsCollector,
+    'RussiaNATO': RussiaNATOCollector,
+    'DefenseSpending': DefenseSpendingCollector,
+    'DCControl': DCControlCollector,
+    'GuardMetros': GuardMetrosCollector,
+    'ICEDetentions': ICEDetentionsCollector,
+    'DHSRemoval': DHSRemovalCollector,
+    'HillLegislation': HillLegislationCollector,
+    'LibertyLitigation': LibertyLitigationCollector
 }
 
 # Only initialize enabled collectors
@@ -130,7 +154,21 @@ config_to_collector = {
     'labor_ai_01_layoffs': 'AILayoffs',
     'cyber_02_ai_ransomware': 'AIRansomware',
     'info_02_deepfake_shocks': 'DeepfakeShocks',
-    'green_g1_gdp_rates': 'GDPGrowth'  # Green flag indicator using GDP collector
+    'green_g1_gdp_rates': 'GDPGrowth',  # Green flag indicator using GDP collector
+    # New global conflict indicators
+    'global_conflict_intensity': 'GlobalConflict',
+    'taiwan_pla_activity': 'TaiwanPLA',
+    'nato_high_readiness': 'NATOReadiness',
+    'nuclear_test_activity': 'NuclearTests',
+    'russia_nato_escalation': 'RussiaNATO',
+    'defense_spending_growth': 'DefenseSpending',
+    # New domestic control indicators
+    'dc_control_countdown': 'DCControl',
+    'national_guard_metros': 'GuardMetros',
+    'ice_detention_surge': 'ICEDetentions',
+    'dhs_removal_expansion': 'DHSRemoval',
+    'hill_control_legislation': 'HillLegislation',
+    'liberty_litigation_count': 'LibertyLitigation'
 }
 
 for config_name, collector_name in config_to_collector.items():

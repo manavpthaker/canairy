@@ -34,6 +34,18 @@ from .mbridge_settlements import MBridgeSettlementsCollector
 from .jodi_oil import JODIOilCollector
 from .ai_ransomware import AIRansomwareCollector
 from .deepfake_shocks import DeepfakeShocksCollector
+from .global_conflict import GlobalConflictCollector
+from .taiwan_pla import TaiwanPLACollector
+from .nato_readiness import NATOReadinessCollector
+from .nuclear_tests import NuclearTestsCollector
+from .russia_nato import RussiaNATOCollector
+from .defense_spending import DefenseSpendingCollector
+from .dc_control import DCControlCollector
+from .guard_metros import GuardMetrosCollector
+from .ice_detentions import ICEDetentionsCollector
+from .dhs_removal import DHSRemovalCollector
+from .hill_legislation import HillLegislationCollector
+from .liberty_litigation import LibertyLitigationCollector
 
 __all__ = [
     'BaseCollector',
@@ -65,4 +77,16 @@ __all__ = [
     'JODIOilCollector',
     'AIRansomwareCollector',
     'DeepfakeShocksCollector',
+    'GlobalConflictCollector',
+    'TaiwanPLACollector',
+    'NATOReadinessCollector',
+    'NuclearTestsCollector',
+    'RussiaNATOCollector',
+    'DefenseSpendingCollector',
+    'DCControlCollector',
+    'GuardMetrosCollector',
+    'ICEDetentionsCollector',
+    'DHSRemovalCollector',
+    'HillLegislationCollector',
+    'LibertyLitigationCollector',
 ]

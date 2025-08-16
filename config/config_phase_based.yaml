@@ -396,6 +396,146 @@ trip_wires:
       red: 999
     unit: "trend_score"
     category: "cult"
+    
+  # GLOBAL CONFLICT INDICATORS
+  global_conflict_intensity:
+    name: "Global battle intensity (ACLED 90d avg)"
+    enabled: true
+    source_type: "api"
+    url: "https://api.acleddata.com/acled/read"
+    thresholds:
+      green: 500
+      amber: 1000
+      red: 2000
+    unit: "events_per_day"
+    category: "conflict"
+    
+  taiwan_pla_activity:
+    name: "PLA Taiwan incursions (14d avg)"
+    enabled: true
+    source_type: "web_scraper"
+    url: "https://www.mnd.gov.tw/english/"
+    thresholds:
+      green: 20
+      amber: 50
+      red: 100
+    unit: "aircraft_per_day"
+    category: "conflict"
+    
+  nato_high_readiness:
+    name: "NATO high-readiness forces activated"
+    enabled: true
+    source_type: "news_api"
+    critical: true
+    thresholds:
+      green: 0
+      amber: 1
+      red: 2
+    unit: "activations"
+    category: "conflict"
+    
+  nuclear_test_activity:
+    name: "Nuclear/missile tests (90d count)"
+    enabled: true
+    source_type: "composite"
+    thresholds:
+      green: 2
+      amber: 5
+      red: 10
+    unit: "tests"
+    category: "conflict"
+    
+  russia_nato_escalation:
+    name: "Russia-NATO escalation index"
+    enabled: true
+    source_type: "composite"
+    thresholds:
+      green: 30
+      amber: 60
+      red: 80
+    unit: "index"
+    category: "conflict"
+    
+  defense_spending_growth:
+    name: "Global defense spending YoY growth"
+    enabled: true
+    source_type: "sipri"
+    url: "https://www.sipri.org/databases/milex"
+    thresholds:
+      green: 5
+      amber: 8
+      red: 15
+    unit: "percent"
+    category: "conflict"
+    
+  # DOMESTIC CONTROL INDICATORS
+  dc_control_countdown:
+    name: "Days until DC autonomy"
+    enabled: true
+    source_type: "congress_api"
+    thresholds:
+      green: 730
+      amber: 365
+      red: 180
+    unit: "days"
+    category: "control"
+    
+  national_guard_metros:
+    name: "Major metros with Guard deployment"
+    enabled: true
+    source_type: "news_aggregator"
+    critical: true
+    thresholds:
+      green: 0
+      amber: 1
+      red: 2
+    unit: "metros"
+    category: "control"
+    
+  ice_detention_surge:
+    name: "ICE detention population"
+    enabled: true
+    source_type: "ice_stats"
+    thresholds:
+      green: 50000
+      amber: 80000
+      red: 150000
+    unit: "detainees"
+    category: "control"
+    
+  dhs_removal_expansion:
+    name: "DHS expedited removal expanded"
+    enabled: true
+    source_type: "federal_register"
+    critical: true
+    thresholds:
+      green: 0
+      amber: 0
+      red: 1
+    unit: "expansion_status"
+    category: "control"
+    
+  hill_control_legislation:
+    name: "Control bills advancing (30d)"
+    enabled: true
+    source_type: "legiscan_api"
+    thresholds:
+      green: 3
+      amber: 5
+      red: 10
+    unit: "bills"
+    category: "control"
+    
+  liberty_litigation_count:
+    name: "Major liberty cases active"
+    enabled: true
+    source_type: "aclu_eff_feeds"
+    thresholds:
+      green: 5
+      amber: 10
+      red: 20
+    unit: "cases"
+    category: "control"
 
 # Alert system configuration
 alerts:
@@ -408,6 +548,9 @@ alerts:
   critical_indicators:
     - "market_01_intraday_swing"
     - "info_02_deepfake_shocks"
+    - "nato_high_readiness"
+    - "national_guard_metros"
+    - "dhs_removal_expansion"
   
   # Notification settings (actual credentials in secrets.yaml)
   email:
