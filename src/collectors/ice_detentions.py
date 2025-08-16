@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 from bs4 import BeautifulSoup
 from .base import BaseCollector
+from .ice_detention_scraper import ICEDetentionScraperCollector
 
 
 class ICEDetentionsCollector(BaseCollector):
@@ -29,6 +30,9 @@ class ICEDetentionsCollector(BaseCollector):
         # Historical baseline (pre-surge)
         self.baseline_population = 35000  # Typical pre-2024 level
         
+        # Initialize scraper as primary data source
+        self.scraper = ICEDetentionScraperCollector(config)
+        
     def collect(self) -> Optional[Dict[str, Any]]:
         """
         Collect ICE detention population data.
@@ -37,8 +41,13 @@ class ICEDetentionsCollector(BaseCollector):
             Dict with total detention population
         """
         try:
-            # Try to get current detention numbers
-            detainee_count = self._fetch_detention_stats()
+            # Use scraper as primary method
+            result = self.scraper.collect()
+            if result and 'value' in result:
+                detainee_count = result['value']
+            else:
+                # Fall back to our own methods
+                detainee_count = self._fetch_detention_stats()
             
             # Calculate surge level
             surge_factor = detainee_count / self.baseline_population
