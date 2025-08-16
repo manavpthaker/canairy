@@ -27,7 +27,7 @@ class HillLegislationCollector(BaseCollector):
         
         # Congress.gov as backup
         self.congress_url = "https://api.congress.gov/v3/bill"
-        self.congress_key = config.get('api_keys', {}).get('congress', '')
+        self.congress_key = api_keys.get('congress', '')
         
         # Keywords indicating concerning bills
         self.control_keywords = [
