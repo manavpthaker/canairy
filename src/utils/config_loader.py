@@ -30,6 +30,7 @@ class ConfigLoader:
         self.config_path = Path(config_path)
         self.config = self._load_config()
         self.secrets = self._load_secrets()
+        self._merge_secrets_into_config()
         
     def _load_config(self) -> Dict[str, Any]:
         """Load the main configuration file."""
@@ -167,3 +168,16 @@ class ConfigLoader:
     def get_secrets(self) -> Dict[str, Any]:
         """Get secrets configuration."""
         return self.secrets
+    
+    def _merge_secrets_into_config(self):
+        """Merge secrets into main configuration."""
+        # Merge API keys
+        if 'api_keys' in self.secrets:
+            if 'api_keys' not in self.config:
+                self.config['api_keys'] = {}
+            self.config['api_keys'].update(self.secrets['api_keys'])
+        
+        # Merge other keys at root level
+        for key in ['fred_api_key', 'news_api_key', 'alpha_vantage_key']:
+            if key in self.secrets:
+                self.config[key] = self.secrets[key]

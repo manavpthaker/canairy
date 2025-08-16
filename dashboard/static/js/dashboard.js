@@ -129,7 +129,31 @@ function createIndicatorCard(indicator) {
         'GroceryCPI': 'Food Inflation',
         'CISACyber': 'Cyber Threats',
         'GridOutages': 'Power Grid Failures',
-        'GDPGrowth': 'Economic Growth'
+        'GDPGrowth': 'Economic Growth',
+        'StrikeTracker': 'Labor Strikes',
+        'LegiScan': 'AI Surveillance Laws',
+        'ACLEDProtests': 'US Protests',
+        'MarketVolatility': 'Bond Market Shock',
+        'WHODisease': 'Disease Outbreaks',
+        'CREAOil': 'Russian Oil Flows',
+        'OFACDesignations': 'Sanctions Activity',
+        'AILayoffs': 'AI Job Losses',
+        'MBridgeSettlements': 'Dollar Alternatives',
+        'JODIOil': 'Oil Refinery Balance',
+        'AIRansomware': 'AI Cyber Attacks',
+        'DeepfakeShocks': 'Deepfake Events',
+        'GlobalConflict': 'Global Battles',
+        'TaiwanPLA': 'China-Taiwan Military',
+        'NATOReadiness': 'NATO Forces Alert',
+        'NuclearTests': 'Nuclear Testing',
+        'RussiaNATO': 'Russia-NATO Tension',
+        'DefenseSpending': 'Military Spending',
+        'DCControl': 'DC Autonomy Timer',
+        'GuardMetros': 'National Guard Cities',
+        'ICEDetentions': 'Immigration Detention',
+        'DHSRemoval': 'DHS Powers Expanded',
+        'HillLegislation': 'Control Laws',
+        'LibertyLitigation': 'Freedom Cases'
     };
     
     const descriptions = {
@@ -148,7 +172,31 @@ function createIndicatorCard(indicator) {
         'GroceryCPI': 'How fast grocery prices are rising (3-month annualized)',
         'CISACyber': 'Critical cyber vulnerabilities discovered in last 90 days',
         'GridOutages': 'Major power outages affecting >50k customers this quarter',
-        'GDPGrowth': 'Economic growth rate - higher is better (positive indicator)'
+        'GDPGrowth': 'Economic growth rate - higher is better (positive indicator)',
+        'StrikeTracker': 'Total days of work stoppages this month',
+        'LegiScan': 'AI surveillance bills being pushed through legislature',
+        'ACLEDProtests': 'Daily average of protests and civil unrest',
+        'MarketVolatility': 'Wild swings in "safe" bond markets on data days',
+        'WHODisease': 'Countries with human-to-human disease transmission',
+        'CREAOil': 'Russian oil flowing to BRICS nations instead of West',
+        'OFACDesignations': 'New sanctions on India/China oil entities',
+        'AILayoffs': 'Workers laid off due to AI automation this month',
+        'MBridgeSettlements': 'Oil trades settled outside US dollar system',
+        'JODIOil': 'Asia vs West oil refining capacity ratio',
+        'AIRansomware': 'AI-powered ransomware attacks in 90 days',
+        'DeepfakeShocks': 'Market-moving deepfake events this quarter',
+        'GlobalConflict': 'Daily average of global armed conflicts',
+        'TaiwanPLA': 'Chinese military aircraft near Taiwan daily',
+        'NATOReadiness': 'NATO high-readiness forces activated',
+        'NuclearTests': 'Nuclear or missile tests this quarter',
+        'RussiaNATO': 'Russia-NATO escalation composite index',
+        'DefenseSpending': 'Global military spending growth rate',
+        'DCControl': 'Days until DC could act independently',
+        'GuardMetros': 'Major US cities with National Guard deployed',
+        'ICEDetentions': 'Total immigration detainees in custody',
+        'DHSRemoval': 'DHS expedited removal powers expanded',
+        'HillLegislation': 'Control bills advancing in Congress',
+        'LibertyLitigation': 'Major constitutional cases active'
     };
     
     const whyItMatters = {
@@ -167,7 +215,31 @@ function createIndicatorCard(indicator) {
         'GroceryCPI': 'Food too expensive → families struggle → social unrest → supply chain breaks',
         'CISACyber': 'Critical systems vulnerable → infrastructure attacks → services offline',
         'GridOutages': 'No power → no heat/cooling → no refrigeration → cant work from home',
-        'GDPGrowth': 'Strong economy = more jobs → stability → less risk (GREEN is good!)'
+        'GDPGrowth': 'Strong economy = more jobs → stability → less risk (GREEN is good!)',
+        'StrikeTracker': 'Mass strikes → supply disruptions → shortages → economic spiral',
+        'LegiScan': 'Surveillance laws → privacy gone → social control → authoritarian shift',
+        'ACLEDProtests': 'Rising unrest → curfews → economic shutdown → supply issues',
+        'MarketVolatility': 'Bond chaos → financial panic → bank runs → credit freeze',
+        'WHODisease': 'New pandemic → lockdowns → economic collapse → social breakdown',
+        'CREAOil': 'Oil axis forming → dollar weakens → import costs surge → inflation',
+        'OFACDesignations': 'Sanctions escalation → oil shock → gas prices spike → recession',
+        'AILayoffs': 'Mass AI unemployment → no income → defaults → economic collapse',
+        'MBridgeSettlements': 'Dollar bypassed → US power erodes → import crisis → shortages',
+        'JODIOil': 'Asia dominates oil → West energy crisis → rationing → economic shock',
+        'AIRansomware': 'AI attacks infrastructure → hospitals/utilities down → chaos',
+        'DeepfakeShocks': 'Fake crisis → market crash → savings wiped out → panic',
+        'GlobalConflict': 'Wars spreading → trade disrupted → shortages → draft possible',
+        'TaiwanPLA': 'Taiwan blockade → chip shortage → cars/phones unavailable → economic halt',
+        'NATOReadiness': 'NATO mobilizing → WW3 risk → nuclear threat → prepare now',
+        'NuclearTests': 'Nuclear escalation → deterrence failing → existential risk',
+        'RussiaNATO': 'Direct conflict risk → nuclear war possible → survival mode',
+        'DefenseSpending': 'Arms race accelerating → war preparations → draft coming',
+        'DCControl': 'DC autonomy → constitutional crisis → federal breakdown',
+        'GuardMetros': 'Military in cities → martial law coming → freedom restricted',
+        'ICEDetentions': 'Mass detentions → social breakdown → unrest → supply issues',
+        'DHSRemoval': 'Due process gone → anyone can be detained → police state',
+        'HillLegislation': 'Freedom eroding → speech/assembly banned → authoritarian',
+        'LibertyLitigation': 'Courts overwhelmed → rights suspended → constitution void'
     };
     
     card.innerHTML = `
@@ -619,6 +691,186 @@ function getIndicatorDetails(indicatorName) {
                 { text: 'Deepfake Detection Challenge', url: 'https://ai.facebook.com/datasets/dfdc/' },
                 { text: 'SEC Market Manipulation', url: 'https://www.sec.gov/newsroom/press-releases' },
                 { text: 'Synthetic Media Research', url: 'https://www.partnershiponai.org/synthetic-media-framework/' }
+            ]
+        },
+        'GlobalConflict': {
+            title: '⚔️ Global Battle Intensity',
+            whatWeTrack: 'Daily average of battles, explosions, and violence against civilians worldwide from ACLED (Armed Conflict Location & Event Data). 90-day rolling average.',
+            whyItMatters: 'Rising global conflicts disrupt supply chains, trigger refugee crises, and pull major powers toward war. High intensity means world order breaking down.',
+            thresholds: {
+                green: '< 500 events/day',
+                amber: '500-1000 events/day',
+                red: '> 2000 events/day'
+            },
+            references: [
+                { text: 'ACLED Global Dashboard', url: 'https://acleddata.com/dashboard/' },
+                { text: 'Uppsala Conflict Data', url: 'https://ucdp.uu.se/' },
+                { text: 'Global Peace Index', url: 'https://www.visionofhumanity.org/maps/' }
+            ]
+        },
+        'TaiwanPLA': {
+            title: '🇹🇼 Taiwan PLA Activity',
+            whatWeTrack: 'Chinese military aircraft entering Taiwan air defense zone daily. Data from Taiwan Ministry of National Defense reports. 14-day average.',
+            whyItMatters: 'Taiwan produces 90% of advanced chips. Military escalation risks blockade → global chip shortage → cars/phones/computers unavailable → economic collapse.',
+            thresholds: {
+                green: '< 20 aircraft/day',
+                amber: '20-50 aircraft/day',
+                red: '> 100 aircraft/day'
+            },
+            references: [
+                { text: 'Taiwan MND Reports', url: 'https://www.mnd.gov.tw/english/' },
+                { text: 'Taiwan ADIZ Tracker', url: 'https://amti.csis.org/taiwan-tracker/' },
+                { text: 'Semiconductor Supply Chain', url: 'https://www.semiconductors.org/global-semiconductor-supply-chain/' }
+            ]
+        },
+        'NATOReadiness': {
+            title: '🛡️ NATO Forces Activation',
+            whatWeTrack: 'Number of NATO Response Force (NRF) and Very High Readiness Joint Task Force (VJTF) activations. News monitoring for deployments.',
+            whyItMatters: 'NATO activation means Europe preparing for war. This triggers energy crisis, market crash, possible Article 5 → WW3. Critical early warning.',
+            thresholds: {
+                green: '0 activations',
+                amber: '1 activation',
+                red: '≥ 2 activations (CRITICAL)'
+            },
+            references: [
+                { text: 'NATO News', url: 'https://www.nato.int/cps/en/natohq/news.htm' },
+                { text: 'SHAPE Updates', url: 'https://shape.nato.int/' },
+                { text: 'NATO Response Force', url: 'https://www.nato.int/cps/en/natohq/topics_49755.htm' }
+            ]
+        },
+        'NuclearTests': {
+            title: '☢️ Nuclear/Missile Tests',
+            whatWeTrack: 'Nuclear tests and ICBM/SLBM launches by Russia, China, North Korea, Iran in last 90 days. Includes doctrine changes.',
+            whyItMatters: 'Rising nuclear tests signal deterrence breakdown. Multiple tests mean powers preparing for nuclear conflict. Doctrine changes = lower threshold for use.',
+            thresholds: {
+                green: '≤ 2 tests/quarter',
+                amber: '3-5 tests',
+                red: '> 10 tests or doctrine change'
+            },
+            references: [
+                { text: 'NTI Nuclear Security', url: 'https://www.nti.org/' },
+                { text: 'Arms Control Association', url: 'https://www.armscontrol.org/' },
+                { text: 'CTBTO Monitoring', url: 'https://www.ctbto.org/' }
+            ]
+        },
+        'RussiaNATO': {
+            title: '🚨 Russia-NATO Escalation',
+            whatWeTrack: 'Composite index tracking: NATO alerts, new deployments, border incidents, airspace violations, nuclear rhetoric, sanctions. 0-100 scale.',
+            whyItMatters: 'Direct Russia-NATO conflict = nuclear war risk. Index above 80 means prepare for worst case: infrastructure attacks, nuclear threats, survival scenarios.',
+            thresholds: {
+                green: '< 30 index',
+                amber: '30-60 index',
+                red: '> 80 index'
+            },
+            references: [
+                { text: 'EUCOM News', url: 'https://www.eucom.mil/newsroom' },
+                { text: 'ISW Russia Updates', url: 'https://www.understandingwar.org/' },
+                { text: 'NATO-Russia Council', url: 'https://www.nato.int/cps/en/natohq/topics_50090.htm' }
+            ]
+        },
+        'DefenseSpending': {
+            title: '💰 Global Military Spending',
+            whatWeTrack: 'Year-over-year growth in global military expenditure from SIPRI (Stockholm International Peace Research Institute). Annual data released each April.',
+            whyItMatters: 'Accelerating defense spending = arms race = war preparation. When spending surges globally, major conflict becomes more likely within 2-3 years.',
+            thresholds: {
+                green: '< 5% YoY growth',
+                amber: '5-8% growth',
+                red: '> 15% growth'
+            },
+            references: [
+                { text: 'SIPRI Military Database', url: 'https://www.sipri.org/databases/milex' },
+                { text: 'Defense News', url: 'https://www.defensenews.com/' },
+                { text: 'Global Firepower', url: 'https://www.globalfirepower.com/' }
+            ]
+        },
+        'DCControl': {
+            title: '🏛️ DC Autonomy Countdown',
+            whatWeTrack: 'Days until Washington DC could gain autonomy under HR 51 or similar legislation. Tracks Congressional progress on DC statehood bills.',
+            whyItMatters: 'DC autonomy triggers constitutional crisis: federal vs local control, Congress relocation, power vacuum. Major destabilization of US government.',
+            thresholds: {
+                green: '> 730 days',
+                amber: '365-730 days',
+                red: '< 180 days'
+            },
+            references: [
+                { text: 'Congress.gov HR 51', url: 'https://www.congress.gov/bill/118th-congress/house-bill/51' },
+                { text: 'DC Statehood', url: 'https://statehood.dc.gov/' },
+                { text: 'Constitutional Issues', url: 'https://www.heritage.org/political-process/report/dc-statehood-not-without-constitutional-amendment' }
+            ]
+        },
+        'GuardMetros': {
+            title: '🚔 National Guard in Cities',
+            whatWeTrack: 'Number of major US metropolitan areas with National Guard deployments in last 14 days. Monitors news for activation orders.',
+            whyItMatters: 'Guard in cities = civil unrest/martial law imminent. 2+ metros means national emergency, freedom of movement restricted, economic shutdown.',
+            thresholds: {
+                green: '0 metros',
+                amber: '1 metro',
+                red: '≥ 2 metros (CRITICAL)'
+            },
+            references: [
+                { text: 'National Guard News', url: 'https://www.nationalguard.mil/News/' },
+                { text: 'State Emergency Declarations', url: 'https://www.nga.org/governors/powers-and-authority/' },
+                { text: 'Urban Unrest Tracking', url: 'https://acleddata.com/special-projects/us-crisis-monitor/' }
+            ]
+        },
+        'ICEDetentions': {
+            title: '🔒 Immigration Detention Surge',
+            whatWeTrack: 'Total ICE detention population across all facilities. Normal baseline ~35,000. Surge indicates mass enforcement operations.',
+            whyItMatters: 'Detention surge = social breakdown coming. Mass detentions trigger unrest, labor shortages, community collapse, supply chain failures.',
+            thresholds: {
+                green: '< 50,000 detainees',
+                amber: '50,000-80,000',
+                red: '> 150,000 detainees'
+            },
+            references: [
+                { text: 'ICE Detention Stats', url: 'https://www.ice.gov/detain/detention-statistics' },
+                { text: 'TRAC Immigration', url: 'https://trac.syr.edu/immigration/' },
+                { text: 'Detention Watch', url: 'https://www.detentionwatchnetwork.org/' }
+            ]
+        },
+        'DHSRemoval': {
+            title: '⚖️ DHS Powers Expansion',
+            whatWeTrack: 'Expansion of expedited removal beyond current 100-mile/14-day limits. Binary indicator: 0=current scope, 1=expanded nationwide.',
+            whyItMatters: 'Expedited removal everywhere = due process gone. Anyone can be detained/deported without hearing. Police state conditions, constitution suspended.',
+            thresholds: {
+                green: 'Current 100mi/14day limits',
+                amber: 'Expansion proposed',
+                red: 'Nationwide expansion (CRITICAL)'
+            },
+            references: [
+                { text: 'Federal Register', url: 'https://www.federalregister.gov/' },
+                { text: 'DHS Immigration', url: 'https://www.dhs.gov/immigration-enforcement' },
+                { text: 'ACLU Expedited Removal', url: 'https://www.aclu.org/issues/immigrants-rights/deportation-and-due-process/expedited-removal' }
+            ]
+        },
+        'HillLegislation': {
+            title: '📜 Control Legislation',
+            whatWeTrack: 'Bills advancing in Congress that restrict speech, assembly, privacy, or gun rights. Counts bills with committee action in last 30 days.',
+            whyItMatters: 'Control laws = freedom dying. Multiple bills mean coordinated push for authoritarian measures. Your rights disappearing through "emergency" legislation.',
+            thresholds: {
+                green: '< 3 bills advancing',
+                amber: '3-5 bills',
+                red: '> 10 bills advancing'
+            },
+            references: [
+                { text: 'LegiScan Tracking', url: 'https://legiscan.com/' },
+                { text: 'Congress.gov', url: 'https://www.congress.gov/' },
+                { text: 'GovTrack', url: 'https://www.govtrack.us/' }
+            ]
+        },
+        'LibertyLitigation': {
+            title: '⚖️ Constitutional Cases',
+            whatWeTrack: 'Major liberty/constitutional cases at Supreme Court and circuit level. Tracking ACLU/EFF litigation on speech, privacy, due process.',
+            whyItMatters: 'Surge in liberty cases = rights under attack. Courts overwhelmed means constitution failing, emergency powers expanding, authoritarian shift.',
+            thresholds: {
+                green: '< 5 major cases',
+                amber: '5-10 cases',
+                red: '> 20 cases active'
+            },
+            references: [
+                { text: 'SCOTUS Docket', url: 'https://www.supremecourt.gov/docket/docket.aspx' },
+                { text: 'ACLU Cases', url: 'https://www.aclu.org/cases' },
+                { text: 'EFF Cases', url: 'https://www.eff.org/cases' }
             ]
         }
     };

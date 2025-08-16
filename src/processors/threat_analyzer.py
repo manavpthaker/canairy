@@ -75,7 +75,21 @@ class ThreatAnalyzer:
             'cult_trend_01_twitter': 'TwitterCult',
             'cult_meme_01_tokens': 'EtherscanTokens',
             'cult_event_01_protests': 'ACLEDCult',
-            'cult_media_01_trends': 'GoogleTrendsAI'
+            'cult_media_01_trends': 'GoogleTrendsAI',
+            # New global conflict indicators
+            'global_conflict_intensity': 'GlobalConflict',
+            'taiwan_pla_activity': 'TaiwanPLA',
+            'nato_high_readiness': 'NATOReadiness',
+            'nuclear_test_activity': 'NuclearTests',
+            'russia_nato_escalation': 'RussiaNATO',
+            'defense_spending_growth': 'DefenseSpending',
+            # New domestic control indicators
+            'dc_control_countdown': 'DCControl',
+            'national_guard_metros': 'GuardMetros',
+            'ice_detention_surge': 'ICEDetentions',
+            'dhs_removal_expansion': 'DHSRemoval',
+            'hill_control_legislation': 'HillLegislation',
+            'liberty_litigation_count': 'LibertyLitigation'
         }
         
         for config_name, collector_name in name_mapping.items():

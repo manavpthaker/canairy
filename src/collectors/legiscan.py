@@ -16,7 +16,8 @@ class LegiScanCollector(BaseCollector):
     def __init__(self, config):
         super().__init__(config)
         self._name = "LegiScan"
-        self.api_key = os.getenv('LEGISCAN_API_KEY', '')
+        # Try to get API key from config/secrets first, then environment
+        self.api_key = config.get('api_keys', {}).get('legiscan', '') or os.getenv('LEGISCAN_API_KEY', '')
         self.base_url = "https://api.legiscan.com"
         
     def collect(self) -> Optional[Dict[str, Any]]:
