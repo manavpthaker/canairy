@@ -7,6 +7,7 @@ import requests
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 from .base import BaseCollector
+from .strike_tracker_scraper import StrikeTrackerScraperCollector
 
 
 class StrikeTrackerCollector(BaseCollector):
@@ -16,6 +17,8 @@ class StrikeTrackerCollector(BaseCollector):
         super().__init__(config)
         self._name = "StrikeTracker"
         self.base_url = "https://striketracker.ilr.cornell.edu/api/v1/strikes"
+        # Initialize scraper as fallback
+        self.scraper = StrikeTrackerScraperCollector(config)
         
     def collect(self) -> Optional[Dict[str, Any]]:
         """
@@ -87,13 +90,28 @@ class StrikeTrackerCollector(BaseCollector):
                 return total_strike_days
             else:
                 self.logger.error(f"API returned status {response.status_code}")
-                return None
+                # Try scraper as fallback
+                self.logger.info("Falling back to web scraper")
+                return self._fallback_to_scraper()
                 
         except requests.exceptions.RequestException as e:
             self.logger.error(f"Request failed: {e}")
-            return None
+            # Try scraper as fallback
+            self.logger.info("Falling back to web scraper due to request error")
+            return self._fallback_to_scraper()
         except Exception as e:
             self.logger.error(f"Failed to parse strike data: {e}")
+            return None
+    
+    def _fallback_to_scraper(self) -> Optional[int]:
+        """Use web scraper as fallback when API fails."""
+        try:
+            result = self.scraper.collect()
+            if result and 'value' in result:
+                return result['value']
+            return None
+        except Exception as e:
+            self.logger.error(f"Scraper fallback also failed: {e}")
             return None
     
     def validate_data(self, data: Dict[str, Any]) -> bool:

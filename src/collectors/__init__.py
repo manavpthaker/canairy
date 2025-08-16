@@ -46,6 +46,10 @@ from .ice_detentions import ICEDetentionsCollector
 from .dhs_removal import DHSRemovalCollector
 from .hill_legislation import HillLegislationCollector
 from .liberty_litigation import LibertyLitigationCollector
+from .strike_tracker_scraper import StrikeTrackerScraperCollector
+from .taiwan_pla_scraper import TaiwanPLAScraperCollector
+from .ice_detention_scraper import ICEDetentionScraperCollector
+from .news_aggregator import NewsAggregatorCollector
 
 __all__ = [
     'BaseCollector',
@@ -89,4 +93,8 @@ __all__ = [
     'DHSRemovalCollector',
     'HillLegislationCollector',
     'LibertyLitigationCollector',
+    'StrikeTrackerScraperCollector',
+    'TaiwanPLAScraperCollector',
+    'ICEDetentionScraperCollector',
+    'NewsAggregatorCollector',
 ]

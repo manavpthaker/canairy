@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List
 from bs4 import BeautifulSoup
 from .base import BaseCollector
+from .taiwan_pla_scraper import TaiwanPLAScraperCollector
 
 
 class TaiwanPLACollector(BaseCollector):
@@ -26,6 +27,9 @@ class TaiwanPLACollector(BaseCollector):
             "https://www.notams.faa.gov/search",  # Would need proper API
             "https://english.news.cn/",  # Xinhua for announcements
         ]
+        
+        # Initialize scraper as fallback
+        self.scraper = TaiwanPLAScraperCollector(config)
         
     def collect(self) -> Optional[Dict[str, Any]]:
         """
@@ -98,11 +102,15 @@ class TaiwanPLACollector(BaseCollector):
                     max_daily = max(max_daily, count)
                     self.logger.info(f"Found PLA incursion: {count} aircraft")
             
-            return max_daily if max_daily > 0 else self._get_mock_incursions()
+            if max_daily > 0:
+                return max_daily
+            else:
+                # Fall back to scraper
+                return self._use_scraper_fallback()
             
         except Exception as e:
             self.logger.error(f"Failed to parse MND data: {e}")
-            return self._get_mock_incursions()
+            return self._use_scraper_fallback()
     
     def _check_exclusion_zones(self) -> int:
         """Check for active PLA exclusion zones."""
@@ -142,6 +150,18 @@ class TaiwanPLACollector(BaseCollector):
             return random.randint(1, 3)
         else:  # 2% extended exclusion
             return random.randint(4, 10)
+    
+    def _use_scraper_fallback(self) -> int:
+        """Use web scraper when primary methods fail."""
+        try:
+            self.logger.info("Using web scraper fallback for Taiwan PLA data")
+            result = self.scraper.collect()
+            if result and 'value' in result:
+                return result['value']
+            return self._get_mock_incursions()
+        except Exception as e:
+            self.logger.error(f"Scraper fallback failed: {e}")
+            return self._get_mock_incursions()
     
     def validate_data(self, data: Dict[str, Any]) -> bool:
         """Validate Taiwan PLA data."""
