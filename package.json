@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "screenshots": "npx playwright test tests/screenshots/portfolio-screenshots.spec.ts",
+    "demos": "npx playwright test tests/screenshots/interactive-demo.spec.ts",
+    "portfolio": "node scripts/generate-portfolio-assets.js",
+    "playwright:install": "npx playwright install"
   },
   "dependencies": {
     "@types/react-router-dom": "^5.3.3",
@@ -26,6 +30,7 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
@@ -35,6 +40,7 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "playwright": "^1.55.0",
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
