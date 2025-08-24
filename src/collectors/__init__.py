@@ -11,7 +11,6 @@ from .ice_detention import ICEDetentionCollector
 from .taiwan_zone import TaiwanZoneCollector
 from .hormuz_risk import HormuzRiskCollector
 from .dod_autonomy import DoDAutonomyCollector
-from .mbridge import MBridgeCollector
 from .jobless_claims import JoblessClaimsCollector
 from .luxury_collapse import LuxuryCollapseCollector
 from .pharmacy_shortage import PharmacyShortageCollector
@@ -58,7 +57,6 @@ __all__ = [
     'TaiwanZoneCollector',
     'HormuzRiskCollector',
     'DoDAutonomyCollector',
-    'MBridgeCollector',
     'JoblessClaimsCollector',
     'LuxuryCollapseCollector',
     'PharmacyShortageCollector',

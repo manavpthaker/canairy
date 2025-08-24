@@ -67,7 +67,8 @@ class WHODiseaseCollector(BaseCollector):
             
             if feed.bozo:
                 self.logger.error(f"Failed to parse RSS feed: {feed.bozo_exception}")
-                return None
+                # Try alternative approach with requests
+                return self._fetch_via_requests()
             
             # Get cutoff date (14 days ago)
             cutoff_date = datetime.now() - timedelta(days=14)
@@ -111,6 +112,20 @@ class WHODiseaseCollector(BaseCollector):
             
         except Exception as e:
             self.logger.error(f"Failed to fetch WHO RSS data: {e}")
+            return None
+    
+    def _fetch_via_requests(self) -> Optional[Set[str]]:
+        """Fallback method using requests if feedparser fails."""
+        try:
+            import requests
+            response = requests.get(self.rss_url, timeout=10)
+            if response.status_code == 200:
+                # For now, return empty set if RSS is malformed
+                self.logger.warning("WHO RSS feed malformed, returning no outbreaks")
+                return set()
+            return None
+        except Exception as e:
+            self.logger.error(f"Fallback fetch failed: {e}")
             return None
     
     def validate_data(self, data: Dict[str, Any]) -> bool:

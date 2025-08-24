@@ -65,7 +65,7 @@ class GroceryCPICollector(BaseCollector):
                 "seriesid": ["CUUR0000SAF11"],
                 "startyear": str(start_date.year),
                 "endyear": str(end_date.year),
-                "registrationkey": self.config.get_secrets().get('bls_api_key', '')  # Optional
+                "registrationkey": self.config.get_secrets().get('api_keys', {}).get('bls', '')  # Optional
             }
             
             headers = {'Content-type': 'application/json'}

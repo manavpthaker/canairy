@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bunker-black: #0D0D0D;
+    --bunker-dark: #1A1A1A;
+    --bunker-border: #262626;
+    --bunker-success: #10B981;
+    --bunker-warning: #F59E0B;
+    --bunker-danger: #EF4444;
+    --bunker-primary: #F9FAFB;
+    --bunker-secondary: #9CA3AF;
+    --bunker-accent: #6366F1;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-bunker-black text-bunker-primary antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  ::selection {
+    @apply bg-bunker-accent text-white;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-bunker-dark;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-bunker-border rounded-sm hover:bg-bunker-secondary;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-bunker-dark border border-bunker-border rounded-lg p-4 transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply hover:border-bunker-secondary hover:shadow-lg hover:shadow-bunker-black/50;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-200 inline-flex items-center justify-center;
+  }
+
+  .btn-primary {
+    @apply bg-bunker-accent text-white hover:bg-opacity-90 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-bunker-dark text-bunker-primary border border-bunker-border hover:bg-bunker-border;
+  }
+
+  .btn-danger {
+    @apply bg-bunker-danger text-white hover:bg-opacity-90;
+  }
+
+  .input {
+    @apply bg-bunker-dark border border-bunker-border rounded-md px-3 py-2 text-bunker-primary placeholder-bunker-secondary focus:outline-none focus:ring-2 focus:ring-bunker-accent focus:border-transparent;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply bg-bunker-success/20 text-bunker-success border border-bunker-success/30;
+  }
+
+  .badge-warning {
+    @apply bg-bunker-warning/20 text-bunker-warning border border-bunker-warning/30;
+  }
+
+  .badge-danger {
+    @apply bg-bunker-danger/20 text-bunker-danger border border-bunker-danger/30;
+  }
+
+  .tooltip {
+    @apply absolute z-50 px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded shadow-sm pointer-events-none;
+  }
+}
+
+@layer utilities {
+  .animate-pulse-danger {
+    animation: pulse-danger 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .glow-success {
+    @apply shadow-lg shadow-bunker-success/25;
+  }
+
+  .glow-warning {
+    @apply shadow-lg shadow-bunker-warning/25;
+  }
+
+  .glow-danger {
+    @apply shadow-lg shadow-bunker-danger/25;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r;
+  }
+
+  .grid-pattern {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* Custom scrollbar for news sidebar */
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-[#0A0A0A];
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-[#2A2A2A] rounded hover:bg-[#3A3A3A];
+  }
+
+  /* Firefox scrollbar support */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #2A2A2A #0A0A0A;
+  }
+}
