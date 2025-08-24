@@ -8,6 +8,20 @@ export interface IndicatorDescription {
     amber: string;
     red: string;
   };
+  whatWeTrack?: string;
+  realWorldImpact?: {
+    green: string;
+    amber: string;
+    red: string;
+  };
+  actionGuidance?: {
+    green: string[];
+    amber: string[];
+    red: string[];
+  };
+  historicalContext?: string;
+  methodology?: string;
+  references?: { title: string; url: string; }[];
 }
 
 const descriptions: Record<string, IndicatorDescription> = {
