@@ -1,70 +1,206 @@
-# Brown Man Bunker 🏠🚨
+# 🐦 Canairy - Early Warning System for Global Disruptions
 
-A personal resilience monitoring system that tracks global risk indicators and provides early warning alerts for household preparedness.
+<div align="center">
+  <img src="docs/images/canairy-logo.png" alt="Canairy Logo" width="200"/>
+  
+  **Your Personal Canary in the Coal Mine**
+  
+  [![React](https://img.shields.io/badge/React-18.2-blue.svg)](https://reactjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+  [![Python](https://img.shields.io/badge/Python-3.10+-yellow.svg)](https://python.org)
+  [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+  [![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
+</div>
 
-## Quick Start
+## 🚨 What is Canairy?
 
-### React Dashboard (Recommended)
+Canairy is a sophisticated early warning system that monitors 22 critical global indicators to help families prepare for potential disruptions before they impact daily life. Like a canary in a coal mine, it detects danger early - giving you time to act.
 
-1. **Install dependencies:**
+### 🎯 Key Features
+
+- **🔍 Real-Time Monitoring**: Tracks 22 vital indicators across finance, supply chain, energy, and social domains
+- **📰 Intelligent News Analysis**: AI-powered news filtering linked to specific risk indicators
+- **📊 Advanced Visualization**: Interactive charts showing historical patterns and future projections
+- **🚦 4-Phase Alert System**: Clear escalation from normal operations to crisis response
+- **📱 Actionable Intelligence**: Specific steps to take based on current threat levels
+- **🏦 Financial Protection**: Early warnings for banking stress and market crashes
+- **🛒 Supply Chain Alerts**: Advance notice of shortages and price spikes
+- **⚡ Energy Disruption Tracking**: Monitor risks to power grid and fuel supplies
+- **🌍 Geopolitical Analysis**: Track global conflicts that could affect your region
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="docs/images/dashboard-overview.png" alt="Dashboard Overview" width="800"/>
+  <p><em>Main Dashboard - All critical information at a glance</em></p>
+</div>
+
+<div align="center">
+  <img src="docs/images/critical-indicators.png" alt="Critical Indicators" width="800"/>
+  <p><em>Critical Indicators Panel - Real-time threat assessment</em></p>
+</div>
+
+<div align="center">
+  <img src="docs/images/action-panel.png" alt="Priority Actions" width="800"/>
+  <p><em>Priority Actions - Know exactly what to do and when</em></p>
+</div>
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Python 3.10+ (for data collectors)
+- API keys for data sources (free tiers available)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/manavpthaker/canairy.git
+   cd canairy
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. **Set up environment variables:**
+3. **Configure environment**
    ```bash
    cp .env.example .env
-   # Edit .env with your API keys (see API Setup section)
+   # Edit .env with your API keys
    ```
 
-3. **Start the development server:**
+4. **Start the system**
    ```bash
    npm run dev
    ```
 
-4. **Access the dashboard:** http://localhost:3005
+5. **Access the dashboard**
+   ```
+   http://localhost:3005
+   ```
 
-### Legacy Python Dashboard
+## 📊 Monitored Indicators
 
-```bash
-cd dashboard && python app.py
+### Financial Indicators
+- **Treasury Tail Risk** - Banking system stress detector
+- **VIX Volatility** - Market crash probability
+- **mBridge Settlement** - Dollar dominance threats
+- **Unemployment Rate** - Economic health gauge
+
+### Supply Chain Indicators
+- **Taiwan Exclusion Zone** - Semiconductor shortage risk
+- **Strait of Hormuz** - Oil supply disruption
+- **Baltic Dry Index** - Global shipping costs
+- **Food Price Index** - Agricultural supply stress
+
+### Energy & Infrastructure
+- **Natural Gas Prices** - Heating/cooling costs
+- **Power Grid Frequency** - Electrical stability
+- **Cyber Attack Index** - Digital infrastructure threats
+
+### Social & Geopolitical
+- **ICE Detention Capacity** - Immigration enforcement
+- **Global Conflict Index** - Military tensions
+- **Civil Unrest Tracker** - Social stability
+
+[View Complete Indicator List →](docs/user-guide/indicator-reference.md)
+
+## 🔧 System Architecture
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   React UI      │────▶│  Backend API    │────▶│ Data Collectors │
+│   Dashboard     │     │  (Python/Node)  │     │   (22 Sources)  │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+         │                       │                        │
+         │                       ▼                        │
+         │              ┌─────────────────┐              │
+         └─────────────▶│   PostgreSQL    │◀─────────────┘
+                        │   Time Series   │
+                        └─────────────────┘
 ```
 
-Access at: http://localhost:5555
+## 📖 Documentation
 
-## API Setup
+- [📚 User Guide](docs/user-guide/manual.md) - Complete usage instructions
+- [🛠️ Technical Documentation](docs/technical/architecture.md) - System architecture and development
+- [🔌 API Reference](docs/api/README.md) - Backend API documentation
+- [🚀 Deployment Guide](docs/deployment/README.md) - Production deployment instructions
+- [🔒 Security Guide](docs/deployment/security.md) - Security best practices
+- [👨‍👩‍👧‍👦 Family Preparedness](docs/family/emergency-planning.md) - Emergency response planning
 
-To enable real-time news intelligence, you'll need API keys for:
+## 🌟 Why Canairy?
 
-### News API
-1. Sign up at [newsapi.org](https://newsapi.org)
-2. Get your API key
-3. Add to `.env`: `NEWS_API_KEY=your_api_key_here`
+Traditional news and financial media often report on crises after they've already begun impacting daily life. Canairy changes this by:
 
-### Alpha Vantage (Market Data)
-1. Sign up at [alphavantage.co](https://www.alphavantage.co/support/#api-key)
-2. Get your free API key
-3. Add to `.env`: `ALPHA_VANTAGE_API_KEY=your_api_key_here`
+1. **Monitoring Leading Indicators**: We track data that changes *before* mainstream awareness
+2. **Connecting the Dots**: Our system identifies patterns across seemingly unrelated indicators
+3. **Actionable Intelligence**: We don't just alert you - we tell you exactly what to do
+4. **Family-Focused**: Designed for protecting households, not institutional investors
 
-### OpenAI (Optional - for news analysis)
-1. Get API key from [platform.openai.com](https://platform.openai.com/api-keys)
-2. Add to `.env`: `OPENAI_API_KEY=your_api_key_here`
+## 🤝 Contributing
 
-## Features
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-- **Real-time Risk Indicators**: Monitor 16 critical resilience indicators
-- **News Intelligence**: Get news filtered by risk indicators with credibility scoring
-- **Plain English Context**: Understand what indicators mean for your family's security
-- **Action Guidance**: Know what to do at each alert level
-- **Historical Context**: See when thresholds were last breached and what happened
+### Development Setup
 
-## Risk Indicators
+```bash
+# Install development dependencies
+npm install
 
-- **Treasury Tail Risk**: Banking system stress
-- **Taiwan Exclusion Zone**: Semiconductor supply chain risk
-- **Strait of Hormuz**: Oil/gas price disruption risk
-- **mBridge Settlement**: Dollar dominance threats
-- **VIX Volatility**: Market crash indicators
-- **ICE Detention**: Immigration enforcement patterns
-- **Global Conflict**: Military tensions worldwide
-- And more...
+# Run tests
+npm test
+
+# Run linters
+npm run lint
+npm run typecheck
+
+# Start development server with hot reload
+npm run dev
+```
+
+## 📊 Data Sources
+
+Canairy aggregates data from multiple reliable sources:
+
+- **Financial Data**: Federal Reserve, Alpha Vantage, CBOE
+- **News Intelligence**: News API, Reuters, Bloomberg
+- **Government Data**: Treasury Direct, USDA, EIA
+- **Market Data**: CME Group, ICE, Baltic Exchange
+- **Geopolitical**: ACLED, Council on Foreign Relations
+
+[View Complete Data Sources →](docs/technical/data-sources.md)
+
+## 🔒 Security & Privacy
+
+- All data is processed locally - no personal information leaves your system
+- API keys are encrypted and stored securely
+- Open source for complete transparency
+- No tracking or analytics
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by Nassim Taleb's work on Black Swan events
+- Phase system adapted from emergency management best practices
+- Built with love for families who want to stay prepared
+
+## 📞 Support
+
+- 📧 Email: support@canairy.app
+- 🐛 Issues: [GitHub Issues](https://github.com/manavpthaker/canairy/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/manavpthaker/canairy/discussions)
+
+---
+
+<div align="center">
+  <strong>Stay Prepared. Stay Informed. Stay Safe.</strong>
+  
+  Made with ❤️ for families everywhere
+</div>
