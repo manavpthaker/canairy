@@ -53,12 +53,23 @@ class GridOutageCollector(BaseCollector):
     def _fetch_grid_outages(self) -> Optional[Dict[str, Any]]:
         """Fetch grid outage data from DOE OE-417 reports."""
         try:
-            # DOE OE-417 annual summary CSV
-            url = "https://www.oe.netl.doe.gov/OE417_annual_summary.csv"
+            # DOE OE-417 annual summary CSV - try different URLs
+            urls = [
+                "https://www.oe.netl.doe.gov/OE417_annual_summary.csv",
+                "https://www.oe.energy.gov/OE417_annual_summary.csv",
+                "https://www.energy.gov/sites/default/files/OE417_annual_summary.csv"
+            ]
             
-            response = requests.get(url, timeout=15)
+            response = None
+            for url in urls:
+                try:
+                    response = requests.get(url, timeout=15)
+                    if response.status_code == 200:
+                        break
+                except:
+                    continue
             
-            if response.status_code == 200:
+            if response and response.status_code == 200:
                 # Parse CSV data
                 csv_data = StringIO(response.text)
                 reader = csv.DictReader(csv_data)

@@ -42,7 +42,6 @@ class ThreatAnalyzer:
             'taiwan_exclusion': 'TaiwanZone',
             'hormuz_risk': 'HormuzRisk',
             'dod_autonomy': 'DoDAutonomy',
-            'mbridge_crude': 'MBridge',
             'jobless_claims': 'JoblessClaims',
             'luxury_collapse': 'LuxuryCollapse',
             'pharmacy_shortage': 'PharmacyShortage',
