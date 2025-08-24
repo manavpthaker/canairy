@@ -99,6 +99,33 @@
     margin: 0;
 }
 
+.hopi-info {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+}
+
+.hopi-label, .confidence-label {
+    color: #666;
+    margin-right: 5px;
+}
+
+.hopi-value, .confidence-value {
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+.hopi-value.red {
+    color: #ef5350;
+}
+
+.hopi-value.amber {
+    color: #ffa726;
+}
+
+.hopi-value.green {
+    color: #66bb6a;
+}
+
 .immediate-actions {
     background: #0f0f0f;
     padding: 1.5rem;

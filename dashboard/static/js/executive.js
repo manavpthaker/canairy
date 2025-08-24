@@ -56,9 +56,25 @@ function updatePhaseAndActions(data) {
     phaseElement.textContent = currentPhase;
     phaseElement.className = currentPhase >= 5 ? 'phase-value high-phase' : 'phase-value';
     
-    // Set phase name
+    // Set phase name and headline
     const phaseInfo = data.phase_info || {};
-    phaseNameElement.textContent = phaseInfo.name || `Phase ${currentPhase}`;
+    phaseNameElement.textContent = phaseInfo.headline || phaseInfo.name || `Phase ${currentPhase}`;
+    
+    // Update HOPI information
+    if (data.hopi) {
+        document.getElementById('exec-hopi').textContent = data.hopi.score.toFixed(1);
+        document.getElementById('exec-confidence').textContent = data.hopi.confidence.toFixed(0) + '%';
+        
+        // Color HOPI score
+        const hopiEl = document.getElementById('exec-hopi');
+        if (data.hopi.score >= 70) {
+            hopiEl.className = 'hopi-value red';
+        } else if (data.hopi.score >= 35) {
+            hopiEl.className = 'hopi-value amber';
+        } else {
+            hopiEl.className = 'hopi-value green';
+        }
+    }
     
     // Set immediate actions
     actionList.innerHTML = '';
