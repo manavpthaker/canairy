@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brown Man Bunker</title>
+    <title>Brown Man Bunker - All Indicators</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -24,8 +24,16 @@
                 <h3>System Status</h3>
                 <div class="status-content">
                     <div class="status-item">
-                        <span class="label">Overall Status:</span>
-                        <span id="overall-status" class="value">Loading...</span>
+                        <span class="label">HOPI Score:</span>
+                        <span id="hopi-score" class="value">--</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Confidence:</span>
+                        <span id="confidence" class="value">--</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Phase:</span>
+                        <span id="current-phase" class="value">--</span>
                     </div>
                     <div class="status-item">
                         <span class="label">Active Alerts:</span>
@@ -47,7 +55,7 @@
                 <h3>Quick Actions</h3>
                 <div class="action-list">
                     <button onclick="refreshStatus()" class="sidebar-button">🔄 Refresh Now</button>
-                    <a href="/executive" class="sidebar-button">📊 Executive Summary</a>
+                    <a href="/" class="sidebar-button">📊 Dashboard</a>
                     <a href="/emergency" class="sidebar-button">📋 Emergency Plan</a>
                     <a href="/framework" class="sidebar-button">📖 Risk Framework</a>
                     <a href="/manual-input" class="sidebar-button">✏️ Manual Input</a>

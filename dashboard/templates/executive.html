@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brown Man Bunker - Executive Summary</title>
+    <title>Brown Man Bunker - Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/executive.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,10 +12,10 @@
     <!-- Simplified Header -->
     <header class="executive-header">
         <div class="header-content">
-            <h1>Brown Man Bunker - Executive Summary</h1>
+            <h1>Brown Man Bunker - Dashboard</h1>
             <div class="header-actions">
                 <span id="last-update-exec">Last update: Loading...</span>
-                <a href="/" class="btn-secondary">Full Dashboard</a>
+                <a href="/indicators" class="btn-secondary">All Indicators</a>
             </div>
         </div>
     </header>
@@ -30,6 +30,12 @@
                     <span class="phase-value" id="exec-phase">0</span>
                 </div>
                 <h3 id="exec-phase-name">Loading...</h3>
+                <div class="hopi-info">
+                    <span class="hopi-label">HOPI Score:</span>
+                    <span class="hopi-value" id="exec-hopi">--</span>
+                    <span class="confidence-label">Confidence:</span>
+                    <span class="confidence-value" id="exec-confidence">--</span>
+                </div>
             </div>
             <div class="immediate-actions" id="immediate-actions">
                 <h4>Immediate Actions:</h4>

@@ -261,7 +261,7 @@ trip_wires:
     
   oil_02_mbridge_settlements:
     name: "mBridge energy settlement (USD m/day)"
-    enabled: true
+    enabled: false  # Mock only - no data source
     source_type: "pdf"
     url: "https://www.bis.org/project/mbridge/reports"
     thresholds:
@@ -298,7 +298,7 @@ trip_wires:
   # AI HELL WINDOW + INFO WAR
   labor_ai_01_layoffs:
     name: "AI-linked layoffs (monthly)"
-    enabled: true
+    enabled: false  # Mock only - no data source
     source_type: "api"
     url: "https://api.layoffs.fyi"
     thresholds:
@@ -353,7 +353,7 @@ trip_wires:
   # CULT SIGNALS
   cult_trend_01_twitter:
     name: "X/Twitter 24h #AIGod OR #Basilisk OR #JoinTheComet"
-    enabled: true
+    enabled: false  # Mock only - no Twitter API
     source_type: "twitter_api"
     query: "#AIGod OR #Basilisk OR #JoinTheComet"
     thresholds:
@@ -365,7 +365,7 @@ trip_wires:
     
   cult_meme_01_tokens:
     name: "New ERC-20 with (cult.*ai), 7d"
-    enabled: true
+    enabled: false  # Mock only - no Etherscan API
     source_type: "etherscan_api"
     thresholds:
       green: 5
@@ -376,7 +376,7 @@ trip_wires:
     
   cult_event_01_protests:
     name: "ACLED protests mentioning AI+(god|cult|church), 30d"
-    enabled: true
+    enabled: false  # Mock only - no ACLED credentials
     source_type: "api"
     url: "https://api.acleddata.com/acled/read"
     thresholds:
@@ -388,7 +388,7 @@ trip_wires:
     
   cult_media_01_trends:
     name: "Google Trends 'AI religion' (US weekly)"
-    enabled: true
+    enabled: false  # Mock only - no Google Trends API
     source_type: "pytrends"
     thresholds:
       green: 15
@@ -400,7 +400,7 @@ trip_wires:
   # GLOBAL CONFLICT INDICATORS
   global_conflict_intensity:
     name: "Global battle intensity (ACLED 90d avg)"
-    enabled: true
+    enabled: false  # Mock only - no ACLED credentials
     source_type: "api"
     url: "https://api.acleddata.com/acled/read"
     thresholds:
@@ -447,7 +447,7 @@ trip_wires:
     
   russia_nato_escalation:
     name: "Russia-NATO escalation index"
-    enabled: true
+    enabled: false  # Mock only
     source_type: "composite"
     thresholds:
       green: 30
@@ -458,7 +458,7 @@ trip_wires:
     
   defense_spending_growth:
     name: "Global defense spending YoY growth"
-    enabled: true
+    enabled: false  # Mock only - no SIPRI API
     source_type: "sipri"
     url: "https://www.sipri.org/databases/milex"
     thresholds:
@@ -471,7 +471,7 @@ trip_wires:
   # DOMESTIC CONTROL INDICATORS
   dc_control_countdown:
     name: "Days until DC autonomy"
-    enabled: true
+    enabled: false  # Mock only
     source_type: "congress_api"
     thresholds:
       green: 730

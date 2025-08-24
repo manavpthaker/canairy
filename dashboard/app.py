@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from flask import Flask, render_template, jsonify, request
+from flask_cors import CORS
 from datetime import datetime
 import json
 import logging
@@ -22,7 +23,6 @@ from collectors import (
     TaiwanZoneCollector,
     HormuzRiskCollector,
     DoDAutonomyCollector,
-    MBridgeCollector,
     JoblessClaimsCollector,
     LuxuryCollapseCollector,
     PharmacyShortageCollector,
@@ -59,11 +59,15 @@ from collectors import (
     LibertyLitigationCollector
 )
 from processors.threat_analyzer import ThreatAnalyzer
-from processors.phase_manager import PhaseManager
+from processors.phase_manager_hopi import PhaseManagerHOPI
 from processors.stale_handler import StaleDataHandler
 from utils.config_loader import ConfigLoader
 
 app = Flask(__name__)
+# Enable CORS for React development
+CORS(app, origins=['http://localhost:3000', 'http://localhost:3001'], 
+     supports_credentials=True,
+     allow_headers=['Content-Type', 'Authorization'])
 app.config['SECRET_KEY'] = 'household-resilience-2024'
 
 # Initialize components
@@ -77,7 +81,6 @@ all_collectors = {
     'TaiwanZone': TaiwanZoneCollector,
     'HormuzRisk': HormuzRiskCollector,
     'DoDAutonomy': DoDAutonomyCollector,
-    'MBridge': MBridgeCollector,
     'JoblessClaims': JoblessClaimsCollector,
     'LuxuryCollapse': LuxuryCollapseCollector,
     'PharmacyShortage': PharmacyShortageCollector,
@@ -126,7 +129,6 @@ config_to_collector = {
     'taiwan_exclusion': 'TaiwanZone',
     'hormuz_risk': 'HormuzRisk',
     'dod_autonomy': 'DoDAutonomy',
-    'mbridge_crude': 'MBridge',
     'jobless_claims': 'JoblessClaims',
     'luxury_collapse': 'LuxuryCollapse',
     'pharmacy_shortage': 'PharmacyShortage',
@@ -176,7 +178,7 @@ for config_name, collector_name in config_to_collector.items():
         if collector_name in all_collectors:
             collectors[collector_name] = all_collectors[collector_name](config)
 threat_analyzer = ThreatAnalyzer(config)
-phase_manager = PhaseManager(config)
+phase_manager = PhaseManagerHOPI(config)
 stale_handler = StaleDataHandler(config)
 
 # Cache for latest readings
@@ -201,9 +203,48 @@ if manual_data_file.exists():
     except:
         manual_overrides = {}
 
+def collect_all_data():
+    """Collect data from all enabled collectors."""
+    global latest_data
+    
+    # Collect fresh data
+    current_readings = {}
+    for name, collector in collectors.items():
+        # Check for manual override first
+        if name in manual_overrides:
+            # Use manual data if it's less than 24 hours old
+            override = manual_overrides[name]
+            override_time = datetime.fromisoformat(override['timestamp'].replace('Z', '+00:00'))
+            if (datetime.utcnow() - override_time.replace(tzinfo=None)).total_seconds() < 86400:
+                current_readings[name] = override
+                continue
+        
+        # Otherwise collect fresh data
+        try:
+            reading = collector.collect()
+            if reading:
+                reading = stale_handler.process_indicator(name, reading)
+                current_readings[name] = reading
+        except Exception as e:
+            logging.error(f"Error collecting {name}: {e}")
+    
+    # Analyze threat levels
+    threat_levels = threat_analyzer.analyze(current_readings)
+    
+    # Update latest data
+    latest_data['readings'] = current_readings
+    latest_data['threat_levels'] = threat_levels
+    latest_data['last_update'] = datetime.utcnow().isoformat()
+    latest_data['tighten_up'] = threat_analyzer.check_tighten_up(threat_levels)
+
 @app.route('/')
 def index():
-    """Main dashboard page."""
+    """Main dashboard page (executive summary)."""
+    return render_template('executive.html')
+
+@app.route('/indicators')
+def indicators():
+    """Detailed indicators page."""
     return render_template('index.html')
 
 @app.route('/api/status')
@@ -252,8 +293,8 @@ def get_status():
     red_count = sum(1 for level in threat_levels.values() if level == "red")
     tighten_up = red_count >= config.get_alert_config().get('tighten_up_threshold', 2)
     
-    # Evaluate current phase
-    current_phase, phase_info = phase_manager.evaluate_phase(current_readings, threat_levels)
+    # Evaluate current phase using HOPI
+    hopi_result = phase_manager.evaluate(current_readings, threat_levels)
     
     # Update cache
     latest_data = {
@@ -261,7 +302,8 @@ def get_status():
         'threat_levels': threat_levels,
         'last_update': datetime.now().isoformat(),
         'tighten_up': tighten_up,
-        'red_count': red_count
+        'red_count': red_count,
+        'hopi_result': hopi_result
     }
     
     # Format for frontend
@@ -310,8 +352,19 @@ def get_status():
         'tighten_up': tighten_up,
         'red_count': red_count,
         'indicators': indicators,
-        'current_phase': current_phase,
-        'phase_info': phase_info
+        'current_phase': hopi_result['phase'],
+        'phase_info': {
+            'name': hopi_result['phase_name'],
+            'headline': hopi_result['headline'],
+            'actions': phase_manager.get_actions(hopi_result['phase'])
+        },
+        'hopi': {
+            'score': hopi_result['hopi'],
+            'confidence': hopi_result['confidence'],
+            'domain_scores': hopi_result['domain_scores'],
+            'critical_reds': hopi_result['critical_reds'],
+            'stale_count': hopi_result['stale_count']
+        }
     })
 
 @app.route('/api/history')
@@ -433,6 +486,128 @@ def save_to_history(indicator, value, metadata):
     history_file.parent.mkdir(exist_ok=True)
     with open(history_file, 'w') as f:
         json.dump(history, f)
+
+@app.route('/api/indicators')
+def get_indicators():
+    """Get all indicators with their current status."""
+    collect_all_data()
+    
+    indicators = []
+    for collector_name, data in latest_data['readings'].items():
+        if data:
+            # Get indicator config
+            indicator_config = None
+            for config_name, mapped_name in config_to_collector.items():
+                if mapped_name == collector_name:
+                    indicator_config = trip_wire_config.get(config_name, {})
+                    break
+            
+            # Determine status level
+            threat_level = latest_data['threat_levels'].get(collector_name, {})
+            status_level = threat_level.get('status', 'unknown').lower()
+            
+            indicator = {
+                'id': collector_name,
+                'name': data.get('name', collector_name),
+                'domain': _get_domain(collector_name),
+                'description': indicator_config.get('description', ''),
+                'unit': data.get('metadata', {}).get('unit', ''),
+                'status': {
+                    'level': status_level,
+                    'value': data.get('value', 0),
+                    'trend': _get_trend(collector_name),
+                    'lastUpdate': data.get('timestamp', datetime.utcnow().isoformat()),
+                    'dataSource': data.get('metadata', {}).get('data_source', 'LIVE')
+                },
+                'thresholds': indicator_config.get('thresholds', {}),
+                'critical': indicator_config.get('critical', False),
+                'greenFlag': indicator_config.get('green_flag', False),
+                'dataSource': data.get('metadata', {}).get('source', 'Unknown'),
+                'updateFrequency': indicator_config.get('update_frequency', '60m')
+            }
+            indicators.append(indicator)
+    
+    return jsonify({
+        'indicators': indicators,
+        'timestamp': datetime.utcnow().isoformat()
+    })
+
+@app.route('/api/hopi')
+def get_hopi():
+    """Get current HOPI score and phase information."""
+    collect_all_data()
+    
+    # Get HOPI calculation from phase manager
+    hopi_result = phase_manager.calculate_hopi()
+    current_phase = phase_manager.get_current_phase()
+    
+    return jsonify({
+        'score': hopi_result['hopi_score'],
+        'confidence': hopi_result['confidence'],
+        'phase': current_phase['phase'],
+        'targetPhase': hopi_result['target_phase'],
+        'domains': hopi_result['domain_scores'],
+        'timestamp': datetime.utcnow().isoformat()
+    })
+
+@app.route('/api/phase')
+def get_phase():
+    """Get current phase information."""
+    current_phase = phase_manager.get_current_phase()
+    
+    return jsonify({
+        'number': current_phase['phase'],
+        'name': current_phase['name'],
+        'description': current_phase.get('description', ''),
+        'triggers': current_phase.get('triggers', []),
+        'actions': current_phase.get('actions', []),
+        'color': _get_phase_color(current_phase['phase'])
+    })
+
+def _get_domain(collector_name):
+    """Map collector to domain."""
+    domain_mapping = {
+        'Treasury': 'economy',
+        'JoblessClaims': 'economy',
+        'GroceryCPI': 'economy',
+        'GDPGrowth': 'economy',
+        'MarketVolatility': 'economy',
+        'GlobalConflict': 'global_conflict',
+        'TaiwanPLA': 'global_conflict',
+        'NATOReadiness': 'global_conflict',
+        'NuclearTests': 'global_conflict',
+        'RussiaNATO': 'global_conflict',
+        'DefenseSpending': 'global_conflict',
+        'CREAOil': 'energy',
+        'JODIOil': 'energy',
+        'GridOutages': 'energy',
+        'AILayoffs': 'ai_tech',
+        'AIRansomware': 'ai_tech',
+        'DeepfakeShocks': 'ai_tech',
+        'AGIMilestones': 'ai_tech',
+        'LaborDisplacement': 'ai_tech',
+        'DCControl': 'domestic_control',
+        'GuardMetros': 'domestic_control',
+        'ICEDetentions': 'domestic_control',
+        'DHSRemoval': 'domestic_control',
+        'HillLegislation': 'domestic_control',
+        'LibertyLitigation': 'domestic_control'
+    }
+    return domain_mapping.get(collector_name, 'other')
+
+def _get_trend(collector_name):
+    """Get trend for indicator (placeholder)."""
+    import random
+    return random.choice(['up', 'down', 'stable', None])
+
+def _get_phase_color(phase):
+    """Get color for phase."""
+    if phase <= 2:
+        return '#10B981'
+    elif phase <= 5:
+        return '#F59E0B'
+    else:
+        return '#EF4444'
 
 @app.route('/api/config')
 def get_config():

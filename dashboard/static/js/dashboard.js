@@ -35,21 +35,57 @@ function updateDashboard(data) {
     statusIndicator.textContent = '● Online';
     statusIndicator.className = 'status-indicator green';
     
+    // Update HOPI information
+    if (data.hopi) {
+        document.getElementById('hopi-score').textContent = data.hopi.score.toFixed(1);
+        document.getElementById('confidence').textContent = data.hopi.confidence.toFixed(0) + '%';
+        
+        // Color HOPI score based on value
+        const hopiEl = document.getElementById('hopi-score');
+        if (data.hopi.score >= 70) {
+            hopiEl.className = 'value red';
+        } else if (data.hopi.score >= 35) {
+            hopiEl.className = 'value amber';
+        } else {
+            hopiEl.className = 'value green';
+        }
+        
+        // Color confidence based on value
+        const confEl = document.getElementById('confidence');
+        if (data.hopi.confidence < 60) {
+            confEl.className = 'value red';
+        } else if (data.hopi.confidence < 80) {
+            confEl.className = 'value amber';
+        } else {
+            confEl.className = 'value green';
+        }
+    }
+    
+    // Update phase display
+    if (data.current_phase !== undefined) {
+        const phaseEl = document.getElementById('current-phase');
+        phaseEl.textContent = `Phase ${data.current_phase}`;
+        
+        // Color phase based on level
+        if (data.current_phase >= 4) {
+            phaseEl.className = 'value red';
+        } else if (data.current_phase >= 2) {
+            phaseEl.className = 'value amber';
+        } else {
+            phaseEl.className = 'value green';
+        }
+    }
+    
     // Update alert banner
     const alertBanner = document.getElementById('alert-banner');
     const redCount = document.getElementById('red-count');
-    const overallStatus = document.getElementById('overall-status');
     const activeAlerts = document.getElementById('active-alerts');
     
     if (data.tighten_up) {
         alertBanner.classList.remove('hidden');
         redCount.textContent = data.red_count;
-        overallStatus.textContent = 'TIGHTEN-UP ACTIVE';
-        overallStatus.className = 'value red';
     } else {
         alertBanner.classList.add('hidden');
-        overallStatus.textContent = 'Normal Monitoring';
-        overallStatus.className = 'value';
     }
     
     activeAlerts.textContent = data.red_count;
@@ -84,21 +120,29 @@ function getDataSourceBadge(indicator) {
     let badgeClass = 'mock';
     let badgeText = 'MOCK';
     
-    if (source.includes('API') || source === 'news_analysis' || 
-        source === 'CISA_KEV' || source === 'DOE_OE417' || 
-        source === 'BLS_API' || source === 'FRED_API' ||
-        source === 'alpha_vantage_api' || source === 'cornell_ilr' ||
-        source === 'legiscan_api' || source === 'ACLED_API' ||
-        source === 'yahoo_finance' || source === 'WHO_RSS' ||
-        source === 'CREA_tracker' || source === 'OFAC_SDN' ||
-        source === 'layoffs_tracker' || source === 'BIS_mBridge' ||
-        source === 'JODI_API' || source === 'CISA_ICS' || 
-        source === 'composite') {
+    // Check for LIVE data sources
+    if (source.includes('API') || source.includes('api') ||
+        source === 'news_analysis' || source === 'CISA_KEV' || 
+        source === 'DOE_OE417' || source === 'BLS_API' || 
+        source === 'FRED_API' || source === 'alpha_vantage_api' || 
+        source === 'cornell_ilr' || source === 'legiscan_api' || 
+        source === 'ACLED_API' || source === 'yahoo_finance' || 
+        source === 'WHO_RSS' || source === 'CREA_tracker' || 
+        source === 'OFAC_SDN' || source === 'layoffs_tracker' || 
+        source === 'BIS_mBridge' || source === 'JODI_API' || 
+        source === 'CISA_ICS' || source === 'composite' ||
+        source === 'treasury_direct' || source === 'ice_stats' ||
+        source === 'congress_api' || source === 'eff_rss' ||
+        source === 'news_aggregator' || source === 'federal_register' ||
+        source === 'web_scraper') {
         badgeClass = 'live';
         badgeText = 'LIVE';
     } else if (source === 'manual_input') {
         badgeClass = 'manual';
         badgeText = 'MANUAL';
+    } else if (source.includes('mock') || source.includes('Mock')) {
+        badgeClass = 'mock';
+        badgeText = 'MOCK';
     }
     
     return `<span class="data-source ${badgeClass}">${badgeText}</span>`;
@@ -115,27 +159,33 @@ function createIndicatorCard(indicator) {
     // Get friendly names
     const friendlyNames = {
         'Treasury': 'Treasury Market',
-        'ICEDetention': 'ICE Detention',
-        'TaiwanZone': 'Taiwan Strait',
-        'HormuzRisk': 'Hormuz Shipping',
-        'DoDAutonomy': 'DoD Systems',
-        'MBridge': 'mBridge Currency',
-        'JoblessClaims': 'Unemployment Surge',
-        'LuxuryCollapse': 'Rich People Fleeing',
-        'PharmacyShortage': 'Medicine Shortages',
-        'SchoolClosures': 'Schools Closing',
-        'AGIMilestones': 'AI Progress to AGI',
-        'LaborDisplacement': 'Jobs Lost to AI',
         'GroceryCPI': 'Food Inflation',
-        'CISACyber': 'Cyber Threats',
-        'GridOutages': 'Power Grid Failures',
-        'GDPGrowth': 'Economic Growth',
         'StrikeTracker': 'Labor Strikes',
         'LegiScan': 'AI Surveillance Laws',
+        'CISACyber': 'Cyber Threats',
         'ACLEDProtests': 'US Protests',
+        'GridOutages': 'Power Grid Failures',
         'MarketVolatility': 'Bond Market Shock',
         'WHODisease': 'Disease Outbreaks',
         'CREAOil': 'Russian Oil Flows',
+        'OFACDesignations': 'Oil Sanctions',
+        'JODIOil': 'Oil Refinery Ratio',
+        'AILayoffs': 'AI Job Losses',
+        'AIRansomware': 'AI Cyber Attacks',
+        'DeepfakeShocks': 'Deepfake Events',
+        'GDPGrowth': 'Economic Growth',
+        'GlobalConflict': 'Global Battles',
+        'TaiwanPLA': 'Taiwan Tensions',
+        'NATOReadiness': 'NATO Alert Status',
+        'NuclearTests': 'Nuclear Activity',
+        'RussiaNATO': 'Russia Escalation',
+        'DefenseSpending': 'Military Spending',
+        'DCControl': 'DC Autonomy',
+        'GuardMetros': 'National Guard',
+        'ICEDetentions': 'ICE Population',
+        'DHSRemoval': 'DHS Expansion',
+        'HillLegislation': 'Control Laws',
+        'LibertyLitigation': 'Rights Cases',
         'OFACDesignations': 'Sanctions Activity',
         'AILayoffs': 'AI Job Losses',
         'MBridgeSettlements': 'Dollar Alternatives',
