@@ -149,7 +149,7 @@ export const ActionablePriorityActions: React.FC = () => {
     }
     
     // Community Actions
-    if (currentPhase?.number >= 2 || redIndicators.length >= 2) {
+    if ((currentPhase?.number ?? 0) >= 2 || redIndicators.length >= 2) {
       actions.push({
         id: 'community-1',
         category: 'Community',

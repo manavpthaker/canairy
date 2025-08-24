@@ -4,7 +4,8 @@ __pycache__/
 venv/
 .env
 config/secrets.yaml
-data/
+/data/
+!/src/data/
 logs/
 .DS_Store
 
