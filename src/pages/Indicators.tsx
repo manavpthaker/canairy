@@ -78,8 +78,8 @@ export const Indicators: React.FC = () => {
     <div className="min-h-screen bg-[#0A0A0A]">
       {/* Header */}
       <div className="bg-[#111111] border-b border-[#1A1A1A] sticky top-0 z-10">
-        <div className="px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-semibold text-white">Indicators</h1>
               <p className="text-gray-400 mt-1">Monitor all resilience indicators in one place</p>
@@ -111,9 +111,9 @@ export const Indicators: React.FC = () => {
           </div>
 
           {/* Search and Filters */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             {/* Search */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative w-full sm:flex-1 sm:max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
@@ -133,13 +133,13 @@ export const Indicators: React.FC = () => {
             </div>
 
             {/* Status Filter */}
-            <div className="flex items-center gap-2 bg-[#1A1A1A] rounded-lg p-1">
+            <div className="flex items-center gap-1 sm:gap-2 bg-[#1A1A1A] rounded-lg p-1 overflow-x-auto">
               {(['all', 'green', 'amber', 'red'] as FilterStatus[]).map((status) => (
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
                   className={cn(
-                    'px-3 py-1.5 rounded-md text-sm font-medium transition-all',
+                    'px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap',
                     statusFilter === status
                       ? 'bg-[#0A0A0A] text-white'
                       : 'text-gray-500 hover:text-gray-300'
@@ -180,7 +180,7 @@ export const Indicators: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="px-8 py-8">
+      <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Results Summary */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm text-gray-400">
@@ -199,7 +199,7 @@ export const Indicators: React.FC = () => {
             layout
             className={cn(
               viewMode === 'grid' 
-                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
+                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6' 
                 : 'space-y-4'
             )}
           >

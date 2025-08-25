@@ -248,7 +248,7 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
 
           {/* Chart with time range selector */}
           <div className="mb-3">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
               <div className="flex items-center gap-1">
                 <BarChart3 className="w-3 h-3 text-bmb-secondary" />
                 <span className="text-xs text-bmb-secondary">Trend</span>

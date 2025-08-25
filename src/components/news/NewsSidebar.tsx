@@ -129,7 +129,8 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
           className={cn(
-            'fixed right-0 top-0 h-full w-96 bg-[#111111] border-l border-[#1A1A1A] z-30',
+            'fixed right-0 top-0 h-full bg-[#111111] border-l border-[#1A1A1A] z-30',
+            'w-full sm:w-96', // Full width on mobile
             'flex flex-col shadow-2xl',
             className
           )}

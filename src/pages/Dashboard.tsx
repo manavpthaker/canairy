@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
   TrendingUp, 
@@ -13,7 +13,9 @@ import {
   Settings,
   ChevronRight,
   Activity,
-  Newspaper
+  Newspaper,
+  Menu,
+  X
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
@@ -41,6 +43,7 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [selectedIndicator, setSelectedIndicator] = useState<IndicatorData | null>(null);
   const [showNewsSidebar, setShowNewsSidebar] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   
   const { 
     indicators, 
@@ -66,13 +69,36 @@ export const Dashboard: React.FC = () => {
   const greenCount = indicators?.filter(i => i.status.level === 'green').length || 0;
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#111111] border-r border-[#1A1A1A] fixed h-full z-20">
+    <div className="min-h-screen bg-[#0A0A0A] flex relative">
+      {/* Mobile Sidebar Backdrop */}
+      <AnimatePresence>
+        {showMobileSidebar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowMobileSidebar(false)}
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar - Desktop always visible, Mobile slides in */}
+      <aside className={cn(
+        "w-64 bg-[#111111] border-r border-[#1A1A1A] fixed h-full z-40 transition-transform duration-300",
+        "lg:translate-x-0", // Always visible on desktop
+        showMobileSidebar ? "translate-x-0" : "-translate-x-full" // Slide in/out on mobile
+      )}>
         <div className="p-6">
-          {/* Logo */}
-          <div className="mb-8">
+          {/* Logo with mobile close button */}
+          <div className="mb-8 flex items-center justify-between">
             <CanaryLogo size="md" showText={true} />
+            <button
+              onClick={() => setShowMobileSidebar(false)}
+              className="p-2 text-gray-400 hover:text-white lg:hidden"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Navigation */}
@@ -81,6 +107,7 @@ export const Dashboard: React.FC = () => {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => setShowMobileSidebar(false)} // Close on mobile after navigation
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-[#1A1A1A] hover:text-white transition-colors',
                   location.pathname === item.path && 'bg-[#1A1A1A] text-white'
@@ -105,16 +132,27 @@ export const Dashboard: React.FC = () => {
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 ml-64">
+      {/* Main content - Responsive margin */}
+      <main className="flex-1 lg:ml-64">
         {/* Header */}
         <header className="bg-[#111111] border-b border-[#1A1A1A] sticky top-0 z-10">
-          <div className="px-12 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 mr-8">
+          <div className="px-4 sm:px-6 lg:px-12 py-4">
+            <div className="flex items-center justify-between gap-4">
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setShowMobileSidebar(true)}
+                className="p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors lg:hidden"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              
+              {/* Status bar - responsive width */}
+              <div className="flex-1 min-w-0">
                 <SituationalStatusBar />
               </div>
-              <div className="flex items-center gap-2">
+              
+              {/* Actions - responsive */}
+              <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   onClick={refreshAll}
                   disabled={loading}
@@ -141,8 +179,8 @@ export const Dashboard: React.FC = () => {
           </div>
         </header>
 
-        {/* Content */}
-        <div className="p-12">
+        {/* Content - Responsive padding */}
+        <div className="p-4 sm:p-6 lg:p-12">
           {/* News Ticker */}
           <div className="mb-6">
             <NewsTicker maxItems={5} />
@@ -204,6 +242,19 @@ export const Dashboard: React.FC = () => {
         isOpen={showNewsSidebar}
         onClose={() => setShowNewsSidebar(false)}
       />
+      
+      {/* Mobile backdrop for news sidebar */}
+      <AnimatePresence>
+        {showNewsSidebar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowNewsSidebar(false)}
+            className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
