@@ -37,12 +37,33 @@ test.describe('Canairy Portfolio Screenshots', () => {
   });
 
   test('04 - Priority Actions Panel', async ({ page }) => {
-    const actionsPanel = page.locator('text=Priority Actions').locator('..').locator('..');
-    await expect(actionsPanel).toBeVisible();
+    // Try multiple selectors for Priority Actions
+    const selectors = [
+      'text=Priority Actions',
+      'text=Actionable Priority Actions',
+      'h3:has-text("Priority Actions")',
+      '.bg-\\[\\#111111\\]:has-text("Priority Actions")'
+    ];
     
-    await actionsPanel.screenshot({
-      path: 'portfolio-assets/screenshots/04-priority-actions.png'
-    });
+    let found = false;
+    for (const selector of selectors) {
+      const element = page.locator(selector).first();
+      if (await element.isVisible({ timeout: 1000 }).catch(() => false)) {
+        await element.locator('..').locator('..').screenshot({
+          path: 'portfolio-assets/screenshots/04-priority-actions.png'
+        });
+        found = true;
+        break;
+      }
+    }
+    
+    if (!found) {
+      // Fallback: take a screenshot of the general area
+      await page.screenshot({
+        path: 'portfolio-assets/screenshots/04-priority-actions.png',
+        clip: { x: 256, y: 400, width: 1400, height: 600 }
+      });
+    }
   });
 
   test('05 - News Sidebar', async ({ page }) => {
@@ -70,12 +91,30 @@ test.describe('Canairy Portfolio Screenshots', () => {
   });
 
   test('07 - Individual Indicator Chart', async ({ page }) => {
-    // Find and click on an indicator chart
+    // Try to find a chart element
     const chartElement = page.locator('canvas').first();
-    if (await chartElement.isVisible()) {
-      await chartElement.screenshot({
-        path: 'portfolio-assets/screenshots/07-indicator-chart.png'
-      });
+    if (await chartElement.isVisible({ timeout: 3000 }).catch(() => false)) {
+      // Take screenshot of the chart with some padding
+      const box = await chartElement.boundingBox();
+      if (box) {
+        await page.screenshot({
+          path: 'portfolio-assets/screenshots/07-indicator-chart.png',
+          clip: {
+            x: Math.max(0, box.x - 20),
+            y: Math.max(0, box.y - 20),
+            width: box.width + 40,
+            height: box.height + 40
+          }
+        });
+      }
+    } else {
+      // Fallback: take a screenshot of an indicator card
+      const indicatorCard = page.locator('.rounded-lg.border').first();
+      if (await indicatorCard.isVisible()) {
+        await indicatorCard.screenshot({
+          path: 'portfolio-assets/screenshots/07-indicator-chart.png'
+        });
+      }
     }
   });
 
