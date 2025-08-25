@@ -200,23 +200,25 @@ export const EnhancedExecutiveSummary: React.FC = () => {
       className="mb-8"
     >
       <div className={cn(
-        'rounded-2xl border-2 p-6',
+        'rounded-2xl border-2 p-4 sm:p-6',
         getStatusColor()
       )}>
         {/* Main Status */}
-        <div className="flex items-start gap-4 mb-6">
-          <div className="flex-shrink-0 mt-1">
-            {getStatusIcon()}
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-6">
+          <div className="flex items-start gap-4 flex-1">
+            <div className="flex-shrink-0 mt-1">
+              {getStatusIcon()}
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl sm:text-2xl font-display font-semibold text-white mb-1">
+                {mainMessage}
+              </h2>
+              <p className="font-body text-gray-300 text-sm sm:text-base">
+                {subMessage}
+              </p>
+            </div>
           </div>
-          <div className="flex-1">
-            <h2 className="text-2xl font-display font-semibold text-white mb-1">
-              {mainMessage}
-            </h2>
-            <p className="font-body text-gray-300">
-              {subMessage}
-            </p>
-          </div>
-          <div className="text-right">
+          <div className="text-left sm:text-right">
             <div className="text-sm text-gray-400 mb-1">Confidence</div>
             <div className="text-xl font-bold text-white">{confidence}%</div>
           </div>
@@ -247,7 +249,7 @@ export const EnhancedExecutiveSummary: React.FC = () => {
               <Clock className="w-4 h-4" />
               Expected Impact Timeline
             </h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {impactTimeline.map((impact, i) => (
                 <div key={i} className="bg-[#0A0A0A] rounded-lg p-3">
                   <div className="flex items-center gap-2 mb-1">
@@ -264,8 +266,8 @@ export const EnhancedExecutiveSummary: React.FC = () => {
         )}
         
         {/* Bottom Stats Bar */}
-        <div className="flex items-center justify-between pt-4 border-t border-white/10">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-white/10">
+          <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-gray-400" />
               <span className="text-sm text-gray-400">

@@ -231,8 +231,8 @@ export const ActionablePriorityActions: React.FC = () => {
   const completionRate = Math.round((completedActions.size / actions.length) * 100);
   
   return (
-    <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-4 sm:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h3 className="text-lg font-display font-semibold text-white">Priority Actions</h3>
         <div className="flex items-center gap-2">
           <div className="text-sm text-gray-400">{completionRate}% Complete</div>
@@ -269,9 +269,9 @@ export const ActionablePriorityActions: React.FC = () => {
                   <action.icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h4 className="font-display font-medium text-white flex items-center gap-2">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                    <div className="flex-1">
+                      <h4 className="font-display font-medium text-white flex flex-wrap items-center gap-2">
                         {action.title}
                         {isCompleted && <CheckCircle2 className="w-4 h-4 text-green-400" />}
                       </h4>
@@ -296,7 +296,7 @@ export const ActionablePriorityActions: React.FC = () => {
               </div>
               
               {/* Impact and Time */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
                 <div className="bg-[#0A0A0A] rounded-lg p-3">
                   <div className="text-xs text-gray-500 mb-1">Impact</div>
                   <div className="text-sm text-gray-300">{action.impact}</div>
@@ -360,7 +360,7 @@ export const ActionablePriorityActions: React.FC = () => {
       </div>
       
       {/* Quick Stats */}
-      <div className="mt-6 pt-6 border-t border-[#1A1A1A] flex items-center justify-between text-sm">
+      <div className="mt-6 pt-6 border-t border-[#1A1A1A] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
         <div className="flex items-center gap-2 text-gray-400">
           <AlertTriangle className="w-4 h-4" />
           <span>{actions.filter(a => a.urgency === 'immediate').length} immediate actions</span>

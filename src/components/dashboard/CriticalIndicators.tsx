@@ -125,9 +125,9 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
                 >
                   <div className="p-4">
                     {/* Header */}
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
                           <h4 className="font-display font-medium text-white">{indicator.name}</h4>
                           <StatusBadge 
                             level={indicator.status.level} 
@@ -144,8 +144,8 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
                       </div>
                       
                       {/* Value and Trend */}
-                      <div className="text-right ml-4">
-                        <div className="flex items-center gap-2 justify-end">
+                      <div className="text-left sm:text-right sm:ml-4">
+                        <div className="flex items-center gap-2 sm:justify-end">
                           <span className="text-xl font-bold text-white">
                             {typeof indicator.status.value === 'number' 
                               ? indicator.status.value.toLocaleString(undefined, { maximumFractionDigits: 2 })
@@ -224,8 +224,8 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
         </div>
 
         {/* Summary Stats */}
-        <div className="mt-6 pt-6 border-t border-[#1A1A1A] flex items-center justify-between text-sm">
-          <div className="flex items-center gap-4">
+        <div className="mt-6 pt-6 border-t border-[#1A1A1A] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm">
+          <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-red-500 rounded-full" />
               <span className="text-gray-400">
