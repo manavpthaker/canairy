@@ -5,9 +5,13 @@
   
   **Your Personal Canary in the Coal Mine**
   
+  [![GitHub stars](https://img.shields.io/github/stars/manavpthaker/canairy.svg?style=social&label=Star)](https://github.com/manavpthaker/canairy)
+  [![GitHub forks](https://img.shields.io/github/forks/manavpthaker/canairy.svg?style=social&label=Fork)](https://github.com/manavpthaker/canairy/fork)
+  [![GitHub issues](https://img.shields.io/github/issues/manavpthaker/canairy.svg)](https://github.com/manavpthaker/canairy/issues)
+  
   [![React](https://img.shields.io/badge/React-18.2-blue.svg)](https://reactjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
-  [![Python](https://img.shields.io/badge/Python-3.10+-yellow.svg)](https://python.org)
+  [![Tailwind](https://img.shields.io/badge/Tailwind-CSS-38B2AC.svg)](https://tailwindcss.com/)
   [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
   [![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
 </div>
@@ -31,19 +35,37 @@ Canairy is a sophisticated early warning system that monitors 22 critical global
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="docs/images/dashboard-overview.png" alt="Dashboard Overview" width="800"/>
+  <img src="portfolio-assets/screenshots/01-dashboard-overview.png" alt="Dashboard Overview" width="800"/>
   <p><em>Main Dashboard - All critical information at a glance</em></p>
 </div>
 
 <div align="center">
-  <img src="docs/images/critical-indicators.png" alt="Critical Indicators" width="800"/>
+  <img src="portfolio-assets/screenshots/03-critical-indicators.png" alt="Critical Indicators" width="800"/>
   <p><em>Critical Indicators Panel - Real-time threat assessment</em></p>
 </div>
 
 <div align="center">
-  <img src="docs/images/action-panel.png" alt="Priority Actions" width="800"/>
+  <img src="portfolio-assets/screenshots/04-priority-actions.png" alt="Priority Actions" width="800"/>
   <p><em>Priority Actions - Know exactly what to do and when</em></p>
 </div>
+
+<div align="center">
+  <img src="portfolio-assets/screenshots/08-mobile-dashboard.png" alt="Mobile Dashboard" width="400"/>
+  <p><em>Mobile-Responsive Design - Full functionality on all devices</em></p>
+</div>
+
+## 🌐 Live Demo
+
+> **[🔗 Try Canairy Live](https://canairy.onrender.com)** - Experience the full dashboard with real-time data
+
+**What you'll see:**
+- 🚨 **Real-time threat assessment** across 22 critical indicators
+- 📊 **Interactive charts** showing historical patterns and trends  
+- 📰 **Live news intelligence** with AI-powered threat correlation
+- 📱 **Mobile-responsive design** optimized for all devices
+- ⚡ **Instant alerts** when conditions change
+
+*No signup required - the demo uses real API data with live updates every 5 minutes.*
 
 ## 🚀 Quick Start
 

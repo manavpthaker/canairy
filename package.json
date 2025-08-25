@@ -1,8 +1,35 @@
 {
-  "name": "brown-man-bunker",
-  "private": true,
+  "name": "canairy",
+  "description": "🐦 Early warning system monitoring 22 global indicators for financial, supply chain, and geopolitical risks. Real-time alerts help families prepare before disruptions impact daily life.",
   "version": "2.0.0",
+  "private": true,
   "type": "module",
+  "keywords": [
+    "early-warning-system",
+    "risk-monitoring", 
+    "financial-alerts",
+    "supply-chain",
+    "geopolitical-analysis",
+    "family-preparedness",
+    "real-time-dashboard",
+    "react-typescript",
+    "emergency-planning",
+    "crisis-management",
+    "threat-intelligence",
+    "resilience-monitoring"
+  ],
+  "homepage": "https://github.com/manavpthaker/canairy#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manavpthaker/canairy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/manavpthaker/canairy/issues"
+  },
+  "author": {
+    "name": "Manav Thaker",
+    "url": "https://github.com/manavpthaker"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
