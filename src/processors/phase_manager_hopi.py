@@ -265,3 +265,70 @@ class PhaseManagerHOPI:
         }
         
         return actions.get(phase, ["Monitor situation"])
+    
+    def get_current_phase(self) -> int:
+        """
+        Get the current phase number.
+        
+        Returns:
+            Current phase (0-9)
+        """
+        try:
+            # Get current phase from config or default to 0
+            phases_config = self.config.config.get('phases', {})
+            current_phase = phases_config.get('current_phase', 0)
+            return int(current_phase)
+        except Exception as e:
+            self.logger.error(f"Error getting current phase: {e}")
+            return 0
+    
+    def calculate_hopi(self, readings: Dict[str, Any] = None, threat_levels: Dict[str, str] = None) -> Dict[str, Any]:
+        """
+        Calculate HOPI score and related metrics.
+        
+        Args:
+            readings: Optional readings data
+            threat_levels: Optional threat levels
+            
+        Returns:
+            HOPI calculation results
+        """
+        try:
+            if readings and threat_levels:
+                # Prepare indicators for HOPI calculation
+                indicators = self._prepare_indicators(readings, threat_levels)
+                
+                # Use the HOPI calculator
+                result = self.hopi_calculator.calculate(indicators)
+            else:
+                # Return default/empty HOPI result
+                result = {
+                    'score': 0.0,
+                    'confidence': 1.0,
+                    'critical_reds': 0,
+                    'stale_count': 0,
+                    'domain_scores': {
+                        'economy': 0.0,
+                        'global_conflict': 0.0,
+                        'oil_axis': 0.0,
+                        'ai_window': 0.0,
+                        'domestic_control': 0.0,
+                        'jobs_labor': 0.0,
+                        'security_infrastructure': 0.0,
+                        'rights_governance': 0.0,
+                        'cult': 0.0
+                    }
+                }
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Error calculating HOPI: {e}")
+            # Return safe default
+            return {
+                'score': 0.0,
+                'confidence': 0.0,
+                'critical_reds': 0,
+                'stale_count': 0,
+                'domain_scores': {}
+            }

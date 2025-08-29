@@ -217,6 +217,19 @@ class ThreatAnalyzer:
             self.logger.error(f"Error calculating threat level for {collector_name}: {e}")
             return "unknown"
             
+    def check_tighten_up(self, threat_levels: Dict[str, str]) -> bool:
+        """
+        Check if TIGHTEN-UP condition is met (≥2 indicators at red level).
+        
+        Args:
+            threat_levels: Dictionary of threat levels by collector
+            
+        Returns:
+            True if TIGHTEN-UP condition is met
+        """
+        red_count = sum(1 for level in threat_levels.values() if level == "red")
+        return red_count >= self.tighten_up_threshold
+    
     def get_overall_status(self, threat_levels: Dict[str, str]) -> Dict[str, Any]:
         """
         Calculate overall system status.
