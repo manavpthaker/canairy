@@ -503,8 +503,9 @@ def get_indicators():
                     break
             
             # Determine status level
-            threat_level = latest_data['threat_levels'].get(collector_name, {})
-            status_level = threat_level.get('status', 'unknown').lower()
+            threat_level = latest_data['threat_levels'].get(collector_name, 'unknown')
+            # threat_level is a string like 'green', 'amber', 'red', not a dict
+            status_level = threat_level if isinstance(threat_level, str) else 'unknown'
             
             indicator = {
                 'id': collector_name,
