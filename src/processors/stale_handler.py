@@ -118,3 +118,19 @@ class StaleDataHandler:
             return forced_level
         
         return threat_level
+    
+    def process_indicator(self, collector_name: str, reading: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Process an indicator reading to check for staleness.
+        
+        Args:
+            collector_name: Name of the collector (for logging)
+            reading: Data reading with timestamp
+            
+        Returns:
+            Updated reading with stale status
+        """
+        if reading and 'collector' not in reading:
+            # Add collector name to reading for better logging
+            reading['collector'] = collector_name
+        return self.check_staleness(reading)

@@ -31,7 +31,7 @@ export const Indicators: React.FC = () => {
 
   // Filter indicators based on search and filters
   const filteredIndicators = useMemo(() => {
-    return indicators.filter(indicator => {
+    const filtered = indicators.filter(indicator => {
       // Search filter
       if (searchQuery && !indicator.name.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
@@ -54,6 +54,8 @@ export const Indicators: React.FC = () => {
       
       return true;
     });
+    
+    return filtered;
   }, [indicators, searchQuery, statusFilter, domainFilter, showCriticalOnly]);
 
   // Count indicators by status

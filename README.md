@@ -1,9 +1,12 @@
 # 🐦 Canairy - Early Warning System for Global Disruptions
 
 <div align="center">
-  <img src="docs/images/canairy-logo.png" alt="Canairy Logo" width="200"/>
+  
+  # 🐦 Canairy
   
   **Your Personal Canary in the Coal Mine**
+  
+  *A Portfolio Demonstration of an Early Warning System*
   
   [![GitHub stars](https://img.shields.io/github/stars/manavpthaker/canairy.svg?style=social&label=Star)](https://github.com/manavpthaker/canairy)
   [![GitHub forks](https://img.shields.io/github/forks/manavpthaker/canairy.svg?style=social&label=Fork)](https://github.com/manavpthaker/canairy/fork)
@@ -18,12 +21,12 @@
 
 ## 🚨 What is Canairy?
 
-Canairy is a sophisticated early warning system that monitors 22 critical global indicators to help families prepare for potential disruptions before they impact daily life. Like a canary in a coal mine, it detects danger early - giving you time to act.
+Canairy is a **demonstration project** showcasing a sophisticated early warning system concept that monitors 22 critical global indicators. Built as a portfolio piece, it demonstrates full-stack development skills while exploring how families could prepare for potential disruptions. Like a canary in a coal mine, it illustrates how early detection systems could work.
 
 ### 🎯 Key Features
 
-- **🔍 Real-Time Monitoring**: Tracks 22 vital indicators across finance, supply chain, energy, and social domains
-- **📰 Intelligent News Analysis**: AI-powered news filtering linked to specific risk indicators
+- **🔍 Real-Time Monitoring**: Demonstrates tracking of 22 indicators (currently using mock data with real API integration ready)
+- **📰 Intelligent News Analysis**: News API integration for real headlines with simulated threat correlation
 - **📊 Advanced Visualization**: Interactive charts showing historical patterns and future projections
 - **🚦 4-Phase Alert System**: Clear escalation from normal operations to crisis response
 - **📱 Actionable Intelligence**: Specific steps to take based on current threat levels
@@ -65,15 +68,15 @@ Canairy is a sophisticated early warning system that monitors 22 critical global
 - 📱 **Mobile-responsive design** optimized for all devices
 - ⚡ **Instant alerts** when conditions change
 
-*No signup required - the demo uses real API data with live updates every 5 minutes.*
+*No signup required - the demo currently uses mock data for most indicators. Real News API integration displays actual headlines.*
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Python 3.10+ (for data collectors)
-- API keys for data sources (free tiers available)
+- Python 3.10+ (optional - for future data collector implementation)
+- API keys for news sources (optional - News API free tier available)
 
 ### Installation
 
@@ -184,17 +187,40 @@ npm run typecheck
 npm run dev
 ```
 
-## 📊 Data Sources
+## 🎯 Project Status & Transparency
 
-Canairy aggregates data from multiple reliable sources:
+**This is a portfolio demonstration project** showcasing:
+- ✅ Full-stack React/TypeScript development
+- ✅ Complex state management with Zustand
+- ✅ Real-time data visualization with Chart.js
+- ✅ Responsive design with Tailwind CSS
+- ✅ API integration patterns (News API working)
+- ✅ Professional UI/UX with dark theme
 
-- **Financial Data**: Federal Reserve, Alpha Vantage, CBOE
-- **News Intelligence**: News API, Reuters, Bloomberg
+**Current Implementation:**
+- 📊 **Mock Data**: Most indicators use realistic mock data
+- 📰 **Real News**: News API integration shows actual headlines
+- 🔄 **API Ready**: Backend structure ready for real data sources
+- 📱 **Fully Responsive**: Complete mobile/tablet support
+- 🎨 **Production UI**: Polished interface with animations
+
+**Future Development Path:**
+- Integration with real financial APIs (FRED, Alpha Vantage)
+- Python data collectors for government sources
+- WebSocket support for real-time updates
+- User authentication and personalization
+
+## 📊 Data Sources (Planned Integration)
+
+The system architecture supports these data sources:
+
+- **Financial Data**: Federal Reserve FRED API, Alpha Vantage, CBOE
+- **News Intelligence**: News API (✅ Implemented), Reuters, Bloomberg  
 - **Government Data**: Treasury Direct, USDA, EIA
 - **Market Data**: CME Group, ICE, Baltic Exchange
 - **Geopolitical**: ACLED, Council on Foreign Relations
 
-[View Complete Data Sources →](docs/technical/data-sources.md)
+[View Integration Guide →](docs/real-data-sources.md)
 
 ## 🔒 Security & Privacy
 
@@ -213,11 +239,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Phase system adapted from emergency management best practices
 - Built with love for families who want to stay prepared
 
-## 📞 Support
+## 📞 Contact & Collaboration
 
-- 📧 Email: support@canairy.app
 - 🐛 Issues: [GitHub Issues](https://github.com/manavpthaker/canairy/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/manavpthaker/canairy/discussions)
+- 🤝 LinkedIn: Connect for collaboration opportunities
 
 ---
 
