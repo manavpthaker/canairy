@@ -74,6 +74,10 @@ class ConfigLoader:
             'FRED_API_KEY': 'fred_api_key',
             'NEWS_API_KEY': 'news_api_key',
             'ALPHA_VANTAGE_API_KEY': 'alpha_vantage_key',
+            'ALPHA_VANTAGE_KEY': 'alpha_vantage_key',
+            'LEGISCAN_API_KEY': 'api_keys.legiscan',
+            'CONGRESS_API_KEY': 'api_keys.congress',
+            'BLS_API_KEY': 'api_keys.bls',
         }
         
         for env_var, config_key in env_mappings.items():

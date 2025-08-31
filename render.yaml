@@ -1,4 +1,5 @@
 services:
+  # Frontend React app
   - type: web
     name: canairy
     env: node
@@ -19,3 +20,31 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+    envVars:
+      - key: VITE_USE_MOCK_DATA
+        value: false
+      - key: VITE_API_URL
+        value: https://canairy-api.onrender.com/api
+  
+  # Backend Python API
+  - type: web
+    name: canairy-api
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT dashboard.app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FRED_API_KEY
+        value: 91c1cb50df4e3f061389ac2ecc335ead
+      - key: LEGISCAN_API_KEY
+        value: cf26ad4f7b62b4e9fe1715fcd59297a4
+      - key: CONGRESS_API_KEY
+        value: NqCAE2On93IaeK43gccAmVHXfa1dXN8Q5Cw8Rkqc
+      - key: BLS_API_KEY
+        value: 8fc6f9652d064098aff2aa4ee91efc9c
+      - key: NEWS_API_KEY
+        value: 88dd145bb61d4aa0b9655edec04309f8
+      - key: ALPHA_VANTAGE_KEY
+        value: H1UKYU1N148IZ94W

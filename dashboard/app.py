@@ -64,8 +64,14 @@ from processors.stale_handler import StaleDataHandler
 from utils.config_loader import ConfigLoader
 
 app = Flask(__name__)
-# Enable CORS for React development
-CORS(app, origins=['http://localhost:3000', 'http://localhost:3001'], 
+# Enable CORS for React development and production
+CORS(app, origins=[
+    'http://localhost:3000', 
+    'http://localhost:3001',
+    'http://localhost:3003',
+    'https://canairy.onrender.com',
+    'https://*.onrender.com'
+], 
      supports_credentials=True,
      allow_headers=['Content-Type', 'Authorization'])
 app.config['SECRET_KEY'] = 'household-resilience-2024'

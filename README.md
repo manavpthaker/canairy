@@ -21,12 +21,12 @@
 
 ## 🚨 What is Canairy?
 
-Canairy is a **demonstration project** showcasing a sophisticated early warning system concept that monitors 22 critical global indicators. Built as a portfolio piece, it demonstrates full-stack development skills while exploring how families could prepare for potential disruptions. Like a canary in a coal mine, it illustrates how early detection systems could work.
+Canairy is a **working early warning system** that monitors 40+ critical global indicators using real data sources and APIs. Originally built as a portfolio demonstration, it has evolved into a functional system that combines live data collection with sophisticated threat analysis. Like a canary in a coal mine, it provides early warnings for potential disruptions before they impact daily life.
 
 ### 🎯 Key Features
 
-- **🔍 Real-Time Monitoring**: Demonstrates tracking of 22 indicators (currently using mock data with real API integration ready)
-- **📰 Intelligent News Analysis**: News API integration for real headlines with simulated threat correlation
+- **🔍 Real-Time Monitoring**: Live tracking of 40+ indicators using real APIs (FRED, Treasury, News API, ACLED, etc.)
+- **📰 Intelligent News Analysis**: News API integration with real headlines and AI-powered threat correlation
 - **📊 Advanced Visualization**: Interactive charts showing historical patterns and future projections
 - **🚦 4-Phase Alert System**: Clear escalation from normal operations to crisis response
 - **📱 Actionable Intelligence**: Specific steps to take based on current threat levels
@@ -68,15 +68,15 @@ Canairy is a **demonstration project** showcasing a sophisticated early warning 
 - 📱 **Mobile-responsive design** optimized for all devices
 - ⚡ **Instant alerts** when conditions change
 
-*No signup required - the demo currently uses mock data for most indicators. Real News API integration displays actual headlines.*
+*No signup required - the system uses real data from 40+ collectors including Treasury, FRED, News API, and government sources. Some indicators fall back to mock data when APIs are unavailable.*
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Python 3.10+ (optional - for future data collector implementation)
-- API keys for news sources (optional - News API free tier available)
+- Python 3.10+ (required - for data collector backend)
+- API keys (News API, Alpha Vantage, FRED API recommended)
 
 ### Installation
 
@@ -97,12 +97,18 @@ Canairy is a **demonstration project** showcasing a sophisticated early warning 
    # Edit .env with your API keys
    ```
 
-4. **Start the system**
+4. **Start the backend**
+   ```bash
+   cd dashboard
+   python app.py
+   ```
+
+5. **Start the frontend**
    ```bash
    npm run dev
    ```
 
-5. **Access the dashboard**
+6. **Access the dashboard**
    ```
    http://localhost:3005
    ```
@@ -137,14 +143,14 @@ Canairy is a **demonstration project** showcasing a sophisticated early warning 
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   React UI      │────▶│  Backend API    │────▶│ Data Collectors │
-│   Dashboard     │     │  (Python/Node)  │     │   (22 Sources)  │
+│   React UI      │────▶│   Python Flask  │────▶│ Data Collectors │
+│   Dashboard     │     │   Backend API   │     │   (40+ Sources) │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
          │                       │                        │
          │                       ▼                        │
          │              ┌─────────────────┐              │
-         └─────────────▶│   PostgreSQL    │◀─────────────┘
-                        │   Time Series   │
+         └─────────────▶│   JSON Files    │◀─────────────┘
+                        │   + History     │
                         └─────────────────┘
 ```
 
@@ -189,38 +195,41 @@ npm run dev
 
 ## 🎯 Project Status & Transparency
 
-**This is a portfolio demonstration project** showcasing:
-- ✅ Full-stack React/TypeScript development
-- ✅ Complex state management with Zustand
+**This is a functional early warning system** featuring:
+- ✅ Full-stack React/TypeScript frontend
+- ✅ Python Flask backend with 40+ data collectors
 - ✅ Real-time data visualization with Chart.js
 - ✅ Responsive design with Tailwind CSS
-- ✅ API integration patterns (News API working)
+- ✅ Live API integration (FRED, Treasury, News API, etc.)
 - ✅ Professional UI/UX with dark theme
 
 **Current Implementation:**
-- 📊 **Mock Data**: Most indicators use realistic mock data
-- 📰 **Real News**: News API integration shows actual headlines
-- 🔄 **API Ready**: Backend structure ready for real data sources
-- 📱 **Fully Responsive**: Complete mobile/tablet support
-- 🎨 **Production UI**: Polished interface with animations
+- 📊 **Live Data**: 40+ collectors fetch real data from government and financial APIs
+- 📰 **Real News**: News API integration with actual headlines and threat correlation
+- 🔄 **Robust Fallback**: Mock data used when APIs are unavailable or rate-limited
+- 📱 **Fully Responsive**: Complete mobile/tablet support with hamburger menu
+- 🎨 **Production UI**: Polished interface with animations and threat-responsive branding
 
-**Future Development Path:**
-- Integration with real financial APIs (FRED, Alpha Vantage)
-- Python data collectors for government sources
-- WebSocket support for real-time updates
-- User authentication and personalization
+**Active Data Sources:**
+- Federal Reserve Economic Data (FRED)
+- US Treasury Direct API
+- News API for real-time headlines
+- ACLED for conflict data
+- Multiple government and financial endpoints
 
-## 📊 Data Sources (Planned Integration)
+## 📊 Data Sources (Live Integration)
 
-The system architecture supports these data sources:
+The system actively collects data from:
 
-- **Financial Data**: Federal Reserve FRED API, Alpha Vantage, CBOE
-- **News Intelligence**: News API (✅ Implemented), Reuters, Bloomberg  
-- **Government Data**: Treasury Direct, USDA, EIA
-- **Market Data**: CME Group, ICE, Baltic Exchange
-- **Geopolitical**: ACLED, Council on Foreign Relations
+- **Financial Data**: Federal Reserve FRED API (✅ Live), Alpha Vantage (✅ Live), Treasury Direct (✅ Live)
+- **News Intelligence**: News API (✅ Live with caching), OpenAI for analysis  
+- **Government Data**: Treasury Direct (✅ Live), ICE reports, DHS data
+- **Market Data**: Market volatility indices, oil futures
+- **Geopolitical**: ACLED conflict data (✅ Live), Taiwan maritime zones, NATO readiness
 
-[View Integration Guide →](docs/real-data-sources.md)
+**Fallback Strategy**: When APIs are unavailable, rate-limited, or return errors, the system gracefully falls back to recent cached data or realistic mock data to ensure continuous operation.
+
+[View Technical Implementation →](docs/real-data-sources.md)
 
 ## 🔒 Security & Privacy
 
