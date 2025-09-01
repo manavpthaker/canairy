@@ -24,7 +24,7 @@ services:
       - key: VITE_USE_MOCK_DATA
         value: false
       - key: VITE_API_URL
-        value: https://canairy-api.onrender.com
+        value: https://canairy-api.onrender.com/api/v1
       - key: NODE_VERSION
         value: "18"
   

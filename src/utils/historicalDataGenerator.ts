@@ -189,20 +189,26 @@ export function generateHistoricalData(
     
     // Determine alert level based on thresholds
     let level: 'green' | 'amber' | 'red' = 'green';
-    if (indicator.thresholds.red.min !== undefined && currentValue >= indicator.thresholds.red.min) {
+    const redThreshold = indicator.thresholds?.threshold_red;
+    const amberThreshold = indicator.thresholds?.threshold_amber;
+
+    if (redThreshold !== undefined && currentValue >= redThreshold) {
       level = 'red';
-    } else if (indicator.thresholds.amber.min !== undefined && currentValue >= indicator.thresholds.amber.min) {
+    } else if (amberThreshold !== undefined && currentValue >= amberThreshold) {
       level = 'amber';
     }
     
     // For greenFlag indicators, invert the logic
     if (indicator.greenFlag) {
-      if (indicator.thresholds.red.max !== undefined && currentValue <= indicator.thresholds.red.max) {
-        level = 'red';
-      } else if (indicator.thresholds.amber.max !== undefined && currentValue <= indicator.thresholds.amber.max) {
-        level = 'amber';
-      }
-    }
+          const redThresholdMax = indicator.thresholds?.threshold_red; // Assuming max is also threshold_red for greenFlag
+          const amberThresholdMax = indicator.thresholds?.threshold_amber; // Assuming max is also threshold_amber for greenFlag
+
+          if (redThresholdMax !== undefined && currentValue <= redThresholdMax) {
+            level = 'red';
+          } else if (amberThresholdMax !== undefined && currentValue <= amberThresholdMax) {
+            level = 'amber';
+          }
+        }
     
     points.push({
       timestamp: timestamp.toISOString(),
