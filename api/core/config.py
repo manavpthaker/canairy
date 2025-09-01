@@ -32,7 +32,10 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "https://canairy.onrender.com",
         "https://brown-man-bunker.onrender.com",
-        "https://bunker-frontend.onrender.com"
+        "https://bunker-frontend.onrender.com",
+        "https://canairy.xyz",
+        "https://www.canairy.xyz",
+        "https://canairy-dashboard.onrender.com"
     ]
     
     # Database
