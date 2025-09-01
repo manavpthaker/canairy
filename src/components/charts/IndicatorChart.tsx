@@ -79,8 +79,12 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
       const value = Math.max(0, currentValue + randomChange * (i / dataPoints));
       
       let level: 'green' | 'amber' | 'red' = 'green';
-      if (indicator.thresholds.red.min && value >= indicator.thresholds.red.min) level = 'red';
-      else if (indicator.thresholds.amber.min && value >= indicator.thresholds.amber.min) level = 'amber';
+      // Use optional chaining for safety
+      const redThreshold = indicator.thresholds?.threshold_red;
+      const amberThreshold = indicator.thresholds?.threshold_amber;
+      
+      if (redThreshold !== undefined && value >= redThreshold) level = 'red';
+      else if (amberThreshold !== undefined && value >= amberThreshold) level = 'amber';
 
       points.push({ timestamp: timestamp.toISOString(), value, level });
     }
@@ -246,20 +250,23 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
 
     // Add threshold lines
     const thresholdDatasets: any[] = [];
-    if (indicator.thresholds.amber.min) {
+    const chartAmberThreshold = indicator.thresholds?.threshold_amber;
+    const chartRedThreshold = indicator.thresholds?.threshold_red;
+
+    if (chartAmberThreshold !== undefined) {
       thresholdDatasets.push({
         label: 'Amber Threshold',
-        data: Array(historicalData.length).fill(indicator.thresholds.amber.min),
+        data: Array(historicalData.length).fill(chartAmberThreshold),
         borderColor: getStatusColor('amber', 0.5),
         borderDash: [5, 5],
         pointRadius: 0,
         fill: false,
       });
     }
-    if (indicator.thresholds.red.min) {
+    if (chartRedThreshold !== undefined) {
       thresholdDatasets.push({
         label: 'Red Threshold',
-        data: Array(historicalData.length).fill(indicator.thresholds.red.min),
+        data: Array(historicalData.length).fill(chartRedThreshold),
         borderColor: getStatusColor('red', 0.5),
         borderDash: [5, 5],
         pointRadius: 0,
@@ -359,10 +366,13 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
     };
 
     // Add colored zones for thresholds
-    if (indicator.thresholds.red.min && indicator.thresholds.amber.min) {
+    const areaAmberThreshold = indicator.thresholds?.threshold_amber;
+    const areaRedThreshold = indicator.thresholds?.threshold_red;
+
+    if (areaRedThreshold !== undefined && areaAmberThreshold !== undefined) {
       data.datasets.unshift({
         label: 'Critical Zone',
-        data: Array(historicalData.length).fill(100),
+        data: Array(historicalData.length).fill(100), // Re-evaluate this '100' if it's not a universal max
         backgroundColor: getStatusColor('red', 0.1),
         fill: '+1',
         pointRadius: 0,
@@ -371,7 +381,7 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
       
       data.datasets.unshift({
         label: 'Warning Zone',
-        data: Array(historicalData.length).fill(indicator.thresholds.red.min),
+        data: Array(historicalData.length).fill(areaRedThreshold),
         backgroundColor: getStatusColor('amber', 0.1),
         fill: '+1',
         pointRadius: 0,
@@ -380,7 +390,7 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
       
       data.datasets.unshift({
         label: 'Safe Zone',
-        data: Array(historicalData.length).fill(indicator.thresholds.amber.min),
+        data: Array(historicalData.length).fill(areaAmberThreshold),
         backgroundColor: getStatusColor('green', 0.1),
         fill: 'origin',
         pointRadius: 0,

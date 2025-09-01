@@ -129,19 +129,44 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
   };
 
   const getThresholdInfo = () => {
-    // Mock threshold data - in real app would come from indicator
-    const thresholds = {
-      green: { min: 0, max: 40 },
-      amber: { min: 40, max: 60 },
-      red: { min: 60, max: 100 }
-    };
-    
-    const currentValue = typeof status.value === 'number' ? status.value : 50;
-    const threshold = thresholds[status.level as keyof typeof thresholds];
-    
+    const currentValue = typeof status.value === 'number' ? status.value : 0; // Default to 0 if not a number
+
+    // Use actual thresholds from the indicator data
+    const amberThreshold = indicator.thresholds?.threshold_amber;
+    const redThreshold = indicator.thresholds?.threshold_red;
+
+    let currentMin = 0;
+    let currentMax = 100; // Default max, might need to be dynamic based on indicator
+    let nextThresholdValue: number | null = null;
+
+    if (status.level === 'green') {
+      currentMin = 0; // Assuming green starts from 0
+      currentMax = amberThreshold !== undefined ? amberThreshold : 100; // Max of green is amber threshold
+      nextThresholdValue = amberThreshold !== undefined ? amberThreshold : null;
+    } else if (status.level === 'amber') {
+      currentMin = amberThreshold !== undefined ? amberThreshold : 0;
+      currentMax = redThreshold !== undefined ? redThreshold : 100; // Max of amber is red threshold
+      nextThresholdValue = redThreshold !== undefined ? redThreshold : null;
+    } else if (status.level === 'red') {
+      currentMin = redThreshold !== undefined ? redThreshold : 0;
+      currentMax = redThreshold !== undefined ? redThreshold * 1.5 : 100; // Arbitrary max for red, or actual max value
+      nextThresholdValue = null; // No next threshold if already red
+    } else { // unknown status
+      currentMin = 0;
+      currentMax = 100;
+      nextThresholdValue = null;
+    }
+
+    // Ensure currentMax is greater than currentMin to avoid division by zero or negative range
+    if (currentMax <= currentMin) {
+      currentMax = currentMin + 1; // Prevent division by zero
+    }
+
+    const percentage = ((currentValue - currentMin) / (currentMax - currentMin)) * 100;
+
     return {
-      percentage: ((currentValue - threshold.min) / (threshold.max - threshold.min)) * 100,
-      nextThreshold: status.level === 'green' ? 40 : status.level === 'amber' ? 60 : null
+      percentage: Math.max(0, Math.min(100, percentage)), // Clamp between 0 and 100
+      nextThreshold: nextThresholdValue
     };
   };
 
