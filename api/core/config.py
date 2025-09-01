@@ -27,8 +27,12 @@ class Settings(BaseSettings):
     # CORS
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:3000",
+        "http://localhost:3003",
+        "http://localhost:3004",
         "http://localhost:5173",
-        "https://canairy.onrender.com"
+        "https://canairy.onrender.com",
+        "https://brown-man-bunker.onrender.com",
+        "https://bunker-frontend.onrender.com"
     ]
     
     # Database
@@ -101,6 +105,7 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = True
+        extra = "ignore"
 
 @lru_cache()
 def get_settings() -> Settings:
