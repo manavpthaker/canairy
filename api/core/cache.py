@@ -2,7 +2,11 @@
 Redis caching implementation with async support
 """
 
-import redis.asyncio as redis
+try:
+    import redis.asyncio as redis
+    REDIS_AVAILABLE = True
+except ImportError:
+    REDIS_AVAILABLE = False
 import json
 import pickle
 from typing import Optional, Any, Union
@@ -28,6 +32,11 @@ class CacheManager:
         
     async def initialize(self):
         """Initialize Redis connection"""
+        if not REDIS_AVAILABLE:
+            logger.warning("Redis not available, caching disabled")
+            self.redis_client = None
+            return
+            
         try:
             self.redis_client = redis.from_url(
                 settings.REDIS_URL,
