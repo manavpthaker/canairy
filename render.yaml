@@ -35,13 +35,11 @@ services:
     plan: free
     buildCommand: |
       pip install --upgrade pip
-      pip install -r api/requirements.txt
-    startCommand: bash start_api.sh
+      pip install fastapi uvicorn
+    startCommand: uvicorn api.simple_main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
-      - key: PYTHONPATH
-        value: /opt/render/project/src:/opt/render/project
       - key: ENVIRONMENT
         value: production
       - key: SECRET_KEY
