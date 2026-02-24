@@ -62,28 +62,31 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
       // Domain-specific insights
       switch (domain) {
         case 'economy':
-          insights.push({
-            type: 'action',
-            message: 'Consider reviewing financial positions and increasing cash reserves'
-          });
+          insights.push({ type: 'action', message: 'Review financial positions and increase cash reserves' });
           break;
-        case 'energy':
-          insights.push({
-            type: 'action',
-            message: 'Verify backup power systems and fuel reserves'
-          });
+        case 'jobs_labor':
+          insights.push({ type: 'action', message: 'Supply chain disruptions possible from labor unrest' });
+          break;
+        case 'rights_governance':
+          insights.push({ type: 'info', message: 'Review digital privacy and civil liberties posture' });
+          break;
+        case 'security_infrastructure':
+          insights.push({ type: 'action', message: 'Verify backup power and cyber hygiene' });
+          break;
+        case 'oil_axis':
+          insights.push({ type: 'action', message: 'Top off fuel, review currency exposure' });
+          break;
+        case 'ai_window':
+          insights.push({ type: 'info', message: 'AI-driven disruption risk elevated' });
           break;
         case 'global_conflict':
-          insights.push({
-            type: 'info',
-            message: 'Monitor geopolitical developments closely'
-          });
+          insights.push({ type: 'info', message: 'Monitor geopolitical developments closely' });
           break;
-        case 'ai_tech':
-          insights.push({
-            type: 'info',
-            message: 'Technology disruption risk elevated'
-          });
+        case 'domestic_control':
+          insights.push({ type: 'action', message: 'Update family emergency plan and go-folder' });
+          break;
+        case 'cult':
+          insights.push({ type: 'info', message: 'Monitor cultural signals for AI-worship trends' });
           break;
       }
     } else if (status.level === 'amber') {

@@ -16,15 +16,17 @@ import { Badge } from '../components/core/Badge';
 import { cn } from '../utils/cn';
 
 type NewsFilter = 'all' | 'high' | 'medium' | 'low' | 'indicators';
-type DomainFilter = 'all' | 'economy' | 'global_conflict' | 'energy' | 'ai_tech' | 'domestic_control';
+type DomainFilter = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'security_infrastructure' | 'oil_axis' | 'ai_window' | 'global_conflict' | 'domestic_control' | 'cult';
 
 const indicatorOptions = [
-  { id: 'treasury_tail', name: 'Treasury Tail Risk', icon: TrendingUp },
-  { id: 'taiwan_zone', name: 'Taiwan Exclusion Zone', icon: Shield },
-  { id: 'hormuz_war_risk', name: 'Hormuz War Risk', icon: Zap },
-  { id: 'vix_volatility', name: 'VIX Volatility', icon: TrendingUp },
-  { id: 'ice_detention', name: 'ICE Detention', icon: AlertTriangle },
-  { id: 'global_conflict_index', name: 'Global Conflict', icon: Globe },
+  { id: 'econ_01_treasury_tail', name: '10Y Auction Tail', icon: TrendingUp },
+  { id: 'market_01_intraday_swing', name: '10Y Intraday Swing', icon: TrendingUp },
+  { id: 'taiwan_pla_activity', name: 'Taiwan PLA Incursions', icon: Shield },
+  { id: 'nato_high_readiness', name: 'NATO High Readiness', icon: Globe },
+  { id: 'national_guard_metros', name: 'Guard Deployments', icon: AlertTriangle },
+  { id: 'oil_01_russian_brics', name: 'Russian Crude to BRICS', icon: Zap },
+  { id: 'info_02_deepfake_shocks', name: 'Deepfake Shocks', icon: AlertTriangle },
+  { id: 'ice_detention_surge', name: 'ICE Detention', icon: AlertTriangle },
 ];
 
 export const News: React.FC = () => {

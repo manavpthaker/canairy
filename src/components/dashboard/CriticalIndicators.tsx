@@ -54,16 +54,38 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
 
   const getImpactSummary = (indicator: IndicatorData): string => {
     const descriptions: Record<string, string> = {
-      treasury_tail: 'Bank lending may tighten, mortgage rates rise',
-      ice_detention: 'Community enforcement activity increasing',
-      taiwan_zone: 'Electronics shortage likely within weeks',
-      hormuz_war_risk: 'Gas prices could double within 72 hours',
-      vix_volatility: 'Stock market crash risk elevated',
-      unemployment_rate: 'Job losses accelerating in your area',
-      global_conflict_index: 'Multiple conflicts could affect supply chains',
-      mbridge_settlement: 'Dollar losing reserve status faster'
+      econ_01_treasury_tail: 'Bank lending may tighten, mortgage rates rise',
+      econ_02_grocery_cpi: 'Food prices outpacing wages — budget impact',
+      market_01_intraday_swing: 'Systemic market stress — protect deposits NOW',
+      green_g1_gdp_rates: 'Economy not meeting green-flag conditions',
+      job_01_strike_days: 'Labor disruptions affecting supply chains',
+      power_01_ai_surveillance: 'Surveillance legislation accelerating',
+      civil_01_acled_protests: 'Social unrest rising — avoid protest zones',
+      cyber_01_cisa_kev: 'Critical infrastructure under cyber attack',
+      grid_01_pjm_outages: 'Power grid showing fragility — test backups',
+      bio_01_h2h_countries: 'Novel pathogen transmission detected',
+      oil_01_russian_brics: 'Oil trade de-dollarization accelerating',
+      oil_02_mbridge_settlements: 'CBDC oil settlement bypassing USD',
+      oil_03_ofac_designations: 'Sanctions escalation — fuel price risk',
+      oil_04_refinery_ratio: 'Refining shifting East — domestic supply risk',
+      labor_ai_01_layoffs: 'AI displacement hitting multiple industries',
+      cyber_02_ai_ransomware: 'AI-enhanced ransomware targeting infrastructure',
+      info_02_deepfake_shocks: 'Information warfare — verify all breaking news',
+      compute_01_training_cost: 'AI cost trends shifting',
+      global_conflict_intensity: 'Multiple conflicts escalating globally',
+      taiwan_pla_activity: 'Semiconductor supply at risk from PLA activity',
+      nato_high_readiness: 'NATO forces activated — conflict proximity HIGH',
+      nuclear_test_activity: 'Nuclear deterrence under pressure',
+      russia_nato_escalation: 'Russia-NATO tensions at dangerous levels',
+      defense_spending_growth: 'Arms race dynamics emerging globally',
+      dc_control_countdown: 'Federal control consolidation advancing',
+      national_guard_metros: 'Guard deployed — movement restrictions likely',
+      ice_detention_surge: 'Mass enforcement operations active',
+      dhs_removal_expansion: 'Due process curtailed — civil liberties at risk',
+      hill_control_legislation: 'Control legislation advancing rapidly',
+      liberty_litigation_count: 'Civil rights under broad legal assault',
     };
-    
+
     return descriptions[indicator.id] || 'Monitoring for changes';
   };
 
