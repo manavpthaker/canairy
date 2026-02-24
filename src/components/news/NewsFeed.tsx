@@ -320,14 +320,14 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
                             </h5>
                             <p className="text-gray-300 text-sm">
                               This news relates to risk indicators in your monitoring system. 
-                              {article.indicator_relevance?.includes('treasury_tail') && 
+                              {article.indicator_relevance?.includes('econ_01_treasury_tail') &&
                                 ' Changes in treasury markets can affect banking stability and your savings.'}
-                              {article.indicator_relevance?.includes('taiwan_zone') && 
+                              {article.indicator_relevance?.includes('taiwan_pla_activity') &&
                                 ' Taiwan tensions could disrupt global supply chains and electronics availability.'}
-                              {article.indicator_relevance?.includes('vix_volatility') && 
+                              {article.indicator_relevance?.includes('market_01_intraday_swing') &&
                                 ' Market volatility affects retirement accounts and job security.'}
-                              {article.indicator_relevance?.includes('hormuz_war_risk') && 
-                                ' Shipping disruptions would immediately impact gas and grocery prices.'}
+                              {article.indicator_relevance?.includes('oil_01_russian_brics') &&
+                                ' Oil trade shifts would impact gas prices and dollar purchasing power.'}
                             </p>
                           </div>
                         </div>

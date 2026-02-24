@@ -22,14 +22,14 @@ import { useStore } from '../store';
 import { IndicatorData } from '../types';
 import { EnhancedIndicatorCard } from '../components/indicators/EnhancedIndicatorCard';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
-import { SimpleExecutiveBanner } from '../components/dashboard/SimpleExecutiveBanner';
 import { EnhancedExecutiveSummary } from '../components/dashboard/EnhancedExecutiveSummary';
-import { SimpleDecisionSupport } from '../components/dashboard/SimpleDecisionSupport';
-import { SimplePriorityActions } from '../components/dashboard/SimplePriorityActions';
 import { ActionablePriorityActions } from '../components/dashboard/ActionablePriorityActions';
 import { CriticalIndicators } from '../components/dashboard/CriticalIndicators';
 import { RiskNarrativePanel } from '../components/dashboard/RiskNarrativePanel';
 import { SituationalStatusBar } from '../components/dashboard/SituationalStatusBar';
+import { TightenUpBanner } from '../components/dashboard/TightenUpBanner';
+import { PhaseDetailPanel } from '../components/dashboard/PhaseDetailPanel';
+import { DomainBreakdown } from '../components/dashboard/DomainBreakdown';
 import { CanaryLogo } from '../components/branding/CanaryLogo';
 import { NewsTicker } from '../components/news/NewsTicker';
 import { NewsSidebar } from '../components/news/NewsSidebar';
@@ -186,11 +186,20 @@ export const Dashboard: React.FC = () => {
             <NewsTicker maxItems={5} />
           </div>
 
+          {/* Tighten-Up Banner — shows when ≥2 indicators are RED */}
+          <TightenUpBanner />
+
           {/* Enhanced Executive Summary */}
           <EnhancedExecutiveSummary />
 
+          {/* Domain Threat Breakdown — all 9 domains with HOPI scores */}
+          <DomainBreakdown />
+
+          {/* Phase Detail — current phase actions and triggers */}
+          <PhaseDetailPanel />
+
           {/* Critical Indicators */}
-          <CriticalIndicators 
+          <CriticalIndicators
             indicators={indicators}
             onIndicatorClick={(indicator) => setSelectedIndicator(indicator)}
           />

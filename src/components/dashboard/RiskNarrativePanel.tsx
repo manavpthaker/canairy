@@ -43,9 +43,9 @@ export const RiskNarrativePanel: React.FC = () => {
     const redIndicators = indicators.filter(i => i.status.level === 'red');
     
     // Banking Crisis Pattern
-    if (redIndicators.some(i => i.id === 'treasury_tail')) {
-      const treasuryIndicator = indicators.find(i => i.id === 'treasury_tail');
-      const vixIndicator = indicators.find(i => i.id === 'vix_volatility');
+    if (redIndicators.some(i => i.id === 'econ_01_treasury_tail' || i.id === 'market_01_intraday_swing')) {
+      const treasuryIndicator = indicators.find(i => i.id === 'econ_01_treasury_tail');
+      const marketIndicator = indicators.find(i => i.id === 'market_01_intraday_swing');
       
       patterns.push({
         id: 'banking-crisis',
@@ -64,8 +64,8 @@ export const RiskNarrativePanel: React.FC = () => {
     }
     
     // Geopolitical Supply Chain Pattern
-    if (redIndicators.some(i => i.id === 'taiwan_zone')) {
-      const taiwanIndicator = indicators.find(i => i.id === 'taiwan_zone');
+    if (redIndicators.some(i => i.id === 'taiwan_pla_activity')) {
+      const taiwanIndicator = indicators.find(i => i.id === 'taiwan_pla_activity');
       const exclusionZones = typeof taiwanIndicator?.status.value === 'number' ? taiwanIndicator.status.value : 0;
       
       patterns.push({
@@ -84,23 +84,23 @@ export const RiskNarrativePanel: React.FC = () => {
       });
     }
     
-    // Energy Crisis Pattern
-    if (redIndicators.some(i => i.id === 'hormuz_war_risk')) {
-      const hormuzIndicator = indicators.find(i => i.id === 'hormuz_war_risk');
-      const premium = typeof hormuzIndicator?.status.value === 'number' ? hormuzIndicator.status.value : 0;
+    // Oil / De-dollarization Pattern
+    if (redIndicators.some(i => i.domain === 'oil_axis')) {
+      const oilIndicator = redIndicators.find(i => i.domain === 'oil_axis');
+      const premium = typeof oilIndicator?.status.value === 'number' ? oilIndicator.status.value : 0;
       
       patterns.push({
-        id: 'energy-crisis',
-        title: 'Oil Supply Disruption Pattern',
-        description: `War risk insurance for the Strait of Hormuz has spiked to ${(premium * 100).toFixed(3)}%. Lloyd\'s of London insurers are pricing in real combat risk. 21% of global oil flows through this 21-mile wide chokepoint.`,
+        id: 'oil-axis-crisis',
+        title: 'Oil Axis / De-Dollarization Pattern',
+        description: `Oil trade is shifting away from USD settlement. Russian crude to BRICS, mBridge CBDC settlement, and refinery capacity rebalancing signal a structural shift in global energy markets.`,
         historicalExample: {
           date: 'September 2019',
           event: 'Saudi Aramco Drone Attacks',
           outcome: 'Oil spiked 20% in one day, gas up $0.75/gallon',
           duration: '3 weeks for prices to stabilize'
         },
-        currentSimilarity: premium > 0.001 ? 80 : 60,
-        expectedOutcome: 'Gas prices double within 72 hours of any incident. Strategic reserves provide only 30-40 days of relief.',
+        currentSimilarity: premium > 60 ? 75 : 55,
+        expectedOutcome: 'Energy prices rise as USD loses oil-trade monopoly. Expect gradual fuel cost increases and dollar purchasing power erosion.',
         icon: Zap
       });
     }
