@@ -31,6 +31,8 @@ export const TightenUpBanner: React.FC = () => {
 
   return (
     <motion.div
+      role="alert"
+      aria-live="assertive"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       className="mb-6"
