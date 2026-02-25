@@ -76,7 +76,7 @@ export const News: React.FC = () => {
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => setShowIndicatorFilter(!showIndicatorFilter)}
-                variant={showIndicatorFilter ? 'primary' : 'outline'}
+                variant={showIndicatorFilter ? 'primary' : 'ghost'}
                 size="sm"
               >
                 <Filter className="w-4 h-4 mr-2" />
@@ -86,7 +86,7 @@ export const News: React.FC = () => {
               {(selectedIndicator || urgencyFilter !== 'all' || domainFilter !== 'all') && (
                 <Button
                   onClick={clearFilters}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                 >
                   Clear Filters
@@ -147,7 +147,7 @@ export const News: React.FC = () => {
               <span className="text-sm text-gray-400">Active filters:</span>
               
               {selectedIndicator && (
-                <Badge variant="primary">
+                <Badge variant="accent">
                   {indicatorOptions.find(i => i.id === selectedIndicator)?.name || selectedIndicator}
                 </Badge>
               )}
@@ -159,7 +159,7 @@ export const News: React.FC = () => {
               )}
               
               {domainFilter !== 'all' && (
-                <Badge variant="blue">
+                <Badge variant="accent">
                   {domainFilter.replace('_', ' ')} Domain
                 </Badge>
               )}
@@ -246,15 +246,15 @@ export const News: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <Button className="w-full justify-start" size="sm" variant="outline">
+                  <Button className="w-full justify-start" size="sm" variant="ghost">
                     <TrendingUp className="w-4 h-4 mr-2" />
                     View Dashboard
                   </Button>
-                  <Button className="w-full justify-start" size="sm" variant="outline">
+                  <Button className="w-full justify-start" size="sm" variant="ghost">
                     <AlertTriangle className="w-4 h-4 mr-2" />
                     Check Alerts
                   </Button>
-                  <Button className="w-full justify-start" size="sm" variant="outline">
+                  <Button className="w-full justify-start" size="sm" variant="ghost">
                     <Shield className="w-4 h-4 mr-2" />
                     Emergency Plan
                   </Button>

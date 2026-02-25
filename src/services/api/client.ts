@@ -118,7 +118,7 @@ export class APIClient {
         config.headers['X-Request-ID'] = this.generateRequestId();
 
         // Log request in development
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.log('API Request:', {
             method: config.method,
             url: config.url,
@@ -138,7 +138,7 @@ export class APIClient {
     this.client.interceptors.response.use(
       (response) => {
         // Log response in development
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.log('API Response:', {
             status: response.status,
             url: response.config.url,
@@ -205,10 +205,11 @@ export class APIClient {
 
     if (error.response) {
       // Server responded with error
+      const data = error.response.data as Record<string, unknown> | undefined;
       apiError.status = error.response.status;
-      apiError.message = error.response.data?.message || error.message;
-      apiError.code = error.response.data?.code;
-      apiError.details = error.response.data?.details;
+      apiError.message = (data?.message as string) || error.message;
+      apiError.code = data?.code as string | undefined;
+      apiError.details = data?.details;
     } else if (error.request) {
       // Request made but no response
       apiError.message = 'No response from server';

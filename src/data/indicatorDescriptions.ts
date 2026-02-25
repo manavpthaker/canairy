@@ -2,12 +2,22 @@
 export interface IndicatorDescription {
   id: string;
   name: string;
+  whatWeTrack?: string;
   whyItMatters: string;
+  realWorldImpact?: string;
   thresholds: {
     green: string;
     amber: string;
     red: string;
   };
+  actionGuidance?: {
+    green: string;
+    amber: string;
+    red: string;
+  };
+  historicalContext?: string;
+  methodology?: string;
+  references?: string[];
 }
 
 const descriptions: Record<string, IndicatorDescription> = {
