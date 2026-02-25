@@ -1,4 +1,4 @@
-// Core types for Brown Man Bunker monitoring system
+// Core types for Canairy resilience monitoring system
 
 export type AlertLevel = 'green' | 'amber' | 'red' | 'unknown';
 
@@ -10,12 +10,28 @@ export type IndicatorStatus = {
   dataSource: 'LIVE' | 'MANUAL' | 'MOCK';
 };
 
-export type Domain = 
+export type Domain =
   | 'economy'
+  | 'jobs_labor'
+  | 'rights_governance'
+  | 'security_infrastructure'
+  | 'oil_axis'
+  | 'ai_window'
   | 'global_conflict'
-  | 'energy'
-  | 'ai_tech'
-  | 'domestic_control';
+  | 'domestic_control'
+  | 'cult';
+
+export const DOMAIN_META: Record<Domain, { label: string; weight: number; icon: string }> = {
+  economy:                 { label: 'Economy',          weight: 1.0,  icon: 'DollarSign' },
+  jobs_labor:              { label: 'Jobs & Labor',     weight: 1.0,  icon: 'Briefcase' },
+  rights_governance:       { label: 'Rights & Gov',     weight: 1.0,  icon: 'Scale' },
+  security_infrastructure: { label: 'Security & Infra', weight: 1.25, icon: 'ShieldAlert' },
+  oil_axis:                { label: 'Oil Axis',         weight: 1.0,  icon: 'Fuel' },
+  ai_window:               { label: 'AI Window',        weight: 1.0,  icon: 'Brain' },
+  global_conflict:         { label: 'Global Conflict',  weight: 1.5,  icon: 'Globe' },
+  domestic_control:        { label: 'Domestic Control',  weight: 1.25, icon: 'Landmark' },
+  cult:                    { label: 'Cult Signals',     weight: 0.75, icon: 'Eye' },
+};
 
 export interface Indicator {
   id: string;
@@ -27,9 +43,12 @@ export interface Indicator {
     green: { min?: number; max?: number };
     amber: { min?: number; max?: number };
     red: { min?: number; max?: number };
+    threshold_amber?: number;
+    threshold_red?: number;
   };
   critical?: boolean;
   greenFlag?: boolean;
+  enabled?: boolean;
   dataSource: string;
   updateFrequency: string;
   metadata?: Record<string, any>;
