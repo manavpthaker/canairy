@@ -63,57 +63,57 @@ export class NewsIntelligenceService {
   };
 
   private indicatorNewsMapping: Record<string, IndicatorNewsMapping> = {
-    treasury_tail: {
-      indicators: ['treasury_tail'],
+    econ_01_treasury_tail: {
+      indicators: ['econ_01_treasury_tail'],
       keywords: ['treasury auction', 'bond market', 'yield curve', 'federal reserve', 'interest rates', 'banking stress', 'liquidity crisis'],
       exclusions: ['personal finance', 'mortgage rates'],
       sources: ['wsj', 'reuters', 'bloomberg', 'ft'],
       context: 'Federal Reserve and banking system stress indicators'
     },
-    taiwan_zone: {
-      indicators: ['taiwan_zone'],
+    taiwan_pla_activity: {
+      indicators: ['taiwan_pla_activity'],
       keywords: ['taiwan strait', 'china military', 'pla exercises', 'semiconductor', 'tsmc', 'china taiwan', 'south china sea'],
       exclusions: ['tourism', 'culture'],
       sources: ['reuters', 'bbc-news', 'wsj', 'ft'],
       context: 'Taiwan conflict risk and semiconductor supply chain'
     },
-    hormuz_war_risk: {
-      indicators: ['hormuz_war_risk'],
-      keywords: ['strait of hormuz', 'iran', 'oil tankers', 'persian gulf', 'shipping rates', 'war risk insurance'],
+    oil_01_russian_brics: {
+      indicators: ['oil_01_russian_brics'],
+      keywords: ['russian oil', 'brics oil', 'sanctions evasion', 'oil trade', 'crude exports'],
       exclusions: ['oil prices general'],
       sources: ['reuters', 'bloomberg', 'wsj'],
-      context: 'Middle East shipping and oil supply risks'
+      context: 'Oil trade de-dollarization and sanctions'
     },
-    mbridge_settlement: {
-      indicators: ['mbridge_settlement'],
+    oil_02_mbridge_settlements: {
+      indicators: ['oil_02_mbridge_settlements'],
       keywords: ['mbridge', 'central bank digital currency', 'cbdc', 'dedollarization', 'yuan oil', 'petrodollar'],
       exclusions: ['bitcoin', 'crypto'],
       sources: ['reuters', 'ft', 'wsj', 'bloomberg'],
       context: 'Dollar dominance and alternative payment systems'
     },
-    vix_volatility: {
-      indicators: ['vix_volatility'],
-      keywords: ['market volatility', 'vix', 'market crash', 'stock market decline', 'fear index'],
+    market_01_intraday_swing: {
+      indicators: ['market_01_intraday_swing'],
+      keywords: ['market volatility', 'treasury yield', 'bond market crash', 'market stress', 'intraday swing'],
       exclusions: ['individual stocks'],
       sources: ['bloomberg', 'wsj', 'marketwatch', 'cnbc'],
       context: 'Market stress and volatility indicators'
     },
-    ice_detention: {
-      indicators: ['ice_detention'],
+    ice_detention_surge: {
+      indicators: ['ice_detention_surge'],
       keywords: ['ice detention', 'immigration enforcement', 'border security', 'deportation', 'immigrant detention'],
       exclusions: ['ice hockey'],
       sources: ['reuters', 'bbc-news', 'wsj'],
       context: 'Immigration enforcement and domestic control measures'
     },
-    unemployment_rate: {
-      indicators: ['unemployment_rate'],
-      keywords: ['unemployment', 'jobless claims', 'layoffs', 'job market', 'labor statistics'],
-      exclusions: ['job openings'],
-      sources: ['wsj', 'reuters', 'bloomberg', 'cnbc'],
-      context: 'Employment and economic indicators'
+    nato_high_readiness: {
+      indicators: ['nato_high_readiness'],
+      keywords: ['nato readiness', 'nato forces', 'article 5', 'nato activation', 'european security'],
+      exclusions: ['nato summit'],
+      sources: ['reuters', 'bbc-news', 'wsj'],
+      context: 'NATO defense posture and European theater'
     },
-    global_conflict_index: {
-      indicators: ['global_conflict_index'],
+    global_conflict_intensity: {
+      indicators: ['global_conflict_intensity'],
       keywords: ['military conflict', 'war', 'armed conflict', 'geopolitical tension', 'international crisis'],
       exclusions: ['sports conflict', 'corporate conflict'],
       sources: ['reuters', 'bbc-news', 'wsj'],

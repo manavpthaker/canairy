@@ -30,35 +30,49 @@ export const EnhancedExecutiveSummary: React.FC = () => {
     let status: SystemStatus = 'stable';
     let confidence = 85; // Base confidence
     
-    // Analyze critical threats
-    if (redIndicators.some(i => i.id === 'treasury_tail')) {
-      threats.push('Treasury markets showing severe stress - banking system under pressure');
+    // Analyze critical threats by domain
+    if (redIndicators.some(i => i.id === 'econ_01_treasury_tail' || i.id === 'market_01_intraday_swing')) {
+      threats.push('Treasury/market stress detected — banking system under pressure');
       confidence -= 10;
     }
-    
-    if (redIndicators.some(i => i.id === 'taiwan_zone')) {
-      threats.push('Taiwan tensions escalated with active exclusion zones');
+
+    if (redIndicators.some(i => i.id === 'taiwan_pla_activity')) {
+      threats.push('Taiwan PLA incursions escalating — semiconductor supply at risk');
       confidence -= 15;
     }
-    
-    if (redIndicators.some(i => i.id === 'hormuz_war_risk')) {
-      threats.push('Strait of Hormuz war risk premiums spiking - oil supply threatened');
+
+    if (redIndicators.some(i => i.id === 'nato_high_readiness')) {
+      threats.push('NATO high-readiness forces activated — conflict proximity elevated');
+      confidence -= 15;
+    }
+
+    if (redIndicators.some(i => i.id === 'national_guard_metros')) {
+      threats.push('National Guard deployed to major metros — civil order stressed');
       confidence -= 10;
     }
-    
-    if (redIndicators.some(i => i.id === 'ice_detention')) {
-      threats.push('ICE detention capacity at critical levels - enforcement surge active');
+
+    if (redIndicators.some(i => i.id === 'dhs_removal_expansion')) {
+      threats.push('DHS expedited removal expanded — civil liberties eroding');
       confidence -= 5;
     }
-    
-    // Add amber warnings
+
+    if (redIndicators.some(i => i.id === 'info_02_deepfake_shocks')) {
+      threats.push('Deepfake market shocks detected — information warfare active');
+      confidence -= 10;
+    }
+
+    // Add amber warnings from key indicators
     amberIndicators.forEach(indicator => {
-      if (indicator.id === 'vix_volatility') {
-        threats.push('Market volatility elevated - potential correction ahead');
+      if (indicator.id === 'econ_02_grocery_cpi') {
+        threats.push('Grocery prices rising faster than wages');
+        confidence -= 3;
+      }
+      if (indicator.id === 'oil_01_russian_brics') {
+        threats.push('De-dollarization accelerating via Russian oil trade');
         confidence -= 5;
       }
-      if (indicator.id === 'unemployment_rate') {
-        threats.push('Unemployment claims trending higher');
+      if (indicator.id === 'ice_detention_surge') {
+        threats.push('ICE detention population elevated — enforcement surge active');
         confidence -= 3;
       }
     });
@@ -107,45 +121,45 @@ export const EnhancedExecutiveSummary: React.FC = () => {
     const redIndicators = indicators.filter(i => i.status.level === 'red');
     
     // Immediate impacts (24-48 hours)
-    if (redIndicators.some(i => i.id === 'hormuz_war_risk')) {
-      timeline.push({
-        timeframe: 'immediate',
-        description: 'Gas prices likely to spike within 48 hours'
-      });
-    }
-    
-    if (redIndicators.some(i => i.id === 'treasury_tail' && i.critical)) {
+    if (redIndicators.some(i => i.id === 'market_01_intraday_swing')) {
       timeline.push({
         timeframe: 'immediate',
         description: 'Bank lending may freeze, ATM limits possible'
       });
     }
-    
+
+    if (redIndicators.some(i => i.id === 'national_guard_metros')) {
+      timeline.push({
+        timeframe: 'immediate',
+        description: 'Movement restrictions likely in affected metros'
+      });
+    }
+
     // This week impacts
-    if (redIndicators.some(i => i.id === 'taiwan_zone')) {
+    if (redIndicators.some(i => i.id === 'taiwan_pla_activity')) {
       timeline.push({
         timeframe: 'this-week',
-        description: 'Electronics prices to rise 10-20%'
+        description: 'Electronics and semiconductor prices to spike 10-20%'
       });
     }
-    
-    if (redIndicators.some(i => i.id === 'vix_volatility' || i.id === 'treasury_tail')) {
+
+    if (redIndicators.some(i => i.id === 'econ_01_treasury_tail')) {
       timeline.push({
         timeframe: 'this-week',
-        description: 'Stock market correction likely'
+        description: 'Stock market correction likely, tighten financial positions'
       });
     }
-    
+
     // This month impacts
-    if (redIndicators.some(i => i.id === 'unemployment_rate')) {
+    if (redIndicators.some(i => i.id === 'oil_01_russian_brics' || i.id === 'oil_03_ofac_designations')) {
       timeline.push({
         timeframe: 'this-month',
-        description: 'Local job market deterioration'
+        description: 'Energy prices rising as oil trade shifts away from USD'
       });
     }
-    
+
     // Long-term impacts
-    if (redIndicators.some(i => i.id === 'mbridge_settlement')) {
+    if (redIndicators.some(i => i.id === 'oil_02_mbridge_settlements')) {
       timeline.push({
         timeframe: 'long-term',
         description: 'Dollar purchasing power erosion accelerating'

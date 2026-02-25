@@ -22,20 +22,21 @@ import { useStore } from '../store';
 import { IndicatorData } from '../types';
 import { EnhancedIndicatorCard } from '../components/indicators/EnhancedIndicatorCard';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
-import { SimpleExecutiveBanner } from '../components/dashboard/SimpleExecutiveBanner';
 import { EnhancedExecutiveSummary } from '../components/dashboard/EnhancedExecutiveSummary';
-import { SimpleDecisionSupport } from '../components/dashboard/SimpleDecisionSupport';
-import { SimplePriorityActions } from '../components/dashboard/SimplePriorityActions';
 import { ActionablePriorityActions } from '../components/dashboard/ActionablePriorityActions';
 import { CriticalIndicators } from '../components/dashboard/CriticalIndicators';
 import { RiskNarrativePanel } from '../components/dashboard/RiskNarrativePanel';
 import { SituationalStatusBar } from '../components/dashboard/SituationalStatusBar';
+import { TightenUpBanner } from '../components/dashboard/TightenUpBanner';
+import { PhaseDetailPanel } from '../components/dashboard/PhaseDetailPanel';
+import { DomainBreakdown } from '../components/dashboard/DomainBreakdown';
 import { CanaryLogo } from '../components/branding/CanaryLogo';
 import { NewsTicker } from '../components/news/NewsTicker';
 import { NewsSidebar } from '../components/news/NewsSidebar';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/core/Card';
 import { Button } from '../components/core/Button';
 import { Badge } from '../components/core/Badge';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { cn } from '../utils/cn';
 
 export const Dashboard: React.FC = () => {
@@ -60,6 +61,8 @@ export const Dashboard: React.FC = () => {
     { path: '/news', icon: Globe, label: 'News' },
     { path: '/alerts', icon: Bell, label: 'Alerts' },
     { path: '/reports', icon: Download, label: 'Reports' },
+    { path: '/playbook', icon: Shield, label: 'Playbook' },
+    { path: '/settings', icon: Settings, label: 'Settings' },
   ];
 
 
@@ -70,6 +73,11 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex relative">
+      {/* Skip to Content */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
       {/* Mobile Sidebar Backdrop */}
       <AnimatePresence>
         {showMobileSidebar && (
@@ -84,17 +92,21 @@ export const Dashboard: React.FC = () => {
       </AnimatePresence>
 
       {/* Sidebar - Desktop always visible, Mobile slides in */}
-      <aside className={cn(
-        "w-64 bg-[#111111] border-r border-[#1A1A1A] fixed h-full z-40 transition-transform duration-300",
-        "lg:translate-x-0", // Always visible on desktop
-        showMobileSidebar ? "translate-x-0" : "-translate-x-full" // Slide in/out on mobile
-      )}>
+      <aside
+        aria-label="Main navigation"
+        className={cn(
+          "w-64 bg-[#111111] border-r border-[#1A1A1A] fixed h-full z-40 transition-transform duration-300",
+          "lg:translate-x-0",
+          showMobileSidebar ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
         <div className="p-6">
           {/* Logo with mobile close button */}
           <div className="mb-8 flex items-center justify-between">
             <CanaryLogo size="md" showText={true} />
             <button
               onClick={() => setShowMobileSidebar(false)}
+              aria-label="Close navigation menu"
               className="p-2 text-gray-400 hover:text-white lg:hidden"
             >
               <X className="w-5 h-5" />
@@ -102,7 +114,7 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="space-y-1">
+          <nav aria-label="Primary navigation" className="space-y-1">
             {sidebarItems.map((item) => (
               <Link
                 key={item.path}
@@ -133,7 +145,7 @@ export const Dashboard: React.FC = () => {
       </aside>
 
       {/* Main content - Responsive margin */}
-      <main className="flex-1 lg:ml-64">
+      <main id="main-content" className="flex-1 lg:ml-64">
         {/* Header */}
         <header className="bg-[#111111] border-b border-[#1A1A1A] sticky top-0 z-10">
           <div className="px-4 sm:px-6 lg:px-12 py-4">
@@ -141,6 +153,7 @@ export const Dashboard: React.FC = () => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setShowMobileSidebar(true)}
+                aria-label="Open navigation menu"
                 className="p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors lg:hidden"
               >
                 <Menu className="w-5 h-5" />
@@ -181,27 +194,83 @@ export const Dashboard: React.FC = () => {
 
         {/* Content - Responsive padding */}
         <div className="p-4 sm:p-6 lg:p-12">
+          {/* Loading state */}
+          {loading && indicators.length === 0 && (
+            <div className="space-y-6 animate-pulse">
+              <div className="h-16 bg-[#111111] rounded-2xl border border-[#1A1A1A]" />
+              <div className="h-48 bg-[#111111] rounded-2xl border border-[#1A1A1A]" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-32 bg-[#111111] rounded-2xl border border-[#1A1A1A]" />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Empty state — data loaded but no indicators */}
+          {!loading && indicators.length === 0 && (
+            <div className="text-center py-24">
+              <Activity className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-300 mb-2">No indicators loaded</h3>
+              <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                Unable to fetch indicator data. Check that the backend is running on port 5555.
+              </p>
+              <button
+                onClick={refreshAll}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Retry
+              </button>
+            </div>
+          )}
+
           {/* News Ticker */}
-          <div className="mb-6">
-            <NewsTicker maxItems={5} />
-          </div>
+          <ErrorBoundary isolate>
+            <div className="mb-6">
+              <NewsTicker maxItems={5} />
+            </div>
+          </ErrorBoundary>
+
+          {/* Tighten-Up Banner — shows when ≥2 indicators are RED */}
+          <ErrorBoundary isolate>
+            <TightenUpBanner />
+          </ErrorBoundary>
 
           {/* Enhanced Executive Summary */}
-          <EnhancedExecutiveSummary />
+          <ErrorBoundary isolate>
+            <EnhancedExecutiveSummary />
+          </ErrorBoundary>
+
+          {/* Domain Threat Breakdown — all 9 domains with HOPI scores */}
+          <ErrorBoundary isolate>
+            <DomainBreakdown />
+          </ErrorBoundary>
+
+          {/* Phase Detail — current phase actions and triggers */}
+          <ErrorBoundary isolate>
+            <PhaseDetailPanel />
+          </ErrorBoundary>
 
           {/* Critical Indicators */}
-          <CriticalIndicators 
-            indicators={indicators}
-            onIndicatorClick={(indicator) => setSelectedIndicator(indicator)}
-          />
+          <ErrorBoundary isolate>
+            <CriticalIndicators
+              indicators={indicators}
+              onIndicatorClick={(indicator) => setSelectedIndicator(indicator)}
+            />
+          </ErrorBoundary>
 
           {/* Risk Narrative Panel */}
-          <RiskNarrativePanel />
+          <ErrorBoundary isolate>
+            <RiskNarrativePanel />
+          </ErrorBoundary>
 
           {/* Actionable Priority Actions */}
-          <div className="mb-12">
-            <ActionablePriorityActions />
-          </div>
+          <ErrorBoundary isolate>
+            <div className="mb-12">
+              <ActionablePriorityActions />
+            </div>
+          </ErrorBoundary>
 
 
           {/* Quick Link to Indicators */}

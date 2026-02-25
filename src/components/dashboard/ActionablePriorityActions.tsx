@@ -47,8 +47,8 @@ export const ActionablePriorityActions: React.FC = () => {
     const criticalReds = redIndicators.filter(i => i.critical);
     
     // Financial Protection Actions
-    if (redIndicators.some(i => i.id === 'treasury_tail' || i.id === 'vix_volatility')) {
-      const treasuryRed = redIndicators.find(i => i.id === 'treasury_tail');
+    if (redIndicators.some(i => i.id === 'econ_01_treasury_tail' || i.id === 'market_01_intraday_swing')) {
+      const treasuryRed = redIndicators.find(i => i.id === 'econ_01_treasury_tail' || i.id === 'market_01_intraday_swing');
       actions.push({
         id: 'finance-1',
         category: 'Financial',
@@ -74,7 +74,7 @@ export const ActionablePriorityActions: React.FC = () => {
     }
     
     // Supply Chain Actions
-    if (redIndicators.some(i => i.id === 'taiwan_zone' || i.id === 'hormuz_war_risk')) {
+    if (redIndicators.some(i => i.id === 'taiwan_pla_activity' || i.domain === 'oil_axis')) {
       const urgencyLevel = criticalReds.length > 0 ? 'immediate' : 'today';
       actions.push({
         id: 'supply-1',
@@ -100,7 +100,7 @@ export const ActionablePriorityActions: React.FC = () => {
     }
     
     // Energy/Power Actions
-    if (redIndicators.some(i => i.domain === 'energy') || redIndicators.length >= 2) {
+    if (redIndicators.some(i => i.domain === 'oil_axis' || i.id === 'grid_01_pjm_outages') || redIndicators.length >= 2) {
       actions.push({
         id: 'energy-1',
         category: 'Energy',
@@ -124,7 +124,7 @@ export const ActionablePriorityActions: React.FC = () => {
     }
     
     // Security/Family Actions
-    if (redIndicators.some(i => i.id === 'ice_detention' || i.id === 'global_conflict_index')) {
+    if (redIndicators.some(i => i.id === 'ice_detention_surge' || i.id === 'national_guard_metros' || i.domain === 'global_conflict')) {
       actions.push({
         id: 'security-1',
         category: 'Family Safety',

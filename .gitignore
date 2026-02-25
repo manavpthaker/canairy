@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 venv/
 .env
+.env.production
+.env.staging
+.env.local
 config/secrets.yaml
 /data/
 !/src/data/

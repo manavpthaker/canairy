@@ -18,7 +18,7 @@ import { cn } from '../utils/cn';
 
 type ViewMode = 'grid' | 'list';
 type FilterStatus = 'all' | 'green' | 'amber' | 'red';
-type FilterDomain = 'all' | 'economy' | 'global_conflict' | 'energy' | 'ai_tech' | 'domestic_control';
+type FilterDomain = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'security_infrastructure' | 'oil_axis' | 'ai_window' | 'global_conflict' | 'domestic_control' | 'cult';
 
 export const Indicators: React.FC = () => {
   const { indicators } = useStore();
@@ -68,12 +68,16 @@ export const Indicators: React.FC = () => {
     };
   }, [indicators]);
 
-  const domainLabels = {
-    economy: 'Economic',
+  const domainLabels: Record<string, string> = {
+    economy: 'Economy',
+    jobs_labor: 'Jobs & Labor',
+    rights_governance: 'Rights & Gov',
+    security_infrastructure: 'Security & Infra',
+    oil_axis: 'Oil Axis',
+    ai_window: 'AI Window',
     global_conflict: 'Global Conflict',
-    energy: 'Energy',
-    ai_tech: 'AI/Tech',
-    domestic_control: 'Social',
+    domestic_control: 'Domestic Control',
+    cult: 'Cult Signals',
   };
 
   return (

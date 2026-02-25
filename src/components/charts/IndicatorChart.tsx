@@ -97,19 +97,21 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
   // Get chart type based on indicator
   const getChartType = () => {
     switch (indicator.id) {
-      case 'ice_detention':
+      case 'ice_detention_surge':
         return 'gauge';
-      case 'taiwan_zone':
+      case 'dhs_removal_expansion':
+      case 'nato_high_readiness':
         return 'binary';
-      case 'global_conflict_index':
+      case 'global_conflict_intensity':
         return 'heatmap';
-      case 'vix_volatility':
-      case 'treasury_tail':
+      case 'market_01_intraday_swing':
+      case 'econ_01_treasury_tail':
         return 'area';
-      case 'unemployment_rate':
-      case 'mbridge_settlement':
+      case 'oil_01_russian_brics':
+      case 'oil_02_mbridge_settlements':
+      case 'job_01_strike_days':
         return 'bar';
-      case 'hormuz_war_risk':
+      case 'oil_04_refinery_ratio':
         return 'area-threshold';
       default:
         return 'line';
@@ -412,13 +414,10 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
       },
       scales: {
         y: {
-          max: indicator.id === 'hormuz_war_risk' ? 0.2 : undefined,
+          max: indicator.id === 'oil_04_refinery_ratio' ? 2.0 : undefined,
           ticks: {
             color: '#9CA3AF',
             callback: (value: any) => {
-              if (indicator.id === 'hormuz_war_risk') {
-                return `${(value * 100).toFixed(3)}%`;
-              }
               return `${value} ${indicator.unit}`;
             }
           },

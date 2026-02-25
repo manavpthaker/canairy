@@ -16,15 +16,17 @@ import { Badge } from '../components/core/Badge';
 import { cn } from '../utils/cn';
 
 type NewsFilter = 'all' | 'high' | 'medium' | 'low' | 'indicators';
-type DomainFilter = 'all' | 'economy' | 'global_conflict' | 'energy' | 'ai_tech' | 'domestic_control';
+type DomainFilter = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'security_infrastructure' | 'oil_axis' | 'ai_window' | 'global_conflict' | 'domestic_control' | 'cult';
 
 const indicatorOptions = [
-  { id: 'treasury_tail', name: 'Treasury Tail Risk', icon: TrendingUp },
-  { id: 'taiwan_zone', name: 'Taiwan Exclusion Zone', icon: Shield },
-  { id: 'hormuz_war_risk', name: 'Hormuz War Risk', icon: Zap },
-  { id: 'vix_volatility', name: 'VIX Volatility', icon: TrendingUp },
-  { id: 'ice_detention', name: 'ICE Detention', icon: AlertTriangle },
-  { id: 'global_conflict_index', name: 'Global Conflict', icon: Globe },
+  { id: 'econ_01_treasury_tail', name: '10Y Auction Tail', icon: TrendingUp },
+  { id: 'market_01_intraday_swing', name: '10Y Intraday Swing', icon: TrendingUp },
+  { id: 'taiwan_pla_activity', name: 'Taiwan PLA Incursions', icon: Shield },
+  { id: 'nato_high_readiness', name: 'NATO High Readiness', icon: Globe },
+  { id: 'national_guard_metros', name: 'Guard Deployments', icon: AlertTriangle },
+  { id: 'oil_01_russian_brics', name: 'Russian Crude to BRICS', icon: Zap },
+  { id: 'info_02_deepfake_shocks', name: 'Deepfake Shocks', icon: AlertTriangle },
+  { id: 'ice_detention_surge', name: 'ICE Detention', icon: AlertTriangle },
 ];
 
 export const News: React.FC = () => {
@@ -74,7 +76,7 @@ export const News: React.FC = () => {
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => setShowIndicatorFilter(!showIndicatorFilter)}
-                variant={showIndicatorFilter ? 'primary' : 'outline'}
+                variant={showIndicatorFilter ? 'primary' : 'ghost'}
                 size="sm"
               >
                 <Filter className="w-4 h-4 mr-2" />
@@ -84,7 +86,7 @@ export const News: React.FC = () => {
               {(selectedIndicator || urgencyFilter !== 'all' || domainFilter !== 'all') && (
                 <Button
                   onClick={clearFilters}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                 >
                   Clear Filters
@@ -145,7 +147,7 @@ export const News: React.FC = () => {
               <span className="text-sm text-gray-400">Active filters:</span>
               
               {selectedIndicator && (
-                <Badge variant="primary">
+                <Badge variant="accent">
                   {indicatorOptions.find(i => i.id === selectedIndicator)?.name || selectedIndicator}
                 </Badge>
               )}
@@ -157,7 +159,7 @@ export const News: React.FC = () => {
               )}
               
               {domainFilter !== 'all' && (
-                <Badge variant="blue">
+                <Badge variant="accent">
                   {domainFilter.replace('_', ' ')} Domain
                 </Badge>
               )}
@@ -244,15 +246,15 @@ export const News: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <Button className="w-full justify-start" size="sm" variant="outline">
+                  <Button className="w-full justify-start" size="sm" variant="ghost">
                     <TrendingUp className="w-4 h-4 mr-2" />
                     View Dashboard
                   </Button>
-                  <Button className="w-full justify-start" size="sm" variant="outline">
+                  <Button className="w-full justify-start" size="sm" variant="ghost">
                     <AlertTriangle className="w-4 h-4 mr-2" />
                     Check Alerts
                   </Button>
-                  <Button className="w-full justify-start" size="sm" variant="outline">
+                  <Button className="w-full justify-start" size="sm" variant="ghost">
                     <Shield className="w-4 h-4 mr-2" />
                     Emergency Plan
                   </Button>

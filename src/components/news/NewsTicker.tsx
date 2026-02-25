@@ -103,21 +103,21 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({
       url: "#",
       source: "Wall Street Journal",
       urgency: 'medium',
-      indicator: 'treasury_tail'
+      indicator: 'econ_01_treasury_tail'
     },
     {
       title: "Market volatility increases as investors weigh geopolitical tensions",
       url: "#",
       source: "Bloomberg",
       urgency: 'medium',
-      indicator: 'vix_volatility'
+      indicator: 'market_01_intraday_swing'
     },
     {
       title: "Global supply chain monitoring shows resilient systems despite regional conflicts",
       url: "#",
       source: "Reuters",
       urgency: 'low',
-      indicator: 'global_conflict_index'
+      indicator: 'global_conflict_intensity'
     }
   ];
 
