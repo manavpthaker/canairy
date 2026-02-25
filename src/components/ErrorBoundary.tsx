@@ -152,13 +152,13 @@ export class ErrorBoundary extends Component<Props, State> {
       // Isolated error boundary shows minimal UI
       if (isolate) {
         return (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-600 text-sm">
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p className="text-red-400 text-sm">
               Something went wrong in this section.
             </p>
             <button
               onClick={this.resetErrorBoundary}
-              className="mt-2 text-xs text-red-500 hover:text-red-700 underline"
+              className="mt-2 text-xs text-red-300 hover:text-red-200 underline"
             >
               Try again
             </button>
@@ -166,31 +166,31 @@ export class ErrorBoundary extends Component<Props, State> {
         );
       }
 
-      // Full error boundary UI
+      // Full error boundary UI — dark theme matching app
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] px-4">
           <div className="max-w-md w-full">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center justify-center w-16 h-16 mx-auto bg-red-100 rounded-full">
-                <AlertTriangle className="w-8 h-8 text-red-600" />
+            <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-8">
+              <div className="flex items-center justify-center w-16 h-16 mx-auto bg-red-500/10 rounded-full border border-red-500/20">
+                <AlertTriangle className="w-8 h-8 text-red-400" />
               </div>
-              
-              <h1 className="mt-4 text-2xl font-bold text-center text-gray-900">
-                Oops! Something went wrong
+
+              <h1 className="mt-4 text-2xl font-bold text-center text-white">
+                Something went wrong
               </h1>
-              
-              <p className="mt-2 text-center text-gray-600">
+
+              <p className="mt-2 text-center text-gray-400">
                 {errorCount > 3
                   ? "We're experiencing persistent issues. Please try again later."
                   : "An unexpected error occurred. The issue has been reported."}
               </p>
 
               {import.meta.env.DEV && error && (
-                <details className="mt-4 p-4 bg-gray-100 rounded-lg">
-                  <summary className="cursor-pointer text-sm font-medium text-gray-700">
+                <details className="mt-4 p-4 bg-[#0A0A0A] rounded-lg border border-[#1A1A1A]">
+                  <summary className="cursor-pointer text-sm font-medium text-gray-300">
                     Error Details (Development Only)
                   </summary>
-                  <pre className="mt-2 text-xs text-gray-600 overflow-auto">
+                  <pre className="mt-2 text-xs text-gray-500 overflow-auto max-h-48">
                     {error.message}
                     {'\n\n'}
                     {error.stack}
@@ -201,15 +201,15 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="mt-6 space-y-3">
                 <button
                   onClick={this.resetErrorBoundary}
-                  className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="w-full flex items-center justify-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Try Again
                 </button>
-                
+
                 <button
                   onClick={this.handleGoHome}
-                  className="w-full flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="w-full flex items-center justify-center px-4 py-2.5 bg-[#1A1A1A] text-gray-300 rounded-xl hover:bg-[#222222] transition-colors font-medium"
                 >
                   <Home className="w-4 h-4 mr-2" />
                   Go to Dashboard

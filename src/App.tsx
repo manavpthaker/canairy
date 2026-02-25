@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useStore } from './store';
 import { wsService } from './services/api';
 import { PageSkeleton } from './components/LoadingSkeleton';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy-loaded pages for code splitting
 const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
@@ -53,24 +54,26 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <Suspense fallback={<PageSkeleton />}>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/indicators" element={<Indicators />} />
-          <Route path="/indicator/:id" element={<IndicatorDetails />} />
-          <Route path="/news" element={<News />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/alerts" element={<Alerts />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/checklist" element={<FamilyChecklist />} />
-          <Route path="/playbook" element={<ResiliencePlaybook />} />
-          <Route path="/family" element={<CanairyDashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <Suspense fallback={<PageSkeleton />}>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/indicators" element={<Indicators />} />
+            <Route path="/indicator/:id" element={<IndicatorDetails />} />
+            <Route path="/news" element={<News />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/alerts" element={<Alerts />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/checklist" element={<FamilyChecklist />} />
+            <Route path="/playbook" element={<ResiliencePlaybook />} />
+            <Route path="/family" element={<CanairyDashboard />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </Router>
+    </ErrorBoundary>
   );
 }
 
