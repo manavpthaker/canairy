@@ -31,7 +31,7 @@ export const IndicatorDetails: React.FC = () => {
     return (
       <div className="min-h-screen bg-canairy-neutral p-6 flex items-center justify-center">
         <div className="text-center">
-          <CanairyMascot size="md" mood="confused" />
+          <CanairyMascot size="md" mood="thinking" />
           <h1 className="text-2xl font-bold text-canairy-charcoal mt-4">Indicator Not Found</h1>
           <p className="text-canairy-charcoal-light">Loading or invalid indicator ID: {id}</p>
         </div>

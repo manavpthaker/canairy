@@ -138,7 +138,7 @@ export class WebSocketService {
   private reconnectInterval = 5000;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 3; // Reduced from 10
-  private listeners: Map<string, Set<Function>> = new Map();
+  private listeners: Map<string, Set<(...args: unknown[]) => void>> = new Map();
   private enabled = !USE_MOCK_DATA; // Disable WebSocket when using mock data
 
   connect(url: string = 'ws://localhost:5555/ws') {
@@ -204,14 +204,14 @@ export class WebSocketService {
     }
   }
 
-  on(event: string, callback: Function) {
+  on(event: string, callback: (...args: unknown[]) => void) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
     this.listeners.get(event)!.add(callback);
   }
 
-  off(event: string, callback: Function) {
+  off(event: string, callback: (...args: unknown[]) => void) {
     const callbacks = this.listeners.get(event);
     if (callbacks) {
       callbacks.delete(callback);

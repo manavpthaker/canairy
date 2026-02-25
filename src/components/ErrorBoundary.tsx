@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
     this.errorCounter++;
     
     // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.error('Error Boundary caught an error:', error, errorInfo);
     }
 
@@ -106,7 +106,7 @@ export class ErrorBoundary extends Component<Props, State> {
     };
 
     // In production, send to error tracking service
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       // Example: Send to your error tracking endpoint
       fetch('/api/errors', {
         method: 'POST',
@@ -185,7 +185,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   : "An unexpected error occurred. The issue has been reported."}
               </p>
 
-              {process.env.NODE_ENV === 'development' && error && (
+              {import.meta.env.DEV && error && (
                 <details className="mt-4 p-4 bg-gray-100 rounded-lg">
                   <summary className="cursor-pointer text-sm font-medium text-gray-700">
                     Error Details (Development Only)
