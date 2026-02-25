@@ -60,6 +60,8 @@ export const Dashboard: React.FC = () => {
     { path: '/news', icon: Globe, label: 'News' },
     { path: '/alerts', icon: Bell, label: 'Alerts' },
     { path: '/reports', icon: Download, label: 'Reports' },
+    { path: '/playbook', icon: Shield, label: 'Playbook' },
+    { path: '/settings', icon: Settings, label: 'Settings' },
   ];
 
 
@@ -70,6 +72,11 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex relative">
+      {/* Skip to Content */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
       {/* Mobile Sidebar Backdrop */}
       <AnimatePresence>
         {showMobileSidebar && (
@@ -84,17 +91,21 @@ export const Dashboard: React.FC = () => {
       </AnimatePresence>
 
       {/* Sidebar - Desktop always visible, Mobile slides in */}
-      <aside className={cn(
-        "w-64 bg-[#111111] border-r border-[#1A1A1A] fixed h-full z-40 transition-transform duration-300",
-        "lg:translate-x-0", // Always visible on desktop
-        showMobileSidebar ? "translate-x-0" : "-translate-x-full" // Slide in/out on mobile
-      )}>
+      <aside
+        aria-label="Main navigation"
+        className={cn(
+          "w-64 bg-[#111111] border-r border-[#1A1A1A] fixed h-full z-40 transition-transform duration-300",
+          "lg:translate-x-0",
+          showMobileSidebar ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
         <div className="p-6">
           {/* Logo with mobile close button */}
           <div className="mb-8 flex items-center justify-between">
             <CanaryLogo size="md" showText={true} />
             <button
               onClick={() => setShowMobileSidebar(false)}
+              aria-label="Close navigation menu"
               className="p-2 text-gray-400 hover:text-white lg:hidden"
             >
               <X className="w-5 h-5" />
@@ -102,7 +113,7 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="space-y-1">
+          <nav aria-label="Primary navigation" className="space-y-1">
             {sidebarItems.map((item) => (
               <Link
                 key={item.path}
@@ -133,7 +144,7 @@ export const Dashboard: React.FC = () => {
       </aside>
 
       {/* Main content - Responsive margin */}
-      <main className="flex-1 lg:ml-64">
+      <main id="main-content" className="flex-1 lg:ml-64">
         {/* Header */}
         <header className="bg-[#111111] border-b border-[#1A1A1A] sticky top-0 z-10">
           <div className="px-4 sm:px-6 lg:px-12 py-4">
@@ -141,6 +152,7 @@ export const Dashboard: React.FC = () => {
               {/* Mobile menu button */}
               <button
                 onClick={() => setShowMobileSidebar(true)}
+                aria-label="Open navigation menu"
                 className="p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors lg:hidden"
               >
                 <Menu className="w-5 h-5" />
