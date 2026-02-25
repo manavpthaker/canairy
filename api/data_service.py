@@ -55,16 +55,20 @@ _TreasuryCollector = _load_collector("treasury.py", "TreasuryCollector")
 _JoblessClaimsCollector = _load_collector("jobless_claims.py", "JoblessClaimsCollector")
 _GDPGrowthCollector = _load_collector("gdp_growth.py", "GDPGrowthCollector")
 _MarketVolatilityCollector = _load_collector("market_volatility.py", "MarketVolatilityCollector")
+_TreasuryAuctionCollector = _load_collector("treasury_auctions.py", "TreasuryAuctionCollector")
+_NWSAlertsCollector = _load_collector("nws_alerts.py", "NWSAlertsCollector")
 
 # ─── ID mapping: collector key → frontend indicator ID ───
 COLLECTOR_TO_FRONTEND_ID = {
-    'cisa_cyber':        'cyber_01_cisa_kev',
-    'who_disease':       'bio_01_h2h_countries',
-    'grocery_cpi':       'econ_02_grocery_cpi',
-    'treasury':          'econ_01_treasury_tail',
-    'jobless_claims':    'job_01_strike_days',  # reuse slot for now
-    'gdp_growth':        'green_g1_gdp_rates',
-    'market_volatility': 'market_01_intraday_swing',
+    'cisa_cyber':         'cyber_01_cisa_kev',
+    'who_disease':        'bio_01_h2h_countries',
+    'grocery_cpi':        'econ_02_grocery_cpi',
+    'treasury':           'econ_01_treasury_tail',
+    'treasury_auctions':  'econ_01_treasury_tail',
+    'jobless_claims':     'job_01_strike_days',
+    'gdp_growth':         'green_g1_gdp_rates',
+    'market_volatility':  'market_01_intraday_swing',
+    'nws_alerts':         'grid_01_pjm_outages',  # weather → infrastructure slot
 }
 
 # ─── Frontend indicator metadata (matches mockData.ts shape) ───
@@ -139,6 +143,16 @@ INDICATOR_META: Dict[str, Dict[str, Any]] = {
         'dataSource': 'FRED API',
         'updateFrequency': 'Weekly',
     },
+    'grid_01_pjm_outages': {
+        'name': 'Severe Weather Alerts',
+        'domain': 'security_infrastructure',
+        'description': 'Active extreme + severe weather alerts nationwide (NWS)',
+        'unit': 'alerts',
+        'thresholds': {'green': {'max': 2}, 'amber': {'min': 3, 'max': 8}, 'red': {'min': 8}, 'threshold_amber': 3, 'threshold_red': 8},
+        'critical': False,
+        'dataSource': 'NWS API',
+        'updateFrequency': 'Real-time',
+    },
 }
 
 
@@ -192,6 +206,8 @@ class DataService:
             'jobless_claims': _JoblessClaimsCollector,
             'gdp_growth': _GDPGrowthCollector,
             'market_volatility': _MarketVolatilityCollector,
+            'treasury_auctions': _TreasuryAuctionCollector,
+            'nws_alerts': _NWSAlertsCollector,
         }
 
         for key, cls in candidate_collectors.items():
@@ -262,13 +278,17 @@ class DataService:
             return None
 
     def collect_all(self) -> List[Dict[str, Any]]:
-        """Collect all indicators that have registered collectors."""
-        results = []
+        """Collect all indicators that have registered collectors.
+
+        When multiple collectors map to the same frontend ID,
+        the last one wins (allows treasury_auctions to override treasury).
+        """
+        seen: Dict[str, Dict[str, Any]] = {}
         for key in self._collectors:
             indicator = self.collect_indicator(key)
             if indicator:
-                results.append(indicator)
-        return results
+                seen[indicator['id']] = indicator
+        return list(seen.values())
 
     def get_live_ids(self) -> List[str]:
         """Return frontend IDs that have live collectors."""
