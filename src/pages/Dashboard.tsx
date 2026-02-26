@@ -211,36 +211,59 @@ export const Dashboard: React.FC = () => {
             <HeroStatusCard />
           </ErrorBoundary>
 
-          {/* 3. Actionable Priority Actions — moved up for action-first UX */}
+          {/* 3. What should I do? — Priority Actions */}
           <ErrorBoundary isolate>
-            <div className="mb-8">
+            <section className="mb-8">
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <span className="text-gray-500">?</span> What should I do?
+              </h2>
               <ActionablePriorityActions />
-            </div>
+            </section>
           </ErrorBoundary>
 
-          {/* 4. Domain Breakdown + Critical Indicators side by side */}
+          {/* 4. Where are the risks? — Domain Breakdown + What needs attention? — Critical Indicators */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
             <ErrorBoundary isolate>
-              <DomainBreakdown />
+              <section>
+                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <span className="text-gray-500">?</span> Where are the risks?
+                </h2>
+                <DomainBreakdown />
+              </section>
             </ErrorBoundary>
             <ErrorBoundary isolate>
-              <CriticalIndicators
-                indicators={indicators}
-                onIndicatorClick={(indicator) => setSelectedIndicator(indicator)}
-              />
+              <section>
+                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <span className="text-gray-500">?</span> What needs attention?
+                </h2>
+                <CriticalIndicators
+                  indicators={indicators}
+                  onIndicatorClick={(indicator) => setSelectedIndicator(indicator)}
+                  maxItems={5}
+                  hideGreen={true}
+                />
+              </section>
             </ErrorBoundary>
           </div>
 
-          {/* 5. Phase Detail — current phase actions and triggers */}
+          {/* 5. What's my current phase? — Phase Detail */}
           <ErrorBoundary isolate>
-            <PhaseDetailPanel />
+            <section className="mb-8">
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <span className="text-gray-500">?</span> What's my current phase?
+              </h2>
+              <PhaseDetailPanel />
+            </section>
           </ErrorBoundary>
 
-          {/* 6. News Ticker — moved to bottom */}
+          {/* 6. What's happening? — News Ticker */}
           <ErrorBoundary isolate>
-            <div className="mb-8">
+            <section className="mb-8">
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <span className="text-gray-500">?</span> What's happening?
+              </h2>
               <NewsTicker maxItems={5} />
-            </div>
+            </section>
           </ErrorBoundary>
 
 

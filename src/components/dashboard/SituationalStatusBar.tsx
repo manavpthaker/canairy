@@ -12,10 +12,11 @@ import {
   ChevronDown,
   Timer,
   Database,
-  Wifi
+  Radio
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useStore } from '../../store';
+import { LiveClock } from './LiveClock';
 
 type ThreatLevel = 'normal' | 'elevated' | 'high' | 'critical';
 
@@ -373,23 +374,52 @@ export const SituationalStatusBar: React.FC = () => {
         </div>
 
         {/* Right Side - System Status */}
-        <div className="flex items-center gap-2 text-sm">
-          {dataSource.type === 'mock' ? (
-            <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 border border-amber-500/30 rounded text-amber-400">
-              <Database className="w-4 h-4" />
-              <span>Demo Mode</span>
-            </div>
-          ) : dataSource.type === 'partial' ? (
-            <div className="flex items-center gap-1 text-amber-400" title={`${dataSource.live} live, ${dataSource.mock} simulated`}>
-              <Wifi className="w-4 h-4" />
-              <span>Partial Live</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-green-400">
-              <Wifi className="w-4 h-4" />
-              <span>Live Data</span>
-            </div>
-          )}
+        <div className="flex items-center gap-3 text-sm">
+          {/* 24-Hour Clock */}
+          <LiveClock className="text-gray-400" />
+
+          {/* Live Pulse Indicator */}
+          <div className="flex items-center gap-2">
+            {dataSource.type === 'mock' ? (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-500/10 border border-amber-500/30 rounded text-amber-400">
+                <Database className="w-3.5 h-3.5" />
+                <span className="text-xs font-medium">DEMO</span>
+              </div>
+            ) : dataSource.type === 'partial' ? (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-500/10 border border-amber-500/30 rounded text-amber-400" title={`${dataSource.live} live, ${dataSource.mock} simulated`}>
+                <motion.div
+                  className="w-2 h-2 bg-amber-400 rounded-full"
+                  animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <span className="text-xs font-medium">PARTIAL</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 border border-green-500/30 rounded text-green-400">
+                <motion.div
+                  className="w-2 h-2 bg-green-400 rounded-full"
+                  animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                />
+                <span className="text-xs font-medium">LIVE</span>
+              </div>
+            )}
+          </div>
+
+          {/* Sync Heartbeat */}
+          <motion.div
+            className="flex items-center gap-1.5 text-gray-500"
+            title={`Last sync: ${dataFreshness.text}`}
+          >
+            <motion.div
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 1, repeat: Infinity, repeatDelay: 59 }}
+            >
+              <Radio className="w-3.5 h-3.5" />
+            </motion.div>
+            <span className="text-xs">{dataFreshness.text}</span>
+          </motion.div>
+
           {threatLevel !== 'normal' && (
             <motion.div
               className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 border border-amber-500/30 rounded text-amber-400 text-xs"

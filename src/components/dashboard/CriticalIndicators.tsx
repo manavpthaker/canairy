@@ -20,11 +20,15 @@ import { getIndicatorDescription } from '../../data/indicatorDescriptions';
 interface CriticalIndicatorsProps {
   indicators: IndicatorData[];
   onIndicatorClick?: (indicator: IndicatorData) => void;
+  maxItems?: number;
+  hideGreen?: boolean;
 }
 
 export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
   indicators,
-  onIndicatorClick
+  onIndicatorClick,
+  maxItems = 5,
+  hideGreen = false
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -34,16 +38,24 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
     const redIndicators = indicators.filter(i => i.status.level === 'red');
     const criticalReds = redIndicators.filter(i => i.critical);
     const normalReds = redIndicators.filter(i => !i.critical);
-    
+
     // Then get amber indicators
     const amberIndicators = indicators.filter(i => i.status.level === 'amber');
-    
-    // Combine in priority order
-    return [
+
+    // Build priority list: critical reds first, then regular reds, then amber
+    const priorityList = [
       ...criticalReds,
       ...normalReds,
-      ...amberIndicators.slice(0, 5 - redIndicators.length)
-    ].slice(0, 5);
+      ...amberIndicators
+    ];
+
+    // If hideGreen is false and we have room, add green indicators
+    if (!hideGreen) {
+      const greenIndicators = indicators.filter(i => i.status.level === 'green');
+      priorityList.push(...greenIndicators);
+    }
+
+    return priorityList.slice(0, maxItems);
   };
 
   const criticalIndicators = getCriticalIndicators();
