@@ -14,7 +14,7 @@ import {
   RadialLinearScale,
   TimeScale,
 } from 'chart.js';
-import { Line, Bar, Doughnut, Radar } from 'react-chartjs-2';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { DataPoint, IndicatorData } from '../../types';
 import { format } from 'date-fns';
 import 'chartjs-adapter-date-fns';

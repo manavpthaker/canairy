@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Minus, 
-  AlertCircle, 
-  Activity, 
+import { useNavigate } from 'react-router-dom';
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
   Clock,
   Info,
-  ChevronRight,
   AlertTriangle,
   Lightbulb,
-  BarChart3
+  BarChart3,
+  ExternalLink
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../core/Card';
 import { Badge, StatusBadge } from '../core/Badge';
@@ -37,8 +36,14 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
   onClick,
   showInsights = true,
 }) => {
-  const { status, name, domain, unit, dataSource, critical, greenFlag } = indicator;
+  const navigate = useNavigate();
+  const { status, name, domain, unit, dataSource, critical, greenFlag, description } = indicator;
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('24h');
+
+  const handleViewDetails = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/indicator/${indicator.id}`);
+  };
   
   // Generate historical data if not provided
   useEffect(() => {
@@ -220,6 +225,11 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
                   {dataSource}
                 </span>
               </div>
+              {description && (
+                <p className="text-xs text-bmb-secondary mt-2 line-clamp-1">
+                  {description}
+                </p>
+              )}
             </div>
             <StatusBadge 
               level={status.level} 
@@ -276,12 +286,9 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
 
           {/* Chart with time range selector */}
           <div className="mb-3">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <div className="flex items-center gap-1">
-                <BarChart3 className="w-3 h-3 text-bmb-secondary" />
-                <span className="text-xs text-bmb-secondary">Trend</span>
-              </div>
-              <div className="flex gap-1">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-xs text-bmb-secondary font-medium">History</span>
+              <div className="flex bg-bmb-dark/50 rounded-lg p-0.5">
                 {(['24h', '7d', '30d'] as const).map((range) => (
                   <button
                     key={range}
@@ -290,10 +297,10 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
                       setTimeRange(range);
                     }}
                     className={cn(
-                      'px-2 py-0.5 text-xs rounded transition-colors',
-                      timeRange === range 
-                        ? 'bg-bmb-accent text-white' 
-                        : 'text-bmb-secondary hover:text-white hover:bg-bmb-dark'
+                      'px-3 py-1 text-xs font-medium rounded-md transition-all',
+                      timeRange === range
+                        ? 'bg-white text-bmb-dark shadow-sm'
+                        : 'text-bmb-secondary hover:text-white'
                     )}
                   >
                     {range}
@@ -331,10 +338,13 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
                 {formatDistanceToNow(new Date(status.lastUpdate), { addSuffix: true })}
               </span>
             </div>
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={handleViewDetails}
+              className="flex items-center gap-1 text-bmb-accent hover:text-white transition-colors"
+            >
               <span>View details</span>
-              <ChevronRight className="w-3 h-3" />
-            </div>
+              <ExternalLink className="w-3 h-3" />
+            </button>
           </div>
         </CardContent>
 

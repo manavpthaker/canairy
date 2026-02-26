@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, Minus, AlertCircle, Activity, Clock } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Activity, Clock } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../core/Card';
 import { Badge, StatusBadge } from '../core/Badge';
 import { cn } from '../../utils/cn';

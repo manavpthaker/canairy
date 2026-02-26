@@ -1,18 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { 
+import {
   Filter,
   Search,
   LayoutGrid,
   List,
-  ChevronDown,
   X
 } from 'lucide-react';
 import { useStore } from '../store';
 import { IndicatorData } from '../types';
 import { EnhancedIndicatorCard } from '../components/indicators/EnhancedIndicatorCard';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
-import { Button } from '../components/core/Button';
 import { Badge } from '../components/core/Badge';
 import { cn } from '../utils/cn';
 

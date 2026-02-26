@@ -6,7 +6,6 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle2,
-  AlertTriangle,
   Zap,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../core/Card';

@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../core/Card';
 import { Badge } from '../core/Badge';
-import { cn } from '../../utils/cn';
 import { newsIntelligence } from '../../services/newsIntelligence';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -93,14 +92,14 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
 
   const getCredibilityBadge = (credibility?: { score: number; bias: string }) => {
     if (!credibility) return null;
-    
-    const { score, bias } = credibility;
+
+    const { score } = credibility;
     let variant: 'green' | 'amber' | 'red' = 'green';
-    
+
     if (score >= 85) variant = 'green';
     else if (score >= 70) variant = 'amber';
     else variant = 'red';
-    
+
     return (
       <Badge variant={variant} size="sm">
         {score}/100

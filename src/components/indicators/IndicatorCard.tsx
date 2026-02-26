@@ -18,7 +18,7 @@ export const IndicatorCard: React.FC<IndicatorCardProps> = ({
   onClick,
   compact = false,
 }) => {
-  const { status, name, domain, unit, dataSource, critical, greenFlag } = indicator;
+  const { status, name, domain, unit, critical, greenFlag } = indicator;
   
   const getTrendIcon = () => {
     if (!status.trend) return <Minus className="w-4 h-4" />;

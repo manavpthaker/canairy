@@ -121,7 +121,7 @@ export class ErrorBoundary extends Component<Props, State> {
       clearTimeout(this.resetTimeoutId);
       this.resetTimeoutId = null;
     }
-    
+
     this.errorCounter = 0;
     this.setState({
       hasError: false,
@@ -129,10 +129,6 @@ export class ErrorBoundary extends Component<Props, State> {
       errorInfo: null,
       errorCount: 0
     });
-  };
-
-  private handleReload = (): void => {
-    window.location.reload();
   };
 
   private handleGoHome = (): void => {

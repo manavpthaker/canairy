@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Newspaper, 
-  ExternalLink, 
-  Clock, 
-  TrendingUp,
+import {
+  Newspaper,
+  ExternalLink,
+  Clock,
   AlertTriangle,
   X,
   RefreshCw,

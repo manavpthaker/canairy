@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
-import { IndicatorData, HOPIScore, SystemStatus, Phase, AlertLevel } from '../types';
+import { IndicatorData, HOPIScore, SystemStatus, Phase } from '../types';
 import { apiService } from '../services/api';
 
 interface AppState {
