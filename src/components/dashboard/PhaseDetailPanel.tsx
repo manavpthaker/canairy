@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Shield,
@@ -14,10 +14,36 @@ import { cn } from '../../utils/cn';
 import { useStore } from '../../store';
 import { PHASES, getPhaseByNumber, CRITICAL_JUMP_RULES } from '../../data/phaseData';
 
+const STORAGE_KEY = 'canairy_phase_actions';
+
 export const PhaseDetailPanel: React.FC = () => {
   const { hopiScore, indicators } = useStore();
   const [showAllPhases, setShowAllPhases] = useState(false);
-  const [completedActions, setCompletedActions] = useState<Set<string>>(new Set());
+  const [completedActions, setCompletedActions] = useState<Set<string>>(() => {
+    // Load from localStorage on initial render
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return new Set(parsed.items || []);
+      }
+    } catch {
+      // Ignore parse errors
+    }
+    return new Set();
+  });
+
+  // Save to localStorage whenever completedActions changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        items: Array.from(completedActions),
+        lastUpdated: new Date().toISOString()
+      }));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [completedActions]);
 
   const currentPhaseNum = hopiScore?.phase ?? 0;
   const currentPhase = getPhaseByNumber(currentPhaseNum);
