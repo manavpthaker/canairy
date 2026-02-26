@@ -43,9 +43,14 @@ export const ProfessionalIndicatorCard: React.FC<IndicatorCardProps> = ({
     hover: { y: -2 },
   };
 
-  const sparklineData = Array.from({ length: 20 }, () => 
-    Math.random() * 40 + (status.level === 'green' ? 20 : status.level === 'amber' ? 40 : 60)
-  );
+  // Generate deterministic sparkline from indicator id hash
+  const sparklineData = Array.from({ length: 20 }, (_, i) => {
+    // Use indicator id and index for deterministic values
+    const hash = indicator.id.split('').reduce((acc, char, j) => acc + char.charCodeAt(0) * (j + 1), 0);
+    const baseValue = status.level === 'green' ? 30 : status.level === 'amber' ? 50 : 70;
+    const variance = ((hash * (i + 1)) % 30) - 15; // -15 to +15 variance
+    return Math.max(10, Math.min(90, baseValue + variance));
+  });
 
   return (
     <motion.div
@@ -120,8 +125,7 @@ export const ProfessionalIndicatorCard: React.FC<IndicatorCardProps> = ({
               <div className={cn('flex items-center gap-1', getTrendColor())}>
                 {getTrendIcon()}
                 <span className="text-xs font-medium">
-                  {status.trend === 'up' ? '+' : '-'}
-                  {Math.abs(Math.random() * 10).toFixed(1)}%
+                  {status.trend === 'up' ? '↑' : '↓'}
                 </span>
               </div>
             )}

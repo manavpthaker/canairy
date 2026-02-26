@@ -15,9 +15,10 @@ import {
   TimeScale,
 } from 'chart.js';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
-import { DataPoint, IndicatorData } from '../../types';
+import { IndicatorData } from '../../types';
 import { format } from 'date-fns';
 import 'chartjs-adapter-date-fns';
+import { generateHistoricalData as generateSeededHistoricalData } from '../../utils/historicalDataGenerator';
 
 // Register Chart.js components
 ChartJS.register(
@@ -58,41 +59,8 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
     }
   };
 
-  // Generate historical data if not provided
-  const generateHistoricalData = (): DataPoint[] => {
-    const now = new Date();
-    const points: DataPoint[] = [];
-    let dataPoints = 24; // Default for 24h
-
-    switch (timeRange) {
-      case '7d': dataPoints = 7 * 24; break;
-      case '30d': dataPoints = 30; break;
-      case '90d': dataPoints = 90; break;
-    }
-
-    const currentValue = typeof indicator.status.value === 'number' ? indicator.status.value : 50;
-    const volatility = indicator.domain === 'economy' ? 0.1 : 0.05;
-
-    for (let i = dataPoints; i >= 0; i--) {
-      const timestamp = new Date(now.getTime() - i * (timeRange === '24h' ? 3600000 : 86400000));
-      const randomChange = (Math.random() - 0.5) * volatility * currentValue;
-      const value = Math.max(0, currentValue + randomChange * (i / dataPoints));
-      
-      let level: 'green' | 'amber' | 'red' = 'green';
-      // Use optional chaining for safety
-      const redThreshold = indicator.thresholds?.threshold_red;
-      const amberThreshold = indicator.thresholds?.threshold_amber;
-      
-      if (redThreshold !== undefined && value >= redThreshold) level = 'red';
-      else if (amberThreshold !== undefined && value >= amberThreshold) level = 'amber';
-
-      points.push({ timestamp: timestamp.toISOString(), value, level });
-    }
-
-    return points;
-  };
-
-  const historicalData = indicator.history || generateHistoricalData();
+  // Use seeded historical data generator for deterministic results
+  const historicalData = indicator.history || generateSeededHistoricalData(indicator, timeRange);
 
   // Get chart type based on indicator
   const getChartType = () => {

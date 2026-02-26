@@ -1,15 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, ChevronDown, ChevronUp, Check, Clock } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useStore, selectTightenUpActive } from '../../store';
 import { TIGHTEN_UP_CHECKLIST } from '../../data/phaseData';
 
+const STORAGE_KEY = 'canairy_tightenup_checklist';
+
 export const TightenUpBanner: React.FC = () => {
   const tightenUpActive = useStore(selectTightenUpActive);
   const { indicators } = useStore();
   const [expanded, setExpanded] = useState(false);
-  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [completed, setCompleted] = useState<Set<string>>(() => {
+    // Load from localStorage on initial render
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return new Set(parsed.items || []);
+      }
+    } catch {
+      // Ignore parse errors
+    }
+    return new Set();
+  });
+
+  // Save to localStorage whenever completed changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        items: Array.from(completed),
+        lastUpdated: new Date().toISOString()
+      }));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [completed]);
 
   if (!tightenUpActive) return null;
 

@@ -288,49 +288,226 @@ export class NewsIntelligenceService {
   }
 
   private getMockNewsForIndicator(indicatorId: string, limit: number): NewsArticle[] {
+    const now = Date.now();
     const mockNews: Record<string, NewsArticle[]> = {
-      treasury_tail: [
+      econ_01_treasury_tail: [
         {
           title: "Federal Reserve Signals Cautious Approach to Rate Policy",
-          description: "Treasury auction shows mixed demand as investors weigh inflation concerns against growth outlook.",
-          url: "#",
+          description: "Treasury auction shows mixed demand as investors weigh inflation concerns against growth outlook. The 10-year auction tail widened to 3.5 basis points.",
+          url: "https://www.wsj.com",
           source: { id: "wsj", name: "Wall Street Journal" },
-          publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          publishedAt: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
           relevance_score: 9,
           source_credibility: this.sourceCredibility.wsj,
-          indicator_relevance: ["treasury_tail"]
-        }
-      ],
-      taiwan_zone: [
+          indicator_relevance: ["econ_01_treasury_tail"]
+        },
         {
-          title: "China Conducts Military Exercises Near Taiwan Strait",
-          description: "Latest round of exercises raises concerns about semiconductor supply chain stability.",
-          url: "#",
-          source: { id: "reuters", name: "Reuters" },
-          publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          content: "Demo content",
-          relevance_score: 10,
-          source_credibility: this.sourceCredibility.reuters,
-          indicator_relevance: ["taiwan_zone"]
-        }
-      ],
-      vix_volatility: [
-        {
-          title: "Market Volatility Spikes on Economic Uncertainty",
-          description: "VIX jumps as investors brace for potential market turbulence amid mixed economic signals.",
-          url: "#",
+          title: "Bond Markets Flash Warning Signs as Auction Demand Weakens",
+          description: "Weak demand at Treasury auctions raises concerns about investor appetite for U.S. debt.",
+          url: "https://www.bloomberg.com",
           source: { id: "bloomberg", name: "Bloomberg" },
-          publishedAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+          publishedAt: new Date(now - 8 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
           relevance_score: 8,
           source_credibility: this.sourceCredibility.bloomberg,
-          indicator_relevance: ["vix_volatility"]
+          indicator_relevance: ["econ_01_treasury_tail"]
+        }
+      ],
+      taiwan_pla_activity: [
+        {
+          title: "China Conducts Military Exercises Near Taiwan Strait",
+          description: "PLA Air Force sends 28 aircraft into Taiwan's ADIZ, marking largest incursion this month. Semiconductor supply chain concerns rise.",
+          url: "https://www.reuters.com",
+          source: { id: "reuters", name: "Reuters" },
+          publishedAt: new Date(now - 4 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 10,
+          source_credibility: this.sourceCredibility.reuters,
+          indicator_relevance: ["taiwan_pla_activity"]
+        },
+        {
+          title: "TSMC Contingency Plans Amid Rising Cross-Strait Tensions",
+          description: "World's largest chipmaker reviews supply chain resilience as military activity increases in the region.",
+          url: "https://www.ft.com",
+          source: { id: "ft", name: "Financial Times" },
+          publishedAt: new Date(now - 12 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 9,
+          source_credibility: this.sourceCredibility.ft,
+          indicator_relevance: ["taiwan_pla_activity"]
+        }
+      ],
+      market_01_intraday_swing: [
+        {
+          title: "Market Volatility Spikes on Economic Uncertainty",
+          description: "10-year Treasury yields swing 15 basis points intraday as investors brace for Fed announcement.",
+          url: "https://www.bloomberg.com",
+          source: { id: "bloomberg", name: "Bloomberg" },
+          publishedAt: new Date(now - 1 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 8,
+          source_credibility: this.sourceCredibility.bloomberg,
+          indicator_relevance: ["market_01_intraday_swing"]
+        },
+        {
+          title: "Wild Swings in Bond Market Raise Systemic Risk Concerns",
+          description: "Treasury market liquidity deteriorates amid elevated volatility, regulators monitoring closely.",
+          url: "https://www.wsj.com",
+          source: { id: "wsj", name: "Wall Street Journal" },
+          publishedAt: new Date(now - 6 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 9,
+          source_credibility: this.sourceCredibility.wsj,
+          indicator_relevance: ["market_01_intraday_swing"]
+        }
+      ],
+      oil_01_russian_brics: [
+        {
+          title: "Russia Expands Oil Trade with BRICS Nations, Bypassing Dollar",
+          description: "Indian refiners increasingly pay for Russian crude in non-dollar currencies as sanctions reshape global oil trade.",
+          url: "https://www.reuters.com",
+          source: { id: "reuters", name: "Reuters" },
+          publishedAt: new Date(now - 5 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 9,
+          source_credibility: this.sourceCredibility.reuters,
+          indicator_relevance: ["oil_01_russian_brics"]
+        },
+        {
+          title: "De-Dollarization Accelerates in Energy Markets",
+          description: "BRICS nations settle growing share of oil trades in local currencies, challenging petrodollar system.",
+          url: "https://www.ft.com",
+          source: { id: "ft", name: "Financial Times" },
+          publishedAt: new Date(now - 18 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 8,
+          source_credibility: this.sourceCredibility.ft,
+          indicator_relevance: ["oil_01_russian_brics"]
+        }
+      ],
+      oil_02_mbridge_settlements: [
+        {
+          title: "mBridge CBDC Platform Processes Record Gulf Oil Settlement",
+          description: "Central bank digital currency pilot sees surge in cross-border oil trade settlements, bypassing SWIFT.",
+          url: "https://www.bloomberg.com",
+          source: { id: "bloomberg", name: "Bloomberg" },
+          publishedAt: new Date(now - 10 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 9,
+          source_credibility: this.sourceCredibility.bloomberg,
+          indicator_relevance: ["oil_02_mbridge_settlements"]
+        }
+      ],
+      ice_detention_surge: [
+        {
+          title: "ICE Detention Facilities Near Capacity Amid Enforcement Surge",
+          description: "Immigration detention population reaches 45,000 as enhanced interior enforcement continues.",
+          url: "https://www.reuters.com",
+          source: { id: "reuters", name: "Reuters" },
+          publishedAt: new Date(now - 3 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 8,
+          source_credibility: this.sourceCredibility.reuters,
+          indicator_relevance: ["ice_detention_surge"]
+        }
+      ],
+      nato_high_readiness: [
+        {
+          title: "NATO Activates High-Readiness Forces Amid Eastern European Tensions",
+          description: "Alliance places 300,000 troops on heightened alert status, largest activation since Cold War.",
+          url: "https://www.bbc.com",
+          source: { id: "bbc-news", name: "BBC News" },
+          publishedAt: new Date(now - 7 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 10,
+          source_credibility: this.sourceCredibility['bbc-news'],
+          indicator_relevance: ["nato_high_readiness"]
+        }
+      ],
+      global_conflict_intensity: [
+        {
+          title: "Global Armed Conflicts Reach Highest Level Since World War II",
+          description: "ACLED data shows 56 active conflicts worldwide, with escalation across multiple regions.",
+          url: "https://www.reuters.com",
+          source: { id: "reuters", name: "Reuters" },
+          publishedAt: new Date(now - 14 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 9,
+          source_credibility: this.sourceCredibility.reuters,
+          indicator_relevance: ["global_conflict_intensity"]
+        }
+      ],
+      info_02_deepfake_shocks: [
+        {
+          title: "AI-Generated Video Causes Brief Market Panic",
+          description: "Deepfake video of Federal Reserve official briefly crashes bond futures before detection.",
+          url: "https://www.wsj.com",
+          source: { id: "wsj", name: "Wall Street Journal" },
+          publishedAt: new Date(now - 20 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 10,
+          source_credibility: this.sourceCredibility.wsj,
+          indicator_relevance: ["info_02_deepfake_shocks"]
+        }
+      ],
+      national_guard_metros: [
+        {
+          title: "National Guard Deployed to Major Cities Amid Civil Unrest",
+          description: "Six metropolitan areas receive National Guard support for critical infrastructure protection.",
+          url: "https://www.bbc.com",
+          source: { id: "bbc-news", name: "BBC News" },
+          publishedAt: new Date(now - 16 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 9,
+          source_credibility: this.sourceCredibility['bbc-news'],
+          indicator_relevance: ["national_guard_metros"]
+        }
+      ],
+      econ_02_grocery_cpi: [
+        {
+          title: "Food Prices Rise Faster Than Headline Inflation",
+          description: "Grocery costs up 8.2% year-over-year, outpacing overall CPI as supply chain pressures persist.",
+          url: "https://www.bloomberg.com",
+          source: { id: "bloomberg", name: "Bloomberg" },
+          publishedAt: new Date(now - 9 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 8,
+          source_credibility: this.sourceCredibility.bloomberg,
+          indicator_relevance: ["econ_02_grocery_cpi"]
+        }
+      ],
+      job_01_strike_days: [
+        {
+          title: "Labor Strikes Hit Record Levels Across Multiple Industries",
+          description: "Major strikes at automakers, healthcare systems signal rising worker discontent and supply chain risks.",
+          url: "https://www.reuters.com",
+          source: { id: "reuters", name: "Reuters" },
+          publishedAt: new Date(now - 11 * 60 * 60 * 1000).toISOString(),
+          content: "Demo content",
+          relevance_score: 8,
+          source_credibility: this.sourceCredibility.reuters,
+          indicator_relevance: ["job_01_strike_days"]
         }
       ]
     };
 
-    return (mockNews[indicatorId] || []).slice(0, limit);
+    // If no specific mock data, generate generic news
+    const defaultNews: NewsArticle[] = [
+      {
+        title: `Risk Monitoring: ${indicatorId.replace(/_/g, ' ').toUpperCase()}`,
+        description: "Monitoring this indicator for changes that may affect household preparedness.",
+        url: "#",
+        source: { id: "wsj", name: "Wall Street Journal" },
+        publishedAt: new Date(now - 24 * 60 * 60 * 1000).toISOString(),
+        content: "Demo content",
+        relevance_score: 5,
+        source_credibility: this.sourceCredibility.wsj,
+        indicator_relevance: [indicatorId]
+      }
+    ];
+
+    return (mockNews[indicatorId] || defaultNews).slice(0, limit);
   }
 
   getSourceCredibilityInfo(): Record<string, SourceCredibility> {

@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   Globe,
   RefreshCw,
-  Download,
   Bell,
   Settings,
   Shield,
@@ -49,7 +48,6 @@ export const Dashboard: React.FC = () => {
     { path: '/indicators', icon: Activity, label: 'Indicators' },
     { path: '/news', icon: Globe, label: 'News' },
     { path: '/alerts', icon: Bell, label: 'Alerts' },
-    { path: '/reports', icon: Download, label: 'Reports' },
     { path: '/playbook', icon: Shield, label: 'Playbook' },
     { path: '/settings', icon: Settings, label: 'Settings' },
   ];

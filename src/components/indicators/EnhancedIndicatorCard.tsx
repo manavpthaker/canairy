@@ -9,7 +9,6 @@ import {
   Info,
   AlertTriangle,
   Lightbulb,
-  BarChart3,
   ExternalLink
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../core/Card';
@@ -262,8 +261,7 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
               <div className={cn('flex items-center gap-1', getTrendColor())}>
                 {getTrendIcon()}
                 <span className="text-xs font-medium">
-                  {status.trend === 'up' ? '+' : '-'}
-                  {Math.abs(Math.random() * 10).toFixed(1)}%
+                  {status.trend === 'up' ? '↑' : '↓'}
                 </span>
               </div>
             )}
