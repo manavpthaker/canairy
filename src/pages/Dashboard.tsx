@@ -16,10 +16,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
 import { IndicatorData } from '../types';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
-import { EnhancedExecutiveSummary } from '../components/dashboard/EnhancedExecutiveSummary';
+import { HeroStatusCard } from '../components/dashboard/HeroStatusCard';
 import { ActionablePriorityActions } from '../components/dashboard/ActionablePriorityActions';
 import { CriticalIndicators } from '../components/dashboard/CriticalIndicators';
-import { RiskNarrativePanel } from '../components/dashboard/RiskNarrativePanel';
 import { SituationalStatusBar } from '../components/dashboard/SituationalStatusBar';
 import { TightenUpBanner } from '../components/dashboard/TightenUpBanner';
 import { PhaseDetailPanel } from '../components/dashboard/PhaseDetailPanel';
@@ -208,50 +207,45 @@ export const Dashboard: React.FC = () => {
             </div>
           )}
 
-          {/* News Ticker */}
-          <ErrorBoundary isolate>
-            <div className="mb-6">
-              <NewsTicker maxItems={5} />
-            </div>
-          </ErrorBoundary>
-
-          {/* Tighten-Up Banner — shows when ≥2 indicators are RED */}
+          {/* 1. Tighten-Up Banner — shows when ≥2 indicators are RED */}
           <ErrorBoundary isolate>
             <TightenUpBanner />
           </ErrorBoundary>
 
-          {/* Enhanced Executive Summary */}
+          {/* 2. Hero Status Card — "Am I okay?" above the fold */}
           <ErrorBoundary isolate>
-            <EnhancedExecutiveSummary />
+            <HeroStatusCard />
           </ErrorBoundary>
 
-          {/* Domain Threat Breakdown — all 9 domains with HOPI scores */}
+          {/* 3. Actionable Priority Actions — moved up for action-first UX */}
           <ErrorBoundary isolate>
-            <DomainBreakdown />
+            <div className="mb-8">
+              <ActionablePriorityActions />
+            </div>
           </ErrorBoundary>
 
-          {/* Phase Detail — current phase actions and triggers */}
+          {/* 4. Domain Breakdown + Critical Indicators side by side */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+            <ErrorBoundary isolate>
+              <DomainBreakdown />
+            </ErrorBoundary>
+            <ErrorBoundary isolate>
+              <CriticalIndicators
+                indicators={indicators}
+                onIndicatorClick={(indicator) => setSelectedIndicator(indicator)}
+              />
+            </ErrorBoundary>
+          </div>
+
+          {/* 5. Phase Detail — current phase actions and triggers */}
           <ErrorBoundary isolate>
             <PhaseDetailPanel />
           </ErrorBoundary>
 
-          {/* Critical Indicators */}
+          {/* 6. News Ticker — moved to bottom */}
           <ErrorBoundary isolate>
-            <CriticalIndicators
-              indicators={indicators}
-              onIndicatorClick={(indicator) => setSelectedIndicator(indicator)}
-            />
-          </ErrorBoundary>
-
-          {/* Risk Narrative Panel */}
-          <ErrorBoundary isolate>
-            <RiskNarrativePanel />
-          </ErrorBoundary>
-
-          {/* Actionable Priority Actions */}
-          <ErrorBoundary isolate>
-            <div className="mb-12">
-              <ActionablePriorityActions />
+            <div className="mb-8">
+              <NewsTicker maxItems={5} />
             </div>
           </ErrorBoundary>
 

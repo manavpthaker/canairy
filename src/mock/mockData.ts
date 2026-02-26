@@ -16,6 +16,7 @@ export const mockIndicators: IndicatorData[] = [
     critical: false,
     enabled: true,
     dataSource: 'US Treasury API',
+    sourceUrl: 'https://www.treasurydirect.gov/auctions/auction-query/',
     updateFrequency: 'Per auction',
     status: { level: 'green', value: 2.1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -28,6 +29,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 4 }, amber: { min: 4, max: 8 }, red: { min: 8 }, threshold_amber: 4, threshold_red: 8 },
     enabled: true,
     dataSource: 'FRED API',
+    sourceUrl: 'https://fred.stlouisfed.org/series/CPIUFDSL',
     updateFrequency: 'Monthly',
     status: { level: 'amber', value: 5.4, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
