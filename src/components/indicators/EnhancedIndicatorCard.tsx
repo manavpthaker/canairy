@@ -36,7 +36,7 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
   showInsights = true,
 }) => {
   const navigate = useNavigate();
-  const { status, name, domain, unit, dataSource, critical, greenFlag, description } = indicator;
+  const { status, name, domain, unit, dataSource, sourceUrl, critical, greenFlag, description } = indicator;
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('24h');
 
   const handleViewDetails = (e: React.MouseEvent) => {
@@ -330,11 +330,25 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
 
           {/* Footer */}
           <div className="flex items-center justify-between text-2xs text-bmb-secondary">
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span>
-                {formatDistanceToNow(new Date(status.lastUpdate), { addSuffix: true })}
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                <span>
+                  {formatDistanceToNow(new Date(status.lastUpdate), { addSuffix: true })}
+                </span>
+              </div>
+              {sourceUrl && (
+                <a
+                  href={sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-1 text-gray-500 hover:text-bmb-accent transition-colors"
+                  title={`Source: ${dataSource}`}
+                >
+                  <span>Source</span>
+                </a>
+              )}
             </div>
             <button
               onClick={handleViewDetails}

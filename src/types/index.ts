@@ -50,6 +50,7 @@ export interface Indicator {
   greenFlag?: boolean;
   enabled?: boolean;
   dataSource: string;
+  sourceUrl?: string; // Link to the official data source for transparency
   updateFrequency: string;
   metadata?: Record<string, any>;
 }

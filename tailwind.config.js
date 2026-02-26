@@ -19,6 +19,14 @@ export default {
           'accent': '#6366F1',
           'accent-light': '#818CF8',
           'accent-dark': '#4F46E5',
+        },
+        // Elevation system - 5 tiers for visual depth
+        'elevation': {
+          '0': '#09090B',  // Page background
+          '1': '#0F0F12',  // Card background
+          '2': '#18181B',  // Elevated cards
+          '3': '#27272A',  // Hover states
+          '4': '#3F3F46',  // Active states
         }
       },
       fontFamily: {
@@ -73,6 +81,10 @@ export default {
         'glow': '0 0 20px rgba(99, 102, 241, 0.5)',
         'glow-lg': '0 0 30px rgba(99, 102, 241, 0.7)',
         'inner-glow': 'inset 0 0 20px rgba(99, 102, 241, 0.1)',
+        // Elevation shadows for dark theme
+        'elevation-1': '0 1px 2px rgba(0,0,0,0.5)',
+        'elevation-2': '0 2px 4px rgba(0,0,0,0.5)',
+        'elevation-3': '0 4px 8px rgba(0,0,0,0.5)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
