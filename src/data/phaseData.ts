@@ -169,19 +169,112 @@ export function getPhaseColor(num: number): string {
 /**
  * Tighten-Up 48-hour checklist — activated when ≥2 indicators hit RED.
  */
-export const TIGHTEN_UP_CHECKLIST = [
-  { id: 'tu-1', text: 'Verify cash reserves ($500+ small bills)', category: 'Financial' },
-  { id: 'tu-2', text: 'Fill all vehicle fuel tanks', category: 'Supplies' },
-  { id: 'tu-3', text: 'Refill all prescriptions (90-day if possible)', category: 'Health' },
-  { id: 'tu-4', text: 'Top off food & water supply (2-week min)', category: 'Supplies' },
-  { id: 'tu-5', text: 'Charge all power banks and backup batteries', category: 'Comms' },
-  { id: 'tu-6', text: 'Test GMRS radios and comms plan', category: 'Comms' },
-  { id: 'tu-7', text: 'Verify go-folder is current and by front door', category: 'Docs' },
-  { id: 'tu-8', text: 'Screenshot all bank/investment balances', category: 'Financial' },
-  { id: 'tu-9', text: 'Brief family on current phase actions', category: 'Family' },
-  { id: 'tu-10', text: 'Confirm meeting locations (primary + backup)', category: 'Family' },
-  { id: 'tu-11', text: 'Run HEPA filter, verify N95 cache', category: 'Health' },
-  { id: 'tu-12', text: 'Check generator fuel and battery tender', category: 'Power' },
+export interface TightenUpItem {
+  id: string;
+  text: string;
+  category: string;
+  why: string;
+  time?: string;
+  location?: string;
+}
+
+export const TIGHTEN_UP_CHECKLIST: TightenUpItem[] = [
+  {
+    id: 'tu-1',
+    text: 'Verify cash reserves ($500+ small bills)',
+    category: 'Financial',
+    why: 'ATMs and card networks may fail during systemic stress. Small bills ensure you can transact when systems are down.',
+    time: '15 min',
+    location: 'Bank or ATM'
+  },
+  {
+    id: 'tu-2',
+    text: 'Fill all vehicle fuel tanks',
+    category: 'Supplies',
+    why: 'Fuel supply chains are fragile during crises. Full tanks ensure mobility for evacuation or essential trips.',
+    time: '20 min',
+    location: 'Any gas station'
+  },
+  {
+    id: 'tu-3',
+    text: 'Refill all prescriptions (90-day if possible)',
+    category: 'Health',
+    why: 'Pharmacy supply chains and insurance systems can fail. 90-day supply provides critical buffer.',
+    time: '30 min',
+    location: 'Your pharmacy'
+  },
+  {
+    id: 'tu-4',
+    text: 'Top off food & water supply (2-week min)',
+    category: 'Supplies',
+    why: 'Grocery stores empty within 72 hours during panics. Water infrastructure may be affected by grid issues.',
+    time: '1 hour',
+    location: 'Grocery store'
+  },
+  {
+    id: 'tu-5',
+    text: 'Charge all power banks and backup batteries',
+    category: 'Comms',
+    why: 'Extended power outages leave you without communication. Charged devices maintain connectivity.',
+    time: '4 hours',
+    location: 'Home'
+  },
+  {
+    id: 'tu-6',
+    text: 'Test GMRS radios and comms plan',
+    category: 'Comms',
+    why: 'Cell networks fail under load or infrastructure damage. Radio provides off-grid family coordination.',
+    time: '15 min',
+    location: 'Home'
+  },
+  {
+    id: 'tu-7',
+    text: 'Verify go-folder is current and by front door',
+    category: 'Docs',
+    why: 'Evacuation may require proof of identity, ownership, and insurance. Go-folder ensures critical documents are grab-and-go.',
+    time: '30 min',
+    location: 'Home'
+  },
+  {
+    id: 'tu-8',
+    text: 'Screenshot all bank/investment balances',
+    category: 'Financial',
+    why: 'Financial systems can freeze or show incorrect data during crises. Screenshots provide proof of holdings.',
+    time: '10 min',
+    location: 'Online/Phone'
+  },
+  {
+    id: 'tu-9',
+    text: 'Brief family on current phase actions',
+    category: 'Family',
+    why: 'Everyone needs to understand the plan. Reduces panic and ensures coordinated response when action is needed.',
+    time: '30 min',
+    location: 'Home'
+  },
+  {
+    id: 'tu-10',
+    text: 'Confirm meeting locations (primary + backup)',
+    category: 'Family',
+    why: 'If communications fail, family members need predetermined rally points to reunite safely.',
+    time: '15 min',
+    location: 'Home discussion'
+  },
+  {
+    id: 'tu-11',
+    text: 'Run HEPA filter, verify N95 cache',
+    category: 'Health',
+    why: 'Air quality threats from fires, industrial incidents, or bio events require respiratory protection.',
+    time: '10 min',
+    location: 'Home'
+  },
+  {
+    id: 'tu-12',
+    text: 'Check generator fuel and battery tender',
+    category: 'Power',
+    why: 'Grid fragility indicators elevated. Generator readiness ensures essential power for fridge, medical devices, comms.',
+    time: '15 min',
+    location: 'Garage/Storage'
+  },
 ];
 
 /**

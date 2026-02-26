@@ -280,14 +280,17 @@ export const ActionablePriorityActions: React.FC = () => {
                       {getUrgencyBadge(action.urgency)}
                       <button
                         onClick={() => toggleComplete(action.id)}
-                        className={cn(
-                          "w-5 h-5 rounded border-2 transition-colors",
-                          isCompleted 
-                            ? "bg-green-500 border-green-500" 
-                            : "border-gray-600 hover:border-gray-400"
-                        )}
+                        className="w-11 h-11 flex items-center justify-center"
+                        aria-label={isCompleted ? "Mark as incomplete" : "Mark as complete"}
                       >
-                        {isCompleted && <Check className="w-3 h-3 text-white" />}
+                        <div className={cn(
+                          "w-6 h-6 rounded border-2 flex items-center justify-center transition-colors",
+                          isCompleted
+                            ? "bg-green-500 border-green-500"
+                            : "border-gray-600 hover:border-gray-400"
+                        )}>
+                          {isCompleted && <Check className="w-4 h-4 text-white" />}
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -324,7 +327,7 @@ export const ActionablePriorityActions: React.FC = () => {
                 </ul>
               </div>
               
-              {/* Resources */}
+              {/* Resources - 44px minimum touch targets */}
               {action.resources && action.resources.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {action.resources.map((resource, i) => (
@@ -339,14 +342,14 @@ export const ActionablePriorityActions: React.FC = () => {
                           copyToClipboard(resource.value, `${action.id}-${i}`);
                         }
                       }}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#1A1A1A] hover:bg-[#2A2A2A] rounded-lg text-xs text-gray-300 transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-3 min-h-[44px] bg-[#1A1A1A] hover:bg-[#2A2A2A] rounded-lg text-sm text-gray-300 transition-colors"
                     >
-                      {resource.type === 'phone' && <Phone className="w-3 h-3" />}
-                      {resource.type === 'link' && <ExternalLink className="w-3 h-3" />}
+                      {resource.type === 'phone' && <Phone className="w-4 h-4" />}
+                      {resource.type === 'link' && <ExternalLink className="w-4 h-4" />}
                       {resource.type === 'checklist' && (
-                        copiedId === `${action.id}-${i}` 
-                          ? <Check className="w-3 h-3 text-green-400" /> 
-                          : <Copy className="w-3 h-3" />
+                        copiedId === `${action.id}-${i}`
+                          ? <Check className="w-4 h-4 text-green-400" />
+                          : <Copy className="w-4 h-4" />
                       )}
                       {resource.label}
                     </button>

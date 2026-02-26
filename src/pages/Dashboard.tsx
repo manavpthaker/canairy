@@ -28,6 +28,7 @@ import { NewsTicker } from '../components/news/NewsTicker';
 import { NewsSidebar } from '../components/news/NewsSidebar';
 import { DashboardLoader } from '../components/dashboard/DashboardLoader';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { DataProvenance } from '../components/dashboard/DataProvenance';
 import { cn } from '../utils/cn';
 
 export const Dashboard: React.FC = () => {
@@ -266,6 +267,12 @@ export const Dashboard: React.FC = () => {
             </section>
           </ErrorBoundary>
 
+          {/* 7. Data Provenance — Source Attribution */}
+          <ErrorBoundary isolate>
+            <section className="mb-8">
+              <DataProvenance />
+            </section>
+          </ErrorBoundary>
 
           {/* Quick Link to Indicators */}
           <motion.div
