@@ -43,6 +43,7 @@ export const mockIndicators: IndicatorData[] = [
     critical: true,
     enabled: true,
     dataSource: 'Yahoo Finance',
+    sourceUrl: 'https://finance.yahoo.com/quote/%5ETNX/',
     updateFrequency: 'Real-time',
     status: { level: 'amber', value: 24.3, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -56,6 +57,7 @@ export const mockIndicators: IndicatorData[] = [
     greenFlag: true,
     enabled: true,
     dataSource: 'BEA / FRED',
+    sourceUrl: 'https://www.bea.gov/data/gdp/gross-domestic-product',
     updateFrequency: 'Quarterly',
     status: { level: 'amber', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -72,6 +74,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 100000 }, amber: { min: 100000, max: 500000 }, red: { min: 500000 }, threshold_amber: 100000, threshold_red: 500000 },
     enabled: true,
     dataSource: 'Cornell ILR',
+    sourceUrl: 'https://striketracker.ilr.cornell.edu/',
     updateFrequency: 'Monthly',
     status: { level: 'green', value: 78000, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -88,6 +91,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 3 }, amber: { min: 3, max: 10 }, red: { min: 10 }, threshold_amber: 3, threshold_red: 10 },
     enabled: true,
     dataSource: 'LegiScan API',
+    sourceUrl: 'https://legiscan.com/gaits/search?state=ALL&keyword=surveillance',
     updateFrequency: 'Weekly',
     status: { level: 'amber', value: 6, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -100,6 +104,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 25 }, amber: { min: 25, max: 75 }, red: { min: 75 }, threshold_amber: 25, threshold_red: 75 },
     enabled: true,
     dataSource: 'ACLED API',
+    sourceUrl: 'https://acleddata.com/data-export-tool/',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 18, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -116,6 +121,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 2 }, amber: { min: 2, max: 5 }, red: { min: 5 }, threshold_amber: 2, threshold_red: 5 },
     enabled: true,
     dataSource: 'CISA JSON Feed',
+    sourceUrl: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
     updateFrequency: 'Daily',
     status: { level: 'amber', value: 4, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -128,6 +134,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 1 }, amber: { min: 1, max: 2 }, red: { min: 2 }, threshold_amber: 1, threshold_red: 2 },
     enabled: true,
     dataSource: 'DOE OE-417',
+    sourceUrl: 'https://www.oe.energy.gov/oe417.htm',
     updateFrequency: 'Quarterly',
     status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -140,6 +147,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 0 }, amber: { min: 0, max: 2 }, red: { min: 3 }, threshold_amber: 1, threshold_red: 3 },
     enabled: true,
     dataSource: 'WHO DON RSS',
+    sourceUrl: 'https://www.who.int/emergencies/disease-outbreak-news',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -156,6 +164,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 60 }, amber: { min: 60, max: 75 }, red: { min: 75 }, threshold_amber: 60, threshold_red: 75 },
     enabled: true,
     dataSource: 'CREA',
+    sourceUrl: 'https://energyandcleanair.org/russia-fossil-tracker/',
     updateFrequency: 'Monthly',
     status: { level: 'amber', value: 68, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -168,6 +177,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 50 }, amber: { min: 50, max: 300 }, red: { min: 300 }, threshold_amber: 50, threshold_red: 300 },
     enabled: false,
     dataSource: 'BIS Reports',
+    sourceUrl: 'https://www.bis.org/about/bisih/topics/cbdc/mbridge.htm',
     updateFrequency: 'Quarterly',
     status: { level: 'green', value: 32, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
@@ -180,6 +190,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 0 }, amber: { min: 0, max: 5 }, red: { min: 5 }, threshold_amber: 1, threshold_red: 5 },
     enabled: true,
     dataSource: 'Treasury OFAC',
+    sourceUrl: 'https://ofac.treasury.gov/recent-actions',
     updateFrequency: 'Weekly',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -192,6 +203,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 1.2 }, amber: { min: 1.2, max: 1.4 }, red: { min: 1.4 }, threshold_amber: 1.2, threshold_red: 1.4 },
     enabled: true,
     dataSource: 'JODI API',
+    sourceUrl: 'https://www.jodidata.org/oil/',
     updateFrequency: 'Monthly',
     status: { level: 'green', value: 1.15, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -208,6 +220,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 5000 }, amber: { min: 5000, max: 25000 }, red: { min: 25000 }, threshold_amber: 5000, threshold_red: 25000 },
     enabled: false,
     dataSource: 'Layoffs.fyi',
+    sourceUrl: 'https://layoffs.fyi/',
     updateFrequency: 'Monthly',
     status: { level: 'green', value: 3200, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
@@ -220,6 +233,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 3 }, amber: { min: 3, max: 6 }, red: { min: 6 }, threshold_amber: 3, threshold_red: 6 },
     enabled: true,
     dataSource: 'CISA ICS',
+    sourceUrl: 'https://www.cisa.gov/stopransomware/ransomware-alerts',
     updateFrequency: 'Weekly',
     status: { level: 'amber', value: 4, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -233,6 +247,7 @@ export const mockIndicators: IndicatorData[] = [
     critical: true,
     enabled: true,
     dataSource: 'Composite',
+    sourceUrl: 'https://www.sec.gov/news/market-alerts',
     updateFrequency: 'Continuous',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -246,6 +261,7 @@ export const mockIndicators: IndicatorData[] = [
     greenFlag: true,
     enabled: true,
     dataSource: 'Epoch AI',
+    sourceUrl: 'https://epochai.org/trends',
     updateFrequency: 'Monthly',
     status: { level: 'green', value: -42, trend: 'down', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -262,6 +278,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 500 }, amber: { min: 500, max: 1000 }, red: { min: 2000 }, threshold_amber: 500, threshold_red: 2000 },
     enabled: false,
     dataSource: 'ACLED API',
+    sourceUrl: 'https://acleddata.com/dashboard/',
     updateFrequency: 'Daily',
     status: { level: 'amber', value: 720, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
@@ -274,6 +291,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 20 }, amber: { min: 20, max: 50 }, red: { min: 100 }, threshold_amber: 20, threshold_red: 100 },
     enabled: true,
     dataSource: 'Taiwan MND',
+    sourceUrl: 'https://www.mnd.gov.tw/english/',
     updateFrequency: 'Daily',
     status: { level: 'amber', value: 28, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -287,6 +305,7 @@ export const mockIndicators: IndicatorData[] = [
     critical: true,
     enabled: true,
     dataSource: 'NATO / News',
+    sourceUrl: 'https://www.nato.int/cps/en/natohq/news.htm',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -299,6 +318,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 2 }, amber: { min: 2, max: 5 }, red: { min: 10 }, threshold_amber: 2, threshold_red: 10 },
     enabled: true,
     dataSource: 'CTBTO / KCNA',
+    sourceUrl: 'https://www.ctbto.org/specials/testing-times/',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -311,6 +331,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 30 }, amber: { min: 30, max: 60 }, red: { min: 80 }, threshold_amber: 30, threshold_red: 80 },
     enabled: false,
     dataSource: 'Composite',
+    sourceUrl: 'https://www.iiss.org/research-paper/',
     updateFrequency: 'Daily',
     status: { level: 'amber', value: 45, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
@@ -323,6 +344,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 5 }, amber: { min: 5, max: 8 }, red: { min: 15 }, threshold_amber: 5, threshold_red: 15 },
     enabled: false,
     dataSource: 'SIPRI',
+    sourceUrl: 'https://www.sipri.org/databases/milex',
     updateFrequency: 'Annual',
     status: { level: 'amber', value: 6.2, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
@@ -339,6 +361,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { min: 730 }, amber: { min: 365, max: 730 }, red: { max: 180 }, threshold_amber: 730, threshold_red: 365 },
     enabled: false,
     dataSource: 'Congress.gov',
+    sourceUrl: 'https://www.congress.gov/search?q=%7B%22congress%22%3A%22all%22%2C%22source%22%3A%22all%22%2C%22search%22%3A%22district+of+columbia%22%7D',
     updateFrequency: 'Weekly',
     status: { level: 'green', value: 900, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
@@ -352,6 +375,7 @@ export const mockIndicators: IndicatorData[] = [
     critical: true,
     enabled: true,
     dataSource: 'News Aggregator',
+    sourceUrl: 'https://www.nationalguard.mil/News/',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -364,6 +388,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 50000 }, amber: { min: 50000, max: 80000 }, red: { min: 150000 }, threshold_amber: 50000, threshold_red: 150000 },
     enabled: true,
     dataSource: 'ICE Statistics',
+    sourceUrl: 'https://www.ice.gov/detain/detention-management',
     updateFrequency: 'Weekly',
     status: { level: 'amber', value: 62000, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -377,6 +402,7 @@ export const mockIndicators: IndicatorData[] = [
     critical: true,
     enabled: true,
     dataSource: 'Federal Register',
+    sourceUrl: 'https://www.federalregister.gov/agencies/homeland-security-department',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -389,6 +415,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 3 }, amber: { min: 3, max: 5 }, red: { min: 10 }, threshold_amber: 3, threshold_red: 10 },
     enabled: true,
     dataSource: 'LegiScan API',
+    sourceUrl: 'https://legiscan.com/US',
     updateFrequency: 'Weekly',
     status: { level: 'amber', value: 4, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -401,6 +428,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 5 }, amber: { min: 5, max: 10 }, red: { min: 20 }, threshold_amber: 5, threshold_red: 20 },
     enabled: true,
     dataSource: 'ACLU / EFF',
+    sourceUrl: 'https://www.aclu.org/court-cases',
     updateFrequency: 'Weekly',
     status: { level: 'amber', value: 8, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
@@ -417,6 +445,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 10000 }, amber: { min: 10000, max: 50000 }, red: { min: 50000 }, threshold_amber: 10000, threshold_red: 50000 },
     enabled: false,
     dataSource: 'X API',
+    sourceUrl: 'https://x.com/search?q=%23AIGod',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 4200, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
@@ -429,6 +458,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 5 }, amber: { min: 5, max: 20 }, red: { min: 20 }, threshold_amber: 5, threshold_red: 20 },
     enabled: false,
     dataSource: 'Etherscan',
+    sourceUrl: 'https://etherscan.io/tokens',
     updateFrequency: 'Weekly',
     status: { level: 'green', value: 2, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
@@ -441,6 +471,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 1 }, amber: { min: 1, max: 4 }, red: { min: 4 }, threshold_amber: 1, threshold_red: 4 },
     enabled: false,
     dataSource: 'ACLED API',
+    sourceUrl: 'https://acleddata.com/data-export-tool/',
     updateFrequency: 'Monthly',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
@@ -453,6 +484,7 @@ export const mockIndicators: IndicatorData[] = [
     thresholds: { green: { max: 15 }, amber: { min: 15, max: 40 }, red: { min: 40 }, threshold_amber: 15, threshold_red: 40 },
     enabled: false,
     dataSource: 'Google Trends',
+    sourceUrl: 'https://trends.google.com/trends/explore?q=AI%20religion&geo=US',
     updateFrequency: 'Weekly',
     status: { level: 'green', value: 8, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },

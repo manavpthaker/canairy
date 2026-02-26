@@ -9,7 +9,11 @@ import {
   Info,
   AlertTriangle,
   Lightbulb,
-  ExternalLink
+  ExternalLink,
+  Building2,
+  LineChart,
+  Newspaper,
+  Database
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../core/Card';
 import { Badge, StatusBadge } from '../core/Badge';
@@ -18,6 +22,59 @@ import { IndicatorData } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
 import { IndicatorChart } from '../charts/IndicatorChart';
 import { generateHistoricalData } from '../../utils/historicalDataGenerator';
+
+// Source type detection for verification badges
+type SourceType = 'official' | 'financial' | 'news' | 'data';
+
+const getSourceType = (dataSource: string): SourceType => {
+  const officialSources = ['Treasury', 'FRED', 'BEA', 'DOE', 'CISA', 'WHO', 'OFAC', 'Congress', 'Federal Register', 'ICE', 'Taiwan MND', 'NATO', 'CTBTO', 'National Guard', 'SIPRI', 'BIS'];
+  const financialSources = ['Yahoo Finance', 'JODI', 'Epoch AI', 'Layoffs.fyi', 'Etherscan'];
+  const newsSources = ['News', 'Composite', 'Aggregator', 'X API', 'Google Trends'];
+
+  if (officialSources.some(s => dataSource.includes(s))) return 'official';
+  if (financialSources.some(s => dataSource.includes(s))) return 'financial';
+  if (newsSources.some(s => dataSource.includes(s))) return 'news';
+  return 'data';
+};
+
+const SourceBadgeIcon: React.FC<{ sourceType: SourceType; className?: string }> = ({ sourceType, className }) => {
+  switch (sourceType) {
+    case 'official':
+      return <Building2 className={cn("w-3 h-3", className)} />;
+    case 'financial':
+      return <LineChart className={cn("w-3 h-3", className)} />;
+    case 'news':
+      return <Newspaper className={cn("w-3 h-3", className)} />;
+    default:
+      return <Database className={cn("w-3 h-3", className)} />;
+  }
+};
+
+const getSourceBadgeColor = (sourceType: SourceType): string => {
+  switch (sourceType) {
+    case 'official':
+      return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
+    case 'financial':
+      return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
+    case 'news':
+      return 'text-amber-400 bg-amber-400/10 border-amber-400/20';
+    default:
+      return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+  }
+};
+
+const getSourceLabel = (sourceType: SourceType): string => {
+  switch (sourceType) {
+    case 'official':
+      return 'Official';
+    case 'financial':
+      return 'Financial';
+    case 'news':
+      return 'News';
+    default:
+      return 'Data';
+  }
+};
 
 interface IndicatorCardProps {
   indicator: IndicatorData;
@@ -328,27 +385,44 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
             </div>
           )}
 
+          {/* Source Badge - Always Visible */}
+          <div className="flex items-center justify-between p-2 bg-bmb-black/30 rounded-lg mb-3">
+            <div className="flex items-center gap-2">
+              {(() => {
+                const sourceType = getSourceType(dataSource);
+                return (
+                  <div className={cn(
+                    "flex items-center gap-1.5 px-2 py-1 rounded-md border text-xs font-medium",
+                    getSourceBadgeColor(sourceType)
+                  )}>
+                    <SourceBadgeIcon sourceType={sourceType} />
+                    <span>{getSourceLabel(sourceType)}</span>
+                  </div>
+                );
+              })()}
+              <span className="text-xs text-bmb-secondary font-medium">{dataSource}</span>
+            </div>
+            {sourceUrl && (
+              <a
+                href={sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 text-xs text-bmb-accent hover:text-white transition-colors font-medium"
+              >
+                <span>View Source</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
+          </div>
+
           {/* Footer */}
           <div className="flex items-center justify-between text-2xs text-bmb-secondary">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                <span>
-                  {formatDistanceToNow(new Date(status.lastUpdate), { addSuffix: true })}
-                </span>
-              </div>
-              {sourceUrl && (
-                <a
-                  href={sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="flex items-center gap-1 text-gray-500 hover:text-bmb-accent transition-colors"
-                  title={`Source: ${dataSource}`}
-                >
-                  <span>Source</span>
-                </a>
-              )}
+            <div className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              <span>
+                {formatDistanceToNow(new Date(status.lastUpdate), { addSuffix: true })}
+              </span>
             </div>
             <button
               onClick={handleViewDetails}
