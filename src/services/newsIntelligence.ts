@@ -43,8 +43,7 @@ interface IndicatorNewsMapping {
 export class NewsIntelligenceService {
   private newsApiKey: string | undefined;
   private alphaVantageKey: string | undefined;
-  private openaiApiKey: string | undefined;
-  
+
   // Rate limiters for each API
   private newsApiLimiter: RateLimiter;
   private alphaVantageLimiter: RateLimiter;
@@ -124,7 +123,6 @@ export class NewsIntelligenceService {
   constructor() {
     this.newsApiKey = import.meta.env.VITE_NEWS_API_KEY;
     this.alphaVantageKey = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY;
-    this.openaiApiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
     // Initialize rate limiters based on API limits
     this.newsApiLimiter = new RateLimiter(100, 24 * 60 * 60 * 1000); // 100 requests per day
@@ -133,7 +131,7 @@ export class NewsIntelligenceService {
     if (!this.newsApiKey) {
       console.warn('⚠️ NEWS_API_KEY not found - using demo data');
     }
-    
+
     // Clean up cache periodically
     setInterval(() => newsCache.cleanup(), 60 * 1000); // Every minute
   }

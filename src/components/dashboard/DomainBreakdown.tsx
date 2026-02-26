@@ -13,8 +13,6 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../core/Card';
-import { Badge } from '../core/Badge';
-import { cn } from '../../utils/cn';
 import { useStore } from '../../store';
 import { Domain, DOMAIN_META } from '../../types';
 
@@ -34,15 +32,6 @@ function getScoreColor(score: number): string {
   if (score < 0.3) return '#10B981';
   if (score < 0.6) return '#F59E0B';
   return '#EF4444';
-}
-
-function getScoreLabel(score: number): string {
-  if (score < 0.1) return 'Normal';
-  if (score < 0.3) return 'Low';
-  if (score < 0.5) return 'Moderate';
-  if (score < 0.7) return 'Elevated';
-  if (score < 0.85) return 'High';
-  return 'Critical';
 }
 
 export const DomainBreakdown: React.FC = () => {

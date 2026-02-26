@@ -1,13 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  AlertCircle, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  AlertCircle,
+  CheckCircle,
+  AlertTriangle,
   Clock,
   TrendingUp,
   Shield,
-  Calendar,
   Info
 } from 'lucide-react';
 import { cn } from '../../utils/cn';

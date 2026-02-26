@@ -2,7 +2,7 @@
  * Enhanced API client with interceptors, retry logic, and caching
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
 
 // Types
 export interface APIConfig {

@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, 
-  TrendingUp, 
-  Shield, 
-  Zap, 
-  Globe, 
-  Brain,
+import {
+  LayoutDashboard,
+  Globe,
   RefreshCw,
   Download,
   Bell,
   Settings,
-  ChevronRight,
+  Shield,
   Activity,
   Newspaper,
   Menu,
@@ -20,7 +16,6 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
 import { IndicatorData } from '../types';
-import { EnhancedIndicatorCard } from '../components/indicators/EnhancedIndicatorCard';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
 import { EnhancedExecutiveSummary } from '../components/dashboard/EnhancedExecutiveSummary';
 import { ActionablePriorityActions } from '../components/dashboard/ActionablePriorityActions';
@@ -33,9 +28,6 @@ import { DomainBreakdown } from '../components/dashboard/DomainBreakdown';
 import { CanaryLogo } from '../components/branding/CanaryLogo';
 import { NewsTicker } from '../components/news/NewsTicker';
 import { NewsSidebar } from '../components/news/NewsSidebar';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/core/Card';
-import { Button } from '../components/core/Button';
-import { Badge } from '../components/core/Badge';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { cn } from '../utils/cn';
 
@@ -46,13 +38,10 @@ export const Dashboard: React.FC = () => {
   const [showNewsSidebar, setShowNewsSidebar] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   
-  const { 
-    indicators, 
-    hopiScore, 
-    currentPhase, 
-    systemStatus,
+  const {
+    indicators,
     loading,
-    refreshAll 
+    refreshAll
   } = useStore();
 
   const sidebarItems = [
@@ -66,10 +55,6 @@ export const Dashboard: React.FC = () => {
   ];
 
 
-  const criticalCount = indicators?.filter(i => i.status.level === 'red' && i.critical).length || 0;
-  const redCount = indicators?.filter(i => i.status.level === 'red').length || 0;
-  const amberCount = indicators?.filter(i => i.status.level === 'amber').length || 0;
-  const greenCount = indicators?.filter(i => i.status.level === 'green').length || 0;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex relative">

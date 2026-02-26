@@ -12,14 +12,13 @@ import { cn } from '../utils/cn';
 
 export const CanairyDashboard: React.FC = () => {
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const { 
-    indicators, 
-    hopiScore, 
-    currentPhase, 
-    systemStatus,
+  const [sidebarOpen] = useState(true);
+  const {
+    indicators,
+    hopiScore,
+    currentPhase,
     loading,
-    refreshAll 
+    refreshAll
   } = useStore();
 
   const sidebarItems = [

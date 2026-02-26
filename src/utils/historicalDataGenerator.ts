@@ -1,5 +1,5 @@
 import { DataPoint, IndicatorData } from '../types';
-import { subHours, subDays, startOfDay, addHours, addDays } from 'date-fns';
+import { subHours, subDays } from 'date-fns';
 
 interface GeneratorConfig {
   baseValue: number;

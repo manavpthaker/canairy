@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import {
   Settings as SettingsIcon,
   Bell,
-  Shield,
   Database,
   RefreshCw,
   ChevronDown,

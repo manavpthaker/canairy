@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { CanairyMascot } from '../components/canairy/CanairyMascot';
 import { useStore } from '../store';
@@ -18,22 +18,37 @@ import {
 
 export const IndicatorDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { indicators, fetchIndicators } = useStore();
+  const { indicators, fetchIndicators, loading } = useStore();
   const indicator = indicators.find(ind => ind.id === id);
+  const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('7d');
 
   useEffect(() => {
-    if (!indicator) {
+    if (!indicator && indicators.length === 0) {
       fetchIndicators(); // Fetch all indicators if this one isn't in store
     }
-  }, [id, indicator, fetchIndicators]);
+  }, [id, indicator, indicators.length, fetchIndicators]);
 
+  // Show loading state while fetching
+  if (loading || (indicators.length === 0 && !indicator)) {
+    return (
+      <div className="min-h-screen bg-canairy-neutral p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-canairy-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <h1 className="text-xl font-semibold text-canairy-charcoal">Loading indicator data...</h1>
+          <p className="text-canairy-charcoal-light text-sm mt-2">Fetching {id}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show not found only after loading completes
   if (!indicator) {
     return (
       <div className="min-h-screen bg-canairy-neutral p-6 flex items-center justify-center">
         <div className="text-center">
           <CanairyMascot size="md" mood="thinking" />
           <h1 className="text-2xl font-bold text-canairy-charcoal mt-4">Indicator Not Found</h1>
-          <p className="text-canairy-charcoal-light">Loading or invalid indicator ID: {id}</p>
+          <p className="text-canairy-charcoal-light">No indicator with ID: {id}</p>
         </div>
       </div>
     );
@@ -137,8 +152,26 @@ export const IndicatorDetails: React.FC = () => {
         </div>
 
         <div className="card-canairy mb-6">
-          <h2 className="text-xl font-semibold text-canairy-charcoal mb-4">Historical Data</h2>
-          <IndicatorChart indicator={indicator} height={200} />
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-canairy-charcoal">Historical Data</h2>
+            <div className="flex bg-canairy-neutral rounded-lg p-1">
+              {(['24h', '7d', '30d', '90d'] as const).map((range) => (
+                <button
+                  key={range}
+                  onClick={() => setTimeRange(range)}
+                  className={cn(
+                    'px-4 py-1.5 text-sm font-medium rounded-md transition-all',
+                    timeRange === range
+                      ? 'bg-white text-canairy-charcoal shadow-sm'
+                      : 'text-canairy-charcoal-light hover:text-canairy-charcoal'
+                  )}
+                >
+                  {range}
+                </button>
+              ))}
+            </div>
+          </div>
+          <IndicatorChart indicator={indicator} timeRange={timeRange} height={250} />
         </div>
 
         {insights.length > 0 && (

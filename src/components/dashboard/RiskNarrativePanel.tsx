@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  BookOpen, 
-  TrendingUp,
+import {
+  BookOpen,
   AlertTriangle,
-  Calendar,
   DollarSign,
   Globe,
   Zap,
@@ -17,7 +15,6 @@ import { Card, CardHeader, CardTitle, CardContent } from '../core/Card';
 import { Badge } from '../core/Badge';
 import { cn } from '../../utils/cn';
 import { useStore } from '../../store';
-import { format } from 'date-fns';
 
 interface RiskPattern {
   id: string;
@@ -35,17 +32,16 @@ interface RiskPattern {
 }
 
 export const RiskNarrativePanel: React.FC = () => {
-  const { indicators, hopiScore } = useStore();
+  const { indicators } = useStore();
   const [expandedPattern, setExpandedPattern] = useState<string | null>(null);
-  
+
   const identifyRiskPatterns = (): RiskPattern[] => {
     const patterns: RiskPattern[] = [];
     const redIndicators = indicators.filter(i => i.status.level === 'red');
-    
+
     // Banking Crisis Pattern
     if (redIndicators.some(i => i.id === 'econ_01_treasury_tail' || i.id === 'market_01_intraday_swing')) {
       const treasuryIndicator = indicators.find(i => i.id === 'econ_01_treasury_tail');
-      const marketIndicator = indicators.find(i => i.id === 'market_01_intraday_swing');
       
       patterns.push({
         id: 'banking-crisis',

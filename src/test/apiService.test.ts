@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { mockIndicators, mockHOPIScore, mockSystemStatus } from '../mock/mockData';
 import { DOMAIN_META, Domain } from '../types';
 
