@@ -26,6 +26,7 @@ import { DomainBreakdown } from '../components/dashboard/DomainBreakdown';
 import { CanaryLogo } from '../components/branding/CanaryLogo';
 import { NewsTicker } from '../components/news/NewsTicker';
 import { NewsSidebar } from '../components/news/NewsSidebar';
+import { DashboardLoader } from '../components/dashboard/DashboardLoader';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { cn } from '../utils/cn';
 
@@ -176,19 +177,6 @@ export const Dashboard: React.FC = () => {
 
         {/* Content - Responsive padding */}
         <div className="p-4 sm:p-6 lg:p-12">
-          {/* Loading state */}
-          {loading && indicators.length === 0 && (
-            <div className="space-y-6 animate-pulse">
-              <div className="h-16 bg-[#111111] rounded-2xl border border-[#1A1A1A]" />
-              <div className="h-48 bg-[#111111] rounded-2xl border border-[#1A1A1A]" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="h-32 bg-[#111111] rounded-2xl border border-[#1A1A1A]" />
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Empty state — data loaded but no indicators */}
           {!loading && indicators.length === 0 && (
             <div className="text-center py-24">
@@ -207,7 +195,13 @@ export const Dashboard: React.FC = () => {
             </div>
           )}
 
-          {/* 1. Tighten-Up Banner — shows when ≥2 indicators are RED */}
+          {/* Loading state — show loader while fetching data */}
+          {loading && indicators.length === 0 && <DashboardLoader />}
+
+          {/* Only show dashboard content when data is loaded */}
+          {indicators.length > 0 && (
+            <>
+            {/* 1. Tighten-Up Banner — shows when ≥2 indicators are RED */}
           <ErrorBoundary isolate>
             <TightenUpBanner />
           </ErrorBoundary>
@@ -271,6 +265,8 @@ export const Dashboard: React.FC = () => {
               View All Indicators
             </button>
           </motion.div>
+            </>
+          )}
         </div>
       </main>
 
