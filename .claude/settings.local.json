@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python dashboard/app.py:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install)",
+      "Bash(python -c:*)",
+      "Bash(grep:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "WebSearch",
+      "WebFetch(domain:www.smashingmagazine.com)",
+      "WebFetch(domain:clusterdesign.io)",
+      "WebFetch(domain:dashboarddesignpatterns.github.io)"
+    ]
+  }
+}

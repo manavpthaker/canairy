@@ -185,6 +185,52 @@
   }
 }
 
+/* Micro-Animations for Real-Time Feel */
+@keyframes flash-green {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: var(--bmb-success); box-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-delta {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 20px 4px rgba(239, 68, 68, 0.2); }
+}
+
+.animate-flash-green {
+  animation: flash-green 300ms ease-out;
+}
+
+.animate-pulse-live {
+  animation: pulse-live 1.5s ease-in-out infinite;
+}
+
+.animate-slide-in {
+  animation: slide-in 200ms ease-out;
+}
+
+.animate-fade-delta {
+  animation: fade-delta 400ms ease-out;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   *,
