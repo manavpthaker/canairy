@@ -1,18 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { 
+import {
   Filter,
   Search,
   LayoutGrid,
   List,
-  ChevronDown,
   X
 } from 'lucide-react';
 import { useStore } from '../store';
 import { IndicatorData } from '../types';
 import { EnhancedIndicatorCard } from '../components/indicators/EnhancedIndicatorCard';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
-import { Button } from '../components/core/Button';
 import { Badge } from '../components/core/Badge';
 import { cn } from '../utils/cn';
 
@@ -29,44 +27,22 @@ export const Indicators: React.FC = () => {
   const [showCriticalOnly, setShowCriticalOnly] = useState(false);
   const [selectedIndicator, setSelectedIndicator] = useState<IndicatorData | null>(null);
 
-  // Filter indicators based on search and filters
   const filteredIndicators = useMemo(() => {
-    const filtered = indicators.filter(indicator => {
-      // Search filter
-      if (searchQuery && !indicator.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
-      }
-      
-      // Status filter
-      if (statusFilter !== 'all' && indicator.status.level !== statusFilter) {
-        return false;
-      }
-      
-      // Domain filter
-      if (domainFilter !== 'all' && indicator.domain !== domainFilter) {
-        return false;
-      }
-      
-      // Critical filter
-      if (showCriticalOnly && !indicator.critical) {
-        return false;
-      }
-      
+    return indicators.filter(indicator => {
+      if (searchQuery && !indicator.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      if (statusFilter !== 'all' && indicator.status.level !== statusFilter) return false;
+      if (domainFilter !== 'all' && indicator.domain !== domainFilter) return false;
+      if (showCriticalOnly && !indicator.critical) return false;
       return true;
     });
-    
-    return filtered;
   }, [indicators, searchQuery, statusFilter, domainFilter, showCriticalOnly]);
 
-  // Count indicators by status
-  const statusCounts = useMemo(() => {
-    return {
-      all: indicators.length,
-      green: indicators.filter(i => i.status.level === 'green').length,
-      amber: indicators.filter(i => i.status.level === 'amber').length,
-      red: indicators.filter(i => i.status.level === 'red').length,
-    };
-  }, [indicators]);
+  const statusCounts = useMemo(() => ({
+    all: indicators.length,
+    green: indicators.filter(i => i.status.level === 'green').length,
+    amber: indicators.filter(i => i.status.level === 'amber').length,
+    red: indicators.filter(i => i.status.level === 'red').length,
+  }), [indicators]);
 
   const domainLabels: Record<string, string> = {
     economy: 'Economy',
@@ -81,13 +57,13 @@ export const Indicators: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
-      {/* Header */}
-      <div className="bg-[#111111] border-b border-[#1A1A1A] sticky top-0 z-10">
+    <>
+      {/* Page Header with Filters */}
+      <div className="bg-[#111111] border-b border-[#1A1A1A]">
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-semibold text-white">Indicators</h1>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-white">Indicators</h1>
               <p className="text-gray-400 mt-1">Monitor all resilience indicators in one place</p>
             </div>
             <div className="flex items-center gap-2">
@@ -95,8 +71,8 @@ export const Indicators: React.FC = () => {
                 onClick={() => setViewMode('grid')}
                 className={cn(
                   "p-2 rounded-lg transition-colors",
-                  viewMode === 'grid' 
-                    ? 'bg-white text-[#0A0A0A]' 
+                  viewMode === 'grid'
+                    ? 'bg-white text-[#0A0A0A]'
                     : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'
                 )}
               >
@@ -106,8 +82,8 @@ export const Indicators: React.FC = () => {
                 onClick={() => setViewMode('list')}
                 className={cn(
                   "p-2 rounded-lg transition-colors",
-                  viewMode === 'list' 
-                    ? 'bg-white text-[#0A0A0A]' 
+                  viewMode === 'list'
+                    ? 'bg-white text-[#0A0A0A]'
                     : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'
                 )}
               >
@@ -118,7 +94,6 @@ export const Indicators: React.FC = () => {
 
           {/* Search and Filters */}
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-            {/* Search */}
             <div className="relative w-full sm:flex-1 sm:max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -138,7 +113,6 @@ export const Indicators: React.FC = () => {
               )}
             </div>
 
-            {/* Status Filter */}
             <div className="flex items-center gap-1 sm:gap-2 bg-[#1A1A1A] rounded-lg p-1 overflow-x-auto">
               {(['all', 'green', 'amber', 'red'] as FilterStatus[]).map((status) => (
                 <button
@@ -159,7 +133,6 @@ export const Indicators: React.FC = () => {
               ))}
             </div>
 
-            {/* Domain Filter */}
             <select
               value={domainFilter}
               onChange={(e) => setDomainFilter(e.target.value as FilterDomain)}
@@ -171,7 +144,6 @@ export const Indicators: React.FC = () => {
               ))}
             </select>
 
-            {/* Critical Only Toggle */}
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -187,7 +159,6 @@ export const Indicators: React.FC = () => {
 
       {/* Content */}
       <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        {/* Results Summary */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm text-gray-400">
             Showing {filteredIndicators.length} of {indicators.length} indicators
@@ -199,13 +170,12 @@ export const Indicators: React.FC = () => {
           )}
         </div>
 
-        {/* Indicators Grid/List */}
         {filteredIndicators.length > 0 ? (
           <motion.div
             layout
             className={cn(
-              viewMode === 'grid' 
-                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6' 
+              viewMode === 'grid'
+                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6'
                 : 'space-y-4'
             )}
           >
@@ -236,7 +206,6 @@ export const Indicators: React.FC = () => {
         )}
       </div>
 
-      {/* Indicator Modal */}
       {selectedIndicator && (
         <IndicatorModal
           isOpen={!!selectedIndicator}
@@ -244,6 +213,6 @@ export const Indicators: React.FC = () => {
           indicator={selectedIndicator}
         />
       )}
-    </div>
+    </>
   );
 };
