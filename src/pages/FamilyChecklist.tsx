@@ -65,8 +65,8 @@ export const FamilyChecklist: React.FC = () => {
                 <CheckSquare className="w-6 h-6 text-indigo-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Family Preparedness Checklist</h1>
-                <p className="text-gray-400">Phase-by-phase actions to keep your household ready</p>
+                <h1 className="text-2xl font-bold text-white">Family Actions</h1>
+                <p className="text-gray-400">Simple, practical steps to keep your family confident and ready</p>
               </div>
             </div>
             <button
@@ -81,17 +81,29 @@ export const FamilyChecklist: React.FC = () => {
           {/* Overall progress */}
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-400">Overall progress</span>
+              <span className="text-sm text-gray-400">Your family's progress</span>
               <span className="text-sm font-medium text-white">{completedCount}/{totalActions} ({overallProgress}%)</span>
             </div>
-            <div className="h-2 bg-[#0A0A0A] rounded-full overflow-hidden">
+            <div className="h-3 bg-[#0A0A0A] rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-indigo-500 rounded-full"
+                className={cn(
+                  'h-full rounded-full',
+                  overallProgress === 100 ? 'bg-green-500' : overallProgress > 50 ? 'bg-indigo-500' : 'bg-indigo-500/70'
+                )}
                 initial={{ width: 0 }}
                 animate={{ width: `${overallProgress}%` }}
                 transition={{ duration: 0.5 }}
               />
             </div>
+            {overallProgress === 100 && (
+              <p className="text-green-400 text-sm mt-2 font-medium">Your family is fully prepared for this phase. Amazing work!</p>
+            )}
+            {overallProgress > 0 && overallProgress < 100 && (
+              <p className="text-gray-500 text-xs mt-2">Every step makes your family more resilient. Keep going!</p>
+            )}
+            {overallProgress === 0 && (
+              <p className="text-gray-500 text-xs mt-2">Start by tapping any item below. Even one step makes a difference.</p>
+            )}
           </div>
         </div>
       </div>

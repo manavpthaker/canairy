@@ -59,9 +59,9 @@ export const ResiliencePlaybook: React.FC = () => {
               <Shield className="w-6 h-6 text-indigo-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Resilience Playbook</h1>
+              <h1 className="text-2xl font-bold text-white">Your Family's Plan</h1>
               <p className="text-gray-400">
-                Phase ladder, action checklists, and critical jump rules
+                Step-by-step guide for every level of preparedness — from basics to full resilience
               </p>
             </div>
           </div>

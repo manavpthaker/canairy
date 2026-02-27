@@ -67,25 +67,25 @@ export const Reports: React.FC = () => {
 
   const reportCards = [
     {
-      title: 'Full Indicator Report (CSV)',
-      description: 'All indicators with current values, thresholds, and trends',
+      title: 'Detailed Spreadsheet',
+      description: 'All the things we monitor, saved as a spreadsheet you can open in Excel or Google Sheets',
       icon: <FileText className="w-6 h-6 text-indigo-400" />,
       action: handleExportCSV,
-      actionLabel: 'Download CSV',
+      actionLabel: 'Download Spreadsheet',
     },
     {
-      title: 'System Snapshot (JSON)',
-      description: 'Machine-readable snapshot of all indicator data and HOPI score',
+      title: 'Data Backup',
+      description: 'A complete backup of all your family\'s monitoring data',
       icon: <BarChart3 className="w-6 h-6 text-blue-400" />,
       action: handleExportJSON,
-      actionLabel: 'Download JSON',
+      actionLabel: 'Download Backup',
     },
     {
-      title: 'Print Summary',
-      description: 'Print-friendly overview of current system status and alerts',
+      title: 'Fridge Sheet',
+      description: 'Print this summary and put it on your fridge — a quick reference for your whole family',
       icon: <Printer className="w-6 h-6 text-green-400" />,
       action: handlePrint,
-      actionLabel: 'Print',
+      actionLabel: 'Print for Fridge',
     },
   ];
 
@@ -95,14 +95,14 @@ export const Reports: React.FC = () => {
       <div className="bg-[#111111] border-b border-[#1A1A1A]">
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <h1 className="text-2xl sm:text-3xl font-semibold text-white">Reports</h1>
-          <p className="text-gray-400 mt-1">Export data and generate reports for offline use</p>
+          <p className="text-gray-400 mt-1">Save, print, or share your family's preparedness status</p>
         </div>
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-8">
         {/* Quick Stats — Print target */}
         <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6" id="print-summary">
-          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Current System Summary</h2>
+          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Your Family's Current Status</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-white">{hopiScore ? Math.round(hopiScore.score) : '—'}</div>
