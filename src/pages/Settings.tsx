@@ -166,10 +166,10 @@ export const Settings: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <>
       {/* Header */}
       <div className="bg-[#111111] border-b border-[#1A1A1A]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex items-center gap-3 mb-1">
             <Link
               to="/"
@@ -479,6 +479,6 @@ export const Settings: React.FC = () => {
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };

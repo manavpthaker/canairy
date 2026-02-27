@@ -104,7 +104,7 @@ describe('Badge', () => {
   });
 
   it('applies variant styling', () => {
-    const { container } = render(<Badge variant="success">OK</Badge>);
+    const { container } = render(<Badge variant="green">OK</Badge>);
     // Should have success-related class
     const badge = container.firstChild as HTMLElement;
     expect(badge).toBeInTheDocument();
