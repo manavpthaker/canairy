@@ -66,7 +66,7 @@ export const HOPIGauge: React.FC<HOPIGaugeProps> = ({
         <path
           d={arcPath(startAngle, endAngle, radius)}
           fill="none"
-          stroke="#262626"
+          stroke="rgba(255,255,255,0.06)"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
         />
@@ -113,7 +113,7 @@ export const HOPIGauge: React.FC<HOPIGaugeProps> = ({
           cy={center}
           r={strokeWidth / 2}
           fill="#1A1A1A"
-          stroke="#262626"
+          stroke="rgba(255,255,255,0.06)"
           strokeWidth={2}
         />
       </svg>

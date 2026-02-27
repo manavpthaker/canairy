@@ -100,8 +100,8 @@ export const TightenUpBanner: React.FC = () => {
                 </div>
 
                 {/* Red indicators causing activation */}
-                <div className="mb-4 p-3 bg-[#0A0A0A] rounded-lg">
-                  <div className="text-xs text-gray-400 mb-2">Triggering indicators:</div>
+                <div className="mb-4 p-3 bg-white/[0.03] rounded-lg">
+                  <div className="text-xs text-white/30 mb-2">Triggering indicators:</div>
                   <div className="flex flex-wrap gap-2">
                     {redIndicators.map((ind) => (
                       <span
@@ -124,7 +124,7 @@ export const TightenUpBanner: React.FC = () => {
                 <div className="space-y-4">
                   {categories.map((cat) => (
                     <div key={cat}>
-                      <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">
+                      <h4 className="text-xs font-medium text-white/30 uppercase tracking-wider mb-2">
                         {cat}
                       </h4>
                       <div className="space-y-1">
@@ -139,7 +139,7 @@ export const TightenUpBanner: React.FC = () => {
                                   'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
                                   done
                                     ? 'bg-green-500/10 text-green-400'
-                                    : 'hover:bg-red-500/5 text-gray-300'
+                                    : 'hover:bg-red-500/5 text-white/50'
                                 )}
                               >
                                 <div
@@ -147,7 +147,7 @@ export const TightenUpBanner: React.FC = () => {
                                     'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors',
                                     done
                                       ? 'bg-green-500 border-green-500'
-                                      : 'border-gray-600'
+                                      : 'border-white/15'
                                   )}
                                 >
                                   {done && <Check className="w-3 h-3 text-white" />}

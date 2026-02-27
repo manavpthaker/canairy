@@ -227,21 +227,21 @@ export const EnhancedExecutiveSummary: React.FC = () => {
               <h2 className="text-xl sm:text-2xl font-display font-semibold text-white mb-1">
                 {mainMessage}
               </h2>
-              <p className="font-body text-gray-300 text-sm sm:text-base">
+              <p className="font-body text-white/50 text-sm sm:text-base">
                 {subMessage}
               </p>
             </div>
           </div>
           <div className="text-left sm:text-right">
-            <div className="text-sm text-gray-400 mb-1">Confidence</div>
+            <div className="text-sm text-white/30 mb-1">Confidence</div>
             <div className="text-xl font-bold text-white">{confidence}%</div>
           </div>
         </div>
         
         {/* Threat Summary */}
         {threats.length > 0 && (
-          <div className="mb-6 p-4 bg-[#0A0A0A] rounded-xl">
-            <h3 className="text-sm font-display font-medium text-gray-300 mb-3 flex items-center gap-2">
+          <div className="mb-6 p-4 bg-white/[0.03] rounded-xl">
+            <h3 className="text-sm font-display font-medium text-white/50 mb-3 flex items-center gap-2">
               <Info className="w-4 h-4" />
               Current Situation
             </h3>
@@ -249,7 +249,7 @@ export const EnhancedExecutiveSummary: React.FC = () => {
               {threats.map((threat, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
                   <span className="text-amber-400 mt-0.5">•</span>
-                  <span className="font-body text-gray-300">{threat}</span>
+                  <span className="font-body text-white/50">{threat}</span>
                 </li>
               ))}
             </ul>
@@ -259,20 +259,20 @@ export const EnhancedExecutiveSummary: React.FC = () => {
         {/* Impact Timeline */}
         {impactTimeline.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-sm font-display font-medium text-gray-300 mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-display font-medium text-white/50 mb-3 flex items-center gap-2">
               <Clock className="w-4 h-4" />
               Expected Impact Timeline
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {impactTimeline.map((impact, i) => (
-                <div key={i} className="bg-[#0A0A0A] rounded-lg p-3">
+                <div key={i} className="bg-white/[0.03] rounded-lg p-3">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">{getTimeframeIcon(impact.timeframe)}</span>
-                    <span className="text-xs font-display font-medium text-gray-400">
+                    <span className="text-xs font-display font-medium text-white/30">
                       {impact.timeframe.replace('-', ' ').toUpperCase()}
                     </span>
                   </div>
-                  <p className="text-sm font-body text-gray-300">{impact.description}</p>
+                  <p className="text-sm font-body text-white/50">{impact.description}</p>
                 </div>
               ))}
             </div>
@@ -283,14 +283,14 @@ export const EnhancedExecutiveSummary: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-white/10">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-400">
+              <Shield className="w-4 h-4 text-white/30" />
+              <span className="text-sm text-white/30">
                 Phase {currentPhase?.number || 0} Active
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-400">
+              <TrendingUp className="w-4 h-4 text-white/30" />
+              <span className="text-sm text-white/30">
                 HOPI: {hopiScore?.score.toFixed(1) || 'N/A'}
               </span>
             </div>

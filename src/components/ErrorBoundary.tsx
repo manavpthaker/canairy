@@ -168,9 +168,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
       // Full error boundary UI — dark theme matching app
       return (
-        <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] px-4">
+        <div className="min-h-screen flex items-center justify-center bg-[#0A0A0C] px-4">
           <div className="max-w-md w-full">
-            <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-8">
+            <div className="glass-card p-8">
               <div className="flex items-center justify-center w-16 h-16 mx-auto bg-red-500/10 rounded-full border border-red-500/20">
                 <AlertTriangle className="w-8 h-8 text-red-400" />
               </div>
@@ -179,18 +179,18 @@ export class ErrorBoundary extends Component<Props, State> {
                 Something went wrong
               </h1>
 
-              <p className="mt-2 text-center text-gray-400">
+              <p className="mt-2 text-center text-white/30">
                 {errorCount > 3
                   ? "We're experiencing persistent issues. Please try again later."
                   : "An unexpected error occurred. The issue has been reported."}
               </p>
 
               {import.meta.env.DEV && error && (
-                <details className="mt-4 p-4 bg-[#0A0A0A] rounded-lg border border-[#1A1A1A]">
-                  <summary className="cursor-pointer text-sm font-medium text-gray-300">
+                <details className="mt-4 p-4 bg-white/[0.03] rounded-lg border border-white/[0.04]">
+                  <summary className="cursor-pointer text-sm font-medium text-white/50">
                     Error Details (Development Only)
                   </summary>
-                  <pre className="mt-2 text-xs text-gray-500 overflow-auto max-h-48">
+                  <pre className="mt-2 text-xs text-white/20 overflow-auto max-h-48">
                     {error.message}
                     {'\n\n'}
                     {error.stack}
@@ -201,7 +201,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="mt-6 space-y-3">
                 <button
                   onClick={this.resetErrorBoundary}
-                  className="w-full flex items-center justify-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+                  className="w-full flex items-center justify-center px-4 py-2.5 bg-white/10 text-white rounded-xl hover:bg-white/15 transition-colors font-medium"
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Try Again
@@ -209,7 +209,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
                 <button
                   onClick={this.handleGoHome}
-                  className="w-full flex items-center justify-center px-4 py-2.5 bg-[#1A1A1A] text-gray-300 rounded-xl hover:bg-[#222222] transition-colors font-medium"
+                  className="w-full flex items-center justify-center px-4 py-2.5 bg-white/5 text-white/50 rounded-xl hover:bg-white/[0.08] transition-colors font-medium"
                 >
                   <Home className="w-4 h-4 mr-2" />
                   Go to Dashboard
@@ -217,7 +217,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
 
               {errorCount > 1 && (
-                <p className="mt-4 text-xs text-center text-gray-500">
+                <p className="mt-4 text-xs text-center text-white/20">
                   Error occurred {errorCount} times
                 </p>
               )}

@@ -221,9 +221,9 @@ export const ActionablePriorityActions: React.FC = () => {
   
   if (actions.length === 0) {
     return (
-      <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-8">
+      <div className="bg-white/[0.03] rounded-2xl border border-white/[0.04] p-8">
         <h3 className="text-lg font-semibold text-white mb-4">You're All Set!</h3>
-        <p className="text-gray-400">No urgent actions needed. Continue monitoring and stay prepared.</p>
+        <p className="text-white/30">No urgent actions needed. Continue monitoring and stay prepared.</p>
       </div>
     );
   }
@@ -231,12 +231,12 @@ export const ActionablePriorityActions: React.FC = () => {
   const completionRate = Math.round((completedActions.size / actions.length) * 100);
   
   return (
-    <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-4 sm:p-8">
+    <div className="bg-white/[0.03] rounded-2xl border border-white/[0.04] p-4 sm:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h3 className="text-lg font-display font-semibold text-white">Priority Actions</h3>
         <div className="flex items-center gap-2">
-          <div className="text-sm text-gray-400">{completionRate}% Complete</div>
-          <div className="w-24 h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
+          <div className="text-sm text-white/30">{completionRate}% Complete</div>
+          <div className="w-24 h-2 bg-white/5 rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-green-500 rounded-full"
               initial={{ width: 0 }}
@@ -265,7 +265,7 @@ export const ActionablePriorityActions: React.FC = () => {
             >
               {/* Header */}
               <div className="flex items-start gap-4 mb-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#1A1A1A] flex items-center justify-center">
+                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
                   <action.icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
@@ -275,7 +275,7 @@ export const ActionablePriorityActions: React.FC = () => {
                         {action.title}
                         {isCompleted && <CheckCircle2 className="w-4 h-4 text-green-400" />}
                       </h4>
-                      <p className="text-sm font-body text-gray-400 mt-1">{action.why}</p>
+                      <p className="text-sm font-body text-white/30 mt-1">{action.why}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {getUrgencyBadge(action.urgency)}
@@ -285,7 +285,7 @@ export const ActionablePriorityActions: React.FC = () => {
                           "w-5 h-5 rounded border-2 transition-colors",
                           isCompleted 
                             ? "bg-green-500 border-green-500" 
-                            : "border-gray-600 hover:border-gray-400"
+                            : "border-white/15 hover:border-white/30"
                         )}
                       >
                         {isCompleted && <Check className="w-3 h-3 text-white" />}
@@ -297,27 +297,27 @@ export const ActionablePriorityActions: React.FC = () => {
               
               {/* Impact and Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
-                <div className="bg-[#0A0A0A] rounded-lg p-3">
-                  <div className="text-xs text-gray-500 mb-1">Impact</div>
-                  <div className="text-sm text-gray-300">{action.impact}</div>
+                <div className="bg-white/[0.03] rounded-lg p-3">
+                  <div className="text-xs text-white/20 mb-1">Impact</div>
+                  <div className="text-sm text-white/50">{action.impact}</div>
                 </div>
-                <div className="bg-[#0A0A0A] rounded-lg p-3">
-                  <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+                <div className="bg-white/[0.03] rounded-lg p-3">
+                  <div className="text-xs text-white/20 mb-1 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     Time Required
                   </div>
-                  <div className="text-sm text-gray-300">{action.timeRequired}</div>
+                  <div className="text-sm text-white/50">{action.timeRequired}</div>
                 </div>
               </div>
               
               {/* Steps */}
               <div className="mb-4">
-                <h5 className="text-sm font-medium text-gray-300 mb-2">Steps to Take:</h5>
+                <h5 className="text-sm font-medium text-white/50 mb-2">Steps to Take:</h5>
                 <ul className="space-y-2">
                   {action.steps.map((step, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm">
-                      <span className="text-gray-500 mt-0.5">{i + 1}.</span>
-                      <span className={cn("text-gray-300", isCompleted && "line-through")}>
+                      <span className="text-white/20 mt-0.5">{i + 1}.</span>
+                      <span className={cn("text-white/50", isCompleted && "line-through")}>
                         {step}
                       </span>
                     </li>
@@ -340,7 +340,7 @@ export const ActionablePriorityActions: React.FC = () => {
                           copyToClipboard(resource.value, `${action.id}-${i}`);
                         }
                       }}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#1A1A1A] hover:bg-[#2A2A2A] rounded-lg text-xs text-gray-300 transition-colors"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs text-white/50 transition-colors"
                     >
                       {resource.type === 'phone' && <Phone className="w-3 h-3" />}
                       {resource.type === 'link' && <ExternalLink className="w-3 h-3" />}
@@ -360,12 +360,12 @@ export const ActionablePriorityActions: React.FC = () => {
       </div>
       
       {/* Quick Stats */}
-      <div className="mt-6 pt-6 border-t border-[#1A1A1A] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-        <div className="flex items-center gap-2 text-gray-400">
+      <div className="mt-6 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+        <div className="flex items-center gap-2 text-white/30">
           <AlertTriangle className="w-4 h-4" />
           <span>{actions.filter(a => a.urgency === 'immediate').length} immediate actions</span>
         </div>
-        <button className="text-gray-500 hover:text-gray-300 transition-colors">
+        <button className="text-white/20 hover:text-white/50 transition-colors">
           View full checklist →
         </button>
       </div>

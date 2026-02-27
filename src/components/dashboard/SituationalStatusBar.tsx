@@ -150,12 +150,12 @@ export const SituationalStatusBar: React.FC = () => {
         
         {/* Phase Status */}
         <div className="flex items-center gap-2 text-sm">
-          <Shield className="w-4 h-4 text-gray-400" />
+          <Shield className="w-4 h-4 text-white/30" />
           <span className="text-white font-medium">
             Phase {currentPhase?.number || 0}
           </span>
-          <span className="text-gray-400">•</span>
-          <span className="text-gray-400">3 days</span>
+          <span className="text-white/30">•</span>
+          <span className="text-white/30">3 days</span>
           {threatLevel !== 'normal' && (
             <>
               <ChevronRight className="w-3 h-3 text-amber-400" />
@@ -166,7 +166,7 @@ export const SituationalStatusBar: React.FC = () => {
         
         {/* HOPI Score */}
         <div className="flex items-center gap-2 text-sm">
-          <Activity className="w-4 h-4 text-gray-400" />
+          <Activity className="w-4 h-4 text-white/30" />
           <span className="text-white font-mono">
             {hopiScore?.score?.toFixed(1) || 'N/A'}/10
           </span>
