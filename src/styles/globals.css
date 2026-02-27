@@ -5,15 +5,16 @@
 
 @layer base {
   :root {
-    --bmb-black: #0D0D0D;
-    --bmb-dark: #1A1A1A;
-    --bmb-border: #262626;
+    --bmb-black: #0A0A0C;
+    --bmb-dark: #141416;
+    --bmb-elevated: #1C1C1E;
+    --bmb-border: #2A2A2E;
     --bmb-success: #10B981;
     --bmb-warning: #F59E0B;
     --bmb-danger: #EF4444;
-    --bmb-primary: #F9FAFB;
-    --bmb-secondary: #9CA3AF;
-    --bmb-accent: #6366F1;
+    --bmb-primary: #F5F5F7;
+    --bmb-secondary: #8E8E93;
+    --bmb-accent: #64748B;
   }
 
   * {
@@ -25,8 +26,11 @@
   }
 
   body {
-    @apply bg-bmb-black text-bmb-primary;
+    @apply text-bmb-primary;
+    background: radial-gradient(ellipse at 50% 0%, #12121A 0%, #0A0A0C 70%);
+    background-attachment: fixed;
     font-feature-settings: "cv11", "ss01", "ss02", "ss03", "ss04";
+    min-height: 100vh;
   }
 
   ::selection {
@@ -35,70 +39,105 @@
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    @apply w-2 h-2;
+    @apply w-1.5 h-1.5;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-bmb-dark;
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-bmb-border rounded-sm hover:bg-bmb-secondary/50;
+    @apply bg-white/10 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/20;
   }
 
   /* Firefox scrollbar */
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--bmb-border) var(--bmb-dark);
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
   }
 }
 
 @layer components {
-  /* Card Component */
+  /* ── Glass Card ── */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    @apply rounded-2xl;
+  }
+
+  .glass-card-elevated {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    @apply rounded-2xl;
+  }
+
+  .glass-card-interactive {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    @apply rounded-2xl transition-all duration-300;
+  }
+
+  .glass-card-interactive:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  /* ── Legacy Card (still works) ── */
   .card {
-    @apply bg-bmb-dark border border-bmb-border rounded-lg p-6;
-    @apply hover:border-bmb-secondary/50 transition-all duration-200;
+    @apply glass-card p-6;
   }
 
   .card-hover {
-    @apply hover:shadow-lg hover:shadow-bmb-black/50 hover:-translate-y-0.5;
+    @apply hover:shadow-glass hover:-translate-y-0.5;
   }
 
-  /* Button Component */
+  /* ── Buttons ── */
   .btn {
-    @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+    @apply px-4 py-2 rounded-xl font-medium transition-all duration-200;
     @apply inline-flex items-center justify-center gap-2;
-    @apply focus:outline-none focus:ring-2 focus:ring-bmb-accent focus:ring-offset-2 focus:ring-offset-bmb-black;
+    @apply focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-bmb-black;
   }
 
   .btn-primary {
-    @apply bg-bmb-accent text-white hover:bg-bmb-accent-light active:bg-bmb-accent-dark;
+    @apply bg-white/10 text-white hover:bg-white/15 active:bg-white/20 border border-white/10;
   }
 
   .btn-secondary {
-    @apply bg-bmb-dark text-bmb-primary border border-bmb-border;
-    @apply hover:bg-bmb-border/50 hover:border-bmb-secondary/50;
+    @apply bg-transparent text-bmb-secondary border border-white/[0.08];
+    @apply hover:bg-white/5 hover:text-white hover:border-white/[0.12];
   }
 
   .btn-danger {
-    @apply bg-bmb-danger text-white hover:bg-bmb-danger/90 active:bg-bmb-danger/80;
+    @apply bg-bmb-danger/20 text-red-400 hover:bg-bmb-danger/30 active:bg-bmb-danger/40 border border-red-500/20;
   }
 
   .btn-ghost {
-    @apply text-bmb-secondary hover:text-bmb-primary hover:bg-bmb-dark/50;
+    @apply text-bmb-secondary hover:text-bmb-primary hover:bg-white/5;
   }
 
-  /* Input Component */
+  /* ── Input ── */
   .input {
-    @apply bg-bmb-dark border border-bmb-border rounded-md px-3 py-2;
+    @apply bg-white/5 border border-white/[0.08] rounded-xl px-3 py-2;
     @apply text-bmb-primary placeholder-bmb-secondary;
-    @apply focus:outline-none focus:ring-2 focus:ring-bmb-accent focus:border-transparent;
+    @apply focus:outline-none focus:ring-2 focus:ring-white/15 focus:border-white/15;
     @apply transition-all duration-200;
   }
 
-  /* Badge Component */
+  /* ── Badges ── */
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium;
   }
 
   .badge-success {
@@ -114,30 +153,36 @@
   }
 
   .badge-default {
-    @apply bg-bmb-dark text-bmb-secondary border border-bmb-border;
+    @apply bg-white/5 text-bmb-secondary border border-white/[0.08];
   }
 
-  /* Status Indicator */
+  /* ── Status Dot ── */
   .status-dot {
     @apply w-2 h-2 rounded-full;
   }
 
   .status-green {
     @apply bg-bmb-success;
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
   }
 
   .status-amber {
     @apply bg-bmb-warning;
-    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
   }
 
   .status-red {
     @apply bg-bmb-danger animate-pulse;
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
   }
 
-  /* Data Display */
+  /* ── Score Display ── */
+  .score-display {
+    @apply font-mono font-bold tracking-tighter;
+    text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+  }
+
+  /* ── Data Display ── */
   .data-value {
     @apply font-mono text-2xl font-semibold;
   }
@@ -146,42 +191,72 @@
     @apply text-sm text-bmb-secondary;
   }
 
-  /* Chart Container */
+  /* ── Chart Container ── */
   .chart-container {
-    @apply bg-bmb-dark border border-bmb-border rounded-lg p-4;
+    @apply glass-card p-4;
     @apply relative overflow-hidden;
   }
 
-  /* Sidebar Link */
+  /* ── Sidebar Link ── */
   .sidebar-link {
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-md;
+    @apply flex items-center gap-3 px-3 py-2 rounded-xl;
     @apply text-bmb-secondary hover:text-bmb-primary;
-    @apply hover:bg-bmb-dark/50 transition-all duration-200;
+    @apply hover:bg-white/5 transition-all duration-200;
   }
 
   .sidebar-link-active {
-    @apply bg-bmb-accent/10 text-bmb-accent border-l-2 border-bmb-accent;
+    @apply text-white bg-white/[0.08];
   }
 
-  /* Modal Backdrop */
+  /* ── Modal Backdrop ── */
   .modal-backdrop {
-    @apply fixed inset-0 bg-bmb-black/80 backdrop-blur-sm;
+    @apply fixed inset-0 bg-black/70 backdrop-blur-sm;
     @apply flex items-center justify-center p-4 z-50;
   }
 
-  /* Loading Skeleton */
+  /* ── Loading Skeleton ── */
   .skeleton {
-    @apply bg-bmb-dark/50 rounded animate-pulse;
+    @apply bg-white/5 rounded-xl animate-pulse;
   }
 
-  /* Glass Effect */
+  /* ── Glass Effect (legacy) ── */
   .glass {
-    @apply bg-bmb-dark/50 backdrop-blur-md border border-bmb-border/50;
+    @apply bg-white/5 backdrop-blur-md border border-white/[0.08];
   }
 
-  /* Grid Pattern Background */
+  /* ── Grid Pattern ── */
   .grid-bg {
     @apply bg-grid-pattern;
+  }
+
+  /* ── Threat Banner ── */
+  .threat-banner {
+    background: linear-gradient(135deg, rgba(127,29,29,0.5) 0%, rgba(153,27,27,0.3) 50%, rgba(127,29,29,0.5) 100%);
+    background-size: 200% 200%;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    @apply animate-threat-pulse;
+  }
+
+  .threat-banner-amber {
+    background: linear-gradient(135deg, rgba(120,53,15,0.3) 0%, rgba(146,64,14,0.2) 50%, rgba(120,53,15,0.3) 100%);
+    background-size: 200% 200%;
+    border: 1px solid rgba(245, 158, 11, 0.15);
+  }
+
+  /* ── Glow borders for status ── */
+  .glow-border-red {
+    border-color: rgba(239, 68, 68, 0.2);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.08), inset 0 0 20px rgba(239, 68, 68, 0.03);
+  }
+
+  .glow-border-amber {
+    border-color: rgba(245, 158, 11, 0.2);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.06), inset 0 0 20px rgba(245, 158, 11, 0.02);
+  }
+
+  .glow-border-green {
+    border-color: rgba(16, 185, 129, 0.15);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.05), inset 0 0 20px rgba(16, 185, 129, 0.02);
   }
 }
 
@@ -199,36 +274,36 @@
 
 /* Skip to Content */
 .skip-to-content {
-  @apply absolute -top-full left-4 z-[100] bg-bmb-accent text-white px-4 py-2 rounded-b-md;
+  @apply absolute -top-full left-4 z-[100] bg-white/10 text-white px-4 py-2 rounded-b-xl;
   @apply focus:top-0 transition-[top] duration-200;
 }
 
 @layer utilities {
   /* Text Gradient */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-bmb-accent to-bmb-accent-light;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60;
   }
 
   /* Glow Effects */
   .glow-accent {
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 30px rgba(100, 116, 139, 0.2);
   }
 
   .glow-success {
-    box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
   }
 
   .glow-warning {
-    box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
   }
 
   .glow-danger {
-    box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.2);
   }
 
   /* Focus Visible */
   .focus-visible-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bmb-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bmb-black;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-bmb-black;
   }
 
   /* Animation Delays */

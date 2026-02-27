@@ -58,13 +58,12 @@ export const Indicators: React.FC = () => {
 
   return (
     <>
-      {/* Page Header with Filters */}
-      <div className="bg-[#111111] border-b border-[#1A1A1A]">
+      <div className="border-b border-white/[0.04]">
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold text-white">What We're Watching</h1>
-              <p className="text-gray-400 mt-1">Everything Canairy monitors to keep your family informed</p>
+              <h1 className="text-2xl sm:text-3xl font-display font-semibold text-white">What We Watch</h1>
+              <p className="text-white/30 mt-1 text-sm">Everything Canairy monitors for your family</p>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -72,8 +71,8 @@ export const Indicators: React.FC = () => {
                 className={cn(
                   "p-2 rounded-lg transition-colors",
                   viewMode === 'grid'
-                    ? 'bg-white text-[#0A0A0A]'
-                    : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'
+                    ? 'bg-white/10 text-white'
+                    : 'text-white/20 hover:text-white/40 hover:bg-white/5'
                 )}
               >
                 <LayoutGrid className="w-4 h-4" />
@@ -83,8 +82,8 @@ export const Indicators: React.FC = () => {
                 className={cn(
                   "p-2 rounded-lg transition-colors",
                   viewMode === 'list'
-                    ? 'bg-white text-[#0A0A0A]'
-                    : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'
+                    ? 'bg-white/10 text-white'
+                    : 'text-white/20 hover:text-white/40 hover:bg-white/5'
                 )}
               >
                 <List className="w-4 h-4" />
@@ -92,43 +91,41 @@ export const Indicators: React.FC = () => {
             </div>
           </div>
 
-          {/* Search and Filters */}
+          {/* Search + Filters */}
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             <div className="relative w-full sm:flex-1 sm:max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
               <input
                 type="text"
                 placeholder="Search indicators..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-[#1A1A1A] border border-[#2A2A2A] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/50 placeholder-gray-500"
+                className="input w-full pl-10 pr-4"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40"
                 >
                   <X className="w-4 h-4" />
                 </button>
               )}
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-2 bg-[#1A1A1A] rounded-lg p-1 overflow-x-auto">
+            <div className="flex items-center gap-1 bg-white/[0.04] rounded-xl p-1 overflow-x-auto">
               {(['all', 'green', 'amber', 'red'] as FilterStatus[]).map((status) => (
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
                   className={cn(
-                    'px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap',
+                    'px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap',
                     statusFilter === status
-                      ? 'bg-[#0A0A0A] text-white'
-                      : 'text-gray-500 hover:text-gray-300'
+                      ? 'bg-white/[0.08] text-white'
+                      : 'text-white/25 hover:text-white/40'
                   )}
                 >
                   {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
-                  <span className="ml-1.5 text-xs text-gray-500">
-                    ({statusCounts[status]})
-                  </span>
+                  <span className="ml-1 text-xs text-white/15">({statusCounts[status]})</span>
                 </button>
               ))}
             </div>
@@ -136,7 +133,7 @@ export const Indicators: React.FC = () => {
             <select
               value={domainFilter}
               onChange={(e) => setDomainFilter(e.target.value as FilterDomain)}
-              className="px-4 py-2 bg-[#1A1A1A] border border-[#2A2A2A] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/50 text-sm"
+              className="input px-4 py-2 text-sm"
             >
               <option value="all">All Domains</option>
               {Object.entries(domainLabels).map(([value, label]) => (
@@ -149,19 +146,18 @@ export const Indicators: React.FC = () => {
                 type="checkbox"
                 checked={showCriticalOnly}
                 onChange={(e) => setShowCriticalOnly(e.target.checked)}
-                className="w-4 h-4 rounded bg-[#1A1A1A] border-[#2A2A2A] text-white focus:ring-white/20"
+                className="w-4 h-4 rounded bg-white/5 border-white/10 text-white focus:ring-white/20"
               />
-              <span className="text-sm text-gray-400">Critical only</span>
+              <span className="text-sm text-white/30">Critical only</span>
             </label>
           </div>
         </div>
       </div>
 
-      {/* Content */}
       <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="flex items-center justify-between mb-6">
-          <p className="text-sm text-gray-400">
-            Showing {filteredIndicators.length} of {indicators.length} indicators
+          <p className="text-sm text-white/20">
+            Showing {filteredIndicators.length} of {indicators.length}
           </p>
           {filteredIndicators.filter(i => i.status.level === 'red').length > 0 && (
             <Badge variant="red">
@@ -175,8 +171,8 @@ export const Indicators: React.FC = () => {
             layout
             className={cn(
               viewMode === 'grid'
-                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6'
-                : 'space-y-4'
+                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+                : 'space-y-3'
             )}
           >
             {filteredIndicators.map((indicator, index) => (
@@ -197,11 +193,11 @@ export const Indicators: React.FC = () => {
           </motion.div>
         ) : (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-[#1A1A1A] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Filter className="w-8 h-8 text-gray-500" />
+            <div className="w-16 h-16 glass-card flex items-center justify-center mx-auto mb-4 rounded-full">
+              <Filter className="w-8 h-8 text-white/15" />
             </div>
-            <h3 className="text-lg font-medium text-white mb-2">No indicators found</h3>
-            <p className="text-gray-400">Try adjusting your search or filters</p>
+            <h3 className="text-lg font-display font-medium text-white mb-2">No indicators found</h3>
+            <p className="text-white/30">Try adjusting your search or filters</p>
           </div>
         )}
       </div>
