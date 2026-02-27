@@ -33,10 +33,10 @@ export const IndicatorDetails: React.FC = () => {
     return (
       <div className="flex items-center justify-center py-24">
         <div className="text-center">
-          <Activity className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+          <Activity className="w-12 h-12 text-white/15 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white mt-4">Indicator Not Found</h1>
-          <p className="text-gray-400 mt-2">Loading or invalid indicator ID: {id}</p>
-          <Link to="/indicators" className="inline-flex items-center gap-2 mt-6 text-indigo-400 hover:text-indigo-300 transition-colors">
+          <p className="text-white/30 mt-2">Loading or invalid indicator ID: {id}</p>
+          <Link to="/indicators" className="inline-flex items-center gap-2 mt-6 text-white/30 hover:text-white/50 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Back to Indicators
           </Link>
@@ -55,7 +55,7 @@ export const IndicatorDetails: React.FC = () => {
   };
 
   const getTrendColor = () => {
-    if (!indicator.status.trend) return 'text-gray-400';
+    if (!indicator.status.trend) return 'text-white/30';
     if (indicator.greenFlag) {
       return indicator.status.trend === 'up' ? 'text-green-400' : 'text-red-400';
     }
@@ -86,21 +86,21 @@ export const IndicatorDetails: React.FC = () => {
   return (
     <>
       {/* Page Header */}
-      <div className="bg-[#111111] border-b border-[#1A1A1A]">
+      <div className="border-b border-white/[0.04]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 mb-4 text-sm">
-            <Link to="/" className="text-gray-500 hover:text-gray-300 transition-colors">Dashboard</Link>
-            <ChevronRight className="w-3 h-3 text-gray-600" />
-            <Link to="/indicators" className="text-gray-500 hover:text-gray-300 transition-colors">Indicators</Link>
-            <ChevronRight className="w-3 h-3 text-gray-600" />
-            <span className="text-gray-300">{indicator.name}</span>
+            <Link to="/" className="text-white/20 hover:text-white/50 transition-colors">Dashboard</Link>
+            <ChevronRight className="w-3 h-3 text-white/15" />
+            <Link to="/indicators" className="text-white/20 hover:text-white/50 transition-colors">Indicators</Link>
+            <ChevronRight className="w-3 h-3 text-white/15" />
+            <span className="text-white/50">{indicator.name}</span>
           </div>
 
           <div className="flex items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-white">{indicator.name}</h1>
-              <p className="text-gray-400 mt-1">{indicator.description}</p>
+              <p className="text-white/30 mt-1">{indicator.description}</p>
             </div>
             <StatusBadge level={indicator.status.level} size="lg" pulse={indicator.status.level === 'red' && indicator.critical} />
           </div>
@@ -112,17 +112,17 @@ export const IndicatorDetails: React.FC = () => {
         {/* Status + Thresholds cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Current Status */}
-          <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6">
-            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Current Status</h2>
+          <div className="glass-card p-6">
+            <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Current Status</h2>
             <div className="flex items-baseline gap-2 mb-3">
               <span className="text-4xl font-bold text-white">
                 {typeof indicator.status.value === 'number'
                   ? indicator.status.value.toLocaleString(undefined, { maximumFractionDigits: 2 })
                   : indicator.status.value}
               </span>
-              <span className="text-lg text-gray-400">{indicator.unit}</span>
+              <span className="text-lg text-white/30">{indicator.unit}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+            <div className="flex items-center gap-2 text-sm text-white/20 mb-4">
               <Clock className="w-4 h-4" />
               <span>Updated {formatDistanceToNow(new Date(indicator.status.lastUpdate), { addSuffix: true })}</span>
             </div>
@@ -130,29 +130,29 @@ export const IndicatorDetails: React.FC = () => {
               <span className={cn('font-medium flex items-center gap-1', getTrendColor())}>
                 {getTrendIcon()} {indicator.status.trend ? indicator.status.trend.toUpperCase() : 'STABLE'}
               </span>
-              <span className="text-gray-500">from {indicator.dataSource}</span>
+              <span className="text-white/20">from {indicator.dataSource}</span>
             </div>
           </div>
 
           {/* Thresholds */}
-          <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6">
-            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Thresholds</h2>
+          <div className="glass-card p-6">
+            <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Thresholds</h2>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                  <span className="text-gray-300">Green</span>
+                  <span className="text-white/50">Green</span>
                 </div>
-                <span className="text-gray-400 font-mono text-sm">
+                <span className="text-white/30 font-mono text-sm">
                   {indicator.thresholds?.threshold_amber !== undefined ? `< ${indicator.thresholds.threshold_amber} ${indicator.unit}` : 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                  <span className="text-gray-300">Amber</span>
+                  <span className="text-white/50">Amber</span>
                 </div>
-                <span className="text-gray-400 font-mono text-sm">
+                <span className="text-white/30 font-mono text-sm">
                   {indicator.thresholds?.threshold_red !== undefined
                     ? `${indicator.thresholds.threshold_amber} — ${indicator.thresholds.threshold_red} ${indicator.unit}`
                     : 'N/A'}
@@ -161,15 +161,15 @@ export const IndicatorDetails: React.FC = () => {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                  <span className="text-gray-300">Red</span>
+                  <span className="text-white/50">Red</span>
                 </div>
-                <span className="text-gray-400 font-mono text-sm">
+                <span className="text-white/30 font-mono text-sm">
                   {indicator.thresholds?.threshold_red !== undefined ? `> ${indicator.thresholds.threshold_red} ${indicator.unit}` : 'N/A'}
                 </span>
               </div>
             </div>
             {indicator.critical && (
-              <div className="mt-4 pt-4 border-t border-[#1A1A1A] flex items-center gap-2 text-sm text-red-400">
+              <div className="mt-4 pt-4 border-t border-white/[0.04] flex items-center gap-2 text-sm text-red-400">
                 <AlertTriangle className="w-4 h-4" />
                 Critical indicator — contributes to TIGHTEN-UP protocol
               </div>
@@ -178,22 +178,22 @@ export const IndicatorDetails: React.FC = () => {
         </div>
 
         {/* Chart */}
-        <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6">
-          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Historical Trend</h2>
+        <div className="glass-card p-6">
+          <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Historical Trend</h2>
           <IndicatorChart indicator={indicator} height={200} />
         </div>
 
         {/* Insights */}
         {insights.length > 0 && (
-          <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6">
-            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Insights</h2>
+          <div className="glass-card p-6">
+            <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Insights</h2>
             <div className="space-y-3">
               {insights.map((insight, index) => (
-                <div key={index} className="flex items-start gap-3 px-3 py-2.5 rounded-lg bg-[#0A0A0A]">
+                <div key={index} className="flex items-start gap-3 px-3 py-2.5 rounded-lg bg-white/[0.03]">
                   {insight.type === 'warning' && <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />}
                   {insight.type === 'info' && <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />}
                   {insight.type === 'action' && <Lightbulb className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />}
-                  <p className="text-gray-300 text-sm">{insight.message}</p>
+                  <p className="text-white/50 text-sm">{insight.message}</p>
                 </div>
               ))}
             </div>

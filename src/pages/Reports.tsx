@@ -69,7 +69,7 @@ export const Reports: React.FC = () => {
     {
       title: 'Detailed Spreadsheet',
       description: 'All the things we monitor, saved as a spreadsheet you can open in Excel or Google Sheets',
-      icon: <FileText className="w-6 h-6 text-indigo-400" />,
+      icon: <FileText className="w-6 h-6 text-white/40" />,
       action: handleExportCSV,
       actionLabel: 'Download Spreadsheet',
     },
@@ -92,42 +92,42 @@ export const Reports: React.FC = () => {
   return (
     <>
       {/* Header */}
-      <div className="bg-[#111111] border-b border-[#1A1A1A]">
+      <div className="border-b border-white/[0.04]">
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <h1 className="text-2xl sm:text-3xl font-semibold text-white">Reports</h1>
-          <p className="text-gray-400 mt-1">Save, print, or share your family's preparedness status</p>
+          <p className="text-white/30 mt-1">Save, print, or share your family's preparedness status</p>
         </div>
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-8">
         {/* Quick Stats — Print target */}
-        <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6" id="print-summary">
-          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Your Family's Current Status</h2>
+        <div className="glass-card p-6" id="print-summary">
+          <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Your Family's Current Status</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-white">{hopiScore ? Math.round(hopiScore.score) : '—'}</div>
-              <div className="text-xs text-gray-500">HOPI Score</div>
+              <div className="text-xs text-white/20">HOPI Score</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-white">{currentPhase?.number ?? '—'}</div>
-              <div className="text-xs text-gray-500">Phase</div>
+              <div className="text-xs text-white/20">Phase</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-red-400">{redCount}</div>
-              <div className="text-xs text-gray-500">Red Alerts</div>
+              <div className="text-xs text-white/20">Red Alerts</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-amber-400">{amberCount}</div>
-              <div className="text-xs text-gray-500">Amber Warnings</div>
+              <div className="text-xs text-white/20">Amber Warnings</div>
             </div>
           </div>
 
           {/* Domain summary table */}
-          <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Domains</h3>
+          <h3 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-3">Domains</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-gray-500 text-xs uppercase tracking-wider">
+                <tr className="text-white/20 text-xs uppercase tracking-wider">
                   <th className="text-left py-2 pr-4">Domain</th>
                   <th className="text-center py-2 px-2">Total</th>
                   <th className="text-center py-2 px-2">Red</th>
@@ -136,11 +136,11 @@ export const Reports: React.FC = () => {
               </thead>
               <tbody>
                 {domainSummary.map(d => (
-                  <tr key={d.key} className="border-t border-[#1A1A1A]">
-                    <td className="py-2 pr-4 text-gray-300">{d.label}</td>
-                    <td className="py-2 px-2 text-center text-gray-400">{d.total}</td>
-                    <td className={cn('py-2 px-2 text-center', d.red > 0 ? 'text-red-400 font-medium' : 'text-gray-600')}>{d.red}</td>
-                    <td className={cn('py-2 px-2 text-center', d.amber > 0 ? 'text-amber-400 font-medium' : 'text-gray-600')}>{d.amber}</td>
+                  <tr key={d.key} className="border-t border-white/[0.04]">
+                    <td className="py-2 pr-4 text-white/50">{d.label}</td>
+                    <td className="py-2 px-2 text-center text-white/30">{d.total}</td>
+                    <td className={cn('py-2 px-2 text-center', d.red > 0 ? 'text-red-400 font-medium' : 'text-white/15')}>{d.red}</td>
+                    <td className={cn('py-2 px-2 text-center', d.amber > 0 ? 'text-amber-400 font-medium' : 'text-white/15')}>{d.amber}</td>
                   </tr>
                 ))}
               </tbody>
@@ -150,7 +150,7 @@ export const Reports: React.FC = () => {
 
         {/* Export Options */}
         <div>
-          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Export Options</h2>
+          <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Export Options</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {reportCards.map((card, idx) => (
               <motion.div
@@ -158,14 +158,14 @@ export const Reports: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6 flex flex-col"
+                className="glass-card p-6 flex flex-col"
               >
                 <div className="mb-4">{card.icon}</div>
                 <h3 className="text-white font-medium mb-1">{card.title}</h3>
-                <p className="text-sm text-gray-400 mb-6 flex-1">{card.description}</p>
+                <p className="text-sm text-white/30 mb-6 flex-1">{card.description}</p>
                 <button
                   onClick={card.action}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1A1A1A] text-gray-300 rounded-xl hover:bg-[#2A2A2A] transition-colors text-sm font-medium"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 text-white/50 rounded-xl hover:bg-white/10 transition-colors text-sm font-medium"
                 >
                   <Download className="w-4 h-4" />
                   {card.actionLabel}
