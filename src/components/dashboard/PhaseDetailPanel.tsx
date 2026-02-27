@@ -65,10 +65,10 @@ export const PhaseDetailPanel: React.FC = () => {
             </Badge>
           </div>
           <div className="flex items-center gap-3">
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-white/30">
               {completedCount}/{currentPhase.actions.length} done
             </div>
-            <div className="w-16 h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
+            <div className="w-16 h-2 bg-white/5 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -83,12 +83,12 @@ export const PhaseDetailPanel: React.FC = () => {
 
       <CardContent>
         {/* Current phase description */}
-        <p className="text-sm text-gray-400 mb-4">{currentPhase.description}</p>
+        <p className="text-sm text-white/30 mb-4">{currentPhase.description}</p>
 
         {/* Trigger conditions */}
-        <div className="mb-4 p-3 bg-[#0A0A0A] rounded-lg">
-          <div className="text-xs font-medium text-gray-500 mb-1">TRIGGER</div>
-          <div className="text-sm text-gray-300">
+        <div className="mb-4 p-3 bg-white/[0.03] rounded-lg">
+          <div className="text-xs font-medium text-white/20 mb-1">TRIGGER</div>
+          <div className="text-sm text-white/50">
             {currentPhase.triggers.join(' | ')}
           </div>
         </div>
@@ -112,7 +112,7 @@ export const PhaseDetailPanel: React.FC = () => {
 
         {/* Action checklist */}
         <div className="mb-4">
-          <h4 className="text-sm font-medium text-gray-300 mb-3">
+          <h4 className="text-sm font-medium text-white/50 mb-3">
             Phase {currentPhaseNum} Actions:
           </h4>
           <div className="space-y-1">
@@ -127,7 +127,7 @@ export const PhaseDetailPanel: React.FC = () => {
                     'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
                     done
                       ? 'bg-green-500/10'
-                      : 'hover:bg-[#1A1A1A]'
+                      : 'hover:bg-white/5'
                   )}
                 >
                   <div
@@ -135,14 +135,14 @@ export const PhaseDetailPanel: React.FC = () => {
                       'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0',
                       done
                         ? 'bg-green-500 border-green-500'
-                        : 'border-gray-600'
+                        : 'border-white/15'
                     )}
                   >
                     {done && <CheckCircle2 className="w-3 h-3 text-white" />}
                   </div>
                   <span
                     className={cn(
-                      'text-sm text-gray-300',
+                      'text-sm text-white/50',
                       done && 'line-through opacity-60'
                     )}
                   >
@@ -156,14 +156,14 @@ export const PhaseDetailPanel: React.FC = () => {
 
         {/* Next phase preview */}
         {nextPhase && (
-          <div className="p-3 border border-[#1A1A1A] rounded-lg">
+          <div className="p-3 border border-white/[0.04] rounded-lg">
             <div className="flex items-center gap-2 mb-1">
-              <ChevronRight className="w-4 h-4 text-gray-500" />
-              <span className="text-xs font-medium text-gray-500">
+              <ChevronRight className="w-4 h-4 text-white/20" />
+              <span className="text-xs font-medium text-white/20">
                 NEXT: Phase {nextPhase.number} — {nextPhase.name}
               </span>
             </div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-white/20">
               Triggers: {nextPhase.triggers.join(' | ')}
             </div>
           </div>
@@ -172,7 +172,7 @@ export const PhaseDetailPanel: React.FC = () => {
         {/* Show all phases toggle */}
         <button
           onClick={() => setShowAllPhases(!showAllPhases)}
-          className="mt-4 flex items-center gap-2 text-sm text-gray-500 hover:text-gray-300 transition-colors"
+          className="mt-4 flex items-center gap-2 text-sm text-white/20 hover:text-white/50 transition-colors"
         >
           {showAllPhases ? (
             <ChevronUp className="w-4 h-4" />
@@ -199,7 +199,7 @@ export const PhaseDetailPanel: React.FC = () => {
                       key={phase.number}
                       className={cn(
                         'flex items-center gap-3 px-3 py-2 rounded-lg text-sm',
-                        isCurrent && 'bg-[#1A1A1A] border border-[#2A2A2A]',
+                        isCurrent && 'bg-white/5 border border-white/[0.08]',
                         isPast && 'opacity-50'
                       )}
                     >
@@ -210,12 +210,12 @@ export const PhaseDetailPanel: React.FC = () => {
                       <span
                         className={cn(
                           'font-medium',
-                          isCurrent ? 'text-white' : 'text-gray-400'
+                          isCurrent ? 'text-white' : 'text-white/30'
                         )}
                       >
                         Phase {phase.number}
                       </span>
-                      <span className="text-gray-500">{phase.name}</span>
+                      <span className="text-white/20">{phase.name}</span>
                       {isCurrent && (
                         <Badge variant="default" size="sm">
                           CURRENT

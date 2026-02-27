@@ -60,10 +60,10 @@ export const DomainBreakdown: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-gray-400" />
+            <ShieldAlert className="w-5 h-5 text-white/30" />
             <span>Domain Threat Breakdown</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-white/30">
             <span>HOPI:</span>
             <span
               className="font-mono font-bold"
@@ -99,7 +99,7 @@ export const DomainBreakdown: React.FC = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="flex items-center gap-4 p-3 rounded-lg hover:bg-[#1A1A1A] transition-colors"
+                className="flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors"
               >
                 {/* Icon */}
                 <div
@@ -113,11 +113,11 @@ export const DomainBreakdown: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-200 truncate">
+                      <span className="text-sm font-medium text-white/60 truncate">
                         {meta.label}
                       </span>
                       {meta.weight > 1 && (
-                        <span className="text-2xs text-gray-500">
+                        <span className="text-2xs text-white/20">
                           {meta.weight}x
                         </span>
                       )}
@@ -143,7 +143,7 @@ export const DomainBreakdown: React.FC = () => {
                   </div>
 
                   {/* Progress bar */}
-                  <div className="h-1.5 bg-[#1A1A1A] rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <motion.div
                       className="h-full rounded-full"
                       style={{ backgroundColor: color }}
@@ -161,7 +161,7 @@ export const DomainBreakdown: React.FC = () => {
         </div>
 
         {/* Legend */}
-        <div className="mt-6 pt-4 border-t border-[#1A1A1A] flex flex-wrap items-center gap-4 text-xs text-gray-500">
+        <div className="mt-6 pt-4 border-t border-white/[0.04] flex flex-wrap items-center gap-4 text-xs text-white/20">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 rounded-full bg-green-500" />
             <span>0–29 Normal</span>
@@ -174,7 +174,7 @@ export const DomainBreakdown: React.FC = () => {
             <div className="w-2 h-2 rounded-full bg-red-500" />
             <span>60+ Critical</span>
           </div>
-          <span className="text-gray-600">|</span>
+          <span className="text-white/15">|</span>
           <span>Weighted: Global Conflict 1.5x, Security & Domestic 1.25x, Cult 0.75x</span>
         </div>
       </CardContent>

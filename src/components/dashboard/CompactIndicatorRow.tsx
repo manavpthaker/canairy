@@ -40,7 +40,7 @@ export const CompactIndicatorRow: React.FC<CompactIndicatorRowProps> = ({
     red: { dot: 'bg-red-500', text: 'text-red-400', border: 'border-red-500/15 hover:border-red-500/30' },
     amber: { dot: 'bg-amber-500', text: 'text-amber-400', border: 'border-amber-500/10 hover:border-amber-500/25' },
     green: { dot: 'bg-green-500', text: 'text-green-400', border: 'border-green-500/10' },
-    unknown: { dot: 'bg-gray-500', text: 'text-gray-400', border: 'border-white/5' },
+    unknown: { dot: 'bg-white/20', text: 'text-white/30', border: 'border-white/5' },
   };
 
   return (

@@ -138,7 +138,7 @@ export const RiskNarrativePanel: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-400">No significant risk patterns detected. Continue normal monitoring.</p>
+          <p className="text-white/30">No significant risk patterns detected. Continue normal monitoring.</p>
         </CardContent>
       </Card>
     );
@@ -166,27 +166,27 @@ export const RiskNarrativePanel: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="border border-[#1A1A1A] rounded-lg overflow-hidden"
+                className="border border-white/[0.04] rounded-lg overflow-hidden"
               >
                 <button
                   onClick={() => setExpandedPattern(isExpanded ? null : pattern.id)}
-                  className="w-full p-4 hover:bg-[#111111] transition-colors text-left"
+                  className="w-full p-4 hover:bg-white/[0.03] transition-colors text-left"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 bg-[#1A1A1A] rounded-lg flex items-center justify-center">
+                    <div className="flex-shrink-0 w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center">
                       <pattern.icon className="w-5 h-5 text-amber-400" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <h4 className="font-medium text-white">{pattern.title}</h4>
-                          <p className="text-sm text-gray-400 mt-1 line-clamp-2">
+                          <p className="text-sm text-white/30 mt-1 line-clamp-2">
                             {pattern.description}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="text-right">
-                            <div className="text-xs text-gray-500">Pattern Match</div>
+                            <div className="text-xs text-white/20">Pattern Match</div>
                             <div className={cn(
                               "text-lg font-bold",
                               pattern.currentSimilarity >= 80 ? "text-red-400" : 
@@ -197,9 +197,9 @@ export const RiskNarrativePanel: React.FC = () => {
                             </div>
                           </div>
                           {isExpanded ? (
-                            <ChevronUp className="w-5 h-5 text-gray-500" />
+                            <ChevronUp className="w-5 h-5 text-white/20" />
                           ) : (
-                            <ChevronDown className="w-5 h-5 text-gray-500" />
+                            <ChevronDown className="w-5 h-5 text-white/20" />
                           )}
                         </div>
                       </div>
@@ -214,35 +214,35 @@ export const RiskNarrativePanel: React.FC = () => {
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="border-t border-[#1A1A1A]"
+                      className="border-t border-white/[0.04]"
                     >
                       <div className="p-4 space-y-4">
                         {/* Full Description */}
                         <div>
-                          <h5 className="text-sm font-medium text-gray-300 mb-2">What This Means</h5>
-                          <p className="text-sm text-gray-400 leading-relaxed">
+                          <h5 className="text-sm font-medium text-white/50 mb-2">What This Means</h5>
+                          <p className="text-sm text-white/30 leading-relaxed">
                             {pattern.description}
                           </p>
                         </div>
                         
                         {/* Historical Example */}
-                        <div className="bg-[#0A0A0A] rounded-lg p-4">
-                          <h5 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                        <div className="bg-white/[0.03] rounded-lg p-4">
+                          <h5 className="text-sm font-medium text-white/50 mb-3 flex items-center gap-2">
                             <History className="w-4 h-4" />
                             Historical Precedent: {pattern.historicalExample.date}
                           </h5>
                           <div className="space-y-2 text-sm">
                             <div className="flex items-start gap-2">
-                              <span className="text-gray-500">Event:</span>
-                              <span className="text-gray-300">{pattern.historicalExample.event}</span>
+                              <span className="text-white/20">Event:</span>
+                              <span className="text-white/50">{pattern.historicalExample.event}</span>
                             </div>
                             <div className="flex items-start gap-2">
-                              <span className="text-gray-500">Result:</span>
-                              <span className="text-gray-300">{pattern.historicalExample.outcome}</span>
+                              <span className="text-white/20">Result:</span>
+                              <span className="text-white/50">{pattern.historicalExample.outcome}</span>
                             </div>
                             <div className="flex items-start gap-2">
-                              <span className="text-gray-500">Duration:</span>
-                              <span className="text-gray-300">{pattern.historicalExample.duration}</span>
+                              <span className="text-white/20">Duration:</span>
+                              <span className="text-white/50">{pattern.historicalExample.duration}</span>
                             </div>
                           </div>
                         </div>
@@ -253,7 +253,7 @@ export const RiskNarrativePanel: React.FC = () => {
                             <AlertTriangle className="w-4 h-4" />
                             Expected Outcome This Time
                           </h5>
-                          <p className="text-sm text-gray-300">
+                          <p className="text-sm text-white/50">
                             {pattern.expectedOutcome}
                           </p>
                         </div>
@@ -267,10 +267,10 @@ export const RiskNarrativePanel: React.FC = () => {
         </div>
         
         {/* Context Footer */}
-        <div className="mt-6 pt-6 border-t border-[#1A1A1A]">
+        <div className="mt-6 pt-6 border-t border-white/[0.04]">
           <div className="flex items-start gap-2">
-            <Info className="w-4 h-4 text-gray-500 mt-0.5" />
-            <p className="text-xs text-gray-500">
+            <Info className="w-4 h-4 text-white/20 mt-0.5" />
+            <p className="text-xs text-white/20">
               Pattern recognition based on historical data from 2008-2024. Higher similarity percentages indicate closer matches to past crisis patterns. This analysis helps predict likely outcomes but is not guaranteed.
             </p>
           </div>

@@ -116,7 +116,7 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
           </div>
           <button
             onClick={() => onIndicatorClick?.(criticalIndicators[0])}
-            className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1"
+            className="text-sm text-white/30 hover:text-white transition-colors flex items-center gap-1"
           >
             View all
             <ChevronRight className="w-4 h-4" />
@@ -141,7 +141,7 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
                     "border rounded-lg transition-all cursor-pointer",
                     indicator.status.level === 'red' && indicator.critical 
                       ? "border-red-500/50 bg-red-500/5" 
-                      : "border-[#1A1A1A] hover:border-[#2A2A2A]"
+                      : "border-white/[0.04] hover:border-white/[0.08]"
                   )}
                   onClick={() => setExpandedId(isExpanded ? null : indicator.id)}
                 >
@@ -160,7 +160,7 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
                             <Badge variant="red" size="sm">CRITICAL</Badge>
                           )}
                         </div>
-                        <p className="text-sm font-body text-gray-400">
+                        <p className="text-sm font-body text-white/30">
                           {getImpactSummary(indicator)}
                         </p>
                       </div>
@@ -173,10 +173,10 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
                               ? indicator.status.value.toLocaleString(undefined, { maximumFractionDigits: 2 })
                               : indicator.status.value}
                           </span>
-                          <span className="text-sm text-gray-400">{indicator.unit}</span>
+                          <span className="text-sm text-white/30">{indicator.unit}</span>
                           {getTrendIcon(indicator.status.trend, indicator.greenFlag)}
                         </div>
-                        <div className="text-xs text-gray-500 mt-1">
+                        <div className="text-xs text-white/20 mt-1">
                           Updated {formatDistanceToNow(new Date(indicator.status.lastUpdate), { addSuffix: true })}
                         </div>
                       </div>
@@ -201,22 +201,22 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
                           transition={{ duration: 0.2 }}
                           className="overflow-hidden"
                         >
-                          <div className="pt-4 mt-4 border-t border-[#1A1A1A] space-y-3">
+                          <div className="pt-4 mt-4 border-t border-white/[0.04] space-y-3">
                             {/* Why It Matters */}
                             <div>
                               <h5 className="text-sm font-medium text-white mb-1 flex items-center gap-1">
                                 <AlertTriangle className="w-3 h-3 text-amber-400" />
                                 Why This Matters Now
                               </h5>
-                              <p className="text-sm text-gray-300">
+                              <p className="text-sm text-white/50">
                                 {description.whyItMatters}
                               </p>
                             </div>
 
                             {/* Current Threshold */}
-                            <div className="bg-[#0A0A0A] rounded-lg p-3">
-                              <div className="text-xs text-gray-400 mb-1">Current Status</div>
-                              <p className="text-sm text-gray-300">
+                            <div className="bg-white/[0.03] rounded-lg p-3">
+                              <div className="text-xs text-white/30 mb-1">Current Status</div>
+                              <p className="text-sm text-white/50">
                                 {indicator.status.level === 'red' && description.thresholds.red}
                                 {indicator.status.level === 'amber' && description.thresholds.amber}
                                 {indicator.status.level === 'green' && description.thresholds.green}
@@ -229,7 +229,7 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
                                 e.stopPropagation();
                                 onIndicatorClick?.(indicator);
                               }}
-                              className="w-full py-2 bg-[#1A1A1A] hover:bg-[#2A2A2A] rounded-lg text-sm text-white transition-colors flex items-center justify-center gap-2"
+                              className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-white transition-colors flex items-center justify-center gap-2"
                             >
                               <Info className="w-4 h-4" />
                               View Details & Actions
@@ -246,28 +246,28 @@ export const CriticalIndicators: React.FC<CriticalIndicatorsProps> = ({
         </div>
 
         {/* Summary Stats */}
-        <div className="mt-6 pt-6 border-t border-[#1A1A1A] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm">
+        <div className="mt-6 pt-6 border-t border-white/[0.04] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-sm">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-red-500 rounded-full" />
-              <span className="text-gray-400">
+              <span className="text-white/30">
                 {indicators.filter(i => i.status.level === 'red').length} Critical
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-amber-500 rounded-full" />
-              <span className="text-gray-400">
+              <span className="text-white/30">
                 {indicators.filter(i => i.status.level === 'amber').length} Elevated
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full" />
-              <span className="text-gray-400">
+              <span className="text-white/30">
                 {indicators.filter(i => i.status.level === 'green').length} Normal
               </span>
             </div>
           </div>
-          <Activity className="w-4 h-4 text-gray-500" />
+          <Activity className="w-4 h-4 text-white/20" />
         </div>
       </CardContent>
     </Card>
