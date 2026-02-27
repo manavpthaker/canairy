@@ -70,8 +70,8 @@ export const News: React.FC = () => {
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold text-white">Risk Intelligence News</h1>
-              <p className="text-gray-400 mt-1">Real-time news filtered by risk indicators</p>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-white">News</h1>
+              <p className="text-gray-400 mt-1">What's happening in the world, filtered for what matters to your family</p>
             </div>
             <div className="flex items-center gap-2">
               <Button

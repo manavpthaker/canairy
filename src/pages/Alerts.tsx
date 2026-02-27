@@ -43,7 +43,7 @@ export const Alerts: React.FC = () => {
       items.push({
         id: 'tighten-up',
         type: 'tighten_up',
-        message: `TIGHTEN-UP protocol active — ${redCount} indicators at RED. Execute 48-hour checklist.`,
+        message: `Multiple areas need attention right now (${redCount} at critical levels). Check your Family Actions checklist — there are specific steps you can take today.`,
         severity: 'critical',
         timestamp: now,
       });
@@ -59,7 +59,7 @@ export const Alerts: React.FC = () => {
           indicatorId: ind.id,
           indicatorName: ind.name,
           domain: ind.domain,
-          message: `${ind.name} has breached the RED threshold (${typeof ind.status.value === 'number' ? ind.status.value.toFixed(1) : ind.status.value} ${ind.unit})`,
+          message: `${ind.name} has reached a level that may affect your family. Current reading: ${typeof ind.status.value === 'number' ? ind.status.value.toFixed(1) : ind.status.value} ${ind.unit}. Tap for details and what to do.`,
           severity: ind.critical ? 'critical' : 'warning',
           timestamp: ind.status.lastUpdate,
         });
@@ -75,7 +75,7 @@ export const Alerts: React.FC = () => {
           indicatorId: ind.id,
           indicatorName: ind.name,
           domain: ind.domain,
-          message: `${ind.name} at AMBER — approaching red threshold`,
+          message: `${ind.name} is something to keep an eye on — it's elevated but not urgent yet`,
           severity: 'info',
           timestamp: ind.status.lastUpdate,
         });
@@ -124,8 +124,8 @@ export const Alerts: React.FC = () => {
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold text-white">Alerts</h1>
-              <p className="text-gray-400 mt-1">Real-time alerts generated from indicator thresholds</p>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-white">Heads Up</h1>
+              <p className="text-gray-400 mt-1">Things that might affect your family — and what you can do about them</p>
             </div>
             <Link
               to="/settings"
@@ -140,15 +140,15 @@ export const Alerts: React.FC = () => {
           <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
             <div className="bg-[#0A0A0A] rounded-xl border border-red-500/10 p-3 sm:p-4 text-center">
               <div className="text-2xl font-bold text-red-400">{criticalCount}</div>
-              <div className="text-xs text-gray-500">Critical</div>
+              <div className="text-xs text-gray-500">Need action</div>
             </div>
             <div className="bg-[#0A0A0A] rounded-xl border border-amber-500/10 p-3 sm:p-4 text-center">
               <div className="text-2xl font-bold text-amber-400">{warningCount}</div>
-              <div className="text-xs text-gray-500">Warnings</div>
+              <div className="text-xs text-gray-500">Worth knowing</div>
             </div>
             <div className="bg-[#0A0A0A] rounded-xl border border-blue-500/10 p-3 sm:p-4 text-center">
               <div className="text-2xl font-bold text-blue-400">{infoCount}</div>
-              <div className="text-xs text-gray-500">Monitoring</div>
+              <div className="text-xs text-gray-500">Keeping an eye on</div>
             </div>
           </div>
 
@@ -216,8 +216,8 @@ export const Alerts: React.FC = () => {
         ) : (
           <div className="text-center py-16">
             <CheckCircle2 className="w-12 h-12 text-green-500/50 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">All Clear</h3>
-            <p className="text-gray-400">No alerts match this filter</p>
+            <h3 className="text-lg font-medium text-white mb-2">Everything looks good</h3>
+            <p className="text-gray-400">Nothing needs your attention right now. We'll let you know if that changes.</p>
           </div>
         )}
       </div>

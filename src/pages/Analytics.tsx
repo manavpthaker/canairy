@@ -55,24 +55,24 @@ export const Analytics: React.FC = () => {
       {/* Header */}
       <div className="bg-[#111111] border-b border-[#1A1A1A]">
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-white">Analytics</h1>
-          <p className="text-gray-400 mt-1">System-wide trends, domain breakdown, and data health</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-white">Trends</h1>
+          <p className="text-gray-400 mt-1">The big picture — how things are changing across all the areas we watch</p>
         </div>
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-8">
         {/* Top-level stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <StatCard label="Total Indicators" value={indicators.length} icon={<Activity className="w-5 h-5 text-indigo-400" />} />
-          <StatCard label="Red" value={redCount} icon={<AlertTriangle className="w-5 h-5 text-red-400" />} accent="red" />
-          <StatCard label="Amber" value={amberCount} icon={<Shield className="w-5 h-5 text-amber-400" />} accent="amber" />
-          <StatCard label="Green" value={greenCount} icon={<Shield className="w-5 h-5 text-green-400" />} accent="green" />
+          <StatCard label="Things Monitored" value={indicators.length} icon={<Activity className="w-5 h-5 text-indigo-400" />} />
+          <StatCard label="Need Action" value={redCount} icon={<AlertTriangle className="w-5 h-5 text-red-400" />} accent="red" />
+          <StatCard label="Worth Watching" value={amberCount} icon={<Shield className="w-5 h-5 text-amber-400" />} accent="amber" />
+          <StatCard label="Looking Good" value={greenCount} icon={<Shield className="w-5 h-5 text-green-400" />} accent="green" />
         </div>
 
         {/* HOPI Score overview */}
         {hopiScore && (
           <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6">
-            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">HOPI Score Breakdown</h2>
+            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Overall Preparedness Score</h2>
             <div className="flex items-baseline gap-3 mb-6">
               <span className="text-5xl font-bold text-white">{Math.round(hopiScore.score)}</span>
               <span className="text-gray-500 text-lg">/100</span>
@@ -95,7 +95,7 @@ export const Analytics: React.FC = () => {
 
         {/* Domain Breakdown */}
         <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6">
-          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Domain Breakdown</h2>
+          <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Areas We Monitor</h2>
           <div className="space-y-4">
             {domainStats.map((domain, idx) => (
               <motion.div
@@ -143,21 +143,21 @@ export const Analytics: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Trend distribution */}
           <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6">
-            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Trend Distribution</h2>
+            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Which Way Things Are Moving</h2>
             <div className="space-y-4">
-              <TrendRow icon={<TrendingUp className="w-4 h-4 text-red-400" />} label="Worsening" count={trendStats.up} total={indicators.length} color="bg-red-500" />
-              <TrendRow icon={<Minus className="w-4 h-4 text-gray-400" />} label="Stable" count={trendStats.stable} total={indicators.length} color="bg-gray-500" />
-              <TrendRow icon={<TrendingDown className="w-4 h-4 text-green-400" />} label="Improving" count={trendStats.down} total={indicators.length} color="bg-green-500" />
+              <TrendRow icon={<TrendingUp className="w-4 h-4 text-red-400" />} label="Getting worse" count={trendStats.up} total={indicators.length} color="bg-red-500" />
+              <TrendRow icon={<Minus className="w-4 h-4 text-gray-400" />} label="Holding steady" count={trendStats.stable} total={indicators.length} color="bg-gray-500" />
+              <TrendRow icon={<TrendingDown className="w-4 h-4 text-green-400" />} label="Getting better" count={trendStats.down} total={indicators.length} color="bg-green-500" />
             </div>
           </div>
 
           {/* Data source health */}
           <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] p-6">
-            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Data Source Health</h2>
+            <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Where Our Data Comes From</h2>
             <div className="space-y-4">
-              <TrendRow icon={<BarChart3 className="w-4 h-4 text-green-400" />} label="Live APIs" count={sourceStats.live} total={indicators.length} color="bg-green-500" />
-              <TrendRow icon={<BarChart3 className="w-4 h-4 text-amber-400" />} label="Mock/Fallback" count={sourceStats.mock} total={indicators.length} color="bg-amber-500" />
-              <TrendRow icon={<BarChart3 className="w-4 h-4 text-blue-400" />} label="Manual Entry" count={sourceStats.manual} total={indicators.length} color="bg-blue-500" />
+              <TrendRow icon={<BarChart3 className="w-4 h-4 text-green-400" />} label="Live sources" count={sourceStats.live} total={indicators.length} color="bg-green-500" />
+              <TrendRow icon={<BarChart3 className="w-4 h-4 text-amber-400" />} label="Estimated" count={sourceStats.mock} total={indicators.length} color="bg-amber-500" />
+              <TrendRow icon={<BarChart3 className="w-4 h-4 text-blue-400" />} label="Manually checked" count={sourceStats.manual} total={indicators.length} color="bg-blue-500" />
             </div>
           </div>
         </div>

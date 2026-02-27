@@ -1,47 +1,58 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard,
-  Activity,
-  Globe,
-  Bell,
-  Download,
-  Shield,
-  Settings,
-  BarChart3,
-  RefreshCw,
+  Home,
+  Eye,
   Newspaper,
+  Bell,
+  CheckSquare,
+  Shield,
+  BarChart3,
+  FileText,
+  Settings,
+  RefreshCw,
   Menu,
   X,
+  Heart,
 } from 'lucide-react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { useStore } from '../../store';
 import { CanaryLogo } from '../branding/CanaryLogo';
 import { NewsSidebar } from '../news/NewsSidebar';
-import { SituationalStatusBar } from '../dashboard/SituationalStatusBar';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { cn } from '../../utils/cn';
 
 const NAV_ITEMS = [
-  { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/indicators', icon: Activity, label: 'Indicators' },
-  { path: '/news', icon: Globe, label: 'News' },
-  { path: '/analytics', icon: BarChart3, label: 'Analytics' },
-  { path: '/alerts', icon: Bell, label: 'Alerts' },
-  { path: '/reports', icon: Download, label: 'Reports' },
-  { path: '/playbook', icon: Shield, label: 'Playbook' },
+  { path: '/', icon: Home, label: 'Home' },
+  { path: '/checklist', icon: CheckSquare, label: 'Family Actions' },
+  { path: '/indicators', icon: Eye, label: "What We're Watching" },
+  { path: '/alerts', icon: Bell, label: 'Heads Up' },
+  { path: '/playbook', icon: Shield, label: 'Family Plan' },
+  { path: '/news', icon: Newspaper, label: 'News' },
+  { path: '/analytics', icon: BarChart3, label: 'Trends' },
+  { path: '/reports', icon: FileText, label: 'Reports' },
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 
 export const AppShell: React.FC = () => {
   const location = useLocation();
-  const { loading, refreshAll } = useStore();
+  const { loading, refreshAll, indicators } = useStore();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showNewsSidebar, setShowNewsSidebar] = useState(false);
 
+  const redCount = indicators.filter(i => i.status.level === 'red').length;
+  const amberCount = indicators.filter(i => i.status.level === 'amber').length;
+
+  // Family-friendly overall status
+  const getOverallMood = () => {
+    if (redCount >= 2) return { label: 'Action needed', color: 'text-red-400', dot: 'bg-red-500', pulse: true };
+    if (redCount > 0 || amberCount >= 3) return { label: 'Stay alert', color: 'text-amber-400', dot: 'bg-amber-500', pulse: false };
+    return { label: 'Looking good', color: 'text-green-400', dot: 'bg-green-500', pulse: false };
+  };
+  const mood = getOverallMood();
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex relative">
-      {/* Skip to Content */}
       <a href="#main-content" className="skip-to-content">
         Skip to main content
       </a>
@@ -68,9 +79,9 @@ export const AppShell: React.FC = () => {
           showMobileSidebar ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="p-6">
-          {/* Logo with mobile close button */}
-          <div className="mb-8 flex items-center justify-between">
+        <div className="p-5">
+          {/* Logo */}
+          <div className="mb-6 flex items-center justify-between">
             <Link to="/" onClick={() => setShowMobileSidebar(false)}>
               <CanaryLogo size="md" showText={true} />
             </Link>
@@ -83,13 +94,29 @@ export const AppShell: React.FC = () => {
             </button>
           </div>
 
+          {/* Family status pill */}
+          <div className="mb-6 px-3 py-2.5 rounded-xl bg-[#0A0A0A] border border-[#1A1A1A]">
+            <div className="flex items-center gap-2.5">
+              <span className={cn('w-2.5 h-2.5 rounded-full flex-shrink-0', mood.dot, mood.pulse && 'animate-pulse')} />
+              <div className="min-w-0">
+                <div className={cn('text-sm font-medium', mood.color)}>{mood.label}</div>
+                <div className="text-xs text-gray-500">
+                  {indicators.length} things monitored
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Navigation */}
-          <nav aria-label="Primary navigation" className="space-y-1">
+          <nav aria-label="Primary navigation" className="space-y-0.5">
             {NAV_ITEMS.map((item) => {
               const isActive =
                 item.path === '/'
                   ? location.pathname === '/'
                   : location.pathname.startsWith(item.path);
+
+              // Show alert count badge on Heads Up
+              const showBadge = item.path === '/alerts' && redCount > 0;
 
               return (
                 <Link
@@ -97,37 +124,37 @@ export const AppShell: React.FC = () => {
                   to={item.path}
                   onClick={() => setShowMobileSidebar(false)}
                   className={cn(
-                    'flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-[#1A1A1A] hover:text-white transition-colors',
-                    isActive && 'bg-[#1A1A1A] text-white'
+                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-[#1A1A1A] hover:text-white transition-colors text-sm',
+                    isActive && 'bg-[#1A1A1A] text-white font-medium'
                   )}
                 >
-                  <item.icon className="w-5 h-5 flex-shrink-0" />
-                  <span className="flex-1">{item.label}</span>
+                  <item.icon className="w-4.5 h-4.5 flex-shrink-0" style={{ width: 18, height: 18 }} />
+                  <span className="flex-1 truncate">{item.label}</span>
+                  {showBadge && (
+                    <span className="px-1.5 py-0.5 text-2xs bg-red-500/20 text-red-400 rounded-full font-medium">{redCount}</span>
+                  )}
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        {/* System Status */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-[#1A1A1A]">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">System Status</span>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full" />
-              <span className="text-gray-300">Operational</span>
-            </div>
+        {/* Bottom — warm message */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 border-t border-[#1A1A1A]">
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <Heart className="w-3.5 h-3.5 text-gray-600" />
+            <span>Keeping your family informed</span>
           </div>
         </div>
       </aside>
 
       {/* Main content */}
       <main id="main-content" className="flex-1 lg:ml-64 min-h-screen flex flex-col">
-        {/* Header */}
+        {/* Header — simplified, warm */}
         <header className="bg-[#111111] border-b border-[#1A1A1A] sticky top-0 z-10">
-          <div className="px-4 sm:px-6 lg:px-8 py-4">
+          <div className="px-4 sm:px-6 lg:px-8 py-3">
             <div className="flex items-center justify-between gap-4">
-              {/* Mobile menu button */}
+              {/* Mobile menu */}
               <button
                 onClick={() => setShowMobileSidebar(true)}
                 aria-label="Open navigation menu"
@@ -136,11 +163,22 @@ export const AppShell: React.FC = () => {
                 <Menu className="w-5 h-5" />
               </button>
 
-              {/* Status bar */}
+              {/* Status summary — plain language */}
               <div className="flex-1 min-w-0">
-                <ErrorBoundary isolate>
-                  <SituationalStatusBar />
-                </ErrorBoundary>
+                <div className="flex items-center gap-3">
+                  <span className={cn('w-2 h-2 rounded-full flex-shrink-0', mood.dot, mood.pulse && 'animate-pulse')} />
+                  <span className={cn('text-sm font-medium', mood.color)}>{mood.label}</span>
+                  {redCount > 0 && (
+                    <span className="text-xs text-gray-500">
+                      — {redCount} {redCount === 1 ? 'thing needs' : 'things need'} attention
+                    </span>
+                  )}
+                  {redCount === 0 && amberCount > 0 && (
+                    <span className="text-xs text-gray-500">
+                      — {amberCount} to keep an eye on
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Actions */}
@@ -149,9 +187,9 @@ export const AppShell: React.FC = () => {
                   onClick={refreshAll}
                   disabled={loading}
                   className="p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors"
-                  title="Refresh data"
+                  title="Check for updates"
                 >
-                  <RefreshCw className={cn('w-5 h-5', loading && 'animate-spin')} />
+                  <RefreshCw className={cn('w-4.5 h-4.5', loading && 'animate-spin')} style={{ width: 18, height: 18 }} />
                 </button>
                 <button
                   onClick={() => setShowNewsSidebar(!showNewsSidebar)}
@@ -159,16 +197,19 @@ export const AppShell: React.FC = () => {
                     'p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors',
                     showNewsSidebar && 'bg-[#1A1A1A] text-white'
                   )}
-                  title="Toggle news sidebar"
+                  title="Latest news"
                 >
-                  <Newspaper className="w-5 h-5" />
+                  <Newspaper className="w-4.5 h-4.5" style={{ width: 18, height: 18 }} />
                 </button>
                 <Link
                   to="/alerts"
-                  className="p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors"
-                  title="Alerts"
+                  className="relative p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors"
+                  title="Heads up"
                 >
-                  <Bell className="w-5 h-5" />
+                  <Bell className="w-4.5 h-4.5" style={{ width: 18, height: 18 }} />
+                  {redCount > 0 && (
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                  )}
                 </Link>
               </div>
             </div>
@@ -187,7 +228,6 @@ export const AppShell: React.FC = () => {
         onClose={() => setShowNewsSidebar(false)}
       />
 
-      {/* Mobile backdrop for news sidebar */}
       <AnimatePresence>
         {showNewsSidebar && (
           <motion.div

@@ -63,8 +63,8 @@ export const Indicators: React.FC = () => {
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold text-white">Indicators</h1>
-              <p className="text-gray-400 mt-1">Monitor all resilience indicators in one place</p>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-white">What We're Watching</h1>
+              <p className="text-gray-400 mt-1">Everything Canairy monitors to keep your family informed</p>
             </div>
             <div className="flex items-center gap-2">
               <button

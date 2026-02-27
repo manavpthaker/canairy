@@ -186,7 +186,7 @@ export const Settings: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Settings</h1>
-              <p className="text-gray-400">Notifications, data sources, and system configuration</p>
+              <p className="text-gray-400">How Canairy keeps you informed — notifications, data, and preferences</p>
             </div>
           </div>
         </div>
