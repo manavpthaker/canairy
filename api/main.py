@@ -7,69 +7,76 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
-import redis.asyncio as redis
 import logging
 from typing import Optional
 
-from api.core.config import settings
-from api.core.logging import setup_logging
-from api.routers import indicators, alerts, news, analytics, health
-from api.middleware.rate_limit import RateLimitMiddleware
-from api.middleware.cache import CacheMiddleware
-from api.core.cache import cache_manager
-
-# Setup logging
-logger = setup_logging(__name__)
+try:
+    from api.core.config import settings
+    from api.core.logging import setup_logging
+    from api.routers import indicators, alerts, news, analytics, health
+    from api.middleware.rate_limit import RateLimitMiddleware
+    from api.middleware.cache import CacheMiddleware
+    from api.core.cache import cache_manager
+    _FULL_MODE = True
+    logger = setup_logging(__name__)
+except ImportError:
+    _FULL_MODE = False
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    logger.warning("Running in lite mode — some dependencies missing")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Manage application lifecycle
-    """
-    # Startup
-    logger.info(f"Starting {settings.PROJECT_NAME} v{settings.VERSION}")
-    
-    # Initialize cache
-    await cache_manager.initialize()
-    
-    # Initialize other services
-    logger.info("All services initialized successfully")
-    
+    """Manage application lifecycle"""
+    if _FULL_MODE:
+        logger.info(f"Starting {settings.PROJECT_NAME} v{settings.VERSION}")
+        await cache_manager.initialize()
+        logger.info("All services initialized successfully")
+    else:
+        logger.info("Starting Canairy (lite mode)")
     yield
-    
-    # Shutdown
-    logger.info("Shutting down application")
-    await cache_manager.close()
+    if _FULL_MODE:
+        logger.info("Shutting down application")
+        await cache_manager.close()
 
 # Create FastAPI app
-app = FastAPI(
-    title=settings.PROJECT_NAME,
-    version=settings.VERSION,
-    description="Early Warning System for Global Disruptions",
-    lifespan=lifespan,
-    docs_url="/api/docs" if settings.DEBUG else None,
-    redoc_url="/api/redoc" if settings.DEBUG else None,
-)
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Add custom middleware
-app.add_middleware(RateLimitMiddleware, calls=100, period=60)
-app.add_middleware(CacheMiddleware)
-
-# Include routers
-app.include_router(health.router, tags=["health"])
-app.include_router(indicators.router, prefix="/api/v1/indicators", tags=["indicators"])
-app.include_router(alerts.router, prefix="/api/v1/alerts", tags=["alerts"])
-app.include_router(news.router, prefix="/api/v1/news", tags=["news"])
-app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
+if _FULL_MODE:
+    app = FastAPI(
+        title=settings.PROJECT_NAME,
+        version=settings.VERSION,
+        description="Early Warning System for Global Disruptions",
+        lifespan=lifespan,
+        docs_url="/api/docs" if settings.DEBUG else None,
+        redoc_url="/api/redoc" if settings.DEBUG else None,
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.ALLOWED_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    app.add_middleware(RateLimitMiddleware, calls=100, period=60)
+    app.add_middleware(CacheMiddleware)
+    app.include_router(health.router, tags=["health"])
+    app.include_router(indicators.router, prefix="/api/v1/indicators", tags=["indicators"])
+    app.include_router(alerts.router, prefix="/api/v1/alerts", tags=["alerts"])
+    app.include_router(news.router, prefix="/api/v1/news", tags=["news"])
+    app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
+else:
+    app = FastAPI(
+        title="Canairy",
+        version="2.1.0",
+        description="Early Warning System for Global Disruptions (lite)",
+        lifespan=lifespan,
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 @app.get("/api/v1/hopi", tags=["hopi"])
 async def get_hopi_score():

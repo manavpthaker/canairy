@@ -1,35 +1,20 @@
-# FastAPI Core
+# FastAPI Core (Vercel provides ASGI server)
 fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
 pydantic>=2.5.0
-pydantic-settings>=2.1.0
 
-# API Dependencies
+# HTTP clients
 httpx>=0.25.0
-python-multipart>=0.0.6
+requests>=2.31.0
 
-# Caching (optional - will fallback if not available)
-redis>=5.0.0
+# Config & utilities
+pyyaml>=6.0
+python-dateutil>=2.8.2
+python-dotenv>=1.0.0
 
-# CORS and Security
-python-jose[cryptography]>=3.3.0
-passlib[bcrypt]>=1.7.4
+# Data collectors (lightweight only)
+feedparser>=6.0.10
+beautifulsoup4>=4.12.0
 
 # Logging
 structlog>=23.2.0
 python-json-logger>=2.0.7
-
-# Monitoring
-prometheus-client>=0.19.0
-
-# Data collection dependencies (from main requirements.txt)
-requests>=2.31.0
-pyyaml>=6.0
-pandas>=2.0.0
-python-dateutil>=2.8.2
-python-dotenv>=1.0.0
-beautifulsoup4>=4.12.0
-feedparser>=6.0.10
-yfinance>=0.2.28
-pytrends>=4.9.2
-pdfminer.six>=20221105

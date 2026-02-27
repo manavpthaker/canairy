@@ -2,9 +2,13 @@
 Application configuration using Pydantic Settings
 """
 
-from pydantic_settings import BaseSettings
 from typing import List, Optional
 from functools import lru_cache
+
+try:
+    from pydantic_settings import BaseSettings
+except ImportError:
+    from pydantic import BaseModel as BaseSettings
 
 class Settings(BaseSettings):
     # Application
