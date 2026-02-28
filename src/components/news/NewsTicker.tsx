@@ -145,11 +145,11 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({
 
   if (loading) {
     return (
-      <div className={cn("bg-[#111111] border border-[#1A1A1A] rounded-lg p-3", className)}>
+      <div className={cn("bg-white/[0.03] border border-white/[0.04] rounded-lg p-3", className)}>
         <div className="flex items-center gap-3">
-          <Radio className="w-4 h-4 text-gray-400 animate-pulse" />
+          <Radio className="w-4 h-4 text-white/30 animate-pulse" />
           <div className="flex-1">
-            <div className="h-4 bg-gray-700 rounded animate-pulse w-3/4"></div>
+            <div className="h-4 bg-white/10 rounded animate-pulse w-3/4"></div>
           </div>
         </div>
       </div>
@@ -165,7 +165,7 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({
   return (
     <motion.div
       className={cn(
-        "bg-[#111111] border rounded-lg p-3 transition-all duration-300",
+        "bg-white/[0.03] border rounded-lg p-3 transition-all duration-300",
         getUrgencyColor(currentItem.urgency),
         className
       )}
@@ -177,14 +177,14 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 flex-shrink-0">
           {getUrgencyIcon(currentItem.urgency)}
-          <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+          <span className="text-xs font-medium text-white/30 uppercase tracking-wide">
             {currentItem.source}
           </span>
         </div>
         
         <div className="flex-1 min-w-0">
           <motion.p
-            className="text-sm text-white truncate cursor-pointer hover:text-gray-300 transition-colors"
+            className="text-sm text-white truncate cursor-pointer hover:text-white/50 transition-colors"
             onClick={() => currentItem.url !== '#' && window.open(currentItem.url, '_blank')}
             title={currentItem.title}
             key={currentItem.title}
@@ -197,7 +197,7 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({
           
           {currentItem.indicator && (
             <div className="mt-1">
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-white/20">
                 Relates to: {currentItem.indicator.replace('_', ' ').toUpperCase()}
               </span>
             </div>
@@ -209,7 +209,7 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({
             {items.length > 1 && (
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="p-1 text-gray-400 hover:text-white transition-colors"
+                className="p-1 text-white/30 hover:text-white transition-colors"
                 title={isPlaying ? 'Pause ticker' : 'Resume ticker'}
               >
                 {isPlaying ? (
@@ -225,7 +225,7 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({
                 href={currentItem.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1 text-gray-400 hover:text-white transition-colors"
+                className="p-1 text-white/30 hover:text-white transition-colors"
                 title="Read full article"
               >
                 <ExternalLink className="w-3 h-3" />
@@ -245,7 +245,7 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({
                 "w-2 h-1 rounded-full transition-all",
                 index === currentIndex 
                   ? "bg-white" 
-                  : "bg-gray-600 hover:bg-gray-500"
+                  : "bg-white/15 hover:bg-white/20"
               )}
             />
           ))}

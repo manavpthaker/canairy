@@ -72,7 +72,7 @@ export const Modal: React.FC<ModalProps> = ({
           >
             <div
               className={cn(
-                'bg-[#111111] border border-[#1A1A1A] rounded-2xl shadow-2xl',
+                'bg-[#141416]/95 backdrop-blur-xl border border-white/[0.06] rounded-2xl shadow-2xl',
                 'w-full pointer-events-auto max-h-[90vh] overflow-hidden flex flex-col',
                 sizeClasses[size],
                 className
@@ -81,7 +81,7 @@ export const Modal: React.FC<ModalProps> = ({
             >
               {/* Header */}
               {(title || description) && (
-                <div className="flex items-start justify-between p-6 border-b border-[#1A1A1A]">
+                <div className="flex items-start justify-between p-6 border-b border-white/[0.04]">
                   <div>
                     {title && (
                       <h2 className="text-xl font-semibold text-white">
@@ -89,14 +89,14 @@ export const Modal: React.FC<ModalProps> = ({
                       </h2>
                     )}
                     {description && (
-                      <p className="mt-1 text-sm text-gray-400">
+                      <p className="mt-1 text-sm text-white/30">
                         {description}
                       </p>
                     )}
                   </div>
                   <button
                     onClick={onClose}
-                    className="p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors"
+                    className="p-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                     aria-label="Close modal"
                   >
                     <X className="h-4 w-4" />
@@ -113,7 +113,7 @@ export const Modal: React.FC<ModalProps> = ({
               {!title && !description && (
                 <button
                   onClick={onClose}
-                  className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors"
+                  className="absolute top-4 right-4 z-10 p-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                   aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />

@@ -80,16 +80,16 @@ function Toggle({
   return (
     <button
       onClick={onToggle}
-      className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-[#1A1A1A] transition-colors text-left"
+      className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/5 transition-colors text-left"
     >
       <div>
-        <span className="text-sm text-gray-200">{label}</span>
-        {description && <p className="text-xs text-gray-500 mt-0.5">{description}</p>}
+        <span className="text-sm text-white/70">{label}</span>
+        {description && <p className="text-xs text-white/20 mt-0.5">{description}</p>}
       </div>
       <div
         className={cn(
           'w-10 h-6 rounded-full relative transition-colors',
-          enabled ? 'bg-indigo-600' : 'bg-[#2A2A2A]'
+          enabled ? 'bg-white/10' : 'bg-white/10'
         )}
       >
         <motion.div
@@ -115,20 +115,20 @@ function Section({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="bg-[#111111] rounded-2xl border border-[#1A1A1A] overflow-hidden">
+    <div className="glass-card overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full px-5 py-4 flex items-center gap-3 text-left"
       >
-        <div className="w-8 h-8 rounded-lg bg-[#1A1A1A] flex items-center justify-center">
-          <Icon className="w-4 h-4 text-gray-400" />
+        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+          <Icon className="w-4 h-4 text-white/30" />
         </div>
         <h3 className="text-sm font-semibold text-white flex-1">{title}</h3>
         <ChevronDown
-          className={cn('w-4 h-4 text-gray-500 transition-transform', open && 'rotate-180')}
+          className={cn('w-4 h-4 text-white/20 transition-transform', open && 'rotate-180')}
         />
       </button>
-      {open && <div className="px-5 pb-5 border-t border-[#1A1A1A] pt-4">{children}</div>}
+      {open && <div className="px-5 pb-5 border-t border-white/[0.04] pt-4">{children}</div>}
     </div>
   );
 }
@@ -165,27 +165,27 @@ export const Settings: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <>
       {/* Header */}
-      <div className="bg-[#111111] border-b border-[#1A1A1A]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="border-b border-white/[0.04]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex items-center gap-3 mb-1">
             <Link
               to="/"
-              className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
+              className="text-white/20 hover:text-white/50 text-sm transition-colors"
             >
               Dashboard
             </Link>
-            <ChevronDown className="w-3 h-3 text-gray-600 rotate-[-90deg]" />
-            <span className="text-gray-300 text-sm">Settings</span>
+            <ChevronDown className="w-3 h-3 text-white/15 rotate-[-90deg]" />
+            <span className="text-white/50 text-sm">Settings</span>
           </div>
           <div className="flex items-center gap-4 mt-4">
             <div className="w-12 h-12 rounded-xl bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
-              <SettingsIcon className="w-6 h-6 text-gray-400" />
+              <SettingsIcon className="w-6 h-6 text-white/30" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Settings</h1>
-              <p className="text-gray-400">Notifications, data sources, and system configuration</p>
+              <p className="text-white/30">How Canairy keeps you informed — notifications, data, and preferences</p>
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ export const Settings: React.FC = () => {
         {/* ── Notifications ── */}
         <Section title="Notifications" icon={Bell}>
           <div className="space-y-1 mb-4">
-            <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+            <h4 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-2">
               Channels
             </h4>
             <Toggle
@@ -223,13 +223,13 @@ export const Settings: React.FC = () => {
             {notif.channels.email && (
               <div className="px-4 py-2">
                 <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-gray-500" />
+                  <Mail className="w-4 h-4 text-white/20" />
                   <input
                     type="email"
                     value={notif.emailAddress}
                     onChange={(e) => setNotif((s) => ({ ...s, emailAddress: e.target.value }))}
                     placeholder="your@email.com"
-                    className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-indigo-500"
+                    className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 placeholder-gray-600 focus:outline-none focus:border-white/20"
                   />
                 </div>
               </div>
@@ -248,13 +248,13 @@ export const Settings: React.FC = () => {
             {notif.channels.sms && (
               <div className="px-4 py-2">
                 <div className="flex items-center gap-2">
-                  <Smartphone className="w-4 h-4 text-gray-500" />
+                  <Smartphone className="w-4 h-4 text-white/20" />
                   <input
                     type="tel"
                     value={notif.phoneNumber}
                     onChange={(e) => setNotif((s) => ({ ...s, phoneNumber: e.target.value }))}
                     placeholder="+1 (555) 000-0000"
-                    className="flex-1 bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-indigo-500"
+                    className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 placeholder-gray-600 focus:outline-none focus:border-white/20"
                   />
                 </div>
               </div>
@@ -262,7 +262,7 @@ export const Settings: React.FC = () => {
           </div>
 
           <div className="space-y-1">
-            <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+            <h4 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-2">
               Alert Triggers
             </h4>
             <Toggle
@@ -286,7 +286,7 @@ export const Settings: React.FC = () => {
           </div>
 
           <div className="mt-4 space-y-1">
-            <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+            <h4 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-2">
               Quiet Hours
             </h4>
             <Toggle
@@ -299,19 +299,19 @@ export const Settings: React.FC = () => {
             />
             {notif.quietHoursEnabled && (
               <div className="px-4 py-2 flex items-center gap-3">
-                <Clock className="w-4 h-4 text-gray-500" />
+                <Clock className="w-4 h-4 text-white/20" />
                 <input
                   type="time"
                   value={notif.quietStart}
                   onChange={(e) => setNotif((s) => ({ ...s, quietStart: e.target.value }))}
-                  className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-indigo-500"
+                  className="bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 focus:outline-none focus:border-white/20"
                 />
-                <span className="text-gray-500 text-sm">to</span>
+                <span className="text-white/20 text-sm">to</span>
                 <input
                   type="time"
                   value={notif.quietEnd}
                   onChange={(e) => setNotif((s) => ({ ...s, quietEnd: e.target.value }))}
-                  className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-indigo-500"
+                  className="bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 focus:outline-none focus:border-white/20"
                 />
               </div>
             )}
@@ -322,44 +322,44 @@ export const Settings: React.FC = () => {
         <Section title="Data Sources" icon={Database}>
           {/* Status overview */}
           <div className="grid grid-cols-3 gap-3 mb-5">
-            <div className="bg-[#0A0A0A] rounded-xl border border-[#1A1A1A] p-3 text-center">
+            <div className="bg-white/[0.03] rounded-xl border border-white/[0.04] p-3 text-center">
               <div className="text-2xl font-bold text-white">{totalCount}</div>
-              <div className="text-xs text-gray-500">Total Indicators</div>
+              <div className="text-xs text-white/20">Total Indicators</div>
             </div>
-            <div className="bg-[#0A0A0A] rounded-xl border border-green-500/10 p-3 text-center">
+            <div className="bg-white/[0.03] rounded-xl border border-green-500/10 p-3 text-center">
               <div className="flex items-center justify-center gap-1.5">
                 <Wifi className="w-4 h-4 text-green-400" />
                 <span className="text-2xl font-bold text-green-400">{liveCount}</span>
               </div>
-              <div className="text-xs text-gray-500">Live</div>
+              <div className="text-xs text-white/20">Live</div>
             </div>
-            <div className="bg-[#0A0A0A] rounded-xl border border-amber-500/10 p-3 text-center">
+            <div className="bg-white/[0.03] rounded-xl border border-amber-500/10 p-3 text-center">
               <div className="flex items-center justify-center gap-1.5">
                 <WifiOff className="w-4 h-4 text-amber-400" />
                 <span className="text-2xl font-bold text-amber-400">{mockCount}</span>
               </div>
-              <div className="text-xs text-gray-500">Mock / Offline</div>
+              <div className="text-xs text-white/20">Mock / Offline</div>
             </div>
           </div>
 
           {/* Domain breakdown */}
-          <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">
+          <h4 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-3">
             Domains ({domainStats.length})
           </h4>
           <div className="space-y-2 mb-5">
             {domainStats.map((d) => (
               <div
                 key={d.key}
-                className="flex items-center justify-between px-3 py-2.5 bg-[#0A0A0A] rounded-lg"
+                className="flex items-center justify-between px-3 py-2.5 bg-white/[0.03] rounded-lg"
               >
                 <div>
-                  <span className="text-sm text-gray-200">{d.label}</span>
-                  <span className="text-xs text-gray-600 ml-2">
+                  <span className="text-sm text-white/70">{d.label}</span>
+                  <span className="text-xs text-white/15 ml-2">
                     weight: {d.weight}×
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs">
-                  <span className="text-gray-500">{d.count} indicators</span>
+                  <span className="text-white/20">{d.count} indicators</span>
                   {d.redCount > 0 && (
                     <span className="text-red-400">{d.redCount} red</span>
                   )}
@@ -372,7 +372,7 @@ export const Settings: React.FC = () => {
           </div>
 
           {/* Refresh settings */}
-          <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">
+          <h4 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-3">
             Refresh
           </h4>
           <Toggle
@@ -383,13 +383,13 @@ export const Settings: React.FC = () => {
           />
           {data.autoRefresh && (
             <div className="px-4 py-2">
-              <label className="text-xs text-gray-500 mb-1 block">Refresh interval</label>
+              <label className="text-xs text-white/20 mb-1 block">Refresh interval</label>
               <select
                 value={data.refreshInterval}
                 onChange={(e) =>
                   setData((s) => ({ ...s, refreshInterval: Number(e.target.value) }))
                 }
-                className="bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-indigo-500 w-full"
+                className="bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 focus:outline-none focus:border-white/20 w-full"
               >
                 {REFRESH_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -409,7 +409,7 @@ export const Settings: React.FC = () => {
           <button
             onClick={() => refreshAll()}
             disabled={loading}
-            className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1A1A1A] text-gray-300 rounded-xl hover:bg-[#222222] transition-colors text-sm font-medium"
+            className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 text-white/50 rounded-xl hover:bg-white/20 transition-colors text-sm font-medium"
           >
             <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
             {loading ? 'Refreshing...' : 'Refresh All Data Now'}
@@ -419,8 +419,8 @@ export const Settings: React.FC = () => {
         {/* ── System ── */}
         <Section title="System" icon={Monitor} defaultOpen={false}>
           <div className="space-y-3">
-            <div className="flex items-center justify-between px-3 py-2 bg-[#0A0A0A] rounded-lg">
-              <span className="text-sm text-gray-400">System status</span>
+            <div className="flex items-center justify-between px-3 py-2 bg-white/[0.03] rounded-lg">
+              <span className="text-sm text-white/30">System status</span>
               <span
                 className={cn(
                   'text-sm font-medium',
@@ -430,25 +430,25 @@ export const Settings: React.FC = () => {
                 {systemStatus?.operational ? 'Operational' : 'Degraded'}
               </span>
             </div>
-            <div className="flex items-center justify-between px-3 py-2 bg-[#0A0A0A] rounded-lg">
-              <span className="text-sm text-gray-400">Last update</span>
-              <span className="text-sm text-gray-300">
+            <div className="flex items-center justify-between px-3 py-2 bg-white/[0.03] rounded-lg">
+              <span className="text-sm text-white/30">Last update</span>
+              <span className="text-sm text-white/50">
                 {systemStatus?.lastUpdate
                   ? new Date(systemStatus.lastUpdate).toLocaleString()
                   : '—'}
               </span>
             </div>
-            <div className="flex items-center justify-between px-3 py-2 bg-[#0A0A0A] rounded-lg">
-              <span className="text-sm text-gray-400">Data quality</span>
-              <span className="text-sm text-gray-300">
+            <div className="flex items-center justify-between px-3 py-2 bg-white/[0.03] rounded-lg">
+              <span className="text-sm text-white/30">Data quality</span>
+              <span className="text-sm text-white/50">
                 {systemStatus?.dataQuality != null
                   ? `${Math.round(systemStatus.dataQuality * 100)}%`
                   : '—'}
               </span>
             </div>
-            <div className="flex items-center justify-between px-3 py-2 bg-[#0A0A0A] rounded-lg">
-              <span className="text-sm text-gray-400">Active alerts</span>
-              <span className="text-sm text-gray-300">
+            <div className="flex items-center justify-between px-3 py-2 bg-white/[0.03] rounded-lg">
+              <span className="text-sm text-white/30">Active alerts</span>
+              <span className="text-sm text-white/50">
                 {systemStatus?.activeAlerts ?? '—'}
               </span>
             </div>
@@ -463,7 +463,7 @@ export const Settings: React.FC = () => {
               'flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-colors',
               saved
                 ? 'bg-green-600 text-white'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                : 'bg-white/10 text-white hover:bg-white/15'
             )}
           >
             <Save className="w-4 h-4" />
@@ -471,13 +471,13 @@ export const Settings: React.FC = () => {
           </button>
           <button
             onClick={handleReset}
-            className="flex items-center justify-center gap-2 px-4 py-3 bg-[#1A1A1A] text-gray-400 rounded-xl hover:bg-[#222222] hover:text-gray-300 transition-colors font-medium"
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-white/5 text-white/30 rounded-xl hover:bg-white/20 hover:text-white/50 transition-colors font-medium"
           >
             <RotateCcw className="w-4 h-4" />
             Reset
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };

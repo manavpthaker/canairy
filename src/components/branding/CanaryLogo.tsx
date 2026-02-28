@@ -148,7 +148,7 @@ export const CanaryLogo: React.FC<CanaryLogoProps> = ({
         className={cn(
           "rounded-xl flex items-center justify-center transition-colors",
           config.container,
-          threatLevel === 'normal' ? "bg-gray-800 border border-gray-700" :
+          threatLevel === 'normal' ? "bg-white/[0.06] border border-white/10" :
           threatLevel === 'elevated' ? "bg-amber-500/10 border border-amber-500/30" :
           "bg-red-500/10 border border-red-500/30"
         )}
@@ -168,7 +168,7 @@ export const CanaryLogo: React.FC<CanaryLogoProps> = ({
             Canairy
           </h1>
           <p className={cn(
-            "font-body text-gray-400 leading-tight",
+            "font-body text-white/30 leading-tight",
             config.tagline
           )}>
             Resilience Monitoring

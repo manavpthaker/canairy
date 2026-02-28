@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Newspaper, 
+import {
+  Newspaper,
   Filter,
   Globe,
   TrendingUp,
@@ -38,17 +38,17 @@ export const News: React.FC = () => {
   const getFilteredView = () => {
     if (selectedIndicator) {
       return (
-        <NewsFeed 
+        <NewsFeed
           key={`indicator-${selectedIndicator}`}
-          indicatorId={selectedIndicator} 
+          indicatorId={selectedIndicator}
           limit={20}
           showGlobal={false}
         />
       );
     }
-    
+
     return (
-      <NewsFeed 
+      <NewsFeed
         key="global-feed"
         showGlobal={true}
         limit={20}
@@ -64,14 +64,14 @@ export const News: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
-      {/* Header */}
-      <div className="bg-[#111111] border-b border-[#1A1A1A] sticky top-0 z-10">
-        <div className="px-8 py-6">
-          <div className="flex items-center justify-between mb-6">
+    <>
+      {/* Page Header */}
+      <div className="border-b border-white/[0.04]">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-semibold text-white">Risk Intelligence News</h1>
-              <p className="text-gray-400 mt-1">Real-time news filtered by risk indicators</p>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-white">News</h1>
+              <p className="text-white/30 mt-1">What's happening in the world, filtered for what matters to your family</p>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -82,7 +82,7 @@ export const News: React.FC = () => {
                 <Filter className="w-4 h-4 mr-2" />
                 Filter by Indicator
               </Button>
-              
+
               {(selectedIndicator || urgencyFilter !== 'all' || domainFilter !== 'all') && (
                 <Button
                   onClick={clearFilters}
@@ -101,17 +101,17 @@ export const News: React.FC = () => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="mb-6 p-4 bg-[#0A0A0A] rounded-lg border border-[#1A1A1A]"
+              className="mb-6 p-4 bg-white/[0.03] rounded-lg border border-white/[0.04]"
             >
               <h3 className="text-white font-medium mb-3">Filter by Risk Indicator</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 <button
                   onClick={() => setSelectedIndicator(null)}
                   className={cn(
                     "p-3 rounded-lg text-sm font-medium transition-all text-left",
                     !selectedIndicator
                       ? "bg-white text-[#0A0A0A]"
-                      : "bg-[#1A1A1A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white"
+                      : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
                   )}
                 >
                   <div className="flex items-center gap-2">
@@ -119,7 +119,7 @@ export const News: React.FC = () => {
                     All News
                   </div>
                 </button>
-                
+
                 {indicatorOptions.map((indicator) => (
                   <button
                     key={indicator.id}
@@ -128,7 +128,7 @@ export const News: React.FC = () => {
                       "p-3 rounded-lg text-sm font-medium transition-all text-left",
                       selectedIndicator === indicator.id
                         ? "bg-white text-[#0A0A0A]"
-                        : "bg-[#1A1A1A] text-gray-300 hover:bg-[#2A2A2A] hover:text-white"
+                        : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
                     )}
                   >
                     <div className="flex items-center gap-2">
@@ -144,20 +144,20 @@ export const News: React.FC = () => {
           {/* Active Filters */}
           {(selectedIndicator || urgencyFilter !== 'all' || domainFilter !== 'all') && (
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-sm text-gray-400">Active filters:</span>
-              
+              <span className="text-sm text-white/30">Active filters:</span>
+
               {selectedIndicator && (
                 <Badge variant="accent">
                   {indicatorOptions.find(i => i.id === selectedIndicator)?.name || selectedIndicator}
                 </Badge>
               )}
-              
+
               {urgencyFilter !== 'all' && (
                 <Badge variant="amber">
                   {urgencyFilter.charAt(0).toUpperCase() + urgencyFilter.slice(1)} Urgency
                 </Badge>
               )}
-              
+
               {domainFilter !== 'all' && (
                 <Badge variant="accent">
                   {domainFilter.replace('_', ' ')} Domain
@@ -169,7 +169,7 @@ export const News: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="px-8 py-8">
+      <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main News Feed */}
           <div className="lg:col-span-3">
@@ -178,7 +178,6 @@ export const News: React.FC = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Risk Summary */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -189,22 +188,21 @@ export const News: React.FC = () => {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">High Priority</span>
+                    <span className="text-sm text-white/50">High Priority</span>
                     <Badge variant="red" size="sm">2 indicators</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Monitoring</span>
+                    <span className="text-sm text-white/50">Monitoring</span>
                     <Badge variant="amber" size="sm">3 indicators</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Normal</span>
+                    <span className="text-sm text-white/50">Normal</span>
                     <Badge variant="green" size="sm">11 indicators</Badge>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* News Sources */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -215,55 +213,32 @@ export const News: React.FC = () => {
               <CardContent>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Wall Street Journal</span>
+                    <span className="text-white/50">Wall Street Journal</span>
                     <Badge variant="green" size="sm">95/100</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Reuters</span>
+                    <span className="text-white/50">Reuters</span>
                     <Badge variant="green" size="sm">92/100</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Bloomberg</span>
+                    <span className="text-white/50">Bloomberg</span>
                     <Badge variant="green" size="sm">90/100</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Financial Times</span>
+                    <span className="text-white/50">Financial Times</span>
                     <Badge variant="green" size="sm">88/100</Badge>
                   </div>
                 </div>
-                <div className="mt-4 pt-4 border-t border-[#1A1A1A]">
-                  <p className="text-xs text-gray-400">
+                <div className="mt-4 pt-4 border-t border-white/[0.04]">
+                  <p className="text-xs text-white/30">
                     Sources rated by credibility and bias assessment
                   </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Button className="w-full justify-start" size="sm" variant="ghost">
-                    <TrendingUp className="w-4 h-4 mr-2" />
-                    View Dashboard
-                  </Button>
-                  <Button className="w-full justify-start" size="sm" variant="ghost">
-                    <AlertTriangle className="w-4 h-4 mr-2" />
-                    Check Alerts
-                  </Button>
-                  <Button className="w-full justify-start" size="sm" variant="ghost">
-                    <Shield className="w-4 h-4 mr-2" />
-                    Emergency Plan
-                  </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
