@@ -1,5 +1,5 @@
 import { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useStore } from './store';
 import { wsService } from './services/api';
 import { PageSkeleton } from './components/LoadingSkeleton';
@@ -7,6 +7,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { AppShell } from './components/layout/AppShell';
 
 // Lazy-loaded pages for code splitting
+const Landing = lazy(() => import('./pages/Landing').then(m => ({ default: m.Landing })));
 const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
 const Indicators = lazy(() => import('./pages/Indicators').then(m => ({ default: m.Indicators })));
 const IndicatorDetails = lazy(() => import('./pages/IndicatorDetails').then(m => ({ default: m.IndicatorDetails })));
@@ -58,9 +59,12 @@ function App() {
       <Router>
         <Suspense fallback={<PageSkeleton />}>
           <Routes>
+            {/* Landing page - standalone, no shell */}
+            <Route path="/" element={<Landing />} />
+
             {/* All pages inside the shared shell with sidebar + header */}
             <Route element={<AppShell />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/indicators" element={<Indicators />} />
               <Route path="/indicator/:id" element={<IndicatorDetails />} />
               <Route path="/news" element={<News />} />

@@ -21,7 +21,7 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import { cn } from '../../utils/cn';
 
 const NAV_ITEMS = [
-  { path: '/', icon: Home, label: 'Home' },
+  { path: '/dashboard', icon: Home, label: 'Home' },
   { path: '/checklist', icon: CheckSquare, label: 'Actions' },
   { path: '/indicators', icon: Eye, label: 'Monitor' },
   { path: '/analytics', icon: BarChart3, label: 'Insights' },
@@ -37,7 +37,7 @@ const SECONDARY_NAV = [
 
 // Bottom tab bar items (mobile)
 const BOTTOM_TABS = [
-  { path: '/', icon: Home, label: 'Home' },
+  { path: '/dashboard', icon: Home, label: 'Home' },
   { path: '/checklist', icon: CheckSquare, label: 'Actions' },
   { path: '/indicators', icon: Eye, label: 'Monitor' },
   { path: '/playbook', icon: Shield, label: 'Plan' },
@@ -95,7 +95,7 @@ export const AppShell: React.FC = () => {
           {/* Logo */}
           <div className="p-4 pb-2">
             <div className="flex items-center justify-between">
-              <Link to="/" onClick={() => setShowMobileSidebar(false)}>
+              <Link to="/dashboard" onClick={() => setShowMobileSidebar(false)}>
                 <CanaryLogo size="sm" showText={true} />
               </Link>
               <button
