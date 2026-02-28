@@ -181,7 +181,7 @@ export const Settings: React.FC = () => {
             <span className="text-white/50 text-sm">Settings</span>
           </div>
           <div className="flex items-center gap-4 mt-4">
-            <div className="w-12 h-12 rounded-xl bg-gray-500/10 border border-gray-500/20 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/[0.08] flex items-center justify-center">
               <SettingsIcon className="w-6 h-6 text-white/30" />
             </div>
             <div>
@@ -230,7 +230,7 @@ export const Settings: React.FC = () => {
                     value={notif.emailAddress}
                     onChange={(e) => setNotif((s) => ({ ...s, emailAddress: e.target.value }))}
                     placeholder="your@email.com"
-                    className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 placeholder-gray-600 focus:outline-none focus:border-white/20"
+                    className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 placeholder-white/20 focus:outline-none focus:border-white/20"
                   />
                 </div>
               </div>
@@ -255,7 +255,7 @@ export const Settings: React.FC = () => {
                     value={notif.phoneNumber}
                     onChange={(e) => setNotif((s) => ({ ...s, phoneNumber: e.target.value }))}
                     placeholder="+1 (555) 000-0000"
-                    className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 placeholder-gray-600 focus:outline-none focus:border-white/20"
+                    className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white/70 placeholder-white/20 focus:outline-none focus:border-white/20"
                   />
                 </div>
               </div>

@@ -37,7 +37,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       secondary: 'btn-secondary',
       danger: 'btn-danger',
       ghost: 'btn-ghost',
-      link: 'text-bmb-accent hover:text-bmb-accent-light underline-offset-4 hover:underline p-0 h-auto',
+      link: 'text-white/40 hover:text-white/60 underline-offset-4 hover:underline p-0 h-auto',
     };
 
     return (

@@ -74,19 +74,19 @@ export const DecisionSupport: React.FC = () => {
   const keyChanges = getKeyChanges();
   
   const getRiskColor = (level: number) => {
-    if (level <= 3) return 'text-bmb-success';
-    if (level <= 6) return 'text-bmb-warning';
-    return 'text-bmb-danger';
+    if (level <= 3) return 'text-green-400';
+    if (level <= 6) return 'text-amber-400';
+    return 'text-red-400';
   };
   
   const getTrendIcon = () => {
     switch (trend) {
       case 'improving':
-        return <TrendingDown className="w-5 h-5 text-bmb-success" />;
+        return <TrendingDown className="w-5 h-5 text-green-400" />;
       case 'worsening':
-        return <TrendingUp className="w-5 h-5 text-bmb-danger" />;
+        return <TrendingUp className="w-5 h-5 text-red-400" />;
       default:
-        return <BarChart3 className="w-5 h-5 text-bmb-secondary" />;
+        return <BarChart3 className="w-5 h-5 text-white/30" />;
     }
   };
   
@@ -95,7 +95,7 @@ export const DecisionSupport: React.FC = () => {
       <CardHeader separator>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-bmb-accent" />
+            <Shield className="w-5 h-5 text-white/40" />
             Your Resilience Status
           </CardTitle>
           <Badge variant="accent" size="sm">
@@ -109,7 +109,7 @@ export const DecisionSupport: React.FC = () => {
         <div className="mb-6">
           <div className="flex items-end justify-between mb-2">
             <div>
-              <span className="text-sm text-bmb-secondary">Overall Risk</span>
+              <span className="text-sm text-white/30">Overall Risk</span>
               <div className={cn('text-4xl font-bold', getRiskColor(riskLevel))}>
                 {riskLevel}/10
               </div>
@@ -121,7 +121,7 @@ export const DecisionSupport: React.FC = () => {
           </div>
           
           {/* Risk Level Bar */}
-          <div className="relative h-3 bg-bmb-dark rounded-full overflow-hidden">
+          <div className="relative h-3 bg-white/[0.04] rounded-full overflow-hidden">
             <motion.div
               className="absolute left-0 top-0 h-full rounded-full"
               style={{
@@ -134,7 +134,7 @@ export const DecisionSupport: React.FC = () => {
           </div>
           
           {/* Risk Labels */}
-          <div className="flex justify-between mt-1 text-xs text-bmb-secondary">
+          <div className="flex justify-between mt-1 text-xs text-white/30">
             <span>Low</span>
             <span>Moderate</span>
             <span>High</span>
@@ -142,15 +142,15 @@ export const DecisionSupport: React.FC = () => {
         </div>
         
         {/* Time to Action */}
-        <div className="bg-bmb-black/50 rounded-lg p-4 mb-6">
+        <div className="bg-white/[0.03]/50 rounded-lg p-4 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-bmb-accent" />
-              <span className="text-sm text-bmb-secondary">Time to Act</span>
+              <Clock className="w-5 h-5 text-white/40" />
+              <span className="text-sm text-white/30">Time to Act</span>
             </div>
             <span className={cn(
               'font-bold',
-              timeToAct === 'No urgent action' ? 'text-bmb-success' : 'text-bmb-warning'
+              timeToAct === 'No urgent action' ? 'text-green-400' : 'text-amber-400'
             )}>
               {timeToAct}
             </span>
@@ -159,7 +159,7 @@ export const DecisionSupport: React.FC = () => {
         
         {/* Key Changes */}
         <div>
-          <h4 className="text-sm font-medium text-bmb-secondary mb-3 flex items-center gap-2">
+          <h4 className="text-sm font-medium text-white/30 mb-3 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4" />
             Key Changes
           </h4>
@@ -170,20 +170,20 @@ export const DecisionSupport: React.FC = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="flex items-center justify-between p-2 bg-bmb-black/30 rounded-md"
+                className="flex items-center justify-between p-2 bg-white/[0.03]/30 rounded-md"
               >
                 <span className="text-sm">{change.indicator}</span>
                 <div className="flex items-center gap-2">
                   <span className={cn(
                     'text-sm font-medium',
-                    change.impact === 'negative' ? 'text-bmb-danger' : 'text-bmb-success'
+                    change.impact === 'negative' ? 'text-red-400' : 'text-green-400'
                   )}>
                     {change.trend === 'up' ? '+' : '-'}{change.change}%
                   </span>
                   {change.trend === 'up' ? (
-                    <TrendingUp className="w-4 h-4 text-bmb-danger" />
+                    <TrendingUp className="w-4 h-4 text-red-400" />
                   ) : (
-                    <TrendingDown className="w-4 h-4 text-bmb-success" />
+                    <TrendingDown className="w-4 h-4 text-green-400" />
                   )}
                 </div>
               </motion.div>
@@ -196,14 +196,14 @@ export const DecisionSupport: React.FC = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="flex-1 py-2 bg-bmb-accent text-white rounded-md font-medium hover:bg-bmb-accent-light transition-colors"
+            className="flex-1 py-2 bg-white/10 text-white rounded-md font-medium hover:bg-white/10-light transition-colors"
           >
             View Full Analysis
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="flex-1 py-2 bg-bmb-dark text-bmb-primary border border-bmb-border rounded-md font-medium hover:bg-bmb-border/50 transition-colors"
+            className="flex-1 py-2 bg-white/[0.04] text-white border border-white/[0.06] rounded-md font-medium hover:bg-white/[0.08] transition-colors"
           >
             Take Action
           </motion.button>

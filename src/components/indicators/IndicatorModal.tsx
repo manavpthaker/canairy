@@ -98,8 +98,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                 <div className={cn('flex items-center gap-1 justify-end', getTrendColor())}>
                   {getTrendIcon()}
                   <span className="text-sm font-medium">
-                    {indicator.status.trend === 'up' ? '+' : '-'}
-                    {Math.abs(Math.random() * 10).toFixed(1)}%
+                    {indicator.status.trend === 'up' ? 'Rising' : 'Falling'}
                   </span>
                 </div>
               )}
