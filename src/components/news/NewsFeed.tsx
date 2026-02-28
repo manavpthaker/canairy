@@ -148,8 +148,8 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-gray-800 rounded w-1/2"></div>
+                <div className="h-4 bg-white/10 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-white/[0.06] rounded w-1/2"></div>
               </div>
             ))}
           </div>
@@ -168,10 +168,10 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-400">{error}</p>
+          <p className="text-white/30">{error}</p>
           <button
             onClick={loadNews}
-            className="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="mt-2 px-4 py-2 bg-red-500/80 text-white rounded-lg hover:bg-red-500/90 transition-colors"
           >
             Retry
           </button>
@@ -194,12 +194,12 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
             )}
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-white/20">
               Updated {formatDistanceToNow(lastRefresh, { addSuffix: true })}
             </span>
             <button
               onClick={loadNews}
-              className="p-1 text-gray-400 hover:text-white transition-colors"
+              className="p-1 text-white/30 hover:text-white transition-colors"
               title="Refresh news"
             >
               <TrendingUp className="w-4 h-4" />
@@ -210,9 +210,9 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
       <CardContent>
         {articles.length === 0 ? (
           <div className="text-center py-8">
-            <Newspaper className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+            <Newspaper className="w-12 h-12 text-white/20 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-white mb-2">No Recent News</h3>
-            <p className="text-gray-400">No relevant news articles found.</p>
+            <p className="text-white/30">No relevant news articles found.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -224,7 +224,7 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ delay: index * 0.05 }}
-                  className="border border-[#1A1A1A] rounded-lg p-4 hover:border-[#2A2A2A] transition-colors"
+                  className="border border-white/[0.04] rounded-lg p-4 hover:border-white/[0.08] transition-colors"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
@@ -232,7 +232,7 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
                         {article.title}
                       </h4>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm text-gray-400">
+                        <span className="text-sm text-white/30">
                           {article.source.name}
                         </span>
                         {getCredibilityBadge(article.source_credibility)}
@@ -240,14 +240,14 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
                       </div>
                     </div>
                     <div className="flex items-center gap-1 ml-4">
-                      <Clock className="w-3 h-3 text-gray-500" />
-                      <span className="text-xs text-gray-500">
+                      <Clock className="w-3 h-3 text-white/20" />
+                      <span className="text-xs text-white/20">
                         {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-gray-300 text-sm mb-3 line-clamp-2">
+                  <p className="text-white/50 text-sm mb-3 line-clamp-2">
                     {article.description}
                   </p>
 
@@ -263,7 +263,7 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => toggleExpanded(index)}
-                        className="p-1 text-gray-400 hover:text-white transition-colors"
+                        className="p-1 text-white/30 hover:text-white transition-colors"
                       >
                         {expandedArticle === index ? (
                           <ChevronUp className="w-4 h-4" />
@@ -277,7 +277,7 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
                           href={article.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1 text-gray-400 hover:text-white transition-colors"
+                          className="p-1 text-white/30 hover:text-white transition-colors"
                           title="Read full article"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -293,31 +293,31 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="mt-3 pt-3 border-t border-[#1A1A1A]"
+                        className="mt-3 pt-3 border-t border-white/[0.04]"
                       >
                         <div className="space-y-3">
                           {article.source_credibility && (
                             <div className="flex items-center justify-between text-xs">
-                              <span className="text-gray-400">
+                              <span className="text-white/30">
                                 Source Quality: {article.source_credibility.score}/100
                               </span>
-                              <span className="text-gray-400">
+                              <span className="text-white/30">
                                 Bias: {article.source_credibility.bias}
                               </span>
                               {article.source_credibility.specialty && (
-                                <span className="text-gray-400">
+                                <span className="text-white/30">
                                   Specialty: {article.source_credibility.specialty}
                                 </span>
                               )}
                             </div>
                           )}
                           
-                          <div className="bg-[#0A0A0A] rounded-lg p-3">
+                          <div className="bg-white/[0.03] rounded-lg p-3">
                             <h5 className="text-white font-medium mb-2 flex items-center gap-2">
                               <Shield className="w-4 h-4 text-blue-400" />
                               Why This Matters for Your Security
                             </h5>
-                            <p className="text-gray-300 text-sm">
+                            <p className="text-white/50 text-sm">
                               This news relates to risk indicators in your monitoring system. 
                               {article.indicator_relevance?.includes('econ_01_treasury_tail') &&
                                 ' Changes in treasury markets can affect banking stability and your savings.'}

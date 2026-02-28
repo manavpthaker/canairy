@@ -8,25 +8,18 @@ export default {
     extend: {
       colors: {
         'bmb': {
-          'black': '#0D0D0D',
-          'dark': '#1A1A1A',
-          'border': '#262626',
+          'black': '#0A0A0C',
+          'dark': '#141416',
+          'elevated': '#1C1C1E',
+          'border': '#2A2A2E',
           'success': '#10B981',
           'warning': '#F59E0B',
           'danger': '#EF4444',
-          'primary': '#F9FAFB',
-          'secondary': '#9CA3AF',
-          'accent': '#6366F1',
-          'accent-light': '#818CF8',
-          'accent-dark': '#4F46E5',
-        },
-        // Elevation system - 5 tiers for visual depth
-        'elevation': {
-          '0': '#09090B',  // Page background
-          '1': '#0F0F12',  // Card background
-          '2': '#18181B',  // Elevated cards
-          '3': '#27272A',  // Hover states
-          '4': '#3F3F46',  // Active states
+          'primary': '#F5F5F7',
+          'secondary': '#8E8E93',
+          'accent': '#64748B',
+          'accent-light': '#94A3B8',
+          'accent-dark': '#475569',
         }
       },
       fontFamily: {
@@ -40,6 +33,7 @@ export default {
         '3xl': '1.875rem',
         '4xl': '2.25rem',
         '5xl': '3rem',
+        '6xl': '3.75rem',
       },
       animation: {
         'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
@@ -49,6 +43,10 @@ export default {
         'scale-in': 'scale-in 0.2s ease-out',
         'spin-slow': 'spin 3s linear infinite',
         'glow': 'glow 2s ease-in-out infinite',
+        'glow-red': 'glow-red 2s ease-in-out infinite',
+        'glow-amber': 'glow-amber 3s ease-in-out infinite',
+        'threat-pulse': 'threat-pulse 3s ease-in-out infinite',
+        'ring-fill': 'ring-fill 1.2s ease-out forwards',
       },
       keyframes: {
         'pulse-subtle': {
@@ -72,23 +70,43 @@ export default {
           '100%': { transform: 'scale(1)', opacity: 1 },
         },
         'glow': {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(99, 102, 241, 0.5)' },
-          '50%': { boxShadow: '0 0 30px rgba(99, 102, 241, 0.8)' },
-        }
+          '0%, 100%': { boxShadow: '0 0 20px rgba(100, 116, 139, 0.3)' },
+          '50%': { boxShadow: '0 0 30px rgba(100, 116, 139, 0.5)' },
+        },
+        'glow-red': {
+          '0%, 100%': { boxShadow: '0 0 20px rgba(239, 68, 68, 0.15)' },
+          '50%': { boxShadow: '0 0 40px rgba(239, 68, 68, 0.3)' },
+        },
+        'glow-amber': {
+          '0%, 100%': { boxShadow: '0 0 15px rgba(245, 158, 11, 0.1)' },
+          '50%': { boxShadow: '0 0 30px rgba(245, 158, 11, 0.2)' },
+        },
+        'threat-pulse': {
+          '0%, 100%': { opacity: 1, backgroundPosition: '0% 50%' },
+          '50%': { opacity: 0.95, backgroundPosition: '100% 50%' },
+        },
+        'ring-fill': {
+          '0%': { strokeDashoffset: 'var(--ring-circumference)' },
+          '100%': { strokeDashoffset: 'var(--ring-offset)' },
+        },
       },
       boxShadow: {
-        'glow-sm': '0 0 10px rgba(99, 102, 241, 0.3)',
-        'glow': '0 0 20px rgba(99, 102, 241, 0.5)',
-        'glow-lg': '0 0 30px rgba(99, 102, 241, 0.7)',
-        'inner-glow': 'inset 0 0 20px rgba(99, 102, 241, 0.1)',
-        // Elevation shadows for dark theme
-        'elevation-1': '0 1px 2px rgba(0,0,0,0.5)',
-        'elevation-2': '0 2px 4px rgba(0,0,0,0.5)',
-        'elevation-3': '0 4px 8px rgba(0,0,0,0.5)',
+        'glow-sm': '0 0 10px rgba(100, 116, 139, 0.2)',
+        'glow': '0 0 20px rgba(100, 116, 139, 0.3)',
+        'glow-lg': '0 0 30px rgba(100, 116, 139, 0.4)',
+        'glow-red': '0 0 30px rgba(239, 68, 68, 0.2)',
+        'glow-red-lg': '0 0 50px rgba(239, 68, 68, 0.3)',
+        'glow-amber': '0 0 25px rgba(245, 158, 11, 0.15)',
+        'glow-green': '0 0 25px rgba(16, 185, 129, 0.15)',
+        'inner-glow': 'inset 0 0 20px rgba(100, 116, 139, 0.05)',
+        'glass': '0 8px 32px rgba(0, 0, 0, 0.3)',
+        'glass-lg': '0 12px 48px rgba(0, 0, 0, 0.4)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'grid-pattern': `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23262626' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        'threat-gradient': 'linear-gradient(135deg, rgba(127,29,29,0.6) 0%, rgba(153,27,27,0.4) 50%, rgba(127,29,29,0.6) 100%)',
+        'amber-gradient': 'linear-gradient(135deg, rgba(120,53,15,0.4) 0%, rgba(146,64,14,0.3) 50%, rgba(120,53,15,0.4) 100%)',
       },
       backdropBlur: {
         xs: '2px',

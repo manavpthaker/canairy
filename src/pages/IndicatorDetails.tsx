@@ -1,54 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { CanairyMascot } from '../components/canairy/CanairyMascot';
+import React, { useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { useStore } from '../store';
 import { IndicatorChart } from '../components/charts/IndicatorChart';
 import { StatusBadge } from '../components/core/Badge';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '../utils/cn';
-import { 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  TrendingUp,
+  TrendingDown,
   Minus,
   Clock,
   Info,
   AlertTriangle,
-  Lightbulb
+  Lightbulb,
+  ChevronRight,
+  Activity,
+  ArrowLeft,
 } from 'lucide-react';
 
 export const IndicatorDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { indicators, fetchIndicators, loading } = useStore();
+  const { indicators, fetchIndicators } = useStore();
   const indicator = indicators.find(ind => ind.id === id);
-  const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('7d');
 
   useEffect(() => {
-    if (!indicator && indicators.length === 0) {
-      fetchIndicators(); // Fetch all indicators if this one isn't in store
+    if (!indicator) {
+      fetchIndicators();
     }
-  }, [id, indicator, indicators.length, fetchIndicators]);
+  }, [id, indicator, fetchIndicators]);
 
-  // Show loading state while fetching
-  if (loading || (indicators.length === 0 && !indicator)) {
-    return (
-      <div className="min-h-screen bg-canairy-neutral p-6 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-canairy-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <h1 className="text-xl font-semibold text-canairy-charcoal">Loading indicator data...</h1>
-          <p className="text-canairy-charcoal-light text-sm mt-2">Fetching {id}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show not found only after loading completes
   if (!indicator) {
     return (
-      <div className="min-h-screen bg-canairy-neutral p-6 flex items-center justify-center">
+      <div className="flex items-center justify-center py-24">
         <div className="text-center">
-          <CanairyMascot size="md" mood="thinking" />
-          <h1 className="text-2xl font-bold text-canairy-charcoal mt-4">Indicator Not Found</h1>
-          <p className="text-canairy-charcoal-light">No indicator with ID: {id}</p>
+          <Activity className="w-12 h-12 text-white/15 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-white mt-4">Indicator Not Found</h1>
+          <p className="text-white/30 mt-2">Loading or invalid indicator ID: {id}</p>
+          <Link to="/indicators" className="inline-flex items-center gap-2 mt-6 text-white/30 hover:text-white/50 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Indicators
+          </Link>
         </div>
       </div>
     );
@@ -64,20 +55,20 @@ export const IndicatorDetails: React.FC = () => {
   };
 
   const getTrendColor = () => {
-    if (!indicator.status.trend) return 'text-canairy-charcoal-light';
+    if (!indicator.status.trend) return 'text-white/30';
     if (indicator.greenFlag) {
-      return indicator.status.trend === 'up' ? 'text-canairy-success' : 'text-canairy-danger';
+      return indicator.status.trend === 'up' ? 'text-green-400' : 'text-red-400';
     }
-    return indicator.status.trend === 'up' ? 'text-canairy-danger' : 'text-canairy-success';
+    return indicator.status.trend === 'up' ? 'text-red-400' : 'text-green-400';
   };
 
   const generateInsights = () => {
-    const insights = [];
+    const insights: { type: string; message: string }[] = [];
     if (indicator.status.level === 'red') {
-      insights.push({ type: 'warning', message: 'Critical threshold exceeded - immediate attention required.' });
+      insights.push({ type: 'warning', message: 'Critical threshold exceeded — immediate attention required.' });
     }
     if (indicator.status.level === 'amber') {
-      insights.push({ type: 'info', message: 'Approaching threshold - enhanced monitoring recommended.' });
+      insights.push({ type: 'info', message: 'Approaching threshold — enhanced monitoring recommended.' });
     }
     if (indicator.status.trend === 'up' && !indicator.greenFlag) {
       insights.push({ type: 'warning', message: 'Deteriorating trend detected.' });
@@ -90,106 +81,125 @@ export const IndicatorDetails: React.FC = () => {
 
   const insights = generateInsights();
 
+  const statusColor = indicator.status.level === 'red' ? 'red' : indicator.status.level === 'amber' ? 'amber' : 'green';
+
   return (
-    <div className="min-h-screen bg-canairy-neutral p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="card-canairy mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <CanairyMascot size="md" mood="thinking" />
-              <div>
-                <h1 className="text-2xl font-bold text-canairy-charcoal">{indicator.name}</h1>
-                <p className="text-canairy-charcoal-light">{indicator.description}</p>
-              </div>
+    <>
+      {/* Page Header */}
+      <div className="border-b border-white/[0.04]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 mb-4 text-sm">
+            <Link to="/" className="text-white/20 hover:text-white/50 transition-colors">Dashboard</Link>
+            <ChevronRight className="w-3 h-3 text-white/15" />
+            <Link to="/indicators" className="text-white/20 hover:text-white/50 transition-colors">Indicators</Link>
+            <ChevronRight className="w-3 h-3 text-white/15" />
+            <span className="text-white/50">{indicator.name}</span>
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-white">{indicator.name}</h1>
+              <p className="text-white/30 mt-1">{indicator.description}</p>
             </div>
             <StatusBadge level={indicator.status.level} size="lg" pulse={indicator.status.level === 'red' && indicator.critical} />
           </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="card-canairy">
-            <h2 className="text-xl font-semibold text-canairy-charcoal mb-4">Current Status</h2>
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-bold text-canairy-charcoal">
-                {typeof indicator.status.value === 'number' ? indicator.status.value.toLocaleString(undefined, { maximumFractionDigits: 2 }) : indicator.status.value}
+      {/* Content */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* Status + Thresholds cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Current Status */}
+          <div className="glass-card p-6">
+            <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Current Status</h2>
+            <div className="flex items-baseline gap-2 mb-3">
+              <span className="text-4xl font-bold text-white">
+                {typeof indicator.status.value === 'number'
+                  ? indicator.status.value.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                  : indicator.status.value}
               </span>
-              <span className="text-lg text-canairy-charcoal-light">{indicator.unit}</span>
+              <span className="text-lg text-white/30">{indicator.unit}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-canairy-charcoal-light mb-4">
+            <div className="flex items-center gap-2 text-sm text-white/20 mb-4">
               <Clock className="w-4 h-4" />
-              <span>Last updated {formatDistanceToNow(new Date(indicator.status.lastUpdate), { addSuffix: true })}</span>
+              <span>Updated {formatDistanceToNow(new Date(indicator.status.lastUpdate), { addSuffix: true })}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <span className={cn('font-medium', getTrendColor())}>
-                {getTrendIcon()} {indicator.status.trend ? indicator.status.trend.toUpperCase() : 'NO TREND'}
+              <span className={cn('font-medium flex items-center gap-1', getTrendColor())}>
+                {getTrendIcon()} {indicator.status.trend ? indicator.status.trend.toUpperCase() : 'STABLE'}
               </span>
-              <span className="text-canairy-charcoal-light">from {indicator.dataSource}</span>
+              <span className="text-white/20">from {indicator.dataSource}</span>
             </div>
           </div>
 
-          <div className="card-canairy">
-            <h2 className="text-xl font-semibold text-canairy-charcoal mb-4">Thresholds</h2>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-canairy-success">
-                <span>Green:</span>
-                <span>{indicator.thresholds?.threshold_amber !== undefined ? `< ${indicator.thresholds.threshold_amber} ${indicator.unit}` : 'N/A'}</span>
+          {/* Thresholds */}
+          <div className="glass-card p-6">
+            <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Thresholds</h2>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                  <span className="text-white/50">Green</span>
+                </div>
+                <span className="text-white/30 font-mono text-sm">
+                  {indicator.thresholds?.threshold_amber !== undefined ? `< ${indicator.thresholds.threshold_amber} ${indicator.unit}` : 'N/A'}
+                </span>
               </div>
-              <div className="flex justify-between items-center text-canairy-warning">
-                <span>Amber:</span>
-                <span>{indicator.thresholds?.threshold_red !== undefined ? `${indicator.thresholds.threshold_amber} - < ${indicator.thresholds.threshold_red} ${indicator.unit}` : 'N/A'}</span>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                  <span className="text-white/50">Amber</span>
+                </div>
+                <span className="text-white/30 font-mono text-sm">
+                  {indicator.thresholds?.threshold_red !== undefined
+                    ? `${indicator.thresholds.threshold_amber} — ${indicator.thresholds.threshold_red} ${indicator.unit}`
+                    : 'N/A'}
+                </span>
               </div>
-              <div className="flex justify-between items-center text-canairy-danger">
-                <span>Red:</span>
-                <span>{indicator.thresholds?.threshold_red !== undefined ? `> ${indicator.thresholds.threshold_red} ${indicator.unit}` : 'N/A'}</span>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                  <span className="text-white/50">Red</span>
+                </div>
+                <span className="text-white/30 font-mono text-sm">
+                  {indicator.thresholds?.threshold_red !== undefined ? `> ${indicator.thresholds.threshold_red} ${indicator.unit}` : 'N/A'}
+                </span>
               </div>
             </div>
             {indicator.critical && (
-              <p className="text-sm text-canairy-danger mt-4 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4" /> This is a critical indicator.
-              </p>
+              <div className="mt-4 pt-4 border-t border-white/[0.04] flex items-center gap-2 text-sm text-red-400">
+                <AlertTriangle className="w-4 h-4" />
+                Critical indicator — contributes to TIGHTEN-UP protocol
+              </div>
             )}
           </div>
         </div>
 
-        <div className="card-canairy mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-canairy-charcoal">Historical Data</h2>
-            <div className="flex bg-canairy-neutral rounded-lg p-1">
-              {(['24h', '7d', '30d', '90d'] as const).map((range) => (
-                <button
-                  key={range}
-                  onClick={() => setTimeRange(range)}
-                  className={cn(
-                    'px-4 py-1.5 text-sm font-medium rounded-md transition-all',
-                    timeRange === range
-                      ? 'bg-white text-canairy-charcoal shadow-sm'
-                      : 'text-canairy-charcoal-light hover:text-canairy-charcoal'
-                  )}
-                >
-                  {range}
-                </button>
-              ))}
-            </div>
-          </div>
-          <IndicatorChart indicator={indicator} timeRange={timeRange} height={250} />
+        {/* Chart */}
+        <div className="glass-card p-6">
+          <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Historical Trend</h2>
+          <IndicatorChart indicator={indicator} height={200} />
         </div>
 
+        {/* Insights */}
         {insights.length > 0 && (
-          <div className="card-canairy">
-            <h2 className="text-xl font-semibold text-canairy-charcoal mb-4">Insights</h2>
+          <div className="glass-card p-6">
+            <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Insights</h2>
             <div className="space-y-3">
               {insights.map((insight, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  {insight.type === 'warning' && <AlertTriangle className="w-5 h-5 text-canairy-warning flex-shrink-0" />}
-                  {insight.type === 'info' && <Info className="w-5 h-5 text-canairy-accent flex-shrink-0" />}
-                  {insight.type === 'action' && <Lightbulb className="w-5 h-5 text-canairy-success flex-shrink-0" />}
-                  <p className="text-canairy-charcoal-light text-base">{insight.message}</p>
+                <div key={index} className="flex items-start gap-3 px-3 py-2.5 rounded-lg bg-white/[0.03]">
+                  {insight.type === 'warning' && <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />}
+                  {insight.type === 'info' && <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />}
+                  {insight.type === 'action' && <Lightbulb className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />}
+                  <p className="text-white/50 text-sm">{insight.message}</p>
                 </div>
               ))}
             </div>
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };

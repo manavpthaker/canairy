@@ -17,7 +17,11 @@
       "WebSearch",
       "WebFetch(domain:www.smashingmagazine.com)",
       "WebFetch(domain:clusterdesign.io)",
-      "WebFetch(domain:dashboarddesignpatterns.github.io)"
+      "WebFetch(domain:dashboarddesignpatterns.github.io)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }

@@ -5,15 +5,15 @@
 
 @layer base {
   :root {
-    --bunker-black: #0D0D0D;
-    --bunker-dark: #1A1A1A;
+    --bunker-black: #0A0A0C;
+    --bunker-dark: #141416;
     --bunker-border: #262626;
     --bunker-success: #10B981;
     --bunker-warning: #F59E0B;
     --bunker-danger: #EF4444;
     --bunker-primary: #F9FAFB;
     --bunker-secondary: #9CA3AF;
-    --bunker-accent: #6366F1;
+    --bunker-accent: #64748B;
   }
 
   * {
@@ -21,12 +21,15 @@
   }
 
   body {
-    @apply bg-bunker-black text-bunker-primary antialiased;
+    @apply bg-bmb-black text-white antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background: radial-gradient(ellipse at 50% 0%, #12121A 0%, #0A0A0C 70%);
+    min-height: 100vh;
   }
 
   ::selection {
-    @apply bg-bunker-accent text-white;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
   }
 
   /* Scrollbar styling */
@@ -35,61 +38,66 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-bunker-dark;
+    background: rgba(255, 255, 255, 0.02);
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-bunker-border rounded-sm hover:bg-bunker-secondary;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 }
 
 @layer components {
   .card {
-    @apply bg-bunker-dark border border-bunker-border rounded-lg p-4 transition-all duration-200;
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-4 transition-all duration-200;
   }
 
   .card-hover {
-    @apply hover:border-bunker-secondary hover:shadow-lg hover:shadow-bunker-black/50;
+    @apply hover:border-white/[0.12] hover:shadow-lg hover:shadow-black/30;
   }
 
   .btn {
-    @apply px-4 py-2 rounded-md font-medium transition-all duration-200 inline-flex items-center justify-center;
+    @apply px-4 py-2 rounded-xl font-medium transition-all duration-200 inline-flex items-center justify-center gap-2;
   }
 
   .btn-primary {
-    @apply bg-bunker-accent text-white hover:bg-opacity-90 active:scale-95;
+    @apply bg-white/10 text-white hover:bg-white/15 active:scale-95;
   }
 
   .btn-secondary {
-    @apply bg-bunker-dark text-bunker-primary border border-bunker-border hover:bg-bunker-border;
+    @apply bg-white/5 text-white/70 border border-white/[0.08] hover:bg-white/[0.08] hover:text-white;
   }
 
   .btn-danger {
-    @apply bg-bunker-danger text-white hover:bg-opacity-90;
+    @apply bg-red-500/80 text-white hover:bg-red-500/90;
   }
 
   .input {
-    @apply bg-bunker-dark border border-bunker-border rounded-md px-3 py-2 text-bunker-primary placeholder-bunker-secondary focus:outline-none focus:ring-2 focus:ring-bunker-accent focus:border-transparent;
+    @apply bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-white/15 focus:border-transparent;
   }
 
   .badge {
-    @apply inline-flex items-center px-2 py-1 rounded text-xs font-medium;
+    @apply inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium;
   }
 
   .badge-success {
-    @apply bg-bunker-success/20 text-bunker-success border border-bunker-success/30;
+    @apply bg-green-500/20 text-green-400 border border-green-500/30;
   }
 
   .badge-warning {
-    @apply bg-bunker-warning/20 text-bunker-warning border border-bunker-warning/30;
+    @apply bg-amber-500/20 text-amber-400 border border-amber-500/30;
   }
 
   .badge-danger {
-    @apply bg-bunker-danger/20 text-bunker-danger border border-bunker-danger/30;
+    @apply bg-red-500/20 text-red-400 border border-red-500/30;
   }
 
   .tooltip {
-    @apply absolute z-50 px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded shadow-sm pointer-events-none;
+    @apply absolute z-50 px-2 py-1 text-xs font-medium text-white bg-[#1C1C1E] border border-white/[0.08] rounded-lg shadow-lg pointer-events-none;
   }
 }
 
@@ -99,15 +107,15 @@
   }
 
   .glow-success {
-    @apply shadow-lg shadow-bunker-success/25;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), 0 0 40px rgba(16, 185, 129, 0.05);
   }
 
   .glow-warning {
-    @apply shadow-lg shadow-bunker-warning/25;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.15), 0 0 40px rgba(245, 158, 11, 0.05);
   }
 
   .glow-danger {
-    @apply shadow-lg shadow-bunker-danger/25;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.15), 0 0 40px rgba(239, 68, 68, 0.05);
   }
 
   .text-gradient {
@@ -115,7 +123,7 @@
   }
 
   .grid-pattern {
-    background-image: 
+    background-image:
       linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
     background-size: 50px 50px;
@@ -127,16 +135,21 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-[#0A0A0A];
+    background: rgba(255, 255, 255, 0.02);
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-[#2A2A2A] rounded hover:bg-[#3A3A3A];
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 
   /* Firefox scrollbar support */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #2A2A2A #0A0A0A;
+    scrollbar-color: rgba(255, 255, 255, 0.08) rgba(255, 255, 255, 0.02);
   }
 }

@@ -41,7 +41,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
   };
 
   const getTrendColor = () => {
-    if (!indicator.status.trend) return 'text-gray-400';
+    if (!indicator.status.trend) return 'text-white/30';
     if (indicator.greenFlag) {
       return indicator.status.trend === 'up' ? 'text-green-400' : 'text-red-400';
     }
@@ -70,7 +70,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
     >
       <div className="space-y-6">
         {/* Current Status */}
-        <div className="bg-[#0A0A0A] rounded-xl p-6">
+        <div className="bg-white/[0.03] rounded-xl p-6">
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="text-lg font-medium text-white mb-2">Current Status</h3>
@@ -91,7 +91,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                     ? indicator.status.value.toLocaleString(undefined, { maximumFractionDigits: 2 })
                     : indicator.status.value}
                 </span>
-                <span className="text-gray-400">{indicator.unit}</span>
+                <span className="text-white/30">{indicator.unit}</span>
               </div>
               {indicator.status.trend && (
                 <div className={cn('flex items-center gap-1 justify-end', getTrendColor())}>
@@ -104,9 +104,9 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
             </div>
           </div>
           
-          <p className="text-gray-400 text-sm">{getStatusDescription()}</p>
+          <p className="text-white/30 text-sm">{getStatusDescription()}</p>
           
-          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-[#1A1A1A] text-sm text-gray-400">
+          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-white/[0.04] text-sm text-white/30">
             <div className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
               <span>Updated {formatDistanceToNow(new Date(indicator.status.lastUpdate), { addSuffix: true })}</span>
@@ -127,7 +127,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                 <Info className="w-5 h-5 text-blue-400" />
                 What We're Tracking
               </h3>
-              <p className="text-gray-300 leading-relaxed">{description.whatWeTrack}</p>
+              <p className="text-white/50 leading-relaxed">{description.whatWeTrack}</p>
             </div>
 
             {/* Why It Matters */}
@@ -136,7 +136,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                 <AlertTriangle className="w-5 h-5 text-amber-400" />
                 Why It Matters
               </h3>
-              <p className="text-gray-300 leading-relaxed">{description.whyItMatters}</p>
+              <p className="text-white/50 leading-relaxed">{description.whyItMatters}</p>
             </div>
 
             {/* Real World Impact */}
@@ -146,7 +146,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                   <AlertTriangle className="w-5 h-5" />
                   Real World Impact
                 </h3>
-                <p className="text-gray-300 leading-relaxed">{description.realWorldImpact}</p>
+                <p className="text-white/50 leading-relaxed">{description.realWorldImpact}</p>
               </div>
             )}
 
@@ -158,9 +158,9 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                   <div className="w-3 h-3 bg-green-400 rounded-full mt-1.5 flex-shrink-0" />
                   <div className="flex-1">
                     <div className="font-medium text-green-400 mb-1">Normal (Green)</div>
-                    <p className="text-gray-300 text-sm mb-2">{description.thresholds.green}</p>
+                    <p className="text-white/50 text-sm mb-2">{description.thresholds.green}</p>
                     {description.actionGuidance && (
-                      <p className="text-gray-400 text-xs italic">Action: {description.actionGuidance.green}</p>
+                      <p className="text-white/30 text-xs italic">Action: {description.actionGuidance.green}</p>
                     )}
                   </div>
                 </div>
@@ -169,9 +169,9 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                   <div className="w-3 h-3 bg-amber-400 rounded-full mt-1.5 flex-shrink-0" />
                   <div className="flex-1">
                     <div className="font-medium text-amber-400 mb-1">Elevated (Amber)</div>
-                    <p className="text-gray-300 text-sm mb-2">{description.thresholds.amber}</p>
+                    <p className="text-white/50 text-sm mb-2">{description.thresholds.amber}</p>
                     {description.actionGuidance && (
-                      <p className="text-gray-400 text-xs italic">Action: {description.actionGuidance.amber}</p>
+                      <p className="text-white/30 text-xs italic">Action: {description.actionGuidance.amber}</p>
                     )}
                   </div>
                 </div>
@@ -180,9 +180,9 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                   <div className="w-3 h-3 bg-red-400 rounded-full mt-1.5 flex-shrink-0" />
                   <div className="flex-1">
                     <div className="font-medium text-red-400 mb-1">Critical (Red)</div>
-                    <p className="text-gray-300 text-sm mb-2">{description.thresholds.red}</p>
+                    <p className="text-white/50 text-sm mb-2">{description.thresholds.red}</p>
                     {description.actionGuidance && (
-                      <p className="text-gray-400 text-xs italic">Action: {description.actionGuidance.red}</p>
+                      <p className="text-white/30 text-xs italic">Action: {description.actionGuidance.red}</p>
                     )}
                   </div>
                 </div>
@@ -191,12 +191,12 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
 
             {/* Historical Context */}
             {description.historicalContext && (
-              <div className="bg-[#0A0A0A] rounded-lg p-4 border border-[#2A2A2A]">
+              <div className="bg-white/[0.03] rounded-lg p-4 border border-white/[0.08]">
                 <h3 className="text-lg font-medium text-white mb-3 flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-gray-400" />
+                  <Clock className="w-5 h-5 text-white/30" />
                   Historical Context
                 </h3>
-                <p className="text-gray-300 text-sm leading-relaxed">{description.historicalContext}</p>
+                <p className="text-white/50 text-sm leading-relaxed">{description.historicalContext}</p>
               </div>
             )}
 
@@ -204,7 +204,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
             {description.methodology && (
               <div>
                 <h3 className="text-lg font-medium text-white mb-3">Methodology</h3>
-                <p className="text-gray-300 text-sm leading-relaxed">{description.methodology}</p>
+                <p className="text-white/50 text-sm leading-relaxed">{description.methodology}</p>
               </div>
             )}
 
@@ -214,7 +214,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                 <h3 className="text-lg font-medium text-white mb-3">References & Sources</h3>
                 <div className="space-y-2">
                   {description.references.map((reference, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm text-gray-300">
+                    <div key={index} className="flex items-center gap-2 text-sm text-white/50">
                       <ExternalLink className="w-3 h-3 flex-shrink-0" />
                       <span>{reference}</span>
                     </div>
@@ -237,9 +237,9 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
         {/* Fallback if no description */}
         {!description && (
           <div className="text-center py-8">
-            <Info className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+            <Info className="w-12 h-12 text-white/20 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-white mb-2">Detailed Information</h3>
-            <p className="text-gray-400">
+            <p className="text-white/30">
               Comprehensive analysis and thresholds for this indicator are being prepared.
             </p>
           </div>

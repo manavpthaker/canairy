@@ -97,10 +97,10 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
         display: false,
       },
       tooltip: {
-        backgroundColor: 'rgba(26, 26, 26, 0.95)',
+        backgroundColor: 'rgba(20, 20, 22, 0.95)',
         titleColor: '#fff',
-        bodyColor: '#9CA3AF',
-        borderColor: '#262626',
+        bodyColor: 'rgba(255,255,255,0.3)',
+        borderColor: 'rgba(255,255,255,0.06)',
         borderWidth: 1,
         padding: 8,
         displayColors: false,
@@ -149,7 +149,7 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center mt-8">
             <div className="text-2xl font-bold text-white">{value}%</div>
-            <div className="text-xs text-gray-400">Capacity</div>
+            <div className="text-xs text-white/30">Capacity</div>
           </div>
         </div>
       </div>
@@ -179,15 +179,15 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
           ticks: {
             stepSize: 1,
             callback: (value: any) => value === 1 ? 'Active' : 'Inactive',
-            color: '#9CA3AF',
+            color: 'rgba(255,255,255,0.2)',
           },
           grid: {
-            color: 'rgba(156, 163, 175, 0.1)',
+            color: 'rgba(255, 255, 255, 0.04)',
           }
         },
         x: {
           ticks: {
-            color: '#9CA3AF',
+            color: 'rgba(255,255,255,0.2)',
             maxRotation: 0,
           },
           grid: {
@@ -251,15 +251,15 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
       scales: {
         y: {
           ticks: {
-            color: '#9CA3AF',
+            color: 'rgba(255,255,255,0.2)',
           },
           grid: {
-            color: 'rgba(156, 163, 175, 0.1)',
+            color: 'rgba(255, 255, 255, 0.04)',
           }
         },
         x: {
           ticks: {
-            color: '#9CA3AF',
+            color: 'rgba(255,255,255,0.2)',
             maxRotation: 0,
           },
           grid: {
@@ -294,16 +294,16 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
       scales: {
         y: {
           ticks: {
-            color: '#9CA3AF',
+            color: 'rgba(255,255,255,0.2)',
             callback: (value: any) => `${value} ${indicator.unit}`,
           },
           grid: {
-            color: 'rgba(156, 163, 175, 0.1)',
+            color: 'rgba(255, 255, 255, 0.04)',
           }
         },
         x: {
           ticks: {
-            color: '#9CA3AF',
+            color: 'rgba(255,255,255,0.2)',
           },
           grid: {
             display: false,
@@ -384,18 +384,18 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
         y: {
           max: indicator.id === 'oil_04_refinery_ratio' ? 2.0 : undefined,
           ticks: {
-            color: '#9CA3AF',
+            color: 'rgba(255,255,255,0.2)',
             callback: (value: any) => {
               return `${value} ${indicator.unit}`;
             }
           },
           grid: {
-            color: 'rgba(156, 163, 175, 0.1)',
+            color: 'rgba(255, 255, 255, 0.04)',
           }
         },
         x: {
           ticks: {
-            color: '#9CA3AF',
+            color: 'rgba(255,255,255,0.2)',
             maxRotation: 0,
           },
           grid: {
@@ -432,16 +432,16 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
     scales: {
       y: {
         ticks: {
-          color: '#9CA3AF',
+          color: 'rgba(255,255,255,0.2)',
           callback: (value: any) => `${value} ${indicator.unit}`,
         },
         grid: {
-          color: 'rgba(156, 163, 175, 0.1)',
+          color: 'rgba(255, 255, 255, 0.04)',
         }
       },
       x: {
         ticks: {
-          color: '#9CA3AF',
+          color: 'rgba(255,255,255,0.2)',
           maxRotation: 0,
           autoSkip: true,
           maxTicksLimit: 6,

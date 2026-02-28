@@ -96,7 +96,7 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
   };
 
   const getCredibilityColor = (score?: number) => {
-    if (!score) return 'text-gray-500';
+    if (!score) return 'text-white/20';
     if (score >= 85) return 'text-green-400';
     if (score >= 70) return 'text-amber-400';
     return 'text-red-400';
@@ -128,14 +128,14 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
           className={cn(
-            'fixed right-0 top-0 h-full bg-[#111111] border-l border-[#1A1A1A] z-30',
+            'fixed right-0 top-0 h-full bg-[#0E0E10]/95 backdrop-blur-xl border-l border-white/[0.04] z-30',
             'w-full sm:w-96', // Full width on mobile
             'flex flex-col shadow-2xl',
             className
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-[#1A1A1A]">
+          <div className="flex items-center justify-between p-6 border-b border-white/[0.04]">
             <div className="flex items-center gap-3">
               <Newspaper className="w-5 h-5 text-blue-400" />
               <h2 className="text-lg font-semibold text-white">Live News Feed</h2>
@@ -144,14 +144,14 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
               <button
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className="p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors"
+                className="p-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                 title="Refresh news"
               >
                 <RefreshCw className={cn("w-4 h-4", refreshing && "animate-spin")} />
               </button>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white hover:bg-[#1A1A1A] rounded-lg transition-colors"
+                className="p-2 text-white/30 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -159,7 +159,7 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
           </div>
 
           {/* Last update time */}
-          <div className="px-6 py-2 text-xs text-gray-500 border-b border-[#1A1A1A]">
+          <div className="px-6 py-2 text-xs text-white/20 border-b border-white/[0.04]">
             Updated {formatDistanceToNow(lastRefresh, { addSuffix: true })}
           </div>
 
@@ -169,30 +169,30 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
               <div className="p-6 space-y-4">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="animate-pulse">
-                    <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-800 rounded w-1/2 mb-2"></div>
-                    <div className="h-2 bg-gray-800 rounded w-1/4"></div>
+                    <div className="h-4 bg-white/10 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-white/[0.06] rounded w-1/2 mb-2"></div>
+                    <div className="h-2 bg-white/[0.06] rounded w-1/4"></div>
                   </div>
                 ))}
               </div>
             ) : error ? (
               <div className="p-6 text-center">
                 <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-                <p className="text-gray-400">{error}</p>
+                <p className="text-white/30">{error}</p>
                 <button
                   onClick={loadNews}
-                  className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  className="mt-4 px-4 py-2 bg-red-500/80 text-white rounded-lg hover:bg-red-500/90 transition-colors"
                 >
                   Retry
                 </button>
               </div>
             ) : articles.length === 0 ? (
               <div className="p-6 text-center">
-                <Newspaper className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-400">No news articles available</p>
+                <Newspaper className="w-12 h-12 text-white/20 mx-auto mb-4" />
+                <p className="text-white/30">No news articles available</p>
               </div>
             ) : (
-              <div className="divide-y divide-[#1A1A1A]">
+              <div className="divide-y divide-white/[0.04]">
                 <AnimatePresence>
                   {articles.map((article, index) => (
                     <motion.div
@@ -201,7 +201,7 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ delay: index * 0.05 }}
-                      className="p-4 hover:bg-[#1A1A1A] transition-colors cursor-pointer group"
+                      className="p-4 hover:bg-white/5 transition-colors cursor-pointer group"
                       onClick={() => setExpandedArticle(expandedArticle === index ? null : index)}
                     >
                       {/* Article header */}
@@ -213,9 +213,9 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
                           <span className={cn("font-medium", getCredibilityColor(article.source_credibility?.score))}>
                             {article.source.name}
                           </span>
-                          <span className="text-gray-500">•</span>
-                          <Clock className="w-3 h-3 text-gray-500" />
-                          <span className="text-gray-500">
+                          <span className="text-white/20">•</span>
+                          <Clock className="w-3 h-3 text-white/20" />
+                          <span className="text-white/20">
                             {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true })}
                           </span>
                         </div>
@@ -242,7 +242,7 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
                       )}
 
                       {/* Relationship text */}
-                      <p className="text-xs text-gray-400 mb-2">
+                      <p className="text-xs text-white/30 mb-2">
                         <Shield className="w-3 h-3 inline mr-1" />
                         {getIndicatorRelationshipText(article.indicator_relevance)}
                       </p>
@@ -257,8 +257,8 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
                             transition={{ duration: 0.2 }}
                             className="overflow-hidden"
                           >
-                            <div className="pt-2 mt-2 border-t border-[#2A2A2A]">
-                              <p className="text-xs text-gray-300 mb-3 line-clamp-3">
+                            <div className="pt-2 mt-2 border-t border-white/[0.08]">
+                              <p className="text-xs text-white/50 mb-3 line-clamp-3">
                                 {article.description}
                               </p>
                               {article.url !== '#' && (
@@ -280,7 +280,7 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
 
                       {/* Hover indicator */}
                       <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ChevronRight className="w-3 h-3 text-gray-500" />
+                        <ChevronRight className="w-3 h-3 text-white/20" />
                       </div>
                     </motion.div>
                   ))}
@@ -290,8 +290,8 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
           </div>
 
           {/* Footer with stats */}
-          <div className="p-4 border-t border-[#1A1A1A] bg-[#0A0A0A]">
-            <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="p-4 border-t border-white/[0.04] bg-white/[0.03]">
+            <div className="flex items-center justify-between text-xs text-white/20">
               <span>{articles.length} articles</span>
               <span>Auto-refresh enabled</span>
             </div>

@@ -40,28 +40,28 @@ export const ResiliencePlaybook: React.FC = () => {
   const categories = [...new Set(TIGHTEN_UP_CHECKLIST.map((c) => c.category))];
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <>
       {/* Header */}
-      <div className="bg-[#111111] border-b border-[#1A1A1A]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="border-b border-white/[0.04]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex items-center gap-3 mb-1">
             <Link
               to="/"
-              className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
+              className="text-white/20 hover:text-white/50 text-sm transition-colors"
             >
               Dashboard
             </Link>
-            <ChevronDown className="w-3 h-3 text-gray-600 rotate-[-90deg]" />
-            <span className="text-gray-300 text-sm">Playbook</span>
+            <ChevronDown className="w-3 h-3 text-white/15 rotate-[-90deg]" />
+            <span className="text-white/50 text-sm">Playbook</span>
           </div>
           <div className="flex items-center gap-4 mt-4">
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-              <Shield className="w-6 h-6 text-indigo-400" />
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+              <Shield className="w-6 h-6 text-white/40" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Resilience Playbook</h1>
-              <p className="text-gray-400">
-                Phase ladder, action checklists, and critical jump rules
+              <h1 className="text-2xl font-bold text-white">Your Family's Plan</h1>
+              <p className="text-white/30">
+                Step-by-step guide for every level of preparedness — from basics to full resilience
               </p>
             </div>
           </div>
@@ -100,12 +100,12 @@ export const ResiliencePlaybook: React.FC = () => {
                 <Zap className="w-4 h-4 text-red-400" />
               </div>
               <h2 className="text-lg font-bold text-white">48-Hour Tighten-Up Checklist</h2>
-              <span className="text-sm text-gray-500 ml-auto">
+              <span className="text-sm text-white/20 ml-auto">
                 {completedChecklist.size}/{TIGHTEN_UP_CHECKLIST.length} complete
               </span>
             </div>
 
-            <div className="bg-[#111111] rounded-2xl border border-red-500/20 overflow-hidden">
+            <div className="glass-card border border-red-500/20 overflow-hidden">
               {/* Progress bar */}
               <div className="h-1 bg-red-900/30">
                 <motion.div
@@ -125,7 +125,7 @@ export const ResiliencePlaybook: React.FC = () => {
 
                 {categories.map((cat) => (
                   <div key={cat}>
-                    <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                    <h4 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-2">
                       {cat}
                     </h4>
                     <div className="space-y-1">
@@ -139,7 +139,7 @@ export const ResiliencePlaybook: React.FC = () => {
                               'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors',
                               done
                                 ? 'bg-green-500/10 text-green-400'
-                                : 'hover:bg-[#1A1A1A] text-gray-300'
+                                : 'hover:bg-white/5 text-white/50'
                             )}
                           >
                             <div
@@ -167,11 +167,11 @@ export const ResiliencePlaybook: React.FC = () => {
         {/* ── Phase Ladder ── */}
         <section>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-              <Shield className="w-4 h-4 text-indigo-400" />
+            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+              <Shield className="w-4 h-4 text-white/30" />
             </div>
             <h2 className="text-lg font-bold text-white">Phase Ladder</h2>
-            <span className="text-sm text-gray-500">0 → 9</span>
+            <span className="text-sm text-white/20">0 → 9</span>
           </div>
 
           <div className="space-y-3">
@@ -191,8 +191,8 @@ export const ResiliencePlaybook: React.FC = () => {
                     className={cn(
                       'rounded-2xl border overflow-hidden transition-colors',
                       isCurrent
-                        ? 'border-indigo-500/30 bg-indigo-500/5'
-                        : 'border-[#1A1A1A] bg-[#111111]'
+                        ? 'border-white/10 bg-white/[0.04]'
+                        : 'border-white/[0.06] glass-card'
                     )}
                   >
                     {/* Phase header */}
@@ -207,8 +207,8 @@ export const ResiliencePlaybook: React.FC = () => {
                           isCompleted
                             ? 'bg-green-500/10 border-green-500/20'
                             : isCurrent
-                              ? 'bg-indigo-500/10 border-indigo-500/20'
-                              : 'bg-[#0A0A0A] border-[#1A1A1A]'
+                              ? 'bg-white/[0.06] border-white/10'
+                              : 'bg-white/[0.03] border-white/[0.04]'
                         )}
                       >
                         {isCompleted ? (
@@ -217,7 +217,7 @@ export const ResiliencePlaybook: React.FC = () => {
                           <span
                             className={cn(
                               'text-sm font-bold',
-                              isCurrent ? 'text-indigo-400' : 'text-gray-500'
+                              isCurrent ? 'text-white/40' : 'text-white/20'
                             )}
                           >
                             {phase.number}
@@ -231,18 +231,18 @@ export const ResiliencePlaybook: React.FC = () => {
                           <h3
                             className={cn(
                               'font-semibold',
-                              isCurrent ? 'text-white' : isCompleted ? 'text-gray-300' : 'text-gray-400'
+                              isCurrent ? 'text-white' : isCompleted ? 'text-white/50' : 'text-white/30'
                             )}
                           >
                             {phase.name}
                           </h3>
                           {isCurrent && (
-                            <span className="px-2 py-0.5 text-xs rounded-full bg-indigo-500/20 text-indigo-300 font-medium">
+                            <span className="px-2 py-0.5 text-xs rounded-full bg-white/[0.08] text-white/50 font-medium">
                               CURRENT
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 truncate">{phase.description}</p>
+                        <p className="text-sm text-white/20 truncate">{phase.description}</p>
                       </div>
 
                       {/* Color dot + chevron */}
@@ -252,9 +252,9 @@ export const ResiliencePlaybook: React.FC = () => {
                           style={{ backgroundColor: phase.color }}
                         />
                         {isExpanded ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
+                          <ChevronUp className="w-5 h-5 text-white/20" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
+                          <ChevronDown className="w-5 h-5 text-white/20" />
                         )}
                       </div>
                     </button>
@@ -269,25 +269,25 @@ export const ResiliencePlaybook: React.FC = () => {
                           transition={{ duration: 0.2 }}
                           className="overflow-hidden"
                         >
-                          <div className="px-4 sm:px-6 pb-5 border-t border-[#1A1A1A] pt-4">
+                          <div className="px-4 sm:px-6 pb-5 border-t border-white/[0.04] pt-4">
                             {/* Triggers */}
                             <div className="mb-4">
-                              <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                              <h4 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-2">
                                 Triggers
                               </h4>
                               {phase.triggers.map((trigger, i) => (
                                 <div
                                   key={i}
-                                  className="flex items-start gap-2 text-sm text-gray-400 mb-1"
+                                  className="flex items-start gap-2 text-sm text-white/30 mb-1"
                                 >
-                                  <ArrowRight className="w-3.5 h-3.5 mt-0.5 text-gray-600 flex-shrink-0" />
+                                  <ArrowRight className="w-3.5 h-3.5 mt-0.5 text-white/15 flex-shrink-0" />
                                   <span>{trigger}</span>
                                 </div>
                               ))}
                             </div>
 
                             {/* Actions */}
-                            <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                            <h4 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-2">
                               Actions
                             </h4>
                             <div className="space-y-1.5">
@@ -298,13 +298,13 @@ export const ResiliencePlaybook: React.FC = () => {
                                     'flex items-start gap-3 px-3 py-2 rounded-lg text-sm',
                                     isCompleted
                                       ? 'text-green-400/70 bg-green-500/5'
-                                      : 'text-gray-300 bg-[#0A0A0A]'
+                                      : 'text-white/50 bg-white/[0.03]'
                                   )}
                                 >
                                   {isCompleted ? (
                                     <Check className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                   ) : (
-                                    <Circle className="w-4 h-4 mt-0.5 text-gray-600 flex-shrink-0" />
+                                    <Circle className="w-4 h-4 mt-0.5 text-white/15 flex-shrink-0" />
                                   )}
                                   <span>{action}</span>
                                 </div>
@@ -329,7 +329,7 @@ export const ResiliencePlaybook: React.FC = () => {
             </div>
             <h2 className="text-lg font-bold text-white">Critical Jump Rules</h2>
           </div>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-white/20 mb-4">
             These rules bypass normal phase progression and force immediate escalation.
           </p>
 
@@ -337,18 +337,18 @@ export const ResiliencePlaybook: React.FC = () => {
             {CRITICAL_JUMP_RULES.map((rule) => (
               <div
                 key={rule.id}
-                className="bg-[#111111] rounded-xl border border-[#1A1A1A] p-4"
+                className="glass-card p-4"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-mono text-amber-400/70 uppercase">
                     {rule.id}
                   </span>
-                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                  <span className="text-xs text-white/20 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     {rule.timeLimit}
                   </span>
                 </div>
-                <p className="text-sm text-gray-300 mb-3">{rule.condition}</p>
+                <p className="text-sm text-white/50 mb-3">{rule.condition}</p>
                 <div className="flex items-center gap-2">
                   <ArrowRight className="w-3.5 h-3.5 text-red-400" />
                   <span className="text-sm font-medium text-red-400">
@@ -360,6 +360,6 @@ export const ResiliencePlaybook: React.FC = () => {
           </div>
         </section>
       </div>
-    </div>
+    </>
   );
 };
