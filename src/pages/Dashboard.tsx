@@ -13,7 +13,6 @@ import { ThreatBanner } from '../components/dashboard/ThreatBanner';
 import { NextActionCard } from '../components/dashboard/NextActionCard';
 import { WeeklyPriorities } from '../components/dashboard/WeeklyPriorities';
 import { CompactIndicatorRow } from '../components/dashboard/CompactIndicatorRow';
-import { ScoreRing } from '../components/ui/ScoreRing';
 import { GlassCard } from '../components/ui/GlassCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { canairyMessages } from '../content/canairy-messages';
@@ -102,7 +101,7 @@ export const Dashboard: React.FC = () => {
               <ThreatBanner />
             </ErrorBoundary>
 
-            {/* ──── 2. SCORE HERO ──── */}
+            {/* ──── 2. STATUS HERO ──── */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -112,15 +111,33 @@ export const Dashboard: React.FC = () => {
                 glow={overallStatus === 'action' ? 'red' : overallStatus === 'attention' ? 'amber' : 'green'}
               >
                 <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
-                  {/* Score Ring */}
+                  {/* Status indicator */}
                   <div className="flex-shrink-0">
-                    <ScoreRing
-                      value={hopiScore?.score ?? 0}
-                      max={100}
-                      size="lg"
-                      color={phaseColor}
-                      label="HOPI"
-                    />
+                    <div
+                      className={cn(
+                        'w-20 h-20 rounded-2xl flex items-center justify-center',
+                        'border transition-all duration-300',
+                        overallStatus === 'action' && 'bg-red-500/10 border-red-500/30',
+                        overallStatus === 'attention' && 'bg-amber-500/10 border-amber-500/30',
+                        overallStatus === 'allGood' && 'bg-green-500/10 border-green-500/30'
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          'w-10 h-10 rounded-full',
+                          overallStatus === 'action' && 'bg-red-500 animate-pulse',
+                          overallStatus === 'attention' && 'bg-amber-500',
+                          overallStatus === 'allGood' && 'bg-green-500'
+                        )}
+                        style={{
+                          boxShadow: overallStatus === 'action'
+                            ? '0 0 30px rgba(239, 68, 68, 0.5)'
+                            : overallStatus === 'attention'
+                            ? '0 0 20px rgba(245, 158, 11, 0.4)'
+                            : '0 0 20px rgba(16, 185, 129, 0.3)'
+                        }}
+                      />
+                    </div>
                   </div>
 
                   {/* Status text */}
@@ -132,38 +149,41 @@ export const Dashboard: React.FC = () => {
                       {statusMsg.message}
                     </p>
 
-                    {/* Phase + Stats row */}
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-4">
-                      <div
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border"
-                        style={{
-                          backgroundColor: `${phaseColor}10`,
-                          borderColor: `${phaseColor}25`,
-                          color: phaseColor,
-                        }}
-                      >
-                        Phase {currentPhase?.number ?? 0}
-                        <span className="opacity-60">&mdash; {currentPhase?.name ?? 'Foundations'}</span>
+                    {/* Indicator counts + Phase */}
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 mt-4">
+                      {/* Indicator summary */}
+                      <div className="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                        <span className="flex items-center gap-1.5 text-xs">
+                          <span className="w-2 h-2 rounded-full bg-green-500" />
+                          <span className="text-white/50">{greenCount}</span>
+                        </span>
+                        <span className="flex items-center gap-1.5 text-xs">
+                          <span className="w-2 h-2 rounded-full bg-amber-500" />
+                          <span className="text-white/50">{amberCount}</span>
+                        </span>
+                        <span className="flex items-center gap-1.5 text-xs">
+                          <span className="w-2 h-2 rounded-full bg-red-500" />
+                          <span className="text-white/50">{redCount}</span>
+                        </span>
+                        <span className="text-xs text-white/20 ml-1">
+                          of {indicators.length}
+                        </span>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1.5 text-xs text-white/25">
-                          <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                          {greenCount}
-                        </span>
-                        {amberCount > 0 && (
-                          <span className="flex items-center gap-1.5 text-xs text-white/25">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                            {amberCount}
-                          </span>
-                        )}
-                        {redCount > 0 && (
-                          <span className="flex items-center gap-1.5 text-xs text-white/25">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                            {redCount}
-                          </span>
-                        )}
-                      </div>
+                      {/* Phase badge - only if not Phase 0 */}
+                      {(currentPhase?.number ?? 0) > 0 && (
+                        <div
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border"
+                          style={{
+                            backgroundColor: `${phaseColor}10`,
+                            borderColor: `${phaseColor}25`,
+                            color: phaseColor,
+                          }}
+                        >
+                          Phase {currentPhase?.number}
+                          <span className="opacity-60">&mdash; {currentPhase?.name}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
