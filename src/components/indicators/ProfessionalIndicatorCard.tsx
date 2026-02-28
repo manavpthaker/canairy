@@ -30,11 +30,11 @@ export const ProfessionalIndicatorCard: React.FC<IndicatorCardProps> = ({
   };
 
   const getTrendColor = () => {
-    if (!status.trend) return 'text-bmb-secondary';
+    if (!status.trend) return 'text-white/30';
     if (greenFlag) {
-      return status.trend === 'up' ? 'text-bmb-success' : 'text-bmb-danger';
+      return status.trend === 'up' ? 'text-green-400' : 'text-red-400';
     }
-    return status.trend === 'up' ? 'text-bmb-danger' : 'text-bmb-success';
+    return status.trend === 'up' ? 'text-red-400' : 'text-green-400';
   };
 
   const cardVariants = {
@@ -60,7 +60,7 @@ export const ProfessionalIndicatorCard: React.FC<IndicatorCardProps> = ({
         onClick={onClick}
         className={cn(
           'relative overflow-hidden',
-          status.level === 'red' && critical && 'border-bmb-danger/50',
+          status.level === 'red' && critical && 'border-red-500/50',
           compact && 'p-4'
         )}
       >
@@ -68,10 +68,10 @@ export const ProfessionalIndicatorCard: React.FC<IndicatorCardProps> = ({
         <div
           className={cn(
             'absolute top-0 left-0 right-0 h-0.5',
-            status.level === 'green' && 'bg-bmb-success',
-            status.level === 'amber' && 'bg-bmb-warning',
-            status.level === 'red' && 'bg-bmb-danger',
-            status.level === 'unknown' && 'bg-bmb-secondary'
+            status.level === 'green' && 'bg-green-500',
+            status.level === 'amber' && 'bg-amber-500',
+            status.level === 'red' && 'bg-red-500',
+            status.level === 'unknown' && 'bg-white/20'
           )}
         />
 
@@ -90,7 +90,7 @@ export const ProfessionalIndicatorCard: React.FC<IndicatorCardProps> = ({
                 <Badge variant="default" size="sm">
                   {domain.replace('_', ' ').toUpperCase()}
                 </Badge>
-                <span className="text-2xs text-bmb-secondary">
+                <span className="text-2xs text-white/30">
                   {dataSource}
                 </span>
               </div>
@@ -135,10 +135,10 @@ export const ProfessionalIndicatorCard: React.FC<IndicatorCardProps> = ({
                   key={i}
                   className={cn(
                     'flex-1 rounded-sm transition-all duration-300',
-                    status.level === 'green' && 'bg-bmb-success/20',
-                    status.level === 'amber' && 'bg-bmb-warning/20',
-                    status.level === 'red' && 'bg-bmb-danger/20',
-                    status.level === 'unknown' && 'bg-bmb-secondary/20'
+                    status.level === 'green' && 'bg-green-500/20',
+                    status.level === 'amber' && 'bg-amber-500/20',
+                    status.level === 'red' && 'bg-red-500/20',
+                    status.level === 'unknown' && 'bg-white/10'
                   )}
                   style={{ height: `${value}%` }}
                 />
@@ -147,7 +147,7 @@ export const ProfessionalIndicatorCard: React.FC<IndicatorCardProps> = ({
           )}
 
           {/* Last update */}
-          <div className="flex items-center justify-between text-2xs text-bmb-secondary">
+          <div className="flex items-center justify-between text-2xs text-white/30">
             <div className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
               <span>
@@ -164,7 +164,7 @@ export const ProfessionalIndicatorCard: React.FC<IndicatorCardProps> = ({
         {/* Glow effect for critical red indicators */}
         {status.level === 'red' && critical && (
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-0 bg-bmb-danger/5 animate-pulse" />
+            <div className="absolute inset-0 bg-red-500/5 animate-pulse" />
           </div>
         )}
       </Card>

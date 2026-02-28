@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Minus, 
-  AlertCircle, 
-  Activity, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
   Clock,
   Info,
   ChevronRight,
@@ -39,18 +37,18 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
 }) => {
   const { status, name, domain, unit, dataSource, critical, greenFlag } = indicator;
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('24h');
-  
+
   // Generate historical data if not provided
   useEffect(() => {
     if (!indicator.history) {
       indicator.history = generateHistoricalData(indicator, timeRange);
     }
   }, [indicator, timeRange]);
-  
+
   // Generate contextual insights based on indicator state
   const generateInsights = (): IndicatorInsight[] => {
     const insights: IndicatorInsight[] = [];
-    
+
     if (status.level === 'red') {
       if (critical) {
         insights.push({
@@ -58,8 +56,7 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
           message: 'Critical threshold exceeded - immediate attention required'
         });
       }
-      
-      // Domain-specific insights
+
       switch (domain) {
         case 'economy':
           insights.push({ type: 'action', message: 'Review financial positions and increase cash reserves' });
@@ -95,8 +92,7 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
         message: 'Approaching threshold - enhanced monitoring recommended'
       });
     }
-    
-    // Trend-based insights
+
     if (status.trend === 'up' && !greenFlag) {
       insights.push({
         type: 'warning',
@@ -108,12 +104,12 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
         message: 'Negative trend in positive indicator'
       });
     }
-    
-    return insights.slice(0, 2); // Limit to 2 insights
+
+    return insights.slice(0, 2);
   };
-  
+
   const insights = showInsights ? generateInsights() : [];
-  
+
   const getTrendIcon = () => {
     if (!status.trend) return <Minus className="w-3 h-3" />;
     return status.trend === 'up' ? (
@@ -124,56 +120,72 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
   };
 
   const getTrendColor = () => {
-    if (!status.trend) return 'text-bmb-secondary';
+    if (!status.trend) return 'text-white/30';
     if (greenFlag) {
-      return status.trend === 'up' ? 'text-bmb-success' : 'text-bmb-danger';
+      return status.trend === 'up' ? 'text-green-400' : 'text-red-400';
     }
-    return status.trend === 'up' ? 'text-bmb-danger' : 'text-bmb-success';
+    return status.trend === 'up' ? 'text-red-400' : 'text-green-400';
+  };
+
+  // Compute a real trend percentage from history if available
+  const getTrendPercent = (): string | null => {
+    if (indicator.history && indicator.history.length >= 2) {
+      const recent = indicator.history[indicator.history.length - 1].value;
+      const prior = indicator.history[0].value;
+      if (prior !== 0) {
+        const pct = ((recent - prior) / Math.abs(prior)) * 100;
+        return Math.abs(pct).toFixed(1);
+      }
+    }
+    // Fallback: compute from threshold proximity
+    if (typeof status.value === 'number' && indicator.thresholds?.threshold_amber) {
+      const pct = (status.value / indicator.thresholds.threshold_amber) * 10;
+      return Math.min(Math.abs(pct), 99).toFixed(1);
+    }
+    return null;
   };
 
   const getThresholdInfo = () => {
-    const currentValue = typeof status.value === 'number' ? status.value : 0; // Default to 0 if not a number
-
-    // Use actual thresholds from the indicator data
+    const currentValue = typeof status.value === 'number' ? status.value : 0;
     const amberThreshold = indicator.thresholds?.threshold_amber;
     const redThreshold = indicator.thresholds?.threshold_red;
 
     let currentMin = 0;
-    let currentMax = 100; // Default max, might need to be dynamic based on indicator
+    let currentMax = 100;
     let nextThresholdValue: number | null = null;
 
     if (status.level === 'green') {
-      currentMin = 0; // Assuming green starts from 0
-      currentMax = amberThreshold !== undefined ? amberThreshold : 100; // Max of green is amber threshold
+      currentMin = 0;
+      currentMax = amberThreshold !== undefined ? amberThreshold : 100;
       nextThresholdValue = amberThreshold !== undefined ? amberThreshold : null;
     } else if (status.level === 'amber') {
       currentMin = amberThreshold !== undefined ? amberThreshold : 0;
-      currentMax = redThreshold !== undefined ? redThreshold : 100; // Max of amber is red threshold
+      currentMax = redThreshold !== undefined ? redThreshold : 100;
       nextThresholdValue = redThreshold !== undefined ? redThreshold : null;
     } else if (status.level === 'red') {
       currentMin = redThreshold !== undefined ? redThreshold : 0;
-      currentMax = redThreshold !== undefined ? redThreshold * 1.5 : 100; // Arbitrary max for red, or actual max value
-      nextThresholdValue = null; // No next threshold if already red
-    } else { // unknown status
+      currentMax = redThreshold !== undefined ? redThreshold * 1.5 : 100;
+      nextThresholdValue = null;
+    } else {
       currentMin = 0;
       currentMax = 100;
       nextThresholdValue = null;
     }
 
-    // Ensure currentMax is greater than currentMin to avoid division by zero or negative range
     if (currentMax <= currentMin) {
-      currentMax = currentMin + 1; // Prevent division by zero
+      currentMax = currentMin + 1;
     }
 
     const percentage = ((currentValue - currentMin) / (currentMax - currentMin)) * 100;
 
     return {
-      percentage: Math.max(0, Math.min(100, percentage)), // Clamp between 0 and 100
+      percentage: Math.max(0, Math.min(100, percentage)),
       nextThreshold: nextThresholdValue
     };
   };
 
   const thresholdInfo = getThresholdInfo();
+  const trendPercent = getTrendPercent();
 
   return (
     <motion.div
@@ -187,17 +199,17 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
         onClick={onClick}
         className={cn(
           'relative overflow-hidden group',
-          status.level === 'red' && critical && 'border-bmb-danger/50'
+          status.level === 'red' && critical && 'border-red-500/20 glow-border-red'
         )}
       >
         {/* Status bar */}
         <div
           className={cn(
             'absolute top-0 left-0 right-0 h-0.5',
-            status.level === 'green' && 'bg-bmb-success',
-            status.level === 'amber' && 'bg-bmb-warning',
-            status.level === 'red' && 'bg-bmb-danger',
-            status.level === 'unknown' && 'bg-bmb-secondary'
+            status.level === 'green' && 'bg-green-500',
+            status.level === 'amber' && 'bg-amber-500',
+            status.level === 'red' && 'bg-red-500',
+            status.level === 'unknown' && 'bg-white/20'
           )}
         />
 
@@ -216,13 +228,13 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
                 <Badge variant="default" size="sm">
                   {domain.replace('_', ' ').toUpperCase()}
                 </Badge>
-                <span className="text-2xs text-bmb-secondary">
+                <span className="text-2xs text-white/20">
                   {dataSource}
                 </span>
               </div>
             </div>
-            <StatusBadge 
-              level={status.level} 
+            <StatusBadge
+              level={status.level}
               size="sm"
               pulse={status.level === 'red' && critical}
             />
@@ -234,39 +246,38 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
           <div className="flex items-end justify-between mb-3">
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="data-value">
-                  {typeof status.value === 'number' 
+                <span className="text-2xl font-mono font-semibold text-white">
+                  {typeof status.value === 'number'
                     ? status.value.toLocaleString(undefined, { maximumFractionDigits: 2 })
                     : status.value}
                 </span>
-                <span className="data-label">{unit}</span>
+                <span className="text-xs text-white/30">{unit}</span>
               </div>
-              {/* Threshold proximity indicator */}
               {thresholdInfo.nextThreshold && (
-                <div className="mt-1 text-xs text-bmb-secondary">
+                <div className="mt-1 text-xs text-white/20">
                   {Math.abs(thresholdInfo.nextThreshold - (typeof status.value === 'number' ? status.value : 0)).toFixed(1)} from {status.level === 'green' ? 'amber' : 'red'} threshold
                 </div>
               )}
             </div>
-            {status.trend && (
+            {status.trend && trendPercent && (
               <div className={cn('flex items-center gap-1', getTrendColor())}>
                 {getTrendIcon()}
                 <span className="text-xs font-medium">
                   {status.trend === 'up' ? '+' : '-'}
-                  {Math.abs(Math.random() * 10).toFixed(1)}%
+                  {trendPercent}%
                 </span>
               </div>
             )}
           </div>
 
           {/* Threshold bar */}
-          <div className="relative h-1.5 bg-bmb-dark rounded-full overflow-hidden mb-3">
+          <div className="relative h-1.5 bg-white/[0.06] rounded-full overflow-hidden mb-3">
             <motion.div
               className={cn(
                 'absolute left-0 top-0 h-full rounded-full',
-                status.level === 'green' && 'bg-bmb-success',
-                status.level === 'amber' && 'bg-bmb-warning',
-                status.level === 'red' && 'bg-bmb-danger'
+                status.level === 'green' && 'bg-green-500',
+                status.level === 'amber' && 'bg-amber-500',
+                status.level === 'red' && 'bg-red-500'
               )}
               initial={{ width: 0 }}
               animate={{ width: `${Math.min(thresholdInfo.percentage, 100)}%` }}
@@ -278,8 +289,8 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
           <div className="mb-3">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
               <div className="flex items-center gap-1">
-                <BarChart3 className="w-3 h-3 text-bmb-secondary" />
-                <span className="text-xs text-bmb-secondary">Trend</span>
+                <BarChart3 className="w-3 h-3 text-white/20" />
+                <span className="text-xs text-white/20">Trend</span>
               </div>
               <div className="flex gap-1">
                 {(['24h', '7d', '30d'] as const).map((range) => (
@@ -290,10 +301,10 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
                       setTimeRange(range);
                     }}
                     className={cn(
-                      'px-2 py-0.5 text-xs rounded transition-colors',
-                      timeRange === range 
-                        ? 'bg-bmb-accent text-white' 
-                        : 'text-bmb-secondary hover:text-white hover:bg-bmb-dark'
+                      'px-2 py-0.5 text-xs rounded-lg transition-colors',
+                      timeRange === range
+                        ? 'bg-white/10 text-white'
+                        : 'text-white/30 hover:text-white hover:bg-white/5'
                     )}
                   >
                     {range}
@@ -301,7 +312,7 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
                 ))}
               </div>
             </div>
-            <IndicatorChart 
+            <IndicatorChart
               indicator={indicator}
               timeRange={timeRange}
               height={80}
@@ -311,20 +322,20 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
 
           {/* Insights section */}
           {insights.length > 0 && (
-            <div className="space-y-2 mb-3 p-3 bg-bmb-black/30 rounded-md">
+            <div className="space-y-2 mb-3 p-3 bg-white/[0.03] rounded-xl">
               {insights.map((insight, i) => (
                 <div key={i} className="flex items-start gap-2 text-xs">
-                  {insight.type === 'warning' && <AlertTriangle className="w-3 h-3 text-bmb-warning flex-shrink-0 mt-0.5" />}
-                  {insight.type === 'info' && <Info className="w-3 h-3 text-bmb-accent flex-shrink-0 mt-0.5" />}
-                  {insight.type === 'action' && <Lightbulb className="w-3 h-3 text-bmb-success flex-shrink-0 mt-0.5" />}
-                  <span className="text-bmb-secondary">{insight.message}</span>
+                  {insight.type === 'warning' && <AlertTriangle className="w-3 h-3 text-amber-400 flex-shrink-0 mt-0.5" />}
+                  {insight.type === 'info' && <Info className="w-3 h-3 text-white/40 flex-shrink-0 mt-0.5" />}
+                  {insight.type === 'action' && <Lightbulb className="w-3 h-3 text-green-400 flex-shrink-0 mt-0.5" />}
+                  <span className="text-white/30">{insight.message}</span>
                 </div>
               ))}
             </div>
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between text-2xs text-bmb-secondary">
+          <div className="flex items-center justify-between text-2xs text-white/20">
             <div className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
               <span>
@@ -341,7 +352,7 @@ export const EnhancedIndicatorCard: React.FC<IndicatorCardProps> = ({
         {/* Glow effect for critical red indicators */}
         {status.level === 'red' && critical && (
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-0 bg-bmb-danger/5 animate-pulse" />
+            <div className="absolute inset-0 bg-red-500/5 animate-pulse rounded-2xl" />
           </div>
         )}
       </Card>

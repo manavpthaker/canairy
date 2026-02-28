@@ -140,7 +140,7 @@ export const ModalFooter: React.FC<ModalFooterProps> = ({
   <div
     className={cn(
       'flex items-center justify-end gap-3 px-6 py-4',
-      separator && 'border-t border-bmb-border mt-6 -mx-6',
+      separator && 'border-t border-white/[0.06] mt-6 -mx-6',
       className
     )}
     {...props}

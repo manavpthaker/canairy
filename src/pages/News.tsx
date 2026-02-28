@@ -14,6 +14,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/core/Car
 import { Button } from '../components/core/Button';
 import { Badge } from '../components/core/Badge';
 import { cn } from '../utils/cn';
+import { useStore, selectIndicatorCounts } from '../store';
 
 type NewsFilter = 'all' | 'high' | 'medium' | 'low' | 'indicators';
 type DomainFilter = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'security_infrastructure' | 'oil_axis' | 'ai_window' | 'global_conflict' | 'domestic_control' | 'cult';
@@ -34,6 +35,7 @@ export const News: React.FC = () => {
   const [domainFilter, setDomainFilter] = useState<DomainFilter>('all');
   const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
   const [showIndicatorFilter, setShowIndicatorFilter] = useState(false);
+  const counts = useStore(selectIndicatorCounts);
 
   const getFilteredView = () => {
     if (selectedIndicator) {
@@ -101,16 +103,16 @@ export const News: React.FC = () => {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="mb-6 p-4 bg-white/[0.03] rounded-lg border border-white/[0.04]"
+              className="mb-6 p-4 glass-card"
             >
               <h3 className="text-white font-medium mb-3">Filter by Risk Indicator</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 <button
                   onClick={() => setSelectedIndicator(null)}
                   className={cn(
-                    "p-3 rounded-lg text-sm font-medium transition-all text-left",
+                    "p-3 rounded-xl text-sm font-medium transition-all text-left",
                     !selectedIndicator
-                      ? "bg-white text-[#0A0A0A]"
+                      ? "bg-white/15 text-white border border-white/20"
                       : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
                   )}
                 >
@@ -125,9 +127,9 @@ export const News: React.FC = () => {
                     key={indicator.id}
                     onClick={() => setSelectedIndicator(indicator.id)}
                     className={cn(
-                      "p-3 rounded-lg text-sm font-medium transition-all text-left",
+                      "p-3 rounded-xl text-sm font-medium transition-all text-left",
                       selectedIndicator === indicator.id
-                        ? "bg-white text-[#0A0A0A]"
+                        ? "bg-white/15 text-white border border-white/20"
                         : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
                     )}
                   >
@@ -189,15 +191,15 @@ export const News: React.FC = () => {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-white/50">High Priority</span>
-                    <Badge variant="red" size="sm">2 indicators</Badge>
+                    <Badge variant="red" size="sm">{counts.red} indicator{counts.red !== 1 ? 's' : ''}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-white/50">Monitoring</span>
-                    <Badge variant="amber" size="sm">3 indicators</Badge>
+                    <Badge variant="amber" size="sm">{counts.amber} indicator{counts.amber !== 1 ? 's' : ''}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-white/50">Normal</span>
-                    <Badge variant="green" size="sm">11 indicators</Badge>
+                    <Badge variant="green" size="sm">{counts.green} indicator{counts.green !== 1 ? 's' : ''}</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -214,22 +216,22 @@ export const News: React.FC = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-white/50">Wall Street Journal</span>
-                    <Badge variant="green" size="sm">95/100</Badge>
+                    <Badge variant="green" size="sm">Tier 1</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-white/50">Reuters</span>
-                    <Badge variant="green" size="sm">92/100</Badge>
+                    <Badge variant="green" size="sm">Tier 1</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-white/50">Bloomberg</span>
-                    <Badge variant="green" size="sm">90/100</Badge>
+                    <Badge variant="green" size="sm">Tier 1</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-white/50">Financial Times</span>
-                    <Badge variant="green" size="sm">88/100</Badge>
+                    <Badge variant="green" size="sm">Tier 1</Badge>
                   </div>
                 </div>
-                <div className="mt-4 pt-4 border-t border-white/[0.04]">
+                <div className="mt-4 pt-4 border-t border-white/[0.06]">
                   <p className="text-xs text-white/30">
                     Sources rated by credibility and bias assessment
                   </p>

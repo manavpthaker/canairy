@@ -112,7 +112,7 @@ export const HOPIGauge: React.FC<HOPIGaugeProps> = ({
           cx={center}
           cy={center}
           r={strokeWidth / 2}
-          fill="#1A1A1A"
+          fill="#141416"
           stroke="rgba(255,255,255,0.06)"
           strokeWidth={2}
         />
@@ -125,10 +125,10 @@ export const HOPIGauge: React.FC<HOPIGaugeProps> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <div className="text-5xl font-bold text-bmb-primary font-mono">
+          <div className="text-5xl font-bold text-white font-mono">
             {(normalizedScore * 100).toFixed(0)}
           </div>
-          <div className="text-sm text-bmb-secondary mt-1">
+          <div className="text-sm text-white/30 mt-1">
             HOPI SCORE
           </div>
         </motion.div>
@@ -148,22 +148,22 @@ export const HOPIGauge: React.FC<HOPIGaugeProps> = ({
                 >
                   PHASE {score.phase}
                 </div>
-                <div className="text-xs text-bmb-secondary">Current</div>
+                <div className="text-xs text-white/30">Current</div>
               </div>
-              <div className="w-px h-8 bg-bmb-border" />
+              <div className="w-px h-8 bg-white/[0.06]" />
               <div className="text-center">
-                <div className="text-2xl font-bold text-bmb-primary">
+                <div className="text-2xl font-bold text-white">
                   {confidence.toFixed(0)}%
                 </div>
-                <div className="text-xs text-bmb-secondary">Confidence</div>
+                <div className="text-xs text-white/30">Confidence</div>
               </div>
             </div>
             
             <div className={cn(
               "text-xs font-medium px-3 py-1 rounded-full inline-block",
-              normalizedScore < 0.3 && "bg-bmb-success/10 text-bmb-success",
-              normalizedScore >= 0.3 && normalizedScore < 0.6 && "bg-bmb-warning/10 text-bmb-warning",
-              normalizedScore >= 0.6 && "bg-bmb-danger/10 text-bmb-danger"
+              normalizedScore < 0.3 && "bg-green-500/10 text-green-400",
+              normalizedScore >= 0.3 && normalizedScore < 0.6 && "bg-amber-500/10 text-amber-400",
+              normalizedScore >= 0.6 && "bg-red-500/10 text-red-400"
             )}>
               {getScoreLabel(normalizedScore)}
             </div>

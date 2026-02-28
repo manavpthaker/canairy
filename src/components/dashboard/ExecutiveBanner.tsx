@@ -77,22 +77,22 @@ export const ExecutiveBanner: React.FC = () => {
   const getStatusColor = () => {
     switch (summary.status) {
       case 'stable':
-        return 'from-bmb-success/20 to-bmb-success/10 border-bmb-success/30 text-bmb-success';
+        return 'from-green-500/20 to-green-500/10 border-green-500/30 text-green-400';
       case 'monitoring':
-        return 'from-bmb-warning/20 to-bmb-warning/10 border-bmb-warning/30 text-bmb-warning';
+        return 'from-amber-500/20 to-amber-500/10 border-amber-500/30 text-amber-400';
       case 'action-required':
-        return 'from-bmb-danger/20 to-bmb-danger/10 border-bmb-danger/30 text-bmb-danger';
+        return 'from-red-500/20 to-red-500/10 border-red-500/30 text-red-400';
     }
   };
   
   const getBgPattern = () => {
     switch (summary.status) {
       case 'stable':
-        return 'bg-gradient-to-r from-bmb-success/5 to-transparent';
+        return 'bg-gradient-to-r from-green-500/5 to-transparent';
       case 'monitoring':
-        return 'bg-gradient-to-r from-bmb-warning/5 to-transparent';
+        return 'bg-gradient-to-r from-amber-500/5 to-transparent';
       case 'action-required':
-        return 'bg-gradient-to-r from-bmb-danger/5 to-transparent';
+        return 'bg-gradient-to-r from-red-500/5 to-transparent';
     }
   };
   
@@ -128,7 +128,7 @@ export const ExecutiveBanner: React.FC = () => {
               <h2 className="text-2xl font-bold mb-2">
                 {summary.headline}
               </h2>
-              <p className="text-bmb-primary/90 mb-4">
+              <p className="text-white/90 mb-4">
                 {summary.summary}
               </p>
               
@@ -138,7 +138,7 @@ export const ExecutiveBanner: React.FC = () => {
                   {summary.changes.map((change, i) => (
                     <span
                       key={i}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-bmb-black/20 rounded-full text-sm"
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-white/[0.03]/20 rounded-full text-sm"
                     >
                       <TrendingUp className="w-3 h-3" />
                       {change}
@@ -166,12 +166,12 @@ export const ExecutiveBanner: React.FC = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-6 py-2 bg-bmb-danger text-white rounded-md font-medium hover:bg-bmb-danger/90"
+                    className="px-6 py-2 bg-red-500 text-white rounded-md font-medium hover:bg-red-500/90"
                   >
                     Take Action
                   </motion.button>
                 )}
-                <button className="px-6 py-2 bg-bmb-black/20 rounded-md text-sm hover:bg-bmb-black/30">
+                <button className="px-6 py-2 bg-white/[0.03]/20 rounded-md text-sm hover:bg-white/[0.03]/30">
                   View Details
                 </button>
               </div>
@@ -182,7 +182,7 @@ export const ExecutiveBanner: React.FC = () => {
         {/* Animated border effect for critical status */}
         {summary.status === 'action-required' && (
           <motion.div
-            className="absolute inset-0 border-2 border-bmb-danger/50 rounded-lg pointer-events-none"
+            className="absolute inset-0 border-2 border-red-500/50 rounded-lg pointer-events-none"
             animate={{
               opacity: [0.5, 1, 0.5],
             }}
