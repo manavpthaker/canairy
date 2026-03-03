@@ -167,7 +167,7 @@ export function getPhaseColor(num: number): string {
 }
 
 /**
- * Action Protocol 48-hour checklist — activated when ≥2 indicators hit RED.
+ * 48-hour action checklist — activated when ≥2 indicators hit RED.
  */
 export const ACTION_CHECKLIST = [
   { id: 'ac-1', text: 'Verify cash reserves ($500+ small bills)', category: 'Financial' },
@@ -184,7 +184,7 @@ export const ACTION_CHECKLIST = [
   { id: 'ac-12', text: 'Check generator fuel and battery tender', category: 'Power' },
 ];
 
-/** @deprecated Use ACTION_CHECKLIST */
+/** @deprecated Use ACTION_CHECKLIST instead */
 export const TIGHTEN_UP_CHECKLIST = ACTION_CHECKLIST;
 
 /**

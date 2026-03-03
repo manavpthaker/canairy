@@ -4,10 +4,11 @@ import { mockIndicators, mockHOPIScore, mockSystemStatus } from '../mock/mockDat
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5555/api';
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true' || false;
+const IS_DEMO = import.meta.env.VITE_DEMO_MODE === 'true';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000,
+  timeout: 5000, // 5s timeout — fail fast, fall back to mock
   headers: {
     'Content-Type': 'application/json',
   },
@@ -26,18 +27,26 @@ api.interceptors.response.use(
   }
 );
 
+// Track whether we're using live or demo data
+export let dataMode: 'live' | 'demo' = USE_MOCK_DATA || IS_DEMO ? 'demo' : 'live';
+
 export const apiService = {
+  getDataMode: () => dataMode,
+
   // Indicators
   async getIndicators(): Promise<IndicatorData[]> {
-    if (USE_MOCK_DATA) {
+    if (USE_MOCK_DATA || IS_DEMO) {
+      dataMode = 'demo';
       return mockIndicators;
     }
-    
+
     try {
       const { data } = await api.get('/indicators');
+      dataMode = 'live';
       return data.indicators;
     } catch (error) {
-      console.log('Using mock indicators due to API error');
+      console.log('API unavailable — using demo data');
+      dataMode = 'demo';
       return mockIndicators;
     }
   },

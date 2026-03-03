@@ -462,11 +462,11 @@ export const mockIndicators: IndicatorData[] = [
     id: 'flight_01_notams',
     name: 'Conflict NOTAMs',
     domain: 'security_infrastructure',
-    description: 'Active NOTAMs closing airspace due to military conflict — tracks flight safety risk',
+    description: 'Active conflict-zone NOTAMs restricting civilian airspace — airspace denial indicator',
     unit: 'zones',
-    thresholds: { green: { max: 1 }, amber: { min: 2, max: 4 }, red: { min: 5 }, threshold_amber: 2, threshold_red: 5 },
+    thresholds: { green: { max: 2 }, amber: { min: 2, max: 5 }, red: { min: 5 }, threshold_amber: 2, threshold_red: 5 },
     enabled: true,
-    dataSource: 'FAA NOTAM',
+    dataSource: 'DEMO',
     updateFrequency: 'Daily',
     status: { level: 'red', value: 6, trend: 'up', lastUpdate: now, dataSource: 'DEMO' }
   },
@@ -474,11 +474,11 @@ export const mockIndicators: IndicatorData[] = [
     id: 'flight_02_bans',
     name: 'US Flight Route Bans',
     domain: 'security_infrastructure',
-    description: 'Active FAA flight bans over conflict zones — direct impact on travel and cargo',
+    description: 'FAA-banned flight routes due to conflict or security concerns — travel disruption signal',
     unit: 'routes',
-    thresholds: { green: { max: 0 }, amber: { min: 1, max: 3 }, red: { min: 4 }, threshold_amber: 1, threshold_red: 4 },
+    thresholds: { green: { max: 1 }, amber: { min: 1, max: 4 }, red: { min: 4 }, threshold_amber: 1, threshold_red: 4 },
     enabled: true,
-    dataSource: 'FAA / IATA',
+    dataSource: 'DEMO',
     updateFrequency: 'Daily',
     status: { level: 'amber', value: 3, trend: 'up', lastUpdate: now, dataSource: 'DEMO' }
   },
@@ -486,27 +486,27 @@ export const mockIndicators: IndicatorData[] = [
     id: 'flight_03_diversions',
     name: 'Major Route Diversions',
     domain: 'security_infrastructure',
-    description: 'Major airline routes forced to divert around conflict zones — adds cost and delays',
+    description: 'Major commercial airline route diversions due to conflict zones — global airspace stress',
     unit: 'routes',
-    thresholds: { green: { max: 0 }, amber: { min: 1, max: 2 }, red: { min: 3 }, threshold_amber: 1, threshold_red: 3 },
+    thresholds: { green: { max: 1 }, amber: { min: 1, max: 3 }, red: { min: 3 }, threshold_amber: 1, threshold_red: 3 },
     enabled: true,
-    dataSource: 'FlightRadar / FAA',
+    dataSource: 'DEMO',
     updateFrequency: 'Daily',
     status: { level: 'red', value: 4, trend: 'up', lastUpdate: now, dataSource: 'DEMO' }
   },
 
   // ═══════════════════════════════════════════
-  // BANKING & FINANCE (3 indicators)
+  // BANKING (3 indicators)
   // ═══════════════════════════════════════════
   {
     id: 'bank_01_fdic_problem',
     name: 'FDIC Problem Banks',
     domain: 'economy',
-    description: 'Number of FDIC-designated problem banks — early warning for bank failures',
+    description: 'Number of FDIC-listed problem banks — banking sector fragility indicator',
     unit: 'banks',
     thresholds: { green: { max: 40 }, amber: { min: 40, max: 80 }, red: { min: 80 }, threshold_amber: 40, threshold_red: 80 },
     enabled: true,
-    dataSource: 'FDIC QBP',
+    dataSource: 'DEMO',
     updateFrequency: 'Quarterly',
     status: { level: 'amber', value: 63, trend: 'up', lastUpdate: now, dataSource: 'DEMO' }
   },
@@ -514,63 +514,63 @@ export const mockIndicators: IndicatorData[] = [
     id: 'bank_02_failures',
     name: 'Bank Failures YTD',
     domain: 'economy',
-    description: 'Bank failures this calendar year — when banks fail, deposits can be at risk',
+    description: 'Year-to-date FDIC bank failures — systemic banking stress signal',
     unit: 'banks',
-    thresholds: { green: { max: 0 }, amber: { min: 1, max: 3 }, red: { min: 4 }, threshold_amber: 1, threshold_red: 4 },
+    thresholds: { green: { max: 1 }, amber: { min: 1, max: 4 }, red: { min: 4 }, threshold_amber: 1, threshold_red: 4 },
     enabled: true,
-    dataSource: 'FDIC',
-    updateFrequency: 'Weekly',
+    dataSource: 'DEMO',
+    updateFrequency: 'Monthly',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'DEMO' }
   },
   {
     id: 'bank_03_deposit_outflow',
     name: 'Large Deposit Outflows',
     domain: 'economy',
-    description: 'Quarterly outflows from large deposits ($250K+) — signals bank run risk',
+    description: 'Quarterly large deposit outflows from commercial banks — capital flight indicator',
     unit: '$B/qtr',
     thresholds: { green: { max: 50 }, amber: { min: 50, max: 200 }, red: { min: 200 }, threshold_amber: 50, threshold_red: 200 },
     enabled: true,
-    dataSource: 'FRED H.8',
-    updateFrequency: 'Weekly',
+    dataSource: 'DEMO',
+    updateFrequency: 'Quarterly',
     status: { level: 'green', value: 28, trend: 'stable', lastUpdate: now, dataSource: 'DEMO' }
   },
 
   // ═══════════════════════════════════════════
-  // TRAVEL & MOVEMENT (3 indicators)
+  // TRAVEL (3 indicators)
   // ═══════════════════════════════════════════
   {
     id: 'travel_01_advisories',
     name: 'Level 3-4 Advisories',
     domain: 'security_infrastructure',
-    description: 'Countries with State Dept Level 3 (Reconsider) or Level 4 (Do Not Travel) advisories',
+    description: 'Countries with State Department Level 3-4 travel advisories — global safety deterioration',
     unit: 'countries',
     thresholds: { green: { max: 20 }, amber: { min: 20, max: 35 }, red: { min: 35 }, threshold_amber: 20, threshold_red: 35 },
     enabled: true,
-    dataSource: 'State Dept',
-    updateFrequency: 'Daily',
+    dataSource: 'DEMO',
+    updateFrequency: 'Weekly',
     status: { level: 'amber', value: 28, trend: 'up', lastUpdate: now, dataSource: 'DEMO' }
   },
   {
     id: 'travel_02_border_status',
     name: 'Border Restriction Level',
     domain: 'security_infrastructure',
-    description: 'Composite index of US border restriction intensity (0-100)',
+    description: 'Composite index of international border restrictions affecting US travelers',
     unit: 'index',
     thresholds: { green: { max: 20 }, amber: { min: 20, max: 60 }, red: { min: 60 }, threshold_amber: 20, threshold_red: 60 },
     enabled: true,
-    dataSource: 'CBP / News',
-    updateFrequency: 'Daily',
+    dataSource: 'DEMO',
+    updateFrequency: 'Weekly',
     status: { level: 'amber', value: 38, trend: 'up', lastUpdate: now, dataSource: 'DEMO' }
   },
   {
     id: 'travel_03_passport_delays',
     name: 'Passport Processing',
     domain: 'security_infrastructure',
-    description: 'Current passport processing time in weeks — delays signal travel disruption',
+    description: 'Average passport processing time in weeks — government capacity strain signal',
     unit: 'weeks',
     thresholds: { green: { max: 6 }, amber: { min: 6, max: 10 }, red: { min: 10 }, threshold_amber: 6, threshold_red: 10 },
     enabled: true,
-    dataSource: 'State Dept',
+    dataSource: 'DEMO',
     updateFrequency: 'Weekly',
     status: { level: 'green', value: 5, trend: 'stable', lastUpdate: now, dataSource: 'DEMO' }
   },
@@ -582,11 +582,11 @@ export const mockIndicators: IndicatorData[] = [
     id: 'sc_01_shipping_rates',
     name: 'Container Shipping Rates',
     domain: 'supply_chain',
-    description: 'Global container shipping spot rate per forty-foot container — spikes mean supply chain stress',
+    description: 'Average container shipping rate per forty-foot equivalent unit — global trade cost pressure',
     unit: '$/FEU',
     thresholds: { green: { max: 3000 }, amber: { min: 3000, max: 8000 }, red: { min: 8000 }, threshold_amber: 3000, threshold_red: 8000 },
     enabled: true,
-    dataSource: 'Drewry WCI',
+    dataSource: 'DEMO',
     updateFrequency: 'Weekly',
     status: { level: 'amber', value: 5200, trend: 'up', lastUpdate: now, dataSource: 'DEMO' }
   },
@@ -594,51 +594,51 @@ export const mockIndicators: IndicatorData[] = [
     id: 'sc_02_port_congestion',
     name: 'Port Congestion Index',
     domain: 'supply_chain',
-    description: 'Global port congestion composite index (0-100) — high values mean goods are stuck',
+    description: 'Composite index of major US port congestion levels — import bottleneck indicator',
     unit: 'index',
     thresholds: { green: { max: 30 }, amber: { min: 30, max: 60 }, red: { min: 60 }, threshold_amber: 30, threshold_red: 60 },
     enabled: true,
-    dataSource: 'Freightos',
-    updateFrequency: 'Weekly',
+    dataSource: 'DEMO',
+    updateFrequency: 'Daily',
     status: { level: 'amber', value: 42, trend: 'up', lastUpdate: now, dataSource: 'DEMO' }
   },
   {
     id: 'sc_03_food_disruption',
     name: 'Food Supply Disruption',
     domain: 'supply_chain',
-    description: 'USDA food supply disruption index (0-100) — tracks breakdowns in food distribution',
+    description: 'Food supply chain disruption index covering production and distribution — household staple risk',
     unit: 'index',
     thresholds: { green: { max: 15 }, amber: { min: 15, max: 40 }, red: { min: 40 }, threshold_amber: 15, threshold_red: 40 },
     enabled: true,
-    dataSource: 'USDA ERS',
-    updateFrequency: 'Monthly',
+    dataSource: 'DEMO',
+    updateFrequency: 'Weekly',
     status: { level: 'green', value: 12, trend: 'stable', lastUpdate: now, dataSource: 'DEMO' }
   },
   {
     id: 'sc_04_chip_lead_time',
     name: 'Semiconductor Lead Times',
     domain: 'supply_chain',
-    description: 'Average semiconductor lead time in weeks — long waits disrupt electronics and auto production',
+    description: 'Average semiconductor chip lead time in weeks — technology supply chain stress',
     unit: 'weeks',
     thresholds: { green: { max: 12 }, amber: { min: 12, max: 26 }, red: { min: 26 }, threshold_amber: 12, threshold_red: 26 },
     enabled: true,
-    dataSource: 'Susquehanna',
+    dataSource: 'DEMO',
     updateFrequency: 'Monthly',
     status: { level: 'amber', value: 16, trend: 'up', lastUpdate: now, dataSource: 'DEMO' }
   },
 
   // ═══════════════════════════════════════════
-  // ENERGY & POWER (4 indicators)
+  // ENERGY (4 indicators)
   // ═══════════════════════════════════════════
   {
     id: 'energy_01_spr',
     name: 'Strategic Petroleum Reserve',
     domain: 'energy',
-    description: 'US Strategic Petroleum Reserve level in millions of barrels — low levels mean no buffer',
+    description: 'US Strategic Petroleum Reserve level in million barrels — national energy buffer',
     unit: 'M bbl',
     thresholds: { green: { min: 500 }, amber: { min: 350, max: 500 }, red: { max: 350 }, threshold_amber: 500, threshold_red: 350 },
     enabled: true,
-    dataSource: 'EIA',
+    dataSource: 'DEMO',
     updateFrequency: 'Weekly',
     status: { level: 'amber', value: 395, trend: 'down', lastUpdate: now, dataSource: 'DEMO' }
   },
@@ -646,11 +646,11 @@ export const mockIndicators: IndicatorData[] = [
     id: 'energy_02_gas_supply',
     name: 'Gasoline Supply Days',
     domain: 'energy',
-    description: 'Days of gasoline supply at current consumption — below 20 means shortages likely',
+    description: 'Days of gasoline supply remaining at current consumption rate — fuel availability buffer',
     unit: 'days',
     thresholds: { green: { min: 25 }, amber: { min: 20, max: 25 }, red: { max: 20 }, threshold_amber: 25, threshold_red: 20 },
     enabled: true,
-    dataSource: 'EIA WPSR',
+    dataSource: 'DEMO',
     updateFrequency: 'Weekly',
     status: { level: 'green', value: 27, trend: 'stable', lastUpdate: now, dataSource: 'DEMO' }
   },
@@ -658,11 +658,11 @@ export const mockIndicators: IndicatorData[] = [
     id: 'energy_03_natgas',
     name: 'Natural Gas Storage',
     domain: 'energy',
-    description: 'Natural gas storage deviation from 5-year average — negative means heating cost spikes',
+    description: 'Natural gas storage deviation from 5-year average in percent — heating and power supply risk',
     unit: '% dev',
-    thresholds: { green: { min: -10, max: 10 }, amber: { min: -20, max: -10 }, red: { max: -20 }, threshold_amber: -10, threshold_red: -20 },
+    thresholds: { green: { min: -10 }, amber: { min: -20, max: -10 }, red: { max: -20 }, threshold_amber: -10, threshold_red: -20 },
     enabled: true,
-    dataSource: 'EIA NGAS',
+    dataSource: 'DEMO',
     updateFrequency: 'Weekly',
     status: { level: 'green', value: -5, trend: 'stable', lastUpdate: now, dataSource: 'DEMO' }
   },
@@ -670,11 +670,11 @@ export const mockIndicators: IndicatorData[] = [
     id: 'energy_04_grid_stress',
     name: 'Regional Grid Stress',
     domain: 'energy',
-    description: 'Regional grid stress index (0-100) — high values mean rolling blackouts possible',
+    description: 'Composite index of regional electrical grid stress events — power reliability indicator',
     unit: 'index',
     thresholds: { green: { max: 30 }, amber: { min: 30, max: 60 }, red: { min: 60 }, threshold_amber: 30, threshold_red: 60 },
     enabled: true,
-    dataSource: 'PJM / FERC',
+    dataSource: 'DEMO',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 22, trend: 'stable', lastUpdate: now, dataSource: 'DEMO' }
   },
@@ -689,7 +689,7 @@ export const mockHOPIScore: HOPIScore = {
     economy: {
       score: 0.28,
       weight: 1.0,
-      indicators: ['econ_01_treasury_tail', 'econ_02_grocery_cpi', 'market_01_intraday_swing', 'green_g1_gdp_rates'],
+      indicators: ['econ_01_treasury_tail', 'econ_02_grocery_cpi', 'market_01_intraday_swing', 'green_g1_gdp_rates', 'bank_01_fdic_problem', 'bank_02_failures', 'bank_03_deposit_outflow'],
       criticalAlerts: []
     },
     jobs_labor: {
@@ -707,7 +707,7 @@ export const mockHOPIScore: HOPIScore = {
     security_infrastructure: {
       score: 0.18,
       weight: 1.25,
-      indicators: ['cyber_01_cisa_kev', 'grid_01_pjm_outages', 'bio_01_h2h_countries'],
+      indicators: ['cyber_01_cisa_kev', 'grid_01_pjm_outages', 'bio_01_h2h_countries', 'flight_01_notams', 'flight_02_bans', 'flight_03_diversions', 'travel_01_advisories', 'travel_02_border_status', 'travel_03_passport_delays'],
       criticalAlerts: []
     },
     oil_axis: {

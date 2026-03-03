@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, ChevronDown, ChevronUp, Check, Clock, Shield, Info } from 'lucide-react';
 import { cn } from '../../utils/cn';
@@ -15,17 +15,14 @@ export const ThreatBanner: React.FC = () => {
   const redCount = indicators.filter(i => i.status.level === 'red').length;
   const hasRed = redCount > 0;
 
-  const narrative = useMemo(
-    () => generateSituationNarrative(indicators),
-    [indicators]
-  );
-
   if (!hasRed) return null;
 
   const redIndicators = indicators.filter(i => i.status.level === 'red');
   const completedCount = completed.size;
   const totalCount = ACTION_CHECKLIST.length;
   const progress = Math.round((completedCount / totalCount) * 100);
+
+  const narrative = generateSituationNarrative(indicators);
 
   const toggleItem = (id: string) => {
     setCompleted(prev => {
@@ -86,10 +83,7 @@ export const ThreatBanner: React.FC = () => {
                 actionProtocolActive ? 'text-red-300/60' : 'text-amber-300/60'
               )}>
                 {narrative?.headline
-                  ? narrative.headline
-                  : actionProtocolActive
-                    ? `${redCount} indicators at red — 48-hour checklist active`
-                    : `${redCount} indicator${redCount !== 1 ? 's' : ''} at red level`
+                  ?? `${redCount} indicator${redCount !== 1 ? 's' : ''} at red level`
                 }
               </p>
             </div>
@@ -97,20 +91,18 @@ export const ThreatBanner: React.FC = () => {
 
           <div className="flex items-center gap-3 flex-shrink-0 ml-4">
             {actionProtocolActive && (
-              <>
-                <div className="hidden sm:flex items-center gap-2">
-                  <span className="text-xs font-mono text-red-300/70">
-                    {completedCount}/{totalCount}
-                  </span>
-                  <div className="w-16 h-1.5 bg-red-900/40 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-red-400/80 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress}%` }}
-                    />
-                  </div>
+              <div className="hidden sm:flex items-center gap-2">
+                <span className="text-xs font-mono text-red-300/70">
+                  {completedCount}/{totalCount}
+                </span>
+                <div className="w-16 h-1.5 bg-red-900/40 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-red-400/80 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                  />
                 </div>
-              </>
+              </div>
             )}
             {expanded ? (
               <ChevronUp className={cn('w-4 h-4', actionProtocolActive ? 'text-red-400/60' : 'text-amber-400/60')} />
@@ -134,22 +126,17 @@ export const ThreatBanner: React.FC = () => {
                 'px-4 sm:px-6 pb-5 border-t',
                 actionProtocolActive ? 'border-red-500/10' : 'border-amber-500/10'
               )}>
-                {/* WHY section — what Canairy is seeing */}
+                {/* What's happening section */}
                 {narrative && (
-                  <div className={cn(
-                    'mt-4 mb-4 p-4 rounded-xl',
-                    actionProtocolActive ? 'bg-red-950/30 border border-red-500/10' : 'bg-amber-950/30 border border-amber-500/10'
-                  )}>
-                    <div className="flex items-start gap-2 mb-2">
-                      <Info className={cn('w-4 h-4 mt-0.5 flex-shrink-0', actionProtocolActive ? 'text-red-400' : 'text-amber-400')} />
-                      <h3 className={cn('text-sm font-semibold', actionProtocolActive ? 'text-red-300' : 'text-amber-300')}>
-                        What's happening
-                      </h3>
+                  <div className="py-3 space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-white/40">
+                      <Info className="w-3.5 h-3.5" />
+                      <span className="font-medium uppercase tracking-wider">What's happening</span>
                     </div>
-                    <p className="text-sm text-white/60 leading-relaxed mb-3">
+                    <p className="text-sm text-white/50 leading-relaxed">
                       {narrative.explanation}
                     </p>
-                    <p className="text-sm text-white/50 leading-relaxed">
+                    <p className="text-sm text-white/40 leading-relaxed">
                       {narrative.whatToDoAboutIt}
                     </p>
                   </div>
@@ -162,33 +149,30 @@ export const ThreatBanner: React.FC = () => {
                   </div>
                 )}
 
-                {/* Triggering indicators with their WHY */}
-                <div className="mb-4">
-                  <h4 className="text-xs font-medium text-white/30 uppercase tracking-wider mb-2">Indicators driving this alert</h4>
-                  <div className="space-y-1.5">
-                    {redIndicators.map(ind => {
-                      const keyInd = narrative?.keyIndicators.find(k => k.id === ind.id);
-                      return (
-                        <div
-                          key={ind.id}
+                {/* Triggering indicators with whyItMatters */}
+                <div className="mb-4 flex flex-col gap-2">
+                  {redIndicators.map(ind => {
+                    const keyInd = narrative?.keyIndicators.find(k => k.id === ind.id);
+                    return (
+                      <div key={ind.id} className="flex flex-col gap-1">
+                        <span
                           className={cn(
-                            'px-3 py-2 rounded-lg',
+                            'px-2 py-1 text-xs rounded-lg inline-flex self-start',
                             ind.critical
-                              ? 'bg-red-500/15 border border-red-500/20'
-                              : 'bg-white/[0.03]'
+                              ? 'bg-red-500/15 text-red-300 border border-red-500/20'
+                              : 'bg-white/5 text-red-300/70'
                           )}
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-red-300">{ind.name}</span>
-                            <span className="text-xs font-mono text-red-300/70">{ind.status.value} {ind.unit}</span>
-                          </div>
-                          {keyInd?.whyItMatters && (
-                            <p className="text-xs text-white/40 mt-1 leading-relaxed">{keyInd.whyItMatters}</p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                          {ind.name}
+                        </span>
+                        {keyInd?.whyItMatters && (
+                          <p className="text-xs text-white/25 pl-2 leading-relaxed">
+                            {keyInd.whyItMatters}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Checklist (action protocol only) */}

@@ -1,186 +1,173 @@
-// Straightforward messaging for Canairy
+// Direct, clear messaging for Canairy — no metaphors, no cute language
 export const canairyMessages = {
-  // Brand messaging
   brand: {
-    tagline: "Early warning for your household",
-    subtitle: "Stay informed, stay prepared, stay ahead",
-    description: "Canairy tracks real-world indicators and tells you when to take action.",
+    tagline: "Your family's early-warning system",
+    subtitle: 'Stay prepared, stay informed, stay together',
+    description: 'Canairy tracks public indicators that affect household resilience and tells you when to act.',
   },
 
-  // Status messages
   status: {
     allGood: {
-      title: "All clear",
-      message: "All indicators are in normal range. Nothing needs your attention right now.",
-      icon: "happy",
+      title: 'All indicators normal',
+      message: 'All monitored indicators are within safe ranges. No action needed right now.',
+      icon: 'happy',
     },
     attention: {
-      title: "Some things to watch",
-      message: "A few indicators are shifting. Review the details and decide if action is needed.",
-      icon: "alert",
+      title: 'Some indicators are elevated',
+      message: 'A few indicators have shifted. Review the details below and consider the recommended steps.',
+      icon: 'alert',
     },
     action: {
-      title: "Action needed",
-      message: "Multiple indicators are elevated. Check the action checklist for specific steps.",
-      icon: "alert",
+      title: 'Multiple indicators need attention',
+      message: 'Several indicators are at critical levels. Review the action checklist and take the recommended steps.',
+      icon: 'alert',
     },
   },
 
-  // Indicator names — real names, no sugarcoating
   indicators: {
     MarketVolatility: {
-      old: "Market volatility spike",
-      new: "Market Volatility",
-      description: "Measures how much bond markets are swinging in a single day",
+      old: 'Market volatility spike',
+      new: 'Market Volatility',
+      description: 'Tracks large, sudden moves in financial markets that signal institutional stress',
     },
     TreasuryYield: {
-      old: "Treasury yield inversion",
-      new: "Treasury Auction Tail",
-      description: "How much extra yield buyers demand at Treasury auctions",
+      old: 'Treasury yield inversion',
+      new: 'Treasury Auction Health',
+      description: 'Monitors whether government bond auctions are attracting buyers at normal rates',
     },
     JoblessClaims: {
-      old: "Jobless claims surge",
-      new: "Jobless Claims",
-      description: "Weekly count of new unemployment filings",
+      old: 'Jobless claims surge',
+      new: 'Unemployment Claims',
+      description: 'Tracks weekly new filings for unemployment insurance across the US',
     },
     GroceryCPI: {
-      old: "Food inflation spike",
-      new: "Grocery CPI",
-      description: "Annualized rate of food price increases",
+      old: 'Food inflation spike',
+      new: 'Grocery Price Index',
+      description: 'Measures how fast food prices are rising compared to wages',
     },
     GDPGrowth: {
-      old: "GDP contraction",
-      new: "GDP Growth",
-      description: "Whether the economy is growing or shrinking",
+      old: 'GDP contraction',
+      new: 'Economic Growth',
+      description: 'Shows whether the overall economy is growing or shrinking',
     },
-
-    // Global indicators
     GlobalConflict: {
-      old: "Global conflict intensity",
-      new: "Global Conflict Intensity",
-      description: "Number of active battle events worldwide",
+      old: 'Global conflict intensity',
+      new: 'Global Conflict Level',
+      description: 'Tracks the number and severity of armed conflicts worldwide',
     },
     TaiwanPLA: {
-      old: "Taiwan Strait tensions",
-      new: "Taiwan PLA Incursions",
-      description: "Chinese military aircraft entering Taiwan's air defense zone",
+      old: 'Taiwan Strait tensions',
+      new: 'Taiwan Strait Activity',
+      description: 'Monitors Chinese military activity near Taiwan, which affects global chip supply',
     },
     NATOReadiness: {
-      old: "NATO readiness level",
-      new: "NATO High Readiness",
-      description: "NATO force activations signaling escalation risk",
+      old: 'NATO readiness level',
+      new: 'NATO Force Readiness',
+      description: 'Tracks whether NATO has activated high-readiness forces',
     },
     NuclearTests: {
-      old: "Nuclear test activity",
-      new: "Nuclear/Missile Tests",
-      description: "Nuclear detonation and ICBM launch tests",
+      old: 'Nuclear test activity',
+      new: 'Nuclear and Missile Tests',
+      description: 'Monitors nuclear and ICBM test activity by any nation',
     },
-
-    // Infrastructure
     GridOutage: {
-      old: "Grid outage frequency",
-      new: "Grid Outages",
-      description: "Major power outages affecting 50K+ customers",
+      old: 'Grid outage frequency',
+      new: 'Power Grid Reliability',
+      description: 'Tracks how often and how severely the electrical grid fails',
     },
     CISACyber: {
-      old: "Cyber attack frequency",
-      new: "CISA Cyber Threats",
-      description: "Known exploited vulnerabilities in critical infrastructure",
+      old: 'Cyber attack frequency',
+      new: 'Critical Infrastructure Attacks',
+      description: 'Monitors actively exploited vulnerabilities in power, water, and financial systems',
     },
     WHODisease: {
-      old: "Novel disease H2H transmission",
-      new: "Novel Pathogen Alert",
-      description: "Countries with new human-to-human disease transmission",
+      old: 'Novel disease H2H transmission',
+      new: 'Novel Pathogen Tracking',
+      description: 'Monitors new diseases spreading between people across countries',
     },
-
-    // Social indicators
     StrikeTracker: {
-      old: "Labor strike activity",
-      new: "Strike Activity",
-      description: "Monthly worker-days lost to strikes",
+      old: 'Labor strike activity',
+      new: 'Labor Strike Activity',
+      description: 'Tracks the number of workers on strike and affected industries',
     },
     SchoolClosures: {
-      old: "School closure rate",
-      new: "School Closures",
-      description: "Rate of school closures across the country",
+      old: 'School closure rate',
+      new: 'School Operations',
+      description: 'Monitors whether schools are operating normally or facing closures',
     },
     PharmacyShortage: {
-      old: "Pharmacy shortage reports",
-      new: "Pharmacy Shortages",
-      description: "Reports of prescription medication unavailability",
+      old: 'Pharmacy shortage reports',
+      new: 'Medication Availability',
+      description: 'Tracks reported shortages of common medications at pharmacies',
     },
   },
 
-  // Action messages
   actions: {
     green: {
-      title: "All clear — stay ready",
+      title: 'Maintain your baseline',
       items: [
-        "Review your family emergency contacts",
-        "Check your emergency kit has fresh batteries",
-        "Confirm your family meeting place",
-        "Update any expired medications",
+        'Review your family emergency contacts',
+        'Check your emergency kit has fresh batteries',
+        'Confirm your family meeting location',
+        'Replace any expired medications',
       ],
     },
     amber: {
-      title: "Things are shifting — take simple steps",
+      title: 'Increase your readiness',
       items: [
-        "Top off your gas tank when it hits half full",
-        "Add a few extra canned goods to your pantry each shop",
-        "Make sure everyone in the family knows the plan",
-        "Check in with neighbors and loved ones",
+        'Fill vehicle gas tanks when they hit half',
+        'Add extra non-perishable food to your pantry',
+        'Make sure everyone knows the family plan',
+        'Check in with neighbors and extended family',
       ],
     },
     red: {
-      title: "Action needed — follow the checklist",
+      title: 'Activate your family plan',
       items: [
-        "Fill up all vehicles with gas today",
-        "Stock up on essentials for 2 weeks",
-        "Charge all devices and power banks",
-        "Touch base with your support network",
-        "Review and run through your family emergency plan",
+        'Fill up all vehicles today',
+        'Stock essentials for 2 weeks',
+        'Charge all devices and battery packs',
+        'Contact your support network',
+        'Review and walk through your emergency plan',
       ],
     },
   },
 
-  // Onboarding
   onboarding: {
     welcome: {
-      title: "Welcome to Canairy",
+      title: 'Welcome to Canairy',
       steps: [
-        "How Canairy works",
-        "Set up your household profile",
-        "Choose what matters most to you",
-        "Create your first action plan",
-        "Print your fridge sheet",
+        'Understand what Canairy monitors and why',
+        'Set up your household profile',
+        'Choose which indicators matter most to you',
+        'Create your first action checklist',
+        'Print your refrigerator reference sheet',
       ],
     },
   },
 
-  // Achievements
   achievements: {
     firstWeek: {
-      title: "One Week In",
-      description: "You've been monitoring for a week.",
+      title: 'One Week In',
+      description: 'You have been monitoring for a full week.',
     },
     allGreen: {
-      title: "All Clear",
-      description: "Every indicator is green.",
+      title: 'All Clear',
+      description: 'All indicators are green. Good time to maintain your baseline.',
     },
     actionComplete: {
-      title: "Checklist Done",
-      description: "You completed an action checklist.",
+      title: 'Checklist Complete',
+      description: 'You completed an action checklist.',
     },
     neighborHelp: {
-      title: "Community Ready",
-      description: "You helped a neighbor prepare.",
+      title: 'Community Builder',
+      description: 'You helped a neighbor prepare.',
     },
   },
 
-  // Help
   help: {
-    whatIsThis: "Canairy tracks public data sources — treasury auctions, CISA alerts, conflict events, shipping rates — and tells you when they cross thresholds that matter for your household.",
-    howItWorks: "We check data sources regularly and flag anything that crosses from green to amber or red. Each indicator has clear thresholds based on historical precedents.",
-    whyPrepare: "Small steps now mean less scrambling later. Being prepared isn't about fear — it's about having a plan before you need one.",
+    whatIsThis: 'Canairy monitors public data sources that indicate societal stress. When patterns shift, it tells you what changed and what to do about it.',
+    howItWorks: 'We check government APIs, financial data, and public reports on a regular schedule. When thresholds are crossed, you get clear guidance on what steps to take.',
+    whyPrepare: 'Being prepared is not about fear. It is about having a plan so your family stays calm when things get uncertain.',
   },
 };
