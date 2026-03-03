@@ -8,8 +8,8 @@ import { DOMAIN_META, Domain } from '../types';
  */
 describe('Mock Data Shape', () => {
   describe('mockIndicators', () => {
-    it('has 34 indicators', () => {
-      expect(mockIndicators).toHaveLength(34);
+    it('has 51 indicators (34 original + 17 new)', () => {
+      expect(mockIndicators).toHaveLength(51);
     });
 
     it('every indicator has required fields', () => {
@@ -28,7 +28,7 @@ describe('Mock Data Shape', () => {
         expect(ind.status.value).toBeDefined();
         expect(['up', 'down', 'stable']).toContain(ind.status.trend);
         expect(ind.status.lastUpdate).toBeTruthy();
-        expect(['LIVE', 'MANUAL', 'MOCK']).toContain(ind.status.dataSource);
+        expect(['LIVE', 'MANUAL', 'MOCK', 'DEMO']).toContain(ind.status.dataSource);
 
         // Thresholds
         expect(ind.thresholds).toBeDefined();
@@ -42,9 +42,9 @@ describe('Mock Data Shape', () => {
       });
     });
 
-    it('covers all 9 domains', () => {
+    it('covers all 11 domains', () => {
       const domains = new Set(mockIndicators.map(i => i.domain));
-      expect(domains.size).toBe(9);
+      expect(domains.size).toBe(11);
     });
 
     it('has unique IDs', () => {
@@ -111,9 +111,9 @@ describe('Mock Data Shape', () => {
       expect(mockHOPIScore.timestamp).toBeTruthy();
     });
 
-    it('covers all 9 domains', () => {
+    it('covers all 11 domains', () => {
       const domainKeys = Object.keys(mockHOPIScore.domains);
-      expect(domainKeys).toHaveLength(9);
+      expect(domainKeys).toHaveLength(11);
     });
 
     it('domain scores are between 0 and 1', () => {

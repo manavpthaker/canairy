@@ -5,10 +5,11 @@ describe('DOMAIN_META', () => {
   const allDomains: Domain[] = [
     'economy', 'jobs_labor', 'rights_governance', 'security_infrastructure',
     'oil_axis', 'ai_window', 'global_conflict', 'domestic_control', 'cult',
+    'supply_chain', 'energy',
   ];
 
-  it('has entries for all 9 domains', () => {
-    expect(Object.keys(DOMAIN_META)).toHaveLength(9);
+  it('has entries for all 11 domains', () => {
+    expect(Object.keys(DOMAIN_META)).toHaveLength(11);
     allDomains.forEach(domain => {
       expect(DOMAIN_META[domain]).toBeDefined();
     });

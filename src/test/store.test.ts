@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useStore, selectIndicatorsByDomain, selectCriticalIndicators, selectIndicatorCounts, selectTightenUpActive } from '../store';
+import { useStore, selectIndicatorsByDomain, selectCriticalIndicators, selectIndicatorCounts, selectActionProtocolActive, selectTightenUpActive } from '../store';
 import { IndicatorData } from '../types';
 
 function makeIndicator(overrides: Partial<IndicatorData> & { id: string }): IndicatorData {
@@ -173,9 +173,9 @@ describe('Selectors', () => {
     });
   });
 
-  describe('selectTightenUpActive', () => {
+  describe('selectActionProtocolActive', () => {
     it('returns true when 2+ indicators are red', () => {
-      expect(selectTightenUpActive(state)).toBe(true);
+      expect(selectActionProtocolActive(state)).toBe(true);
     });
 
     it('returns false when fewer than 2 are red', () => {
@@ -186,7 +186,7 @@ describe('Selectors', () => {
           makeIndicator({ id: 'b', status: { level: 'amber', value: 2, lastUpdate: '', dataSource: 'MOCK' } }),
         ],
       };
-      expect(selectTightenUpActive(safeState)).toBe(false);
+      expect(selectActionProtocolActive(safeState)).toBe(false);
     });
 
     it('returns false when no indicators are red', () => {
@@ -196,7 +196,13 @@ describe('Selectors', () => {
           makeIndicator({ id: 'a', status: { level: 'green', value: 1, lastUpdate: '', dataSource: 'MOCK' } }),
         ],
       };
-      expect(selectTightenUpActive(greenState)).toBe(false);
+      expect(selectActionProtocolActive(greenState)).toBe(false);
+    });
+  });
+
+  describe('selectTightenUpActive (deprecated alias)', () => {
+    it('still works as alias for selectActionProtocolActive', () => {
+      expect(selectTightenUpActive(state)).toBe(selectActionProtocolActive(state));
     });
   });
 });

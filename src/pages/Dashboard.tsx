@@ -18,6 +18,7 @@ import { GlassCard } from '../components/ui/GlassCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { canairyMessages } from '../content/canairy-messages';
 import { cn } from '../utils/cn';
+import { generateSituationNarrative, generateDomainNarrative, generateAllClearNarrative } from '../utils/narrative';
 
 export const Dashboard: React.FC = () => {
   const [selectedIndicator, setSelectedIndicator] = useState<IndicatorData | null>(null);
@@ -41,6 +42,18 @@ export const Dashboard: React.FC = () => {
   }, [redCount, amberCount]);
 
   const statusMsg = canairyMessages.status[overallStatus];
+
+  // Generate narrative context
+  const narrative = useMemo(
+    () => generateSituationNarrative(indicators),
+    [indicators]
+  );
+
+  const narrativeContext = useMemo(() => {
+    if (overallStatus === 'allGood') return generateAllClearNarrative(indicators);
+    if (narrative) return narrative.explanation;
+    return statusMsg.message;
+  }, [overallStatus, narrative, indicators, statusMsg.message]);
 
   // Domain summary
   const domainsAtRisk = useMemo(() => {
@@ -129,7 +142,7 @@ export const Dashboard: React.FC = () => {
                       {statusMsg.title}
                     </h1>
                     <p className="text-sm text-white/40 leading-relaxed max-w-lg">
-                      {statusMsg.message}
+                      {narrativeContext}
                     </p>
 
                     {/* Phase + Stats row */}
@@ -228,6 +241,12 @@ export const Dashboard: React.FC = () => {
                               <div className="bg-green-500/40 rounded-full" style={{ width: `${(domain.green / domain.total) * 100}%` }} />
                             )}
                           </div>
+                          {/* Domain narrative */}
+                          {(domain.red > 0 || domain.amber > 0) && (
+                            <p className="text-xs text-white/25 mt-2 leading-relaxed line-clamp-2">
+                              {generateDomainNarrative(domain.key, indicators)}
+                            </p>
+                          )}
                           <div className="flex items-center justify-between mt-2">
                             <span className="text-xs text-white/20">{domain.total} indicators</span>
                             <ChevronRight className="w-3 h-3 text-white/15" />

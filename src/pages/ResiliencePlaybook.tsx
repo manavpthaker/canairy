@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../store';
-import { PHASES, TIGHTEN_UP_CHECKLIST, CRITICAL_JUMP_RULES } from '../data/phaseData';
+import { PHASES, ACTION_CHECKLIST, CRITICAL_JUMP_RULES } from '../data/phaseData';
 import { cn } from '../utils/cn';
 
 export const ResiliencePlaybook: React.FC = () => {
@@ -26,7 +26,7 @@ export const ResiliencePlaybook: React.FC = () => {
 
   const phaseNumber = currentPhase?.number ?? 0;
   const redCount = indicators?.filter((i) => i.status.level === 'red').length || 0;
-  const tightenUpActive = redCount >= 2;
+  const actionProtocolActive = redCount >= 2;
 
   const toggleChecklist = (id: string) => {
     setCompletedChecklist((prev) => {
@@ -37,7 +37,7 @@ export const ResiliencePlaybook: React.FC = () => {
     });
   };
 
-  const categories = [...new Set(TIGHTEN_UP_CHECKLIST.map((c) => c.category))];
+  const categories = [...new Set(ACTION_CHECKLIST.map((c) => c.category))];
 
   return (
     <>
@@ -81,10 +81,10 @@ export const ResiliencePlaybook: React.FC = () => {
               Current: Phase {phaseNumber} —{' '}
               {PHASES.find((p) => p.number === phaseNumber)?.name ?? 'Unknown'}
             </div>
-            {tightenUpActive && (
+            {actionProtocolActive && (
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium">
                 <AlertTriangle className="w-3.5 h-3.5" />
-                TIGHTEN-UP ACTIVE
+                ACTION PROTOCOL
               </div>
             )}
           </div>
@@ -93,15 +93,15 @@ export const ResiliencePlaybook: React.FC = () => {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* ── TIGHTEN-UP 48-Hour Checklist ── */}
-        {tightenUpActive && (
+        {actionProtocolActive && (
           <section>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
                 <Zap className="w-4 h-4 text-red-400" />
               </div>
-              <h2 className="text-lg font-bold text-white">48-Hour Tighten-Up Checklist</h2>
+              <h2 className="text-lg font-bold text-white">48-Hour Action Checklist</h2>
               <span className="text-sm text-white/20 ml-auto">
-                {completedChecklist.size}/{TIGHTEN_UP_CHECKLIST.length} complete
+                {completedChecklist.size}/{ACTION_CHECKLIST.length} complete
               </span>
             </div>
 
@@ -112,7 +112,7 @@ export const ResiliencePlaybook: React.FC = () => {
                   className="h-full bg-red-500"
                   initial={{ width: 0 }}
                   animate={{
-                    width: `${Math.round((completedChecklist.size / TIGHTEN_UP_CHECKLIST.length) * 100)}%`,
+                    width: `${Math.round((completedChecklist.size / ACTION_CHECKLIST.length) * 100)}%`,
                   }}
                 />
               </div>
@@ -129,7 +129,7 @@ export const ResiliencePlaybook: React.FC = () => {
                       {cat}
                     </h4>
                     <div className="space-y-1">
-                      {TIGHTEN_UP_CHECKLIST.filter((c) => c.category === cat).map((item) => {
+                      {ACTION_CHECKLIST.filter((c) => c.category === cat).map((item) => {
                         const done = completedChecklist.has(item.id);
                         return (
                           <button
