@@ -167,22 +167,25 @@ export function getPhaseColor(num: number): string {
 }
 
 /**
- * Tighten-Up 48-hour checklist — activated when ≥2 indicators hit RED.
+ * Action Protocol 48-hour checklist — activated when ≥2 indicators hit RED.
  */
-export const TIGHTEN_UP_CHECKLIST = [
-  { id: 'tu-1', text: 'Verify cash reserves ($500+ small bills)', category: 'Financial' },
-  { id: 'tu-2', text: 'Fill all vehicle fuel tanks', category: 'Supplies' },
-  { id: 'tu-3', text: 'Refill all prescriptions (90-day if possible)', category: 'Health' },
-  { id: 'tu-4', text: 'Top off food & water supply (2-week min)', category: 'Supplies' },
-  { id: 'tu-5', text: 'Charge all power banks and backup batteries', category: 'Comms' },
-  { id: 'tu-6', text: 'Test GMRS radios and comms plan', category: 'Comms' },
-  { id: 'tu-7', text: 'Verify go-folder is current and by front door', category: 'Docs' },
-  { id: 'tu-8', text: 'Screenshot all bank/investment balances', category: 'Financial' },
-  { id: 'tu-9', text: 'Brief family on current phase actions', category: 'Family' },
-  { id: 'tu-10', text: 'Confirm meeting locations (primary + backup)', category: 'Family' },
-  { id: 'tu-11', text: 'Run HEPA filter, verify N95 cache', category: 'Health' },
-  { id: 'tu-12', text: 'Check generator fuel and battery tender', category: 'Power' },
+export const ACTION_CHECKLIST = [
+  { id: 'ac-1', text: 'Verify cash reserves ($500+ small bills)', category: 'Financial' },
+  { id: 'ac-2', text: 'Fill all vehicle fuel tanks', category: 'Supplies' },
+  { id: 'ac-3', text: 'Refill all prescriptions (90-day if possible)', category: 'Health' },
+  { id: 'ac-4', text: 'Top off food & water supply (2-week min)', category: 'Supplies' },
+  { id: 'ac-5', text: 'Charge all power banks and backup batteries', category: 'Comms' },
+  { id: 'ac-6', text: 'Test GMRS radios and comms plan', category: 'Comms' },
+  { id: 'ac-7', text: 'Verify go-folder is current and by front door', category: 'Docs' },
+  { id: 'ac-8', text: 'Screenshot all bank/investment balances', category: 'Financial' },
+  { id: 'ac-9', text: 'Brief family on current phase actions', category: 'Family' },
+  { id: 'ac-10', text: 'Confirm meeting locations (primary + backup)', category: 'Family' },
+  { id: 'ac-11', text: 'Run HEPA filter, verify N95 cache', category: 'Health' },
+  { id: 'ac-12', text: 'Check generator fuel and battery tender', category: 'Power' },
 ];
+
+/** @deprecated Use ACTION_CHECKLIST */
+export const TIGHTEN_UP_CHECKLIST = ACTION_CHECKLIST;
 
 /**
  * Critical jump rules — bypass normal phase progression.

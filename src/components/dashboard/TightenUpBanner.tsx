@@ -2,20 +2,21 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, ChevronDown, ChevronUp, Check, Clock } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import { useStore, selectTightenUpActive } from '../../store';
-import { TIGHTEN_UP_CHECKLIST } from '../../data/phaseData';
+import { useStore, selectActionProtocolActive } from '../../store';
+import { ACTION_CHECKLIST } from '../../data/phaseData';
 
+/** @deprecated Use ThreatBanner instead */
 export const TightenUpBanner: React.FC = () => {
-  const tightenUpActive = useStore(selectTightenUpActive);
+  const actionProtocolActive = useStore(selectActionProtocolActive);
   const { indicators } = useStore();
   const [expanded, setExpanded] = useState(false);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
 
-  if (!tightenUpActive) return null;
+  if (!actionProtocolActive) return null;
 
   const redIndicators = indicators.filter((i) => i.status.level === 'red');
   const completedCount = completed.size;
-  const totalCount = TIGHTEN_UP_CHECKLIST.length;
+  const totalCount = ACTION_CHECKLIST.length;
   const progress = Math.round((completedCount / totalCount) * 100);
 
   const toggleItem = (id: string) => {
@@ -27,7 +28,7 @@ export const TightenUpBanner: React.FC = () => {
     });
   };
 
-  const categories = [...new Set(TIGHTEN_UP_CHECKLIST.map((c) => c.category))];
+  const categories = [...new Set(ACTION_CHECKLIST.map((c) => c.category))];
 
   return (
     <motion.div
@@ -38,7 +39,6 @@ export const TightenUpBanner: React.FC = () => {
       className="mb-6"
     >
       <div className="rounded-2xl border-2 border-red-500/50 bg-red-500/10 overflow-hidden">
-        {/* Header */}
         <button
           onClick={() => setExpanded(!expanded)}
           className="w-full px-4 sm:px-6 py-4 flex items-center justify-between text-left"
@@ -52,16 +52,15 @@ export const TightenUpBanner: React.FC = () => {
             </motion.div>
             <div className="min-w-0">
               <h2 className="text-lg font-display font-bold text-red-400">
-                TIGHTEN-UP PROTOCOL ACTIVE
+                ACTION PROTOCOL ACTIVE
               </h2>
               <p className="text-sm text-red-300/80 truncate">
-                {redIndicators.length} indicators at RED — complete 48-hour checklist
+                {redIndicators.length} indicators at red — complete 48-hour checklist
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 flex-shrink-0 ml-4">
-            {/* Progress ring */}
             <div className="flex items-center gap-2">
               <div className="text-sm font-mono text-red-300">
                 {completedCount}/{totalCount}
@@ -82,7 +81,6 @@ export const TightenUpBanner: React.FC = () => {
           </div>
         </button>
 
-        {/* Expandable checklist */}
         <AnimatePresence>
           {expanded && (
             <motion.div
@@ -93,13 +91,11 @@ export const TightenUpBanner: React.FC = () => {
               className="overflow-hidden"
             >
               <div className="px-4 sm:px-6 pb-6 border-t border-red-500/20">
-                {/* Timer */}
                 <div className="flex items-center gap-2 py-3 text-sm text-red-300/80">
                   <Clock className="w-4 h-4" />
                   <span>Complete within 48 hours of activation</span>
                 </div>
 
-                {/* Red indicators causing activation */}
                 <div className="mb-4 p-3 bg-white/[0.03] rounded-lg">
                   <div className="text-xs text-white/30 mb-2">Triggering indicators:</div>
                   <div className="flex flex-wrap gap-2">
@@ -120,7 +116,6 @@ export const TightenUpBanner: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Checklist by category */}
                 <div className="space-y-4">
                   {categories.map((cat) => (
                     <div key={cat}>
@@ -128,7 +123,7 @@ export const TightenUpBanner: React.FC = () => {
                         {cat}
                       </h4>
                       <div className="space-y-1">
-                        {TIGHTEN_UP_CHECKLIST.filter((c) => c.category === cat).map(
+                        {ACTION_CHECKLIST.filter((c) => c.category === cat).map(
                           (item) => {
                             const done = completed.has(item.id);
                             return (

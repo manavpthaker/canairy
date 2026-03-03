@@ -378,6 +378,271 @@ const descriptions: Record<string, IndicatorDescription> = {
       red: 'Mainstream cultural shift underway',
     },
   },
+
+  // FLIGHT & AIRSPACE
+  flight_01_notams: {
+    id: 'flight_01_notams',
+    name: 'Conflict NOTAMs',
+    whyItMatters: 'When airspace closes due to military conflict, it disrupts flights, reroutes cargo, and drives up costs for everything shipped by air. Multiple closures signal an expanding conflict zone.',
+    thresholds: {
+      green: 'Normal airspace operations',
+      amber: 'Conflict zones affecting some routes — expect delays and cost increases',
+      red: 'Multiple airspace closures — significant travel and cargo disruption',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Review travel plans to affected regions. Expect shipping delays.',
+      red: 'Avoid travel to affected regions. Stock up on imported goods that may be delayed.',
+    },
+  },
+  flight_02_bans: {
+    id: 'flight_02_bans',
+    name: 'US Flight Route Bans',
+    whyItMatters: 'FAA flight bans are issued when airspace is too dangerous for civilian aircraft. These directly affect travel options and air cargo routes.',
+    thresholds: {
+      green: 'No active bans',
+      amber: 'Some routes restricted — check before booking travel',
+      red: 'Major route disruptions — travel significantly impacted',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Check FAA advisories before booking international flights.',
+      red: 'Postpone non-essential international travel. Review cargo alternatives.',
+    },
+  },
+  flight_03_diversions: {
+    id: 'flight_03_diversions',
+    name: 'Major Route Diversions',
+    whyItMatters: 'When airlines divert around conflict zones, flights get longer, fuel costs rise, and ticket prices follow. This is often the first consumer-visible impact of distant conflicts.',
+    thresholds: {
+      green: 'Normal routing',
+      amber: 'Some routes diverted — higher costs and longer flights',
+      red: 'Major diversions — expect significant price increases',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Book essential travel early to lock in prices.',
+      red: 'Expect 20-40% higher airfare. Consider alternative transport.',
+    },
+  },
+
+  // BANKING & FINANCE
+  bank_01_fdic_problem: {
+    id: 'bank_01_fdic_problem',
+    name: 'FDIC Problem Banks',
+    whyItMatters: 'The FDIC maintains a confidential list of banks at risk of failure. When the number climbs, it means banking system stress is building. The 2008 crisis peaked at 884 problem banks.',
+    thresholds: {
+      green: 'Banking system healthy',
+      amber: 'Growing number of stressed banks — verify your deposits are FDIC-insured',
+      red: 'Systemic banking stress — diversify where you keep money',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Confirm all deposits are at FDIC-insured institutions and under $250K per account.',
+      red: 'Spread deposits across multiple FDIC-insured banks. Keep extra cash on hand.',
+    },
+  },
+  bank_02_failures: {
+    id: 'bank_02_failures',
+    name: 'Bank Failures YTD',
+    whyItMatters: 'Bank failures are rare in healthy economies. Multiple failures in a year signal systemic problems. SVB, Signature, and First Republic all failed within weeks in 2023.',
+    thresholds: {
+      green: 'No bank failures — system stable',
+      amber: 'Isolated failures — monitor your bank\'s health',
+      red: 'Multiple failures — banking crisis territory',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Check your bank\'s financial health rating. Ensure FDIC coverage.',
+      red: 'Move excess deposits to Treasury-only money market. Increase cash reserves.',
+    },
+  },
+  bank_03_deposit_outflow: {
+    id: 'bank_03_deposit_outflow',
+    name: 'Large Deposit Outflows',
+    whyItMatters: 'When large depositors pull money out of banks, it signals institutional fear. These outflows preceded SVB\'s collapse by weeks.',
+    thresholds: {
+      green: 'Normal deposit flows',
+      amber: 'Elevated outflows — smart money is moving',
+      red: 'Deposit flight underway — bank liquidity at risk',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Consider moving savings to Treasury-direct or money market.',
+      red: 'Reduce bank exposure. Increase cash and short-term Treasury holdings.',
+    },
+  },
+
+  // TRAVEL & MOVEMENT
+  travel_01_advisories: {
+    id: 'travel_01_advisories',
+    name: 'Level 3-4 Advisories',
+    whyItMatters: 'State Department Level 3-4 advisories cover countries where travel is dangerous. More countries on the list means more of the world is unstable.',
+    thresholds: {
+      green: 'Normal advisory levels',
+      amber: 'Elevated global instability — review travel plans',
+      red: 'Widespread travel danger — large portions of the world restricted',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Check advisories before booking any international travel.',
+      red: 'Limit international travel to essential only. Ensure passports are current.',
+    },
+  },
+  travel_02_border_status: {
+    id: 'travel_02_border_status',
+    name: 'Border Restriction Level',
+    whyItMatters: 'Border restrictions affect movement, trade, and the ability to relocate if needed. High restriction levels can appear suddenly during crises.',
+    thresholds: {
+      green: 'Normal border operations',
+      amber: 'Increased restrictions — expect delays at crossings',
+      red: 'Significant restrictions — movement is being controlled',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Ensure all family ID documents are current. Plan for crossing delays.',
+      red: 'Keep passports and documents ready. Understand your movement options.',
+    },
+  },
+  travel_03_passport_delays: {
+    id: 'travel_03_passport_delays',
+    name: 'Passport Processing',
+    whyItMatters: 'Long passport processing times mean you can\'t get travel documents quickly if you need them. During COVID, waits exceeded 18 weeks.',
+    thresholds: {
+      green: 'Normal processing times',
+      amber: 'Processing delays — renew early if expiring within 12 months',
+      red: 'Severe delays — getting new documents will take months',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Renew passports if expiring within a year. Get passport cards.',
+      red: 'Expedite any pending passport applications. Ensure all family members have current documents.',
+    },
+  },
+
+  // SUPPLY CHAIN
+  sc_01_shipping_rates: {
+    id: 'sc_01_shipping_rates',
+    name: 'Container Shipping Rates',
+    whyItMatters: 'Container shipping costs directly affect the price of everything imported — electronics, clothes, furniture, food ingredients. When rates spike, retail prices follow within 2-3 months.',
+    thresholds: {
+      green: 'Normal shipping costs',
+      amber: 'Rates rising — imported goods will get more expensive',
+      red: 'Crisis-level rates — significant retail price increases coming',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Make planned purchases of imported goods sooner rather than later.',
+      red: 'Buy durable goods now before prices rise. Stock essentials.',
+    },
+  },
+  sc_02_port_congestion: {
+    id: 'sc_02_port_congestion',
+    name: 'Port Congestion Index',
+    whyItMatters: 'Port congestion means goods are stuck on ships or at docks. During the 2021 crisis, ships waited weeks to unload, causing widespread shortages.',
+    thresholds: {
+      green: 'Ports flowing normally',
+      amber: 'Growing backlogs — some goods may be delayed',
+      red: 'Major congestion — shortages of imported goods likely',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Expect some product shortages. Buy essentials when you see them.',
+      red: 'Stock up on household essentials. Expect 4-8 week delays on orders.',
+    },
+  },
+  sc_03_food_disruption: {
+    id: 'sc_03_food_disruption',
+    name: 'Food Supply Disruption',
+    whyItMatters: 'Food supply disruptions mean empty shelves and price spikes. The US imports 15% of its food — disruptions anywhere in the chain affect your grocery store.',
+    thresholds: {
+      green: 'Food supply chain healthy',
+      amber: 'Some disruptions — selective shortages possible',
+      red: 'Significant disruptions — stock up on staples',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Add extra shelf-stable foods to your pantry each shopping trip.',
+      red: 'Build a 2-week food buffer. Focus on rice, beans, canned goods, frozen vegetables.',
+    },
+  },
+  sc_04_chip_lead_time: {
+    id: 'sc_04_chip_lead_time',
+    name: 'Semiconductor Lead Times',
+    whyItMatters: 'Semiconductors are in everything — cars, phones, appliances, medical devices. Long lead times caused car prices to spike 25% in 2021.',
+    thresholds: {
+      green: 'Normal availability',
+      amber: 'Extended waits — buy electronics and vehicles sooner',
+      red: 'Severe shortage — expect price spikes and limited availability',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Make planned electronics or vehicle purchases earlier.',
+      red: 'Buy essential electronics now. Expect 3-6 month delays on orders.',
+    },
+  },
+
+  // ENERGY & POWER
+  energy_01_spr: {
+    id: 'energy_01_spr',
+    name: 'Strategic Petroleum Reserve',
+    whyItMatters: 'The SPR is America\'s emergency oil buffer. At low levels, the government has fewer options to control fuel prices during a crisis. It was drawn down to 40-year lows in 2022.',
+    thresholds: {
+      green: 'Healthy reserve levels — buffer available',
+      amber: 'Reserve drawn down — less buffer for emergencies',
+      red: 'Critically low — no meaningful emergency buffer',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Keep vehicles fueled above half tank.',
+      red: 'Keep all vehicles fully fueled. Consider fuel storage if you have a generator.',
+    },
+  },
+  energy_02_gas_supply: {
+    id: 'energy_02_gas_supply',
+    name: 'Gasoline Supply Days',
+    whyItMatters: 'Days of gasoline supply measures how long current inventories would last at current consumption. Below 20 days has historically preceded price spikes and spot shortages.',
+    thresholds: {
+      green: 'Adequate supply',
+      amber: 'Supply tightening — prices likely rising',
+      red: 'Low supply — shortages and rationing possible',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Fill up when you see low prices. Don\'t let tanks go below half.',
+      red: 'Keep all vehicles topped off. Have alternative transportation plans.',
+    },
+  },
+  energy_03_natgas: {
+    id: 'energy_03_natgas',
+    name: 'Natural Gas Storage',
+    whyItMatters: 'Natural gas heats 47% of US homes. When storage is below the 5-year average, heating bills spike and shortages during cold snaps become possible.',
+    thresholds: {
+      green: 'Storage at normal levels',
+      amber: 'Below average — heating costs will be higher',
+      red: 'Well below average — expect significant heating cost increases',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Budget for higher heating bills. Check insulation and weatherization.',
+      red: 'Prepare backup heating. Weatherize your home. Lock in utility rates if possible.',
+    },
+  },
+  energy_04_grid_stress: {
+    id: 'energy_04_grid_stress',
+    name: 'Regional Grid Stress',
+    whyItMatters: 'Grid stress means the electrical system is being pushed to its limits. At high levels, rolling blackouts become likely. Texas in 2021 showed how quickly grid failure cascades.',
+    thresholds: {
+      green: 'Grid operating normally',
+      amber: 'Grid under pressure — brownouts possible during peak',
+      red: 'Grid at risk — rolling blackouts likely',
+    },
+    actionGuidance: {
+      green: 'No action needed',
+      amber: 'Charge all devices and power banks. Test backup power.',
+      red: 'Activate backup power plan. Fill water containers. Charge everything.',
+    },
+  },
 };
 
 export function getIndicatorDescription(id: string): IndicatorDescription | null {

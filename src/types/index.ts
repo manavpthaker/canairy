@@ -7,7 +7,7 @@ export type IndicatorStatus = {
   value: number | string;
   trend?: 'up' | 'down' | 'stable';
   lastUpdate: string;
-  dataSource: 'LIVE' | 'MANUAL' | 'MOCK';
+  dataSource: 'LIVE' | 'MANUAL' | 'MOCK' | 'DEMO';
 };
 
 export type Domain =
@@ -19,7 +19,9 @@ export type Domain =
   | 'ai_window'
   | 'global_conflict'
   | 'domestic_control'
-  | 'cult';
+  | 'cult'
+  | 'supply_chain'
+  | 'energy';
 
 export const DOMAIN_META: Record<Domain, { label: string; weight: number; icon: string }> = {
   economy:                 { label: 'Economy',          weight: 1.0,  icon: 'DollarSign' },
@@ -31,6 +33,8 @@ export const DOMAIN_META: Record<Domain, { label: string; weight: number; icon: 
   global_conflict:         { label: 'Global Conflict',  weight: 1.5,  icon: 'Globe' },
   domestic_control:        { label: 'Domestic Control',  weight: 1.25, icon: 'Landmark' },
   cult:                    { label: 'Cult Signals',     weight: 0.75, icon: 'Eye' },
+  supply_chain:            { label: 'Supply Chain',     weight: 1.0,  icon: 'Ship' },
+  energy:                  { label: 'Energy & Power',   weight: 1.25, icon: 'Flame' },
 };
 
 export interface Indicator {

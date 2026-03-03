@@ -102,6 +102,17 @@
 }
 
 @layer utilities {
+  /* Live ticker scrolling animation */
+  .ticker-scroll {
+    animation: ticker-scroll var(--ticker-duration, 30s) linear infinite;
+    width: max-content;
+  }
+
+  @keyframes ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
   .animate-pulse-danger {
     animation: pulse-danger 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }

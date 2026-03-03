@@ -18,6 +18,7 @@ import { Link, useLocation, Outlet } from 'react-router-dom';
 import { useStore } from '../../store';
 import { CanaryLogo } from '../branding/CanaryLogo';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { LiveTicker } from './LiveTicker';
 import { cn } from '../../utils/cn';
 
 const NAV_ITEMS = [
@@ -52,6 +53,9 @@ export const AppShell: React.FC = () => {
   const redCount = indicators.filter(i => i.status.level === 'red').length;
   const amberCount = indicators.filter(i => i.status.level === 'amber').length;
 
+  // Check if we're running on demo/mock data
+  const isDemoMode = indicators.length > 0 && indicators.every(i => i.status.dataSource === 'MOCK' || i.status.dataSource === 'DEMO');
+
   const getOverallMood = () => {
     if (redCount >= 2) return { label: 'Action needed', color: 'text-red-400', dot: 'bg-red-500', pulse: true };
     if (redCount > 0 || amberCount >= 3) return { label: 'Stay alert', color: 'text-amber-400', dot: 'bg-amber-500', pulse: false };
@@ -63,7 +67,13 @@ export const AppShell: React.FC = () => {
     path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);
 
   return (
-    <div className="min-h-screen flex relative">
+    <div className="min-h-screen flex flex-col">
+      {/* ── Live Ticker ── */}
+      {indicators.length > 0 && (
+        <LiveTicker className="sticky top-0 z-50" />
+      )}
+
+      <div className="flex-1 flex relative">
       <a href="#main-content" className="skip-to-content">
         Skip to main content
       </a>
@@ -85,11 +95,15 @@ export const AppShell: React.FC = () => {
       <aside
         aria-label="Main navigation"
         className={cn(
-          'w-56 fixed h-full z-40 transition-transform duration-300',
+          'w-56 fixed z-40 transition-transform duration-300',
           'bg-[#0E0E10]/90 backdrop-blur-xl border-r border-white/[0.04]',
           'lg:translate-x-0',
           showMobileSidebar ? 'translate-x-0' : '-translate-x-full'
         )}
+        style={{
+          top: indicators.length > 0 ? '32px' : '0',
+          height: indicators.length > 0 ? 'calc(100vh - 32px)' : '100vh',
+        }}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -176,7 +190,10 @@ export const AppShell: React.FC = () => {
       {/* ── Main Content ── */}
       <main id="main-content" className="flex-1 lg:ml-56 min-h-screen flex flex-col pb-16 lg:pb-0">
         {/* Header — minimal */}
-        <header className="bg-[#0E0E10]/80 backdrop-blur-xl border-b border-white/[0.04] sticky top-0 z-10">
+        <header
+          className="bg-[#0E0E10]/80 backdrop-blur-xl border-b border-white/[0.04] sticky z-10"
+          style={{ top: indicators.length > 0 ? '32px' : '0' }}
+        >
           <div className="px-4 sm:px-6 lg:px-8 py-2.5">
             <div className="flex items-center justify-between gap-4">
               {/* Mobile menu */}
@@ -204,6 +221,14 @@ export const AppShell: React.FC = () => {
                   )}
                 </div>
               </div>
+
+              {/* DEMO badge */}
+              {isDemoMode && (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-xs font-medium text-amber-400">DEMO</span>
+                </div>
+              )}
 
               {/* Refresh */}
               <button
@@ -250,6 +275,7 @@ export const AppShell: React.FC = () => {
           })}
         </div>
       </nav>
+    </div>
     </div>
   );
 };

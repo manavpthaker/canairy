@@ -171,7 +171,7 @@ export const IndicatorDetails: React.FC = () => {
             {indicator.critical && (
               <div className="mt-4 pt-4 border-t border-white/[0.04] flex items-center gap-2 text-sm text-red-400">
                 <AlertTriangle className="w-4 h-4" />
-                Critical indicator — contributes to TIGHTEN-UP protocol
+                Critical indicator — contributes to Action Protocol
               </div>
             )}
           </div>

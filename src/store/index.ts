@@ -119,9 +119,12 @@ export const selectIndicatorCounts = (state: AppState) => {
   return counts;
 };
 
-export const selectTightenUpActive = (state: AppState) => {
+export const selectActionProtocolActive = (state: AppState) => {
   const redCount = state.indicators.filter(
     (ind) => ind.status.level === 'red'
   ).length;
   return redCount >= 2;
 };
+
+/** @deprecated Use selectActionProtocolActive */
+export const selectTightenUpActive = selectActionProtocolActive;

@@ -20,7 +20,7 @@ type AlertFilter = 'all' | 'critical' | 'warning' | 'info';
 
 interface AlertItem {
   id: string;
-  type: 'red_threshold' | 'tighten_up' | 'phase_change' | 'trend_warning';
+  type: 'red_threshold' | 'action_protocol' | 'phase_change' | 'trend_warning';
   indicatorId?: string;
   indicatorName?: string;
   domain?: string;
@@ -40,8 +40,8 @@ export const Alerts: React.FC = () => {
     const redCount = indicators.filter(i => i.status.level === 'red').length;
     if (redCount >= 2) {
       items.push({
-        id: 'tighten-up',
-        type: 'tighten_up',
+        id: 'action-protocol',
+        type: 'action_protocol',
         message: `Multiple areas need attention (${redCount} critical). Check your Actions checklist for specific steps.`,
         severity: 'critical',
         timestamp: now,
