@@ -126,5 +126,5 @@ export const selectActionProtocolActive = (state: AppState) => {
   return redCount >= 2;
 };
 
-/** @deprecated Use selectActionProtocolActive */
+/** @deprecated Use selectActionProtocolActive instead */
 export const selectTightenUpActive = selectActionProtocolActive;

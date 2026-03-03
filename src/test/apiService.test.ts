@@ -8,7 +8,7 @@ import { DOMAIN_META, Domain } from '../types';
  */
 describe('Mock Data Shape', () => {
   describe('mockIndicators', () => {
-    it('has 51 indicators (34 original + 17 new)', () => {
+    it('has 51 indicators', () => {
       expect(mockIndicators).toHaveLength(51);
     });
 

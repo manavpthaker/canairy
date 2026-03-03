@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, Heart, AlertTriangle, CheckCircle } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { IndicatorData } from '../../types';
-import { canairyMessages } from '../../content/canairy-messages';
+import { getIndicatorDescription } from '../../data/indicatorDescriptions';
 import { formatDistanceToNow } from 'date-fns';
 
 interface NestEggCardProps {
@@ -19,9 +19,9 @@ export const NestEggCard: React.FC<NestEggCardProps> = ({
 }) => {
   const { status, id, name, unit, critical } = indicator;
   
-  // Get family-friendly name
-  const friendlyName = canairyMessages.indicators[id as keyof typeof canairyMessages.indicators]?.new || name;
-  const description = canairyMessages.indicators[id as keyof typeof canairyMessages.indicators]?.description || '';
+  const desc = getIndicatorDescription(id);
+  const friendlyName = name;
+  const description = desc?.whyItMatters || '';
 
   const getTrendIcon = () => {
     if (!status.trend) return <Minus className="w-4 h-4" />;

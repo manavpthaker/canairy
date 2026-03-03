@@ -205,4 +205,37 @@ describe('Selectors', () => {
       expect(selectTightenUpActive(state)).toBe(selectActionProtocolActive(state));
     });
   });
+
+  describe('selectActionProtocolActive', () => {
+    it('returns true when 2+ indicators are red', () => {
+      expect(selectActionProtocolActive(state)).toBe(true);
+    });
+
+    it('returns false when fewer than 2 are red', () => {
+      const safeState = {
+        ...state,
+        indicators: [
+          makeIndicator({ id: 'a', status: { level: 'red', value: 1, lastUpdate: '', dataSource: 'MOCK' } }),
+          makeIndicator({ id: 'b', status: { level: 'amber', value: 2, lastUpdate: '', dataSource: 'MOCK' } }),
+        ],
+      };
+      expect(selectActionProtocolActive(safeState)).toBe(false);
+    });
+
+    it('returns false when no indicators are red', () => {
+      const greenState = {
+        ...state,
+        indicators: [
+          makeIndicator({ id: 'a', status: { level: 'green', value: 1, lastUpdate: '', dataSource: 'MOCK' } }),
+        ],
+      };
+      expect(selectActionProtocolActive(greenState)).toBe(false);
+    });
+  });
+
+  describe('selectTightenUpActive is alias for selectActionProtocolActive', () => {
+    it('selectTightenUpActive is the same function as selectActionProtocolActive', () => {
+      expect(selectTightenUpActive).toBe(selectActionProtocolActive);
+    });
+  });
 });

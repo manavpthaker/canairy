@@ -104,6 +104,48 @@ describe('ACTION_CHECKLIST', () => {
   });
 });
 
+describe('ACTION_CHECKLIST', () => {
+  it('has 12 checklist items', () => {
+    expect(ACTION_CHECKLIST).toHaveLength(12);
+  });
+
+  it('each item has id, text, and category', () => {
+    ACTION_CHECKLIST.forEach(item => {
+      expect(item.id).toBeTruthy();
+      expect(item.text).toBeTruthy();
+      expect(item.category).toBeTruthy();
+    });
+  });
+
+  it('covers all required categories', () => {
+    const categories = new Set(ACTION_CHECKLIST.map(i => i.category));
+    expect(categories).toContain('Financial');
+    expect(categories).toContain('Supplies');
+    expect(categories).toContain('Health');
+    expect(categories).toContain('Comms');
+    expect(categories).toContain('Docs');
+    expect(categories).toContain('Family');
+    expect(categories).toContain('Power');
+  });
+
+  it('has unique ids', () => {
+    const ids = ACTION_CHECKLIST.map(i => i.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('uses ac- prefix for IDs', () => {
+    ACTION_CHECKLIST.forEach(item => {
+      expect(item.id).toMatch(/^ac-\d+$/);
+    });
+  });
+});
+
+describe('TIGHTEN_UP_CHECKLIST is alias for ACTION_CHECKLIST', () => {
+  it('TIGHTEN_UP_CHECKLIST is the same object as ACTION_CHECKLIST', () => {
+    expect(TIGHTEN_UP_CHECKLIST).toBe(ACTION_CHECKLIST);
+  });
+});
+
 describe('CRITICAL_JUMP_RULES', () => {
   it('has 4 jump rules', () => {
     expect(CRITICAL_JUMP_RULES).toHaveLength(4);

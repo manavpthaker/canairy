@@ -2,6 +2,7 @@ import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useStore } from './store';
 import { wsService } from './services/api';
+import { StreamingLoader } from './components/StreamingLoader';
 import { PageSkeleton } from './components/LoadingSkeleton';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AppShell } from './components/layout/AppShell';
@@ -20,7 +21,7 @@ const ResiliencePlaybook = lazy(() => import('./pages/ResiliencePlaybook').then(
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 function App() {
-  const { fetchIndicators, fetchHOPIScore, fetchSystemStatus, updateIndicator } = useStore();
+  const { fetchIndicators, fetchHOPIScore, fetchSystemStatus, updateIndicator, loading, indicators } = useStore();
 
   useEffect(() => {
     // Initial data fetch
@@ -55,6 +56,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <StreamingLoader loading={loading} hasData={indicators.length > 0} />
       <Router>
         <Suspense fallback={<PageSkeleton />}>
           <Routes>

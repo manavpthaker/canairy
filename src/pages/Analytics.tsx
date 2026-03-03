@@ -6,52 +6,64 @@ import {
   Minus,
   Activity,
   AlertTriangle,
+  CheckCircle2,
   Eye,
   Info,
+  Database,
 } from 'lucide-react';
 import { useStore } from '../store';
 import { DOMAIN_META, Domain } from '../types';
 import { ScoreRing } from '../components/ui/ScoreRing';
 import { GlassCard } from '../components/ui/GlassCard';
-import { cn } from '../utils/cn';
-import {
-  generateSituationNarrative,
-  generateDomainInsight,
-  generateAllClearNarrative,
-} from '../utils/narrative';
+import { generateSituationNarrative, generateDomainInsight, generateAllClearNarrative } from '../utils/narrative';
 import { getIndicatorDescription } from '../data/indicatorDescriptions';
+import { cn } from '../utils/cn';
 
 export const Analytics: React.FC = () => {
   const { indicators, hopiScore } = useStore();
 
-  const narrative = useMemo(
-    () => generateSituationNarrative(indicators),
-    [indicators]
-  );
+  const narrative = useMemo(() => generateSituationNarrative(indicators), [indicators]);
 
+  const redCount = indicators.filter(i => i.status.level === 'red').length;
+  const amberCount = indicators.filter(i => i.status.level === 'amber').length;
+  const greenCount = indicators.filter(i => i.status.level === 'green').length;
+
+  const overallStatus = useMemo(() => {
+    if (redCount >= 2) return 'action' as const;
+    if (redCount > 0 || amberCount >= 3) return 'attention' as const;
+    return 'allGood' as const;
+  }, [redCount, amberCount]);
+
+  // Domain deep-dives: only domains with amber/red
   const domainInsights = useMemo(() => {
     return Object.keys(DOMAIN_META)
       .map(key => generateDomainInsight(key as Domain, indicators))
-      .filter(Boolean) as NonNullable<ReturnType<typeof generateDomainInsight>>[];
+      .filter((d): d is NonNullable<typeof d> => d !== null)
+      .sort((a, b) => {
+        const aRed = a.indicators.filter(i => i.level === 'red').length;
+        const bRed = b.indicators.filter(i => i.level === 'red').length;
+        if (aRed !== bRed) return bRed - aRed;
+        return b.indicators.length - a.indicators.length;
+      });
   }, [indicators]);
 
+  // Amber indicators trending worse
   const watchList = useMemo(() => {
     return indicators
       .filter(i => i.status.level === 'amber' && i.status.trend === 'up' && i.enabled !== false)
-      .slice(0, 5)
-      .map(i => {
-        const desc = getIndicatorDescription(i.id);
+      .map(ind => {
+        const desc = getIndicatorDescription(ind.id);
         return {
-          id: i.id,
-          name: i.name,
-          value: i.status.value,
-          unit: i.unit,
-          redThreshold: i.thresholds?.threshold_red,
-          whyItMatters: desc?.whyItMatters || i.description,
+          id: ind.id,
+          name: ind.name,
+          value: ind.status.value,
+          unit: ind.unit,
+          whyItMatters: desc?.whyItMatters || ind.description,
         };
       });
   }, [indicators]);
 
+  // Trend summary
   const trendStats = useMemo(() => {
     const enabled = indicators.filter(i => i.enabled !== false);
     const up = enabled.filter(i => i.status.trend === 'up').length;
@@ -60,62 +72,51 @@ export const Analytics: React.FC = () => {
     return { up, down, stable };
   }, [indicators]);
 
+  // Data sources
   const sourceStats = useMemo(() => {
     const live = indicators.filter(i => i.status.dataSource === 'LIVE').length;
-    const demo = indicators.filter(i => i.status.dataSource === 'MOCK' || i.status.dataSource === 'DEMO').length;
+    const demo = indicators.filter(i => i.status.dataSource === 'DEMO').length;
+    const mock = indicators.filter(i => i.status.dataSource === 'MOCK').length;
     const manual = indicators.filter(i => i.status.dataSource === 'MANUAL').length;
-    return { live, demo, manual };
+    return { live, demo, mock, manual };
   }, [indicators]);
-
-  const redCount = indicators.filter(i => i.status.level === 'red').length;
-  const amberCount = indicators.filter(i => i.status.level === 'amber').length;
-
-  // Worseningdomains for trend summary sentence
-  const trendSentence = useMemo(() => {
-    if (trendStats.up === 0 && trendStats.down === 0) return 'All indicators are holding steady.';
-    const parts: string[] = [];
-    if (trendStats.up > 0) parts.push(`${trendStats.up} indicator${trendStats.up !== 1 ? 's' : ''} getting worse`);
-    if (trendStats.down > 0) parts.push(`${trendStats.down} improving`);
-    if (trendStats.stable > 0) parts.push(`${trendStats.stable} stable`);
-    return parts.join(', ') + '.';
-  }, [trendStats]);
 
   return (
     <>
       <div className="border-b border-white/[0.04]">
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <h1 className="text-2xl sm:text-3xl font-display font-semibold text-white">Insights</h1>
-          <p className="text-white/30 mt-1 text-sm">What's happening, why it matters, and what to do about it</p>
+          <p className="text-white/30 mt-1 text-sm">What the data means for your family right now</p>
         </div>
       </div>
 
       <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-8 max-w-6xl mx-auto">
 
-        {/* ── Section 1: Situation Summary ── */}
+        {/* ── Section 1: What's happening right now ── */}
         <GlassCard
-          glow={narrative?.riskLevel === 'critical' ? 'red' : narrative?.riskLevel === 'serious' ? 'amber' : 'green'}
+          glow={overallStatus === 'action' ? 'red' : overallStatus === 'attention' ? 'amber' : 'green'}
         >
-          <div className="flex items-start gap-3 mb-3">
-            <Info className={cn(
-              'w-5 h-5 mt-0.5 flex-shrink-0',
-              narrative ? (narrative.riskLevel === 'critical' ? 'text-red-400' : 'text-amber-400') : 'text-green-400'
-            )} />
-            <h2 className="text-lg font-semibold text-white">
-              {narrative ? 'What\'s happening right now' : 'All clear'}
-            </h2>
-          </div>
-
-          {narrative ? (
-            <div className="ml-8 space-y-3">
-              <p className="text-sm text-white/60 leading-relaxed">
-                {narrative.explanation}
-              </p>
-              <p className="text-sm text-white/40 leading-relaxed">
-                {narrative.whatToDoAboutIt}
-              </p>
-
-              {/* Key indicators driving this */}
-              <div className="flex flex-wrap gap-2 mt-2">
+          <h2 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-3">
+            What's happening right now
+          </h2>
+          {overallStatus === 'allGood' ? (
+            <div className="flex items-start gap-4">
+              <CheckCircle2 className="w-6 h-6 text-green-400/60 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-white/60 leading-relaxed">
+                  {generateAllClearNarrative(indicators)}
+                </p>
+                <p className="text-white/30 text-sm mt-2">
+                  All {greenCount} green indicators are within normal ranges. No preparedness actions needed.
+                </p>
+              </div>
+            </div>
+          ) : narrative ? (
+            <div className="space-y-4">
+              <p className="text-lg font-medium text-white/80">{narrative.headline}</p>
+              <p className="text-white/50 leading-relaxed">{narrative.explanation}</p>
+              <p className="text-white/40 leading-relaxed">{narrative.whatToDoAboutIt}</p>
+              <div className="flex flex-wrap gap-2 pt-2">
                 {narrative.keyIndicators.slice(0, 5).map(ind => (
                   <span
                     key={ind.id}
@@ -126,140 +127,111 @@ export const Analytics: React.FC = () => {
                         : 'bg-amber-500/10 text-amber-300 border border-amber-500/15'
                     )}
                   >
-                    {ind.name}: {ind.currentValue}
+                    {ind.name}
                   </span>
                 ))}
               </div>
             </div>
           ) : (
-            <p className="text-sm text-white/40 ml-8 leading-relaxed">
-              {generateAllClearNarrative(indicators)}
-            </p>
+            <p className="text-white/40">Analyzing indicators...</p>
           )}
         </GlassCard>
 
-        {/* ── Section 2: Domain Deep-Dives ── */}
+        {/* ── Section 2: Domain deep-dives ── */}
         {domainInsights.length > 0 && (
-          <div>
-            <h2 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-3">Domain breakdown</h2>
-            <div className="space-y-3">
-              {domainInsights.map((insight, idx) => {
-                const domainScore = hopiScore?.domains[insight.domain]?.score ?? 0;
-                const scoreColor = domainScore > 66 ? '#EF4444' : domainScore > 33 ? '#F59E0B' : '#10B981';
-
-                return (
-                  <motion.div
-                    key={insight.domain}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
-                    <GlassCard>
-                      <div className="flex items-start gap-4">
-                        {/* Score ring */}
-                        <div className="flex-shrink-0 hidden sm:block">
-                          <ScoreRing
-                            value={domainScore}
-                            max={100}
-                            size="sm"
-                            color={scoreColor}
-                          />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-white mb-1">{insight.label}</h3>
-                          <p className="text-sm text-white/40 leading-relaxed mb-3">
-                            {insight.narrative}
-                          </p>
-
-                          {/* Indicator details */}
-                          <div className="space-y-2">
-                            {insight.indicators.map(ind => (
-                              <div
-                                key={ind.id}
-                                className="flex items-start gap-3 px-3 py-2 rounded-lg bg-white/[0.02]"
-                              >
-                                <span className={cn(
-                                  'w-2 h-2 rounded-full mt-1.5 flex-shrink-0',
-                                  ind.level === 'red' ? 'bg-red-500' : 'bg-amber-500'
-                                )} />
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center justify-between gap-2">
-                                    <span className="text-sm text-white/70 font-medium">{ind.name}</span>
-                                    <span className={cn(
-                                      'text-xs font-mono',
-                                      ind.level === 'red' ? 'text-red-400' : 'text-amber-400'
-                                    )}>
-                                      {ind.value}
-                                    </span>
-                                  </div>
-                                  {ind.actionGuidance && (
-                                    <p className="text-xs text-white/30 mt-0.5 leading-relaxed">{ind.actionGuidance}</p>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </GlassCard>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ── Section 3: What to Watch ── */}
-        {watchList.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Eye className="w-4 h-4 text-amber-400/50" />
-              <h2 className="text-xs font-medium text-white/20 uppercase tracking-wider">What to watch</h2>
-            </div>
-            <p className="text-sm text-white/30 mb-3">
-              These amber indicators are trending worse and could need action soon.
-            </p>
-            <div className="space-y-2">
-              {watchList.map((item, idx) => (
+          <div className="space-y-4">
+            <h2 className="text-xs font-medium text-white/20 uppercase tracking-wider">Domain breakdown</h2>
+            {domainInsights.map((insight, idx) => {
+              const domainScore = hopiScore?.domains[insight.domain]?.score ?? 0;
+              const scoreColor = domainScore > 66 ? '#EF4444' : domainScore > 33 ? '#F59E0B' : '#10B981';
+              return (
                 <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, x: -5 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  key={insight.domain}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                 >
-                  <GlassCard padding="sm">
-                    <div className="flex items-start gap-3">
-                      <TrendingUp className="w-4 h-4 text-amber-400/60 mt-0.5 flex-shrink-0" />
+                  <GlassCard
+                    glow={insight.indicators.some(i => i.level === 'red') ? 'red' : 'amber'}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0">
+                        <ScoreRing
+                          value={domainScore}
+                          max={100}
+                          size="sm"
+                          color={scoreColor}
+                        />
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="text-sm font-medium text-white/70">{item.name}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono text-amber-400">
-                              {item.value} {item.unit}
-                            </span>
-                            {item.redThreshold && (
-                              <span className="text-xs text-white/20">
-                                / {item.redThreshold} red
-                              </span>
-                            )}
-                          </div>
+                        <h3 className="text-sm font-semibold text-white mb-1">{insight.label}</h3>
+                        <p className="text-sm text-white/40 leading-relaxed mb-3">
+                          {insight.narrative}
+                        </p>
+                        <div className="space-y-2">
+                          {insight.indicators.map(ind => (
+                            <div key={ind.id} className="flex flex-col gap-0.5">
+                              <div className="flex items-center gap-2">
+                                <span className={cn(
+                                  'w-1.5 h-1.5 rounded-full flex-shrink-0',
+                                  ind.level === 'red' ? 'bg-red-500' : 'bg-amber-500'
+                                )} />
+                                <span className="text-xs text-white/60 font-medium">{ind.name}</span>
+                                <span className="text-xs text-white/20 font-mono ml-auto">{ind.value}</span>
+                              </div>
+                              {ind.actionGuidance && (
+                                <p className="text-xs text-white/25 pl-4 leading-relaxed">
+                                  {ind.actionGuidance}
+                                </p>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                        <p className="text-xs text-white/30 leading-relaxed">{item.whyItMatters}</p>
                       </div>
                     </div>
                   </GlassCard>
                 </motion.div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         )}
 
-        {/* ── Section 4: Trend Summary ── */}
+        {/* ── Section 3: What to watch ── */}
+        {watchList.length > 0 && (
+          <div>
+            <h2 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-3">What to watch</h2>
+            <GlassCard glow="amber">
+              <div className="flex items-center gap-2 mb-4">
+                <Eye className="w-4 h-4 text-amber-400/60" />
+                <span className="text-sm text-amber-300/80">
+                  {watchList.length} indicator{watchList.length !== 1 ? 's' : ''} at amber and trending worse
+                </span>
+              </div>
+              <div className="space-y-3">
+                {watchList.map(item => (
+                  <div key={item.id} className="border-l-2 border-amber-500/20 pl-3">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-sm text-white/60 font-medium">{item.name}</span>
+                      <TrendingUp className="w-3 h-3 text-amber-400/60" />
+                      <span className="text-xs text-white/20 font-mono ml-auto">{item.value} {item.unit}</span>
+                    </div>
+                    <p className="text-xs text-white/30 leading-relaxed">{item.whyItMatters}</p>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          </div>
+        )}
+
+        {/* ── Section 4: Trend summary ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <GlassCard>
-            <h2 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-2">Direction of change</h2>
-            <p className="text-sm text-white/40 mb-4">{trendSentence}</p>
+            <h2 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-4">Direction of change</h2>
+            <p className="text-sm text-white/40 mb-4">
+              {trendStats.up} indicator{trendStats.up !== 1 ? 's' : ''} getting worse,{' '}
+              {trendStats.down} improving,{' '}
+              {trendStats.stable} stable.
+            </p>
             <div className="space-y-3">
               <TrendRow icon={<TrendingUp className="w-4 h-4 text-red-400/60" />} label="Getting worse" count={trendStats.up} total={indicators.length} color="bg-red-500/60" />
               <TrendRow icon={<Minus className="w-4 h-4 text-white/20" />} label="Holding steady" count={trendStats.stable} total={indicators.length} color="bg-white/20" />
@@ -267,18 +239,19 @@ export const Analytics: React.FC = () => {
             </div>
           </GlassCard>
 
-          {/* Data sources */}
+          {/* ── Section 5: Data sources ── */}
           <GlassCard>
             <h2 className="text-xs font-medium text-white/20 uppercase tracking-wider mb-4">Data sources</h2>
             <div className="space-y-3">
-              <TrendRow icon={<Activity className="w-4 h-4 text-green-400/60" />} label="Live data" count={sourceStats.live} total={indicators.length} color="bg-green-500/50" />
-              <TrendRow icon={<Activity className="w-4 h-4 text-amber-400/60" />} label="Demo data" count={sourceStats.demo} total={indicators.length} color="bg-amber-500/50" />
-              <TrendRow icon={<Activity className="w-4 h-4 text-blue-400/60" />} label="Manual" count={sourceStats.manual} total={indicators.length} color="bg-blue-500/50" />
+              <TrendRow icon={<Activity className="w-4 h-4 text-green-400/60" />} label="Live" count={sourceStats.live} total={indicators.length} color="bg-green-500/50" />
+              <TrendRow icon={<Database className="w-4 h-4 text-amber-400/60" />} label="Demo" count={sourceStats.demo} total={indicators.length} color="bg-amber-500/50" />
+              <TrendRow icon={<Activity className="w-4 h-4 text-blue-400/60" />} label="Estimated" count={sourceStats.mock} total={indicators.length} color="bg-blue-500/50" />
+              <TrendRow icon={<Info className="w-4 h-4 text-white/20" />} label="Manual" count={sourceStats.manual} total={indicators.length} color="bg-white/20" />
             </div>
-            {sourceStats.demo > 0 && (
-              <p className="text-xs text-white/20 mt-3">
-                {sourceStats.demo} indicator{sourceStats.demo !== 1 ? 's' : ''} using demo data.
-                Connect to a backend for live values.
+            {(sourceStats.demo + sourceStats.mock) > 0 && (
+              <p className="text-xs text-white/20 mt-4 pt-3 border-t border-white/[0.04]">
+                {sourceStats.demo + sourceStats.mock} indicator{(sourceStats.demo + sourceStats.mock) !== 1 ? 's' : ''} using demo data.
+                Results may not reflect real-world conditions.
               </p>
             )}
           </GlassCard>
