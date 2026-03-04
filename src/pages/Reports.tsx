@@ -3,13 +3,11 @@ import { motion } from 'framer-motion';
 import {
   Download,
   FileText,
-  Clock,
-  Shield,
   BarChart3,
   Printer,
 } from 'lucide-react';
 import { useStore } from '../store';
-import { DOMAIN_META, Domain } from '../types';
+import { DOMAIN_META } from '../types';
 import { cn } from '../utils/cn';
 
 export const Reports: React.FC = () => {

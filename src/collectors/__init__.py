@@ -50,6 +50,22 @@ from .taiwan_pla_scraper import TaiwanPLAScraperCollector
 from .ice_detention_scraper import ICEDetentionScraperCollector
 from .news_aggregator import NewsAggregatorCollector
 
+# New collectors - Energy
+from .eia_energy import EIASPRCollector, EIANaturalGasCollector, EIAGridEmergencyCollector
+
+# New collectors - Banking
+from .fdic_banks import FDICBankFailuresCollector, FedDiscountWindowCollector, FedDepositsCollector
+
+# New collectors - Flights/Airspace
+from .faa_flights import FAAGroundStopsCollector, FAAFlightDelaysCollector, FAATFRCollector
+
+# New collectors - Travel
+from .cbp_travel import CBPBorderWaitCollector, TSAThroughputCollector
+from .state_dept_travel import StateDeptAdvisoryCollector, PassportWaitCollector
+
+# New collectors - Supply Chain
+from .supply_chain import PortCongestionCollector, FreightIndexCollector, SemiconductorLeadTimeCollector
+
 __all__ = [
     'BaseCollector',
     'TreasuryCollector',
@@ -95,4 +111,25 @@ __all__ = [
     'TaiwanPLAScraperCollector',
     'ICEDetentionScraperCollector',
     'NewsAggregatorCollector',
+    # Energy
+    'EIASPRCollector',
+    'EIANaturalGasCollector',
+    'EIAGridEmergencyCollector',
+    # Banking
+    'FDICBankFailuresCollector',
+    'FedDiscountWindowCollector',
+    'FedDepositsCollector',
+    # Flights/Airspace
+    'FAAGroundStopsCollector',
+    'FAAFlightDelaysCollector',
+    'FAATFRCollector',
+    # Travel
+    'CBPBorderWaitCollector',
+    'TSAThroughputCollector',
+    'StateDeptAdvisoryCollector',
+    'PassportWaitCollector',
+    # Supply Chain
+    'PortCongestionCollector',
+    'FreightIndexCollector',
+    'SemiconductorLeadTimeCollector',
 ]

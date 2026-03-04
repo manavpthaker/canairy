@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../store';
-import { PHASES, TIGHTEN_UP_CHECKLIST, CRITICAL_JUMP_RULES } from '../data/phaseData';
+import { PHASES, ACTION_PROTOCOL_CHECKLIST, CRITICAL_JUMP_RULES } from '../data/phaseData';
 import { cn } from '../utils/cn';
 
 export const ResiliencePlaybook: React.FC = () => {
@@ -37,7 +37,7 @@ export const ResiliencePlaybook: React.FC = () => {
     });
   };
 
-  const categories = [...new Set(TIGHTEN_UP_CHECKLIST.map((c) => c.category))];
+  const categories = [...new Set(ACTION_PROTOCOL_CHECKLIST.map((c: { category: string }) => c.category))];
 
   return (
     <>
@@ -46,7 +46,7 @@ export const ResiliencePlaybook: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex items-center gap-3 mb-1">
             <Link
-              to="/"
+              to="/dashboard"
               className="text-white/20 hover:text-white/50 text-sm transition-colors"
             >
               Dashboard
@@ -101,7 +101,7 @@ export const ResiliencePlaybook: React.FC = () => {
               </div>
               <h2 className="text-lg font-bold text-white">48-Hour Tighten-Up Checklist</h2>
               <span className="text-sm text-white/20 ml-auto">
-                {completedChecklist.size}/{TIGHTEN_UP_CHECKLIST.length} complete
+                {completedChecklist.size}/{ACTION_PROTOCOL_CHECKLIST.length} complete
               </span>
             </div>
 
@@ -112,7 +112,7 @@ export const ResiliencePlaybook: React.FC = () => {
                   className="h-full bg-red-500"
                   initial={{ width: 0 }}
                   animate={{
-                    width: `${Math.round((completedChecklist.size / TIGHTEN_UP_CHECKLIST.length) * 100)}%`,
+                    width: `${Math.round((completedChecklist.size / ACTION_PROTOCOL_CHECKLIST.length) * 100)}%`,
                   }}
                 />
               </div>
@@ -129,7 +129,7 @@ export const ResiliencePlaybook: React.FC = () => {
                       {cat}
                     </h4>
                     <div className="space-y-1">
-                      {TIGHTEN_UP_CHECKLIST.filter((c) => c.category === cat).map((item) => {
+                      {ACTION_PROTOCOL_CHECKLIST.filter((c: { category: string }) => c.category === cat).map((item: { id: string; text: string }) => {
                         const done = completedChecklist.has(item.id);
                         return (
                           <button

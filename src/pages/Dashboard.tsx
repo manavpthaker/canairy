@@ -1,93 +1,137 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import {
-  RefreshCw,
-  ChevronRight,
-  Eye,
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useStore } from '../store';
-import { IndicatorData, DOMAIN_META, Domain } from '../types';
+import { RefreshCw, Eye, Sparkles } from 'lucide-react';
+import { useStore, selectSynthesisCards, selectAIInsights, selectLeadAIInsight, selectSecondaryAIInsights } from '../store';
+import { IndicatorData } from '../types';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
+import { DashboardLoader } from '../components/dashboard/DashboardLoader';
 import { ThreatBanner } from '../components/dashboard/ThreatBanner';
-import { NextActionCard } from '../components/dashboard/NextActionCard';
-import { WeeklyPriorities } from '../components/dashboard/WeeklyPriorities';
-import { CompactIndicatorRow } from '../components/dashboard/CompactIndicatorRow';
-import { GlassCard } from '../components/ui/GlassCard';
+import { StatusHeading } from '../components/dashboard/StatusHeading';
+import { OutcomeSentence } from '../components/dashboard/OutcomeSentence';
+import { PhaseReadinessCard } from '../components/dashboard/PhaseReadinessCard';
+import { LeadCard, LeadCardData } from '../components/dashboard/LeadCard';
+import { SecondaryCardsGrid, CompactRow, CompactRowData } from '../components/dashboard/SecondaryCard';
+import { AIInsightCard, AIAnalysisSummary } from '../components/dashboard/AIInsightCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { canairyMessages } from '../content/canairy-messages';
-import { cn } from '../utils/cn';
+import { getDisplayName, getImpact, getAction } from '../data/indicatorTranslations';
 
 export const Dashboard: React.FC = () => {
   const [selectedIndicator, setSelectedIndicator] = useState<IndicatorData | null>(null);
 
   const {
     indicators,
-    hopiScore,
-    currentPhase,
     loading,
-    refreshAll
+    refreshAll,
+    synthesisLoading,
+    synthesisOutput,
+    runSynthesis,
+    detailPanelCardId,
+    setDetailPanelCardId,
+    aiAnalysisLoading,
   } = useStore();
 
-  const redCount = indicators.filter(i => i.status.level === 'red').length;
-  const amberCount = indicators.filter(i => i.status.level === 'amber').length;
-  const greenCount = indicators.filter(i => i.status.level === 'green').length;
+  const synthesisCards = useStore(selectSynthesisCards);
+  const aiAnalysis = useStore(selectAIInsights);
+  const leadAIInsight = useStore(selectLeadAIInsight);
+  const secondaryAIInsights = useStore(selectSecondaryAIInsights);
 
-  const overallStatus = useMemo(() => {
-    if (redCount >= 2) return 'action' as const;
-    if (redCount > 0 || amberCount >= 3) return 'attention' as const;
-    return 'allGood' as const;
-  }, [redCount, amberCount]);
+  // Open detail panel when lead card is clicked
+  const handleLeadCardClick = () => {
+    if (synthesisOutput?.leadCard) {
+      setDetailPanelCardId(synthesisOutput.leadCard.pattern.id);
+    }
+  };
 
-  const statusMsg = canairyMessages.status[overallStatus];
+  // Run synthesis when indicators change
+  useEffect(() => {
+    if (indicators.length > 0 && !synthesisCards) {
+      runSynthesis();
+    }
+  }, [indicators.length]);
 
-  // Domain summary
-  const domainsAtRisk = useMemo(() => {
-    return Object.entries(DOMAIN_META)
-      .map(([key, meta]) => {
-        const domainIndicators = indicators.filter(i => i.domain === key);
-        const red = domainIndicators.filter(i => i.status.level === 'red').length;
-        const amber = domainIndicators.filter(i => i.status.level === 'amber').length;
-        const green = domainIndicators.filter(i => i.status.level === 'green').length;
-        const score = hopiScore?.domains[key as Domain]?.score ?? 0;
-        return { key: key as Domain, label: meta.label, red, amber, green, total: domainIndicators.length, score };
-      })
-      .filter(d => d.total > 0)
-      .sort((a, b) => b.red - a.red || b.amber - a.amber);
-  }, [indicators, hopiScore]);
+  // Fallback card data when synthesis hasn't run yet
+  // Uses translation map for human-readable language
+  const getFallbackCards = () => {
+    const redIndicators = indicators.filter(i => i.status.level === 'red');
+    const amberIndicators = indicators.filter(i => i.status.level === 'amber');
 
-  const phaseColor = overallStatus === 'action' ? '#EF4444' : overallStatus === 'attention' ? '#F59E0B' : '#10B981';
+    let leadCard: LeadCardData | null = null;
+
+    if (redIndicators.length >= 2) {
+      // TIGHTEN-UP scenario - action-first language
+      const impacts = redIndicators.slice(0, 2).map(i => getImpact(i.id, 'red'));
+      leadCard = {
+        id: 'fallback-action-protocol',
+        headline: 'Start your emergency checklist now',
+        body: `${impacts.join('. ')} Having cash, fuel, and supplies ready protects your family.`,
+        urgency: 'today',
+        indicatorIds: redIndicators.map(i => i.id),
+        severity: 9,
+        action: { label: 'Open 48-hour checklist', href: '/checklist' },
+      };
+    } else if (redIndicators.length === 1) {
+      const ind = redIndicators[0];
+      const impact = getImpact(ind.id, 'red');
+      const action = getAction(ind.id, 'red');
+      leadCard = {
+        id: `fallback-${ind.id}`,
+        headline: action,
+        body: impact,
+        urgency: 'today',
+        indicatorIds: [ind.id],
+        severity: 7,
+        action: { label: 'Add to checklist', href: '/checklist' },
+      };
+    } else if (amberIndicators.length >= 3) {
+      // Multiple amber - encourage preparation without alarm
+      const topIndicator = amberIndicators[0];
+      const action = getAction(topIndicator.id, 'amber');
+      const impact = getImpact(topIndicator.id, 'amber');
+      leadCard = {
+        id: 'fallback-elevated',
+        headline: action,
+        body: `${impact}. Now is a good time to review your supplies and ensure everything is current.`,
+        urgency: 'week',
+        indicatorIds: amberIndicators.map(i => i.id),
+        severity: 5,
+        action: { label: 'Review checklist', href: '/checklist' },
+      };
+    }
+
+    const compactRows: CompactRowData[] = amberIndicators.slice(0, 5).map(ind => ({
+      id: `fallback-compact-${ind.id}`,
+      text: getDisplayName(ind.id),
+      domain: ind.domain,
+      href: `/indicators?highlight=${ind.id}`,
+    }));
+
+    return { leadCard, secondaryCards: [], compactRows };
+  };
+
+  // Use synthesis cards if available, otherwise fallback
+  const cards = synthesisCards || getFallbackCards();
 
   return (
     <>
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-6xl mx-auto">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-4xl">
         {/* Loading state */}
         {loading && indicators.length === 0 && (
-          <div className="space-y-6 animate-pulse">
-            <div className="h-40 glass-card" />
-            <div className="h-48 glass-card" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-32 glass-card" />
-              ))}
-            </div>
-          </div>
+          <DashboardLoader message="Loading indicator data..." />
         )}
 
         {/* Empty state */}
         {!loading && indicators.length === 0 && (
           <div className="text-center py-24">
             <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-4">
-              <Eye className="w-8 h-8 text-white/20" />
+              <Eye className="w-8 h-8 text-olive-tertiary" />
             </div>
-            <h3 className="text-xl font-display font-semibold text-white mb-2">Setting things up...</h3>
-            <p className="text-white/30 mb-6 max-w-md mx-auto">
+            <h3 className="text-xl font-display font-semibold text-olive-primary mb-2">
+              Setting things up...
+            </h3>
+            <p className="text-olive-secondary mb-6 max-w-md mx-auto">
               Canairy is connecting to data sources. This usually takes just a moment.
             </p>
-            <button
-              onClick={refreshAll}
-              className="btn btn-primary"
-            >
+            <button onClick={refreshAll} className="btn btn-primary">
               <RefreshCw className="w-4 h-4" />
               Try Again
             </button>
@@ -96,174 +140,160 @@ export const Dashboard: React.FC = () => {
 
         {indicators.length > 0 && (
           <>
-            {/* ──── 1. THREAT BANNER ──── */}
+            {/* ──── 1. THREAT BANNER (when action protocol active) ──── */}
             <ErrorBoundary isolate>
               <ThreatBanner />
             </ErrorBoundary>
 
-            {/* ──── 2. STATUS HERO ──── */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <GlassCard
-                padding="lg"
-                glow={overallStatus === 'action' ? 'red' : overallStatus === 'attention' ? 'amber' : 'green'}
-              >
-                <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
-                  {/* Status indicator */}
-                  <div className="flex-shrink-0">
-                    <div
-                      className={cn(
-                        'w-20 h-20 rounded-2xl flex items-center justify-center',
-                        'border transition-all duration-300',
-                        overallStatus === 'action' && 'bg-red-500/10 border-red-500/30',
-                        overallStatus === 'attention' && 'bg-amber-500/10 border-amber-500/30',
-                        overallStatus === 'allGood' && 'bg-green-500/10 border-green-500/30'
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          'w-10 h-10 rounded-full',
-                          overallStatus === 'action' && 'bg-red-500 animate-pulse',
-                          overallStatus === 'attention' && 'bg-amber-500',
-                          overallStatus === 'allGood' && 'bg-green-500'
-                        )}
-                        style={{
-                          boxShadow: overallStatus === 'action'
-                            ? '0 0 30px rgba(239, 68, 68, 0.5)'
-                            : overallStatus === 'attention'
-                            ? '0 0 20px rgba(245, 158, 11, 0.4)'
-                            : '0 0 20px rgba(16, 185, 129, 0.3)'
-                        }}
-                      />
-                    </div>
+            {/* ──── 2. STATUS HEADING ──── */}
+            <ErrorBoundary isolate>
+              <div className="pt-2">
+                <StatusHeading />
+                <OutcomeSentence />
+              </div>
+            </ErrorBoundary>
+
+            {/* ──── 3. PHASE READINESS CARD ──── */}
+            <ErrorBoundary isolate>
+              <PhaseReadinessCard />
+            </ErrorBoundary>
+
+            {/* ──── 4. LEAD CARD ──── */}
+            <ErrorBoundary isolate>
+              {synthesisLoading ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="lead-card p-5"
+                >
+                  <div className="animate-pulse space-y-3">
+                    <div className="w-24 h-5 bg-white/5 rounded" />
+                    <div className="w-3/4 h-6 bg-white/5 rounded" />
+                    <div className="w-full h-4 bg-white/5 rounded" />
+                    <div className="w-2/3 h-4 bg-white/5 rounded" />
                   </div>
-
-                  {/* Status text */}
-                  <div className="flex-1 text-center sm:text-left">
-                    <h1 className="text-xl sm:text-2xl font-display font-bold text-white mb-1">
-                      {statusMsg.title}
-                    </h1>
-                    <p className="text-sm text-white/40 leading-relaxed max-w-lg">
-                      {statusMsg.message}
-                    </p>
-
-                    {/* Indicator counts + Phase */}
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 mt-4">
-                      {/* Indicator summary */}
-                      <div className="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-                        <span className="flex items-center gap-1.5 text-xs">
-                          <span className="w-2 h-2 rounded-full bg-green-500" />
-                          <span className="text-white/50">{greenCount}</span>
-                        </span>
-                        <span className="flex items-center gap-1.5 text-xs">
-                          <span className="w-2 h-2 rounded-full bg-amber-500" />
-                          <span className="text-white/50">{amberCount}</span>
-                        </span>
-                        <span className="flex items-center gap-1.5 text-xs">
-                          <span className="w-2 h-2 rounded-full bg-red-500" />
-                          <span className="text-white/50">{redCount}</span>
-                        </span>
-                        <span className="text-xs text-white/20 ml-1">
-                          of {indicators.length}
-                        </span>
-                      </div>
-
-                      {/* Phase badge - only if not Phase 0 */}
-                      {(currentPhase?.number ?? 0) > 0 && (
-                        <div
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border"
-                          style={{
-                            backgroundColor: `${phaseColor}10`,
-                            borderColor: `${phaseColor}25`,
-                            color: phaseColor,
-                          }}
-                        >
-                          Phase {currentPhase?.number}
-                          <span className="opacity-60">&mdash; {currentPhase?.name}</span>
-                        </div>
-                      )}
-                    </div>
+                </motion.div>
+              ) : cards.leadCard ? (
+                <LeadCard
+                  data={{
+                    ...cards.leadCard,
+                    confidence: synthesisOutput?.leadCard ? 'moderate' : undefined,
+                    signalCount: synthesisOutput?.leadCard?.matchedIndicators.length,
+                  }}
+                  onClick={handleLeadCardClick}
+                  isSelected={detailPanelCardId === synthesisOutput?.leadCard?.pattern.id}
+                />
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="lead-card p-5"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="urgency-pill urgency-knowing">No urgent items</span>
                   </div>
-                </div>
-              </GlassCard>
-            </motion.div>
-
-            {/* ──── 3. NEXT ACTION ──── */}
-            <ErrorBoundary isolate>
-              <NextActionCard />
+                  <h3 className="font-display text-display-lead text-olive-primary mb-2">
+                    All systems nominal
+                  </h3>
+                  <p className="text-body-card text-olive-secondary leading-relaxed">
+                    No indicators require immediate attention. Continue routine monitoring
+                    and maintain your preparedness checklist.
+                  </p>
+                </motion.div>
+              )}
             </ErrorBoundary>
 
-            {/* ──── 4. THIS WEEK'S PRIORITIES ──── */}
+            {/* ──── 5. AI INSIGHTS (True AI-Generated Analysis) ──── */}
             <ErrorBoundary isolate>
-              <WeeklyPriorities />
+              {aiAnalysisLoading ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="space-y-4"
+                >
+                  <div className="flex items-center gap-2 text-xs text-olive-muted">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                    <span>AI is analyzing indicators...</span>
+                  </div>
+                  <div className="secondary-card p-5 animate-pulse">
+                    <div className="w-32 h-4 bg-white/5 rounded mb-3" />
+                    <div className="w-3/4 h-5 bg-white/5 rounded mb-2" />
+                    <div className="w-full h-4 bg-white/5 rounded" />
+                  </div>
+                </motion.div>
+              ) : aiAnalysis && aiAnalysis.insights.length > 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="space-y-4"
+                >
+                  {/* AI Overall Assessment */}
+                  {aiAnalysis.outcomeSentence && (
+                    <AIAnalysisSummary
+                      overallAssessment={aiAnalysis.outcomeSentence}
+                      hiddenConnections={aiAnalysis.hiddenConnections}
+                      familyFocusedSummary={aiAnalysis.familyFocusedSummary}
+                      phaseRelevance={aiAnalysis.phaseRelevance}
+                    />
+                  )}
+
+                  {/* Lead AI Insight */}
+                  {leadAIInsight && (
+                    <AIInsightCard
+                      insight={leadAIInsight}
+                      variant="lead"
+                    />
+                  )}
+
+                  {/* Secondary AI Insights */}
+                  {secondaryAIInsights.length > 0 && (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {secondaryAIInsights.map((insight) => (
+                        <AIInsightCard
+                          key={insight.id}
+                          insight={insight}
+                          variant="secondary"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              ) : null}
             </ErrorBoundary>
 
-            {/* ──── 5. COMPACT INDICATORS ──── */}
-            <ErrorBoundary isolate>
-              <CompactIndicatorRow onIndicatorClick={setSelectedIndicator} />
-            </ErrorBoundary>
+            {/* ──── 6. SECONDARY CARDS (Pattern-Based Fallback) ──── */}
+            {(!aiAnalysis || aiAnalysis.insights.length === 0) && cards.secondaryCards && cards.secondaryCards.length > 0 && (
+              <ErrorBoundary isolate>
+                <SecondaryCardsGrid cards={cards.secondaryCards as any} />
+              </ErrorBoundary>
+            )}
 
-            {/* ──── 6. DOMAIN OVERVIEW ──── */}
-            {domainsAtRisk.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <h2 className="text-xs font-medium text-white/30 uppercase tracking-wider mb-3">Domains</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {domainsAtRisk.map((domain, idx) => (
-                    <motion.div
-                      key={domain.key}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 + idx * 0.03 }}
-                    >
-                      <Link to={`/indicators?domain=${domain.key}`}>
-                        <GlassCard
-                          padding="sm"
-                          interactive
-                          glow={domain.red > 0 ? 'red' : domain.amber > 0 ? 'amber' : 'none'}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-sm font-medium text-white">{domain.label}</h3>
-                            <span className={cn(
-                              'text-xs font-mono',
-                              domain.score > 66 ? 'text-red-400' : domain.score > 33 ? 'text-amber-400' : 'text-green-400'
-                            )}>
-                              {Math.round(domain.score)}
-                            </span>
-                          </div>
-                          {/* Mini stacked bar */}
-                          <div className="flex gap-0.5 h-1.5 rounded-full overflow-hidden bg-white/[0.04]">
-                            {domain.red > 0 && (
-                              <div className="bg-red-500/70 rounded-full" style={{ width: `${(domain.red / domain.total) * 100}%` }} />
-                            )}
-                            {domain.amber > 0 && (
-                              <div className="bg-amber-500/60 rounded-full" style={{ width: `${(domain.amber / domain.total) * 100}%` }} />
-                            )}
-                            {domain.green > 0 && (
-                              <div className="bg-green-500/40 rounded-full" style={{ width: `${(domain.green / domain.total) * 100}%` }} />
-                            )}
-                          </div>
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-white/20">{domain.total} indicators</span>
-                            <ChevronRight className="w-3 h-3 text-white/15" />
-                          </div>
-                        </GlassCard>
-                      </Link>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
+            {/* ──── 7. COMPACT ROWS ──── */}
+            {cards.compactRows && cards.compactRows.length > 0 && (
+              <ErrorBoundary isolate>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <h3 className="text-xs font-medium text-olive-tertiary uppercase tracking-wider mb-2">
+                    Also monitoring
+                  </h3>
+                  <div className="secondary-card divide-y divide-olive">
+                    {cards.compactRows.map((row, index) => (
+                      <CompactRow key={row.id} data={row} index={index} />
+                    ))}
+                  </div>
+                </motion.div>
+              </ErrorBoundary>
             )}
 
             {/* ──── BOTTOM MICROCOPY ──── */}
             <div className="text-center py-8">
-              <p className="text-xs text-white/15">
-                Being prepared isn't about fear — it's about confidence.
+              <p className="text-xs text-olive-muted">
+                Preparedness is confidence. Monitor, plan, act.
               </p>
             </div>
           </>

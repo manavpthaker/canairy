@@ -1,145 +1,140 @@
-// Family-friendly messaging for Canairy
+// Professional messaging for Canairy
 export const canairyMessages = {
   // Brand messaging
   brand: {
-    tagline: "Your family's gentle early-warning system",
-    subtitle: "Stay prepared, stay calm, stay together",
-    description: "Canairy helps your family spot changes early and take simple steps to stay resilient.",
+    tagline: "Household Resilience Monitoring",
+    subtitle: "Early warning. Informed action. Peace of mind.",
+    description: "Canairy monitors critical indicators and provides actionable preparedness guidance.",
   },
 
   // Status messages
   status: {
     allGood: {
-      title: "Everything looks great!",
-      message: "Canairy is happy - all indicators are in the green zone. Keep up the great family habits!",
-      icon: "happy",
+      title: "All Clear",
+      message: "All indicators are within normal range. Continue standard monitoring.",
+      icon: "check",
     },
     attention: {
-      title: "Time to pay attention",
-      message: "Canairy notices some changes. Let's review together and make a simple plan.",
+      title: "Elevated Alert",
+      message: "Some indicators require attention. Review status and consider preparedness actions.",
       icon: "alert",
     },
     action: {
-      title: "Time to feather your nest!",
-      message: "Canairy suggests taking some family actions. Don't worry - we'll guide you step by step.",
-      icon: "alert",
+      title: "Action Required",
+      message: "Multiple indicators are elevated. Activate preparedness protocols.",
+      icon: "warning",
     },
   },
 
-  // Indicator transformations
+  // Indicator labels
   indicators: {
-    // Economic indicators
     MarketVolatility: {
       old: "Market volatility spike",
-      new: "Market Weather Check",
-      description: "Like checking if it's stormy or calm in the financial markets",
+      new: "Market Volatility Index",
+      description: "Measures intraday market stress and systemic risk signals",
     },
     TreasuryYield: {
       old: "Treasury yield inversion",
-      new: "Savings Health Monitor",
-      description: "Helps us understand if savings accounts are working normally",
+      new: "Treasury Auction Stress",
+      description: "Bond market demand and liquidity indicators",
     },
     JoblessClaims: {
       old: "Jobless claims surge",
-      new: "Job Market Temperature",
-      description: "Shows if lots of families are looking for work",
+      new: "Unemployment Claims",
+      description: "Weekly jobless claims and labor market stress",
     },
     GroceryCPI: {
       old: "Food inflation spike",
-      new: "Grocery Price Tracker",
-      description: "Watches for big changes in food costs",
+      new: "Food Price Index",
+      description: "Consumer food price inflation rate",
     },
     GDPGrowth: {
       old: "GDP contraction",
-      new: "Economy Growth Chart",
-      description: "Shows if businesses are doing well or struggling",
+      new: "Economic Growth",
+      description: "Real GDP quarter-over-quarter change",
     },
-
-    // Global indicators
     GlobalConflict: {
       old: "Global conflict intensity",
-      new: "World Peace Monitor",
-      description: "Tracks tensions between countries",
+      new: "Global Conflict Index",
+      description: "Worldwide armed conflict intensity",
     },
     TaiwanPLA: {
       old: "Taiwan Strait tensions",
-      new: "Pacific Region Check",
-      description: "Watches for changes in East Asia",
+      new: "Taiwan Strait Activity",
+      description: "PLA military activity near Taiwan ADIZ",
     },
     NATOReadiness: {
       old: "NATO readiness level",
-      new: "Alliance Cooperation Score",
-      description: "Shows how well countries are working together",
+      new: "NATO Alert Status",
+      description: "Alliance high-readiness force activations",
     },
     NuclearTests: {
       old: "Nuclear test activity",
-      new: "Global Safety Watch",
-      description: "Monitors unusual international activities",
+      new: "Nuclear/ICBM Activity",
+      description: "Nuclear detonation and missile test events",
     },
-
-    // Infrastructure
     GridOutage: {
       old: "Grid outage frequency",
-      new: "Power Reliability Score",
-      description: "Tracks how steady our electricity supply is",
+      new: "Grid Reliability",
+      description: "Major power outage incidents",
     },
     CISACyber: {
       old: "Cyber attack frequency",
-      new: "Internet Safety Check",
-      description: "Watches for computer security issues",
+      new: "Cyber Threat Level",
+      description: "Critical infrastructure vulnerability alerts",
     },
     WHODisease: {
       old: "Novel disease H2H transmission",
-      new: "Health Alert Monitor",
-      description: "Tracks new illnesses spreading between people",
+      new: "Pandemic Risk",
+      description: "Novel pathogen human-to-human transmission",
     },
-
-    // Social indicators
     StrikeTracker: {
       old: "Labor strike activity",
-      new: "Worker Happiness Index",
-      description: "Shows if people are satisfied at work",
+      new: "Labor Disruption",
+      description: "Strike activity and worker-days lost",
     },
     SchoolClosures: {
       old: "School closure rate",
-      new: "School Open Tracker",
-      description: "Monitors if schools are operating normally",
+      new: "School Operations",
+      description: "Educational facility closure rate",
     },
     PharmacyShortage: {
       old: "Pharmacy shortage reports",
-      new: "Medicine Availability",
-      description: "Checks if pharmacies have what families need",
+      new: "Medical Supply Status",
+      description: "Critical medication availability",
     },
   },
 
-  // Action messages
+  // Action messages by alert level
   actions: {
     green: {
-      title: "Great job staying prepared!",
+      title: "Maintain Readiness",
       items: [
-        "Review your family emergency contacts",
-        "Check your emergency kit has fresh batteries",
-        "Practice your family meeting place",
-        "Update any expired medications",
+        "Review emergency contact list",
+        "Verify emergency supplies are current",
+        "Confirm family communication plan",
+        "Check expiration dates on stored items",
       ],
     },
     amber: {
-      title: "Let's build your family's resilience",
+      title: "Increase Preparedness",
       items: [
-        "Top off your gas tank when it hits half full",
-        "Add a few extra canned goods to your pantry each shop",
-        "Make sure everyone knows the family plan",
-        "Check in with neighbors and loved ones",
+        "Keep vehicle fuel above half tank",
+        "Stock 2 weeks of essential supplies",
+        "Verify cash reserves are accessible",
+        "Confirm communication plan with family",
+        "Review evacuation routes",
       ],
     },
     red: {
-      title: "Time to activate your family plan",
+      title: "Activate Protocols",
       items: [
-        "Fill up all vehicles with gas today",
-        "Stock up on essentials for 2 weeks",
-        "Ensure all devices are charged",
-        "Touch base with your support network",
-        "Review and practice your family emergency plan",
+        "Fill all vehicles to capacity",
+        "Complete 30-day supply stockpile",
+        "Withdraw emergency cash reserves",
+        "Charge all devices and backup batteries",
+        "Confirm rally points with family members",
+        "Review and execute preparedness checklist",
       ],
     },
   },
@@ -147,41 +142,41 @@ export const canairyMessages = {
   // Onboarding
   onboarding: {
     welcome: {
-      title: "Welcome to your Canairy nest!",
+      title: "Welcome to Canairy",
       steps: [
-        "Meet Canairy - your family's friendly guide",
-        "Set up your family profile",
-        "Choose what matters most to your family",
-        "Create your first family action plan",
-        "Print your fridge sheet reminder",
+        "Configure monitoring preferences",
+        "Set alert thresholds",
+        "Add household members",
+        "Review preparedness checklist",
+        "Enable notifications",
       ],
     },
   },
 
-  // Achievements
+  // Milestones
   achievements: {
     firstWeek: {
-      title: "Early Bird!",
-      description: "You've been checking Canairy for a week!",
+      title: "Active Monitoring",
+      description: "7 days of continuous monitoring",
     },
     allGreen: {
-      title: "Peaceful Nest",
-      description: "All indicators are green - well done!",
+      title: "All Clear Status",
+      description: "All indicators within normal range",
     },
     actionComplete: {
-      title: "Prepared Parent",
-      description: "You completed a family action checklist!",
+      title: "Protocol Complete",
+      description: "Completed preparedness checklist",
     },
     neighborHelp: {
-      title: "Community Helper",
-      description: "You helped a neighbor prepare too!",
+      title: "Community Resilience",
+      description: "Extended preparedness network",
     },
   },
 
-  // Tooltips and help
+  // Help text
   help: {
-    whatIsThis: "Canairy watches many different signals to help your family stay ahead of changes. Like a canary in a coal mine, but friendlier!",
-    howItWorks: "We check reliable data sources every hour and let you know if anything important changes. No scary news - just practical steps!",
-    whyPrepare: "Being prepared isn't about fear - it's about confidence. Small steps today mean your family stays calm tomorrow.",
+    whatIsThis: "Canairy aggregates data from government, financial, and security sources to provide early warning of systemic risks affecting household resilience.",
+    howItWorks: "Indicators are updated continuously from authoritative sources. Alert levels are calculated based on predefined thresholds calibrated to historical risk events.",
+    whyPrepare: "Preparedness reduces response time and increases options during disruptions. Small actions now compound into significant resilience.",
   },
 };

@@ -19,7 +19,7 @@ export const NotFound: React.FC = () => {
             <ArrowLeft className="w-4 h-4" />
             Go Back
           </button>
-          <Link to="/" className="btn btn-primary">
+          <Link to="/dashboard" className="btn btn-primary">
             <Home className="w-4 h-4" />
             Dashboard
           </Link>

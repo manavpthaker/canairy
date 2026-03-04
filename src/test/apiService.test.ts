@@ -8,8 +8,8 @@ import { DOMAIN_META, Domain } from '../types';
  */
 describe('Mock Data Shape', () => {
   describe('mockIndicators', () => {
-    it('has 34 indicators', () => {
-      expect(mockIndicators).toHaveLength(34);
+    it('has 49 indicators', () => {
+      expect(mockIndicators).toHaveLength(49);
     });
 
     it('every indicator has required fields', () => {
@@ -42,9 +42,9 @@ describe('Mock Data Shape', () => {
       });
     });
 
-    it('covers all 9 domains', () => {
+    it('covers all 11 domains', () => {
       const domains = new Set(mockIndicators.map(i => i.domain));
-      expect(domains.size).toBe(9);
+      expect(domains.size).toBe(11);
     });
 
     it('has unique IDs', () => {
@@ -74,7 +74,7 @@ describe('Mock Data Shape', () => {
       const disabled = mockIndicators.filter(i => i.enabled === false);
       expect(disabled.length).toBeGreaterThan(0);
       // Cult indicators should all be disabled
-      const cultDisabled = disabled.filter(i => i.domain === 'cult');
+      const cultDisabled = disabled.filter(i => i.domain === 'social_cohesion');
       expect(cultDisabled.length).toBe(4);
     });
 
@@ -111,9 +111,9 @@ describe('Mock Data Shape', () => {
       expect(mockHOPIScore.timestamp).toBeTruthy();
     });
 
-    it('covers all 9 domains', () => {
+    it('covers all 11 domains', () => {
       const domainKeys = Object.keys(mockHOPIScore.domains);
-      expect(domainKeys).toHaveLength(9);
+      expect(domainKeys).toHaveLength(11);
     });
 
     it('domain scores are between 0 and 1', () => {

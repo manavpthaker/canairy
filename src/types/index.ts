@@ -8,7 +8,14 @@ export type IndicatorStatus = {
   trend?: 'up' | 'down' | 'stable';
   lastUpdate: string;
   dataSource: 'LIVE' | 'MANUAL' | 'MOCK';
+  daysSustained?: number;  // How many days at current level
 };
+
+// Baseline data for comparison
+export interface IndicatorBaseline {
+  value: number;
+  period: string;  // e.g., "Jan 2026" or "12-month avg"
+}
 
 export type Domain =
   | 'economy'
@@ -19,7 +26,9 @@ export type Domain =
   | 'ai_window'
   | 'global_conflict'
   | 'domestic_control'
-  | 'cult';
+  | 'supply_chain'
+  | 'energy'
+  | 'social_cohesion';
 
 export const DOMAIN_META: Record<Domain, { label: string; weight: number; icon: string }> = {
   economy:                 { label: 'Economy',          weight: 1.0,  icon: 'DollarSign' },
@@ -29,8 +38,10 @@ export const DOMAIN_META: Record<Domain, { label: string; weight: number; icon: 
   oil_axis:                { label: 'Oil Axis',         weight: 1.0,  icon: 'Fuel' },
   ai_window:               { label: 'AI Window',        weight: 1.0,  icon: 'Brain' },
   global_conflict:         { label: 'Global Conflict',  weight: 1.5,  icon: 'Globe' },
-  domestic_control:        { label: 'Domestic Control',  weight: 1.25, icon: 'Landmark' },
-  cult:                    { label: 'Cult Signals',     weight: 0.75, icon: 'Eye' },
+  domestic_control:        { label: 'Domestic Control', weight: 1.25, icon: 'Landmark' },
+  supply_chain:            { label: 'Supply Chain',     weight: 1.25, icon: 'Truck' },
+  energy:                  { label: 'Energy',           weight: 1.25, icon: 'Zap' },
+  social_cohesion:         { label: 'Social Cohesion',  weight: 0.75, icon: 'Users' },
 };
 
 export interface Indicator {
@@ -58,6 +69,12 @@ export interface Indicator {
 export interface IndicatorData extends Indicator {
   status: IndicatorStatus;
   history?: DataPoint[];
+
+  // Extended context for AI analysis
+  baseline?: IndicatorBaseline;
+  previousStatus?: AlertLevel;
+  statusChangedDate?: string;  // ISO date string
+  source?: string;  // Human-readable source name (e.g., "BLS", "NERC")
 }
 
 export interface DataPoint {
@@ -113,4 +130,18 @@ export interface ChartConfig {
   timeRange: '24h' | '7d' | '30d' | '90d';
   showThresholds: boolean;
   animated: boolean;
+}
+
+/**
+ * User/household context for personalized AI analysis
+ */
+export interface UserContext {
+  region: string;                    // "Central New Jersey"
+  state: string;                     // "NJ"
+  gridOperator: string;              // "PJM Interconnection"
+  nearestMetro: string;              // "New York metro area"
+  currentPhase: number;
+  phaseTasksCompleted: number;
+  phaseTasksTotal: number;
+  householdDescription?: string;     // "Family with toddler"
 }

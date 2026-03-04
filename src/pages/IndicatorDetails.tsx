@@ -81,8 +81,6 @@ export const IndicatorDetails: React.FC = () => {
 
   const insights = generateInsights();
 
-  const statusColor = indicator.status.level === 'red' ? 'red' : indicator.status.level === 'amber' ? 'amber' : 'green';
-
   return (
     <>
       {/* Page Header */}
@@ -90,7 +88,7 @@ export const IndicatorDetails: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 mb-4 text-sm">
-            <Link to="/" className="text-white/20 hover:text-white/50 transition-colors">Dashboard</Link>
+            <Link to="/dashboard" className="text-white/20 hover:text-white/50 transition-colors">Dashboard</Link>
             <ChevronRight className="w-3 h-3 text-white/15" />
             <Link to="/indicators" className="text-white/20 hover:text-white/50 transition-colors">Indicators</Link>
             <ChevronRight className="w-3 h-3 text-white/15" />

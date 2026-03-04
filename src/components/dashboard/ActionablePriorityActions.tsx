@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
+import {
   CheckCircle2,
   Package,
   DollarSign,
   Zap,
   Shield,
   Users,
-  ChevronRight,
   Phone,
   ExternalLink,
   Clock,

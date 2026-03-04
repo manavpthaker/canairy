@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import {
   ChevronDown,
   Check,
@@ -54,7 +53,7 @@ export const FamilyChecklist: React.FC = () => {
       <div className="border-b border-white/[0.04]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <div className="flex items-center gap-3 mb-1 text-sm">
-            <Link to="/" className="text-white/20 hover:text-white/40 transition-colors">Dashboard</Link>
+            <Link to="/dashboard" className="text-white/20 hover:text-white/40 transition-colors">Dashboard</Link>
             <ChevronDown className="w-3 h-3 text-white/10 rotate-[-90deg]" />
             <span className="text-white/50">Family Actions</span>
           </div>

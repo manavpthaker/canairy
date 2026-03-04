@@ -1,5 +1,5 @@
 import { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useStore } from './store';
 import { wsService } from './services/api';
 import { PageSkeleton } from './components/LoadingSkeleton';
@@ -21,13 +21,11 @@ const ResiliencePlaybook = lazy(() => import('./pages/ResiliencePlaybook').then(
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 function App() {
-  const { fetchIndicators, fetchHOPIScore, fetchSystemStatus, updateIndicator } = useStore();
+  const { refreshAll, updateIndicator } = useStore();
 
   useEffect(() => {
-    // Initial data fetch
-    fetchIndicators();
-    fetchHOPIScore();
-    fetchSystemStatus();
+    // Initial data fetch (includes synthesis)
+    refreshAll();
 
     // Set up WebSocket connection
     wsService.connect();
@@ -39,13 +37,12 @@ function App() {
     });
 
     wsService.on('hopi:update', () => {
-      fetchHOPIScore();
+      refreshAll();
     });
 
-    // Set up polling interval
+    // Set up polling interval - refresh all data including synthesis
     const interval = setInterval(() => {
-      fetchIndicators();
-      fetchHOPIScore();
+      refreshAll();
     }, 60000);
 
     return () => {

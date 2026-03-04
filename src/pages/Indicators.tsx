@@ -1,139 +1,241 @@
-import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import {
-  Filter,
-  Search,
-  LayoutGrid,
-  List,
-  X
-} from 'lucide-react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Filter } from 'lucide-react';
 import { useStore } from '../store';
 import { IndicatorData } from '../types';
-import { EnhancedIndicatorCard } from '../components/indicators/EnhancedIndicatorCard';
-import { IndicatorModal } from '../components/indicators/IndicatorModal';
-import { Badge } from '../components/core/Badge';
+import { IndicatorCard } from '../components/indicators/IndicatorCard';
+import { IndicatorDetailPanel } from '../components/indicators/IndicatorDetailPanel';
 import { cn } from '../utils/cn';
+import {
+  deduplicateIndicators,
+  sortIndicators,
+  formatDomain,
+  formatTimeAgo,
+  hasValidSource,
+} from '../data/indicatorDisplay';
 
-type ViewMode = 'grid' | 'list';
 type FilterStatus = 'all' | 'green' | 'amber' | 'red';
-type FilterDomain = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'security_infrastructure' | 'oil_axis' | 'ai_window' | 'global_conflict' | 'domestic_control' | 'cult';
+type FilterDomain = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'security_infrastructure' | 'oil_axis' | 'ai_window' | 'global_conflict' | 'domestic_control' | 'social_cohesion';
+
+const VALID_DOMAINS: FilterDomain[] = ['all', 'economy', 'jobs_labor', 'rights_governance', 'security_infrastructure', 'oil_axis', 'ai_window', 'global_conflict', 'domestic_control', 'social_cohesion'];
 
 export const Indicators: React.FC = () => {
   const { indicators } = useStore();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
-  const [domainFilter, setDomainFilter] = useState<FilterDomain>('all');
-  const [showCriticalOnly, setShowCriticalOnly] = useState(false);
   const [selectedIndicator, setSelectedIndicator] = useState<IndicatorData | null>(null);
 
-  const filteredIndicators = useMemo(() => {
-    return indicators.filter(indicator => {
-      if (searchQuery && !indicator.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+  // Initialize domain filter from URL params
+  const domainParam = searchParams.get('domain');
+  const initialDomain = domainParam && VALID_DOMAINS.includes(domainParam as FilterDomain)
+    ? (domainParam as FilterDomain)
+    : 'all';
+  const [domainFilter, setDomainFilter] = useState<FilterDomain>(initialDomain);
+
+  // Update domain filter when URL changes
+  useEffect(() => {
+    const domain = searchParams.get('domain');
+    if (domain && VALID_DOMAINS.includes(domain as FilterDomain)) {
+      setDomainFilter(domain as FilterDomain);
+    }
+  }, [searchParams]);
+
+  // Update URL when domain filter changes
+  const handleDomainChange = (domain: FilterDomain) => {
+    setDomainFilter(domain);
+    if (domain === 'all') {
+      searchParams.delete('domain');
+    } else {
+      searchParams.set('domain', domain);
+    }
+    setSearchParams(searchParams);
+  };
+
+  // Deduplicate indicators first, then apply filters and sort
+  // Also filter out indicators without valid sources (data integration pending)
+  const processedIndicators = useMemo(() => {
+    const deduped = deduplicateIndicators(indicators);
+    const filtered = deduped.filter(indicator => {
+      // Hide indicators without valid sources
+      if (!hasValidSource(indicator.id)) return false;
       if (statusFilter !== 'all' && indicator.status.level !== statusFilter) return false;
       if (domainFilter !== 'all' && indicator.domain !== domainFilter) return false;
-      if (showCriticalOnly && !indicator.critical) return false;
       return true;
     });
-  }, [indicators, searchQuery, statusFilter, domainFilter, showCriticalOnly]);
+    return sortIndicators(filtered);
+  }, [indicators, statusFilter, domainFilter]);
+
+  const filteredIndicators = processedIndicators;
+  // Only count indicators with valid sources
+  const dedupedIndicators = useMemo(() =>
+    deduplicateIndicators(indicators).filter(i => hasValidSource(i.id)),
+    [indicators]
+  );
 
   const statusCounts = useMemo(() => ({
-    all: indicators.length,
-    green: indicators.filter(i => i.status.level === 'green').length,
-    amber: indicators.filter(i => i.status.level === 'amber').length,
-    red: indicators.filter(i => i.status.level === 'red').length,
-  }), [indicators]);
+    all: dedupedIndicators.length,
+    green: dedupedIndicators.filter(i => i.status.level === 'green').length,
+    amber: dedupedIndicators.filter(i => i.status.level === 'amber').length,
+    red: dedupedIndicators.filter(i => i.status.level === 'red').length,
+  }), [dedupedIndicators]);
+
+  const lastRefresh = useMemo(() => {
+    if (dedupedIndicators.length === 0) return null;
+    const mostRecent = dedupedIndicators.reduce((latest, ind) =>
+      new Date(ind.status.lastUpdate) > new Date(latest.status.lastUpdate) ? ind : latest
+    );
+    return mostRecent.status.lastUpdate;
+  }, [dedupedIndicators]);
 
   const domainLabels: Record<string, string> = {
-    economy: 'Economy',
-    jobs_labor: 'Jobs & Labor',
-    rights_governance: 'Rights & Gov',
-    security_infrastructure: 'Security & Infra',
-    oil_axis: 'Oil Axis',
-    ai_window: 'AI Window',
-    global_conflict: 'Global Conflict',
-    domestic_control: 'Domestic Control',
-    cult: 'Cult Signals',
+    economy: formatDomain('economy'),
+    jobs_labor: formatDomain('jobs_labor'),
+    rights_governance: formatDomain('rights_governance'),
+    security_infrastructure: formatDomain('security_infrastructure'),
+    oil_axis: formatDomain('oil_axis'),
+    ai_window: formatDomain('ai_window'),
+    global_conflict: formatDomain('global_conflict'),
+    domestic_control: formatDomain('domestic_control'),
+    social_cohesion: formatDomain('social_cohesion'),
+  };
+
+  // Navigate to a different indicator (for connected indicator clicks)
+  const handleNavigate = useCallback((indicatorId: string) => {
+    const indicator = filteredIndicators.find(i => i.id === indicatorId)
+      || processedIndicators.find(i => i.id === indicatorId);
+    if (indicator) {
+      setSelectedIndicator(indicator);
+    }
+  }, [filteredIndicators, processedIndicators]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedIndicator) return;
+
+      if (e.key === 'Escape') {
+        setSelectedIndicator(null);
+        return;
+      }
+
+      const currentIndex = filteredIndicators.findIndex(i => i.id === selectedIndicator.id);
+      if (currentIndex === -1) return;
+
+      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const prevIndex = currentIndex > 0 ? currentIndex - 1 : filteredIndicators.length - 1;
+        setSelectedIndicator(filteredIndicators[prevIndex]);
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const nextIndex = currentIndex < filteredIndicators.length - 1 ? currentIndex + 1 : 0;
+        setSelectedIndicator(filteredIndicators[nextIndex]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedIndicator, filteredIndicators]);
+
+  // Filter pill component
+  const FilterPill = ({
+    label,
+    count,
+    color,
+    active,
+    onClick,
+  }: {
+    label: string;
+    count: number;
+    color?: 'red' | 'amber' | 'green';
+    active: boolean;
+    onClick: () => void;
+  }) => {
+    const colorClasses = {
+      red: active ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'text-red-400/60 hover:text-red-400',
+      amber: active ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'text-amber-400/60 hover:text-amber-400',
+      green: active ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'text-emerald-400/60 hover:text-emerald-400',
+    };
+
+    return (
+      <button
+        onClick={onClick}
+        className={cn(
+          'px-3 py-1.5 rounded-lg text-xs font-medium transition-all border',
+          color
+            ? colorClasses[color]
+            : active
+            ? 'bg-white/10 text-white border-white/10'
+            : 'text-olive-muted border-transparent hover:text-olive-secondary',
+          !active && 'border-transparent'
+        )}
+      >
+        {label}
+        <span className="ml-1.5 opacity-60">{count}</span>
+      </button>
+    );
   };
 
   return (
-    <>
-      <div className="border-b border-white/[0.04]">
-        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-display font-semibold text-white">What We Watch</h1>
-              <p className="text-white/30 mt-1 text-sm">Everything Canairy monitors for your family</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={cn(
-                  "p-2 rounded-lg transition-colors",
-                  viewMode === 'grid'
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/20 hover:text-white/40 hover:bg-white/5'
-                )}
-              >
-                <LayoutGrid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={cn(
-                  "p-2 rounded-lg transition-colors",
-                  viewMode === 'list'
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/20 hover:text-white/40 hover:bg-white/5'
-                )}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
+    <div className="flex h-full">
+      {/* Main content area */}
+      <div className={cn(
+        'flex-1 transition-all duration-300',
+        selectedIndicator && 'lg:mr-[560px]'
+      )}>
+        {/* Header */}
+        <div className="px-4 py-4 border-b border-white/5">
+          {/* Title row */}
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-display font-semibold text-olive-primary">
+              What We Watch
+            </h1>
+            {lastRefresh && (
+              <span className="text-xs font-mono text-olive-data">
+                Last refresh: {formatTimeAgo(lastRefresh)}
+              </span>
+            )}
           </div>
 
-          {/* Search + Filters */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-            <div className="relative w-full sm:flex-1 sm:max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
-              <input
-                type="text"
-                placeholder="Search indicators..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="input w-full pl-10 pr-4"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/40"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+          {/* Filter row */}
+          <div className="flex items-center gap-3 mt-3 flex-wrap">
+            {/* Status filters */}
+            <FilterPill
+              label="All"
+              count={statusCounts.all}
+              active={statusFilter === 'all'}
+              onClick={() => setStatusFilter('all')}
+            />
+            <FilterPill
+              label="Red"
+              count={statusCounts.red}
+              color="red"
+              active={statusFilter === 'red'}
+              onClick={() => setStatusFilter('red')}
+            />
+            <FilterPill
+              label="Amber"
+              count={statusCounts.amber}
+              color="amber"
+              active={statusFilter === 'amber'}
+              onClick={() => setStatusFilter('amber')}
+            />
+            <FilterPill
+              label="Green"
+              count={statusCounts.green}
+              color="green"
+              active={statusFilter === 'green'}
+              onClick={() => setStatusFilter('green')}
+            />
 
-            <div className="flex items-center gap-1 bg-white/[0.04] rounded-xl p-1 overflow-x-auto">
-              {(['all', 'green', 'amber', 'red'] as FilterStatus[]).map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setStatusFilter(status)}
-                  className={cn(
-                    'px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap',
-                    statusFilter === status
-                      ? 'bg-white/[0.08] text-white'
-                      : 'text-white/25 hover:text-white/40'
-                  )}
-                >
-                  {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
-                  <span className="ml-1 text-xs text-white/15">({statusCounts[status]})</span>
-                </button>
-              ))}
-            </div>
+            {/* Divider */}
+            <div className="w-px h-4 bg-white/10" />
 
+            {/* Domain filter */}
             <select
               value={domainFilter}
-              onChange={(e) => setDomainFilter(e.target.value as FilterDomain)}
-              className="input px-4 py-2 text-sm"
+              onChange={(e) => handleDomainChange(e.target.value as FilterDomain)}
+              className="bg-transparent text-xs text-olive-secondary border border-white/10 rounded-lg px-3 py-1.5 focus:outline-none focus:border-white/20"
             >
               <option value="all">All Domains</option>
               {Object.entries(domainLabels).map(([value, label]) => (
@@ -141,74 +243,80 @@ export const Indicators: React.FC = () => {
               ))}
             </select>
 
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showCriticalOnly}
-                onChange={(e) => setShowCriticalOnly(e.target.checked)}
-                className="w-4 h-4 rounded bg-white/5 border-white/10 text-white focus:ring-white/20"
-              />
-              <span className="text-sm text-white/30">Critical only</span>
-            </label>
+            {/* Status summary (right aligned) */}
+            <div className="ml-auto flex items-center gap-3 text-xs text-olive-data">
+              {statusCounts.red > 0 && (
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                  <span className="text-red-400">{statusCounts.red} red</span>
+                </span>
+              )}
+              {statusCounts.amber > 0 && (
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  <span className="text-amber-400">{statusCounts.amber} amber</span>
+                </span>
+              )}
+              <span className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="text-emerald-400">{statusCounts.green} green</span>
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-sm text-white/20">
-            Showing {filteredIndicators.length} of {indicators.length}
-          </p>
-          {filteredIndicators.filter(i => i.status.level === 'red').length > 0 && (
-            <Badge variant="red">
-              {filteredIndicators.filter(i => i.status.level === 'red').length} Critical
-            </Badge>
-          )}
-        </div>
-
-        {filteredIndicators.length > 0 ? (
-          <motion.div
-            layout
-            className={cn(
-              viewMode === 'grid'
-                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-                : 'space-y-3'
-            )}
-          >
-            {filteredIndicators.map((indicator, index) => (
-              <motion.div
-                key={indicator.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.02 }}
-              >
-                <EnhancedIndicatorCard
+        {/* Grid */}
+        <div className="p-4">
+          {filteredIndicators.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {filteredIndicators.map((indicator) => (
+                <IndicatorCard
+                  key={indicator.id}
                   indicator={indicator}
                   onClick={() => setSelectedIndicator(indicator)}
-                  showInsights={true}
+                  isSelected={selectedIndicator?.id === indicator.id}
                 />
-              </motion.div>
-            ))}
-          </motion.div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 glass-card flex items-center justify-center mx-auto mb-4 rounded-full">
-              <Filter className="w-8 h-8 text-white/15" />
+              ))}
             </div>
-            <h3 className="text-lg font-display font-medium text-white mb-2">No indicators found</h3>
-            <p className="text-white/30">Try adjusting your search or filters</p>
-          </div>
-        )}
+          ) : (
+            <div className="text-center py-16">
+              <div className="w-16 h-16 bg-white/5 flex items-center justify-center mx-auto mb-4 rounded-full">
+                <Filter className="w-8 h-8 text-olive-muted" />
+              </div>
+              <h3 className="text-lg font-display font-medium text-olive-primary mb-2">
+                No indicators found
+              </h3>
+              <p className="text-olive-secondary text-sm">
+                Try adjusting your filters
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
-      {selectedIndicator && (
-        <IndicatorModal
-          isOpen={!!selectedIndicator}
-          onClose={() => setSelectedIndicator(null)}
-          indicator={selectedIndicator}
-        />
-      )}
-    </>
+      {/* Detail Panel with Backdrop */}
+      <AnimatePresence>
+        {selectedIndicator && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="fixed inset-0 bg-black/30 z-40 lg:hidden"
+              onClick={() => setSelectedIndicator(null)}
+            />
+
+            {/* Panel */}
+            <IndicatorDetailPanel
+              indicator={selectedIndicator}
+              onClose={() => setSelectedIndicator(null)}
+              onNavigate={handleNavigate}
+            />
+          </>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };

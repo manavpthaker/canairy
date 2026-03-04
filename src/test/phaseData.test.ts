@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { PHASES, getPhaseByNumber, getPhaseColor, TIGHTEN_UP_CHECKLIST, CRITICAL_JUMP_RULES } from '../data/phaseData';
+import { PHASES, getPhaseByNumber, getPhaseColor, ACTION_PROTOCOL_CHECKLIST, CRITICAL_JUMP_RULES } from '../data/phaseData';
 
 describe('PHASES', () => {
   it('has 11 phases (0–9 including 2.5)', () => {
@@ -70,13 +70,13 @@ describe('getPhaseColor', () => {
   });
 });
 
-describe('TIGHTEN_UP_CHECKLIST', () => {
+describe('ACTION_PROTOCOL_CHECKLIST', () => {
   it('has 12 checklist items', () => {
-    expect(TIGHTEN_UP_CHECKLIST).toHaveLength(12);
+    expect(ACTION_PROTOCOL_CHECKLIST).toHaveLength(12);
   });
 
   it('each item has id, text, and category', () => {
-    TIGHTEN_UP_CHECKLIST.forEach(item => {
+    ACTION_PROTOCOL_CHECKLIST.forEach(item => {
       expect(item.id).toBeTruthy();
       expect(item.text).toBeTruthy();
       expect(item.category).toBeTruthy();
@@ -84,7 +84,7 @@ describe('TIGHTEN_UP_CHECKLIST', () => {
   });
 
   it('covers all required categories', () => {
-    const categories = new Set(TIGHTEN_UP_CHECKLIST.map(i => i.category));
+    const categories = new Set(ACTION_PROTOCOL_CHECKLIST.map(i => i.category));
     expect(categories).toContain('Financial');
     expect(categories).toContain('Supplies');
     expect(categories).toContain('Health');
@@ -95,7 +95,7 @@ describe('TIGHTEN_UP_CHECKLIST', () => {
   });
 
   it('has unique ids', () => {
-    const ids = TIGHTEN_UP_CHECKLIST.map(i => i.id);
+    const ids = ACTION_PROTOCOL_CHECKLIST.map(i => i.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 });
