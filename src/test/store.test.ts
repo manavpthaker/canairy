@@ -126,20 +126,36 @@ describe('Selectors', () => {
     currentPhase: null,
     systemStatus: null,
     alerts: [],
+    systemPhase: 1 as number | 'tighten-up',
+    checklistProgress: {
+      completedPhase: 1,
+      currentPhaseProgress: 65,
+      completedItems: [],
+    },
+    synthesisOutput: null,
+    synthesisResults: new Map(),
+    synthesisLoading: false,
+    aiAnalysis: null,
+    aiAnalysisLoading: false,
     loading: false,
     error: null,
     selectedIndicator: null,
     sidebarOpen: true,
     timeRange: '7d' as const,
+    detailPanelCardId: null,
     fetchIndicators: async () => {},
     fetchHOPIScore: async () => {},
     fetchSystemStatus: async () => {},
     refreshAll: async () => {},
+    runSynthesis: async () => {},
+    runAIAnalysis: async () => {},
     setSelectedIndicator: () => {},
     setSidebarOpen: () => {},
     setTimeRange: () => {},
+    setDetailPanelCardId: () => {},
     updateIndicator: () => {},
     setError: () => {},
+    updateChecklistProgress: () => {},
   };
 
   describe('selectIndicatorsByDomain', () => {
@@ -150,7 +166,7 @@ describe('Selectors', () => {
     });
 
     it('returns empty for domain with no indicators', () => {
-      const result = selectIndicatorsByDomain('cult')(state);
+      const result = selectIndicatorsByDomain('social_cohesion')(state);
       expect(result).toHaveLength(0);
     });
   });
@@ -174,19 +190,21 @@ describe('Selectors', () => {
   });
 
   describe('selectTightenUpActive', () => {
-    it('returns true when 2+ indicators are red', () => {
-      expect(selectTightenUpActive(state)).toBe(true);
+    it('returns true when systemPhase is tighten-up', () => {
+      const tightenState = { ...state, systemPhase: 'tighten-up' as const };
+      expect(selectTightenUpActive(tightenState)).toBe(true);
     });
 
-    it('returns false when fewer than 2 are red', () => {
-      const safeState = {
+    it('returns false when systemPhase is a number', () => {
+      const normalState = {
         ...state,
+        systemPhase: 2 as number | 'tighten-up',
         indicators: [
           makeIndicator({ id: 'a', status: { level: 'red', value: 1, lastUpdate: '', dataSource: 'MOCK' } }),
           makeIndicator({ id: 'b', status: { level: 'amber', value: 2, lastUpdate: '', dataSource: 'MOCK' } }),
         ],
       };
-      expect(selectTightenUpActive(safeState)).toBe(false);
+      expect(selectTightenUpActive(normalState)).toBe(false);
     });
 
     it('returns false when no indicators are red', () => {

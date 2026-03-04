@@ -167,9 +167,9 @@ export function getPhaseColor(num: number): string {
 }
 
 /**
- * Tighten-Up 48-hour checklist — activated when ≥2 indicators hit RED.
+ * Action Protocol 48-hour checklist — activated when ≥2 indicators hit RED.
  */
-export interface TightenUpItem {
+export interface ActionProtocolItem {
   id: string;
   text: string;
   category: string;
@@ -178,7 +178,7 @@ export interface TightenUpItem {
   location?: string;
 }
 
-export const TIGHTEN_UP_CHECKLIST: TightenUpItem[] = [
+export const ACTION_PROTOCOL_CHECKLIST: ActionProtocolItem[] = [
   {
     id: 'tu-1',
     text: 'Verify cash reserves ($500+ small bills)',

@@ -66,9 +66,11 @@ from utils.config_loader import ConfigLoader
 app = Flask(__name__)
 # Enable CORS for React development and production
 CORS(app, origins=[
-    'http://localhost:3000', 
+    'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3003',
+    'http://localhost:3004',
+    'http://localhost:5173',
     'https://canairy.onrender.com',
     'https://*.onrender.com'
 ], 
@@ -497,25 +499,116 @@ def save_to_history(indicator, value, metadata):
 def get_indicators():
     """Get all indicators with their current status."""
     collect_all_data()
-    
+
+    # Reverse mapping: collector name -> standardized config ID
+    # Use phase-based IDs that match the frontend translation map
+    collector_to_config = {
+        'Treasury': 'econ_01_treasury_tail',
+        'GroceryCPI': 'econ_02_grocery_cpi',
+        'MarketVolatility': 'market_01_intraday_swing',
+        'GDPGrowth': 'green_g1_gdp_rates',
+        'StrikeTracker': 'job_01_strike_days',
+        'LegiScan': 'power_01_ai_surveillance',
+        'ACLEDProtests': 'civil_01_acled_protests',
+        'CISACyber': 'cyber_01_cisa_kev',
+        'GridOutages': 'grid_01_pjm_outages',
+        'WHODisease': 'bio_01_h2h_countries',
+        'CREAOil': 'oil_01_russian_brics',
+        'MBridgeSettlements': 'oil_02_mbridge_settlements',
+        'OFACDesignations': 'oil_03_ofac_designations',
+        'JODIOil': 'oil_04_refinery_ratio',
+        'AILayoffs': 'labor_ai_01_layoffs',
+        'AIRansomware': 'cyber_02_ai_ransomware',
+        'DeepfakeShocks': 'info_02_deepfake_shocks',
+        'GlobalConflict': 'global_conflict_intensity',
+        'TaiwanPLA': 'taiwan_pla_activity',
+        'NATOReadiness': 'nato_high_readiness',
+        'NuclearTests': 'nuclear_test_activity',
+        'RussiaNATO': 'russia_nato_escalation',
+        'DefenseSpending': 'defense_spending_growth',
+        'DCControl': 'dc_control_countdown',
+        'GuardMetros': 'national_guard_metros',
+        'ICEDetentions': 'ice_detention_surge',
+        'ICEDetention': 'ice_detention_surge',
+        'DHSRemoval': 'dhs_removal_expansion',
+        'HillLegislation': 'hill_control_legislation',
+        'LibertyLitigation': 'liberty_litigation_count',
+        'TaiwanZone': 'taiwan_pla_activity',
+        'HormuzRisk': 'oil_01_wri_premium',
+        'DoDAutonomy': 'dod_autonomy',
+        'JoblessClaims': 'job_01_strike_days',
+        'LuxuryCollapse': 'luxury_collapse',
+        'PharmacyShortage': 'pharmacy_shortage',
+        'SchoolClosures': 'school_closures',
+        'AGIMilestones': 'compute_01_training_cost',
+        'LaborDisplacement': 'labor_ai_01_layoffs'
+    }
+
+    # Human-readable display names for indicators
+    display_names = {
+        'Treasury': '10Y Auction Tail',
+        'GroceryCPI': 'Grocery CPI',
+        'MarketVolatility': '10Y Intraday Swing',
+        'GDPGrowth': 'GDP Green Flag',
+        'StrikeTracker': 'US Strike Days',
+        'LegiScan': 'AI Surveillance Bills',
+        'ACLEDProtests': 'US Protests (7d avg)',
+        'CISACyber': 'CISA KEV + ICS',
+        'GridOutages': 'PJM Grid Outages',
+        'WHODisease': 'Novel H2H Pathogen',
+        'CREAOil': 'Russian Crude to BRICS',
+        'MBridgeSettlements': 'mBridge Settlement',
+        'OFACDesignations': 'OFAC Designations',
+        'JODIOil': 'Refinery Run Ratio',
+        'AILayoffs': 'AI-Linked Layoffs',
+        'AIRansomware': 'AI Ransomware',
+        'DeepfakeShocks': 'Deepfake Market Shocks',
+        'GlobalConflict': 'Global Battle Intensity',
+        'TaiwanPLA': 'Taiwan PLA Incursions',
+        'NATOReadiness': 'NATO High Readiness',
+        'NuclearTests': 'Nuclear/Missile Tests',
+        'RussiaNATO': 'Russia-NATO Index',
+        'DefenseSpending': 'Defense Spending Growth',
+        'DCControl': 'DC Autonomy Countdown',
+        'GuardMetros': 'Guard Metro Deployments',
+        'ICEDetentions': 'ICE Detention Population',
+        'DHSRemoval': 'DHS Expedited Removal',
+        'HillLegislation': 'Control Bills Advancing',
+        'LibertyLitigation': 'Liberty Cases Active',
+        'ICEDetention': 'ICE Detention Population',
+        'TaiwanZone': 'Taiwan Exclusion Zone',
+        'HormuzRisk': 'Hormuz War Risk Premium',
+        'DoDAutonomy': 'DoD Auto-Execute',
+        'JoblessClaims': 'Jobless Claims',
+        'LuxuryCollapse': 'Luxury Retail Index',
+        'PharmacyShortage': 'Pharmacy Shortages',
+        'SchoolClosures': 'School Closures',
+        'AGIMilestones': 'AGI Milestones',
+        'LaborDisplacement': 'Labor Displacement'
+    }
+
     indicators = []
     for collector_name, data in latest_data['readings'].items():
         if data:
+            # Get standardized ID (e.g., econ_01_treasury_tail)
+            indicator_id = collector_to_config.get(collector_name, collector_name)
+
             # Get indicator config
-            indicator_config = None
-            for config_name, mapped_name in config_to_collector.items():
-                if mapped_name == collector_name:
-                    indicator_config = trip_wire_config.get(config_name, {})
-                    break
-            
+            indicator_config = trip_wire_config.get(indicator_id, {})
+            if not indicator_config:
+                # Try the collector name directly in config
+                for config_name, mapped_name in config_to_collector.items():
+                    if mapped_name == collector_name:
+                        indicator_config = trip_wire_config.get(config_name, {})
+                        break
+
             # Determine status level
             threat_level = latest_data['threat_levels'].get(collector_name, 'unknown')
-            # threat_level is a string like 'green', 'amber', 'red', not a dict
             status_level = threat_level if isinstance(threat_level, str) else 'unknown'
-            
+
             indicator = {
-                'id': collector_name,
-                'name': data.get('name', collector_name),
+                'id': indicator_id,
+                'name': display_names.get(collector_name, data.get('name', collector_name)),
                 'domain': _get_domain(collector_name),
                 'description': indicator_config.get('description', ''),
                 'unit': data.get('metadata', {}).get('unit', ''),
@@ -533,7 +626,7 @@ def get_indicators():
                 'updateFrequency': indicator_config.get('update_frequency', '60m')
             }
             indicators.append(indicator)
-    
+
     return jsonify({
         'indicators': indicators,
         'timestamp': datetime.utcnow().isoformat()
@@ -572,33 +665,58 @@ def get_phase():
     })
 
 def _get_domain(collector_name):
-    """Map collector to domain."""
+    """Map collector to domain (matching frontend domain taxonomy)."""
     domain_mapping = {
+        # Economy
         'Treasury': 'economy',
         'JoblessClaims': 'economy',
         'GroceryCPI': 'economy',
         'GDPGrowth': 'economy',
         'MarketVolatility': 'economy',
+        # Jobs & Labor
+        'StrikeTracker': 'jobs_labor',
+        # Rights & Governance
+        'LegiScan': 'rights_governance',
+        'ACLEDProtests': 'rights_governance',
+        # Security & Infrastructure
+        'CISACyber': 'security_infrastructure',
+        'GridOutages': 'security_infrastructure',
+        'WHODisease': 'security_infrastructure',
+        # Oil Axis
+        'CREAOil': 'oil_axis',
+        'MBridgeSettlements': 'oil_axis',
+        'OFACDesignations': 'oil_axis',
+        'JODIOil': 'oil_axis',
+        # AI Window
+        'AILayoffs': 'ai_window',
+        'AIRansomware': 'ai_window',
+        'DeepfakeShocks': 'ai_window',
+        'AGIMilestones': 'ai_window',
+        'LaborDisplacement': 'ai_window',
+        # Global Conflict
         'GlobalConflict': 'global_conflict',
         'TaiwanPLA': 'global_conflict',
+        'TaiwanZone': 'global_conflict',
         'NATOReadiness': 'global_conflict',
         'NuclearTests': 'global_conflict',
         'RussiaNATO': 'global_conflict',
         'DefenseSpending': 'global_conflict',
-        'CREAOil': 'energy',
-        'JODIOil': 'energy',
-        'GridOutages': 'energy',
-        'AILayoffs': 'ai_tech',
-        'AIRansomware': 'ai_tech',
-        'DeepfakeShocks': 'ai_tech',
-        'AGIMilestones': 'ai_tech',
-        'LaborDisplacement': 'ai_tech',
+        'HormuzRisk': 'global_conflict',
+        # Domestic Control
         'DCControl': 'domestic_control',
         'GuardMetros': 'domestic_control',
+        'ICEDetention': 'domestic_control',
         'ICEDetentions': 'domestic_control',
         'DHSRemoval': 'domestic_control',
         'HillLegislation': 'domestic_control',
-        'LibertyLitigation': 'domestic_control'
+        'LibertyLitigation': 'domestic_control',
+        'DoDAutonomy': 'domestic_control',
+        # Energy
+        'GridOutages': 'energy',
+        # Supply Chain
+        'PharmacyShortage': 'supply_chain',
+        'LuxuryCollapse': 'supply_chain',
+        'SchoolClosures': 'supply_chain'
     }
     return domain_mapping.get(collector_name, 'other')
 

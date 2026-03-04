@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  AlertCircle, 
-  TrendingUp, 
-  TrendingDown, 
-  Clock,
+import {
+  AlertCircle,
+  TrendingUp,
+  TrendingDown,
   Shield,
   Activity,
   Zap,
@@ -13,17 +12,15 @@ import {
   Database,
   Wifi
 } from 'lucide-react';
-import { Badge } from '../core/Badge';
 import { cn } from '../../utils/cn';
 import { useStore } from '../../store';
-import { formatDistanceToNow } from 'date-fns';
 
 type ThreatLevel = 'normal' | 'elevated' | 'high' | 'critical';
 
 export const SituationalStatusBar: React.FC = () => {
-  const { indicators, hopiScore, currentPhase, systemStatus } = useStore();
-  const [currentTime, setCurrentTime] = useState(new Date());
-  
+  const { indicators, hopiScore, currentPhase } = useStore();
+  const [, setCurrentTime] = useState(new Date());
+
   // Update current time every minute
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);

@@ -3,19 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, ChevronDown, ChevronUp, Check, Clock } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useStore, selectTightenUpActive } from '../../store';
-import { TIGHTEN_UP_CHECKLIST } from '../../data/phaseData';
+import { ACTION_PROTOCOL_CHECKLIST } from '../../data/phaseData';
 
 export const TightenUpBanner: React.FC = () => {
-  const tightenUpActive = useStore(selectTightenUpActive);
+  const actionProtocolActive = useStore(selectTightenUpActive);
   const { indicators } = useStore();
   const [expanded, setExpanded] = useState(false);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
 
-  if (!tightenUpActive) return null;
+  if (!actionProtocolActive) return null;
 
   const redIndicators = indicators.filter((i) => i.status.level === 'red');
   const completedCount = completed.size;
-  const totalCount = TIGHTEN_UP_CHECKLIST.length;
+  const totalCount = ACTION_PROTOCOL_CHECKLIST.length;
   const progress = Math.round((completedCount / totalCount) * 100);
 
   const toggleItem = (id: string) => {
@@ -27,7 +27,7 @@ export const TightenUpBanner: React.FC = () => {
     });
   };
 
-  const categories = [...new Set(TIGHTEN_UP_CHECKLIST.map((c) => c.category))];
+  const categories = [...new Set(ACTION_PROTOCOL_CHECKLIST.map((c) => c.category))];
 
   return (
     <motion.div
@@ -52,7 +52,7 @@ export const TightenUpBanner: React.FC = () => {
             </motion.div>
             <div className="min-w-0">
               <h2 className="text-lg font-display font-bold text-red-400">
-                TIGHTEN-UP PROTOCOL ACTIVE
+                ACTION PROTOCOL ACTIVE
               </h2>
               <p className="text-sm text-red-300/80 truncate">
                 {redIndicators.length} indicators at RED — complete 48-hour checklist
@@ -128,7 +128,7 @@ export const TightenUpBanner: React.FC = () => {
                         {cat}
                       </h4>
                       <div className="space-y-1">
-                        {TIGHTEN_UP_CHECKLIST.filter((c) => c.category === cat).map(
+                        {ACTION_PROTOCOL_CHECKLIST.filter((c) => c.category === cat).map(
                           (item) => {
                             const done = completed.has(item.id);
                             return (

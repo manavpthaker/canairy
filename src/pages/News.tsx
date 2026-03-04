@@ -16,7 +16,7 @@ import { Badge } from '../components/core/Badge';
 import { cn } from '../utils/cn';
 
 type NewsFilter = 'all' | 'high' | 'medium' | 'low' | 'indicators';
-type DomainFilter = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'security_infrastructure' | 'oil_axis' | 'ai_window' | 'global_conflict' | 'domestic_control' | 'cult';
+type DomainFilter = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'security_infrastructure' | 'oil_axis' | 'ai_window' | 'global_conflict' | 'domestic_control' | 'social_cohesion';
 
 const indicatorOptions = [
   { id: 'econ_01_treasury_tail', name: '10Y Auction Tail', icon: TrendingUp },

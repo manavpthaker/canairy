@@ -19,6 +19,7 @@ import { IndicatorData } from '../../types';
 import { format } from 'date-fns';
 import 'chartjs-adapter-date-fns';
 import { generateHistoricalData as generateSeededHistoricalData } from '../../utils/historicalDataGenerator';
+import { formatUnit } from '../../data/indicatorDisplay';
 
 // Register Chart.js components
 ChartJS.register(
@@ -107,7 +108,8 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
         callbacks: {
           label: (context: any) => {
             const value = context.parsed.y || context.parsed;
-            return `${value.toFixed(2)} ${indicator.unit}`;
+            const unit = formatUnit(indicator.unit);
+            return `${value.toFixed(2)}${unit}`;
           }
         }
       },
@@ -295,7 +297,12 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
         y: {
           ticks: {
             color: 'rgba(255,255,255,0.2)',
-            callback: (value: any) => `${value} ${indicator.unit}`,
+            callback: (value: any) => {
+              if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+              if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+              if (Number.isInteger(value)) return value;
+              return value.toFixed(1);
+            },
           },
           grid: {
             color: 'rgba(255, 255, 255, 0.04)',
@@ -386,7 +393,10 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
           ticks: {
             color: 'rgba(255,255,255,0.2)',
             callback: (value: any) => {
-              return `${value} ${indicator.unit}`;
+              if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+              if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+              if (Number.isInteger(value)) return value;
+              return value.toFixed(1);
             }
           },
           grid: {
@@ -412,19 +422,44 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
     );
   }
 
-  // Default line chart
+  // Default line chart with threshold lines
+  const lineAmberThreshold = indicator.thresholds?.threshold_amber;
+  const lineRedThreshold = indicator.thresholds?.threshold_red;
+
   const data = {
     labels: historicalData.map(d => format(new Date(d.timestamp), timeRange === '24h' ? 'HH:mm' : 'MMM dd')),
-    datasets: [{
-      label: indicator.name,
-      data: historicalData.map(d => d.value),
-      borderColor: getStatusColor(indicator.status.level),
-      backgroundColor: getStatusColor(indicator.status.level, 0.1),
-      borderWidth: 2,
-      pointRadius: 0,
-      pointHoverRadius: 4,
-      tension: 0.3,
-    }],
+    datasets: [
+      {
+        label: indicator.name,
+        data: historicalData.map(d => d.value),
+        borderColor: getStatusColor(indicator.status.level),
+        backgroundColor: getStatusColor(indicator.status.level, 0.1),
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        tension: 0.3,
+      },
+      // Add amber threshold line if defined
+      ...(lineAmberThreshold !== undefined ? [{
+        label: 'Amber',
+        data: Array(historicalData.length).fill(lineAmberThreshold),
+        borderColor: getStatusColor('amber', 0.4),
+        borderDash: [4, 4],
+        borderWidth: 1,
+        pointRadius: 0,
+        fill: false,
+      }] : []),
+      // Add red threshold line if defined
+      ...(lineRedThreshold !== undefined ? [{
+        label: 'Red',
+        data: Array(historicalData.length).fill(lineRedThreshold),
+        borderColor: getStatusColor('red', 0.4),
+        borderDash: [4, 4],
+        borderWidth: 1,
+        pointRadius: 0,
+        fill: false,
+      }] : []),
+    ],
   };
 
   const lineOptions = {
@@ -433,7 +468,13 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
       y: {
         ticks: {
           color: 'rgba(255,255,255,0.2)',
-          callback: (value: any) => `${value} ${indicator.unit}`,
+          // Don't show units on every tick - just clean numbers
+          callback: (value: any) => {
+            if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+            if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+            if (Number.isInteger(value)) return value;
+            return value.toFixed(1);
+          },
         },
         grid: {
           color: 'rgba(255, 255, 255, 0.04)',

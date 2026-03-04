@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, ChevronDown, ChevronUp, Check, Clock, Shield } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useStore, selectTightenUpActive } from '../../store';
-import { TIGHTEN_UP_CHECKLIST } from '../../data/phaseData';
+import { ACTION_PROTOCOL_CHECKLIST } from '../../data/phaseData';
 
 export const ThreatBanner: React.FC = () => {
-  const tightenUpActive = useStore(selectTightenUpActive);
+  const actionProtocolActive = useStore(selectTightenUpActive);
   const { indicators } = useStore();
   const [expanded, setExpanded] = useState(false);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
@@ -18,7 +18,7 @@ export const ThreatBanner: React.FC = () => {
 
   const redIndicators = indicators.filter(i => i.status.level === 'red');
   const completedCount = completed.size;
-  const totalCount = TIGHTEN_UP_CHECKLIST.length;
+  const totalCount = ACTION_PROTOCOL_CHECKLIST.length;
   const progress = Math.round((completedCount / totalCount) * 100);
 
   const toggleItem = (id: string) => {
@@ -30,7 +30,7 @@ export const ThreatBanner: React.FC = () => {
     });
   };
 
-  const categories = [...new Set(TIGHTEN_UP_CHECKLIST.map(c => c.category))];
+  const categories = [...new Set(ACTION_PROTOCOL_CHECKLIST.map(c => c.category))];
 
   return (
     <motion.div
@@ -42,21 +42,21 @@ export const ThreatBanner: React.FC = () => {
     >
       <div className={cn(
         'rounded-2xl overflow-hidden',
-        tightenUpActive ? 'threat-banner' : 'threat-banner-amber'
+        actionProtocolActive ? 'threat-banner' : 'threat-banner-amber'
       )}>
         {/* Header */}
         <button
-          onClick={() => tightenUpActive && setExpanded(!expanded)}
+          onClick={() => actionProtocolActive && setExpanded(!expanded)}
           className="w-full px-4 sm:px-6 py-4 flex items-center justify-between text-left"
         >
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className={cn(
               'w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0',
-              tightenUpActive
+              actionProtocolActive
                 ? 'bg-red-500/20 border border-red-500/30'
                 : 'bg-amber-500/15 border border-amber-500/25'
             )}>
-              {tightenUpActive ? (
+              {actionProtocolActive ? (
                 <motion.div
                   animate={{ scale: [1, 1.15, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
@@ -71,16 +71,16 @@ export const ThreatBanner: React.FC = () => {
             <div className="min-w-0">
               <h2 className={cn(
                 'text-sm sm:text-base font-display font-bold tracking-wide',
-                tightenUpActive ? 'text-red-300' : 'text-amber-300'
+                actionProtocolActive ? 'text-red-300' : 'text-amber-300'
               )}>
-                {tightenUpActive ? 'TIGHTEN-UP PROTOCOL' : 'ELEVATED AWARENESS'}
+                {actionProtocolActive ? 'ACTION REQUIRED' : 'ELEVATED ALERT'}
               </h2>
               <p className={cn(
                 'text-xs sm:text-sm truncate',
-                tightenUpActive ? 'text-red-300/60' : 'text-amber-300/60'
+                actionProtocolActive ? 'text-red-300/60' : 'text-amber-300/60'
               )}>
-                {tightenUpActive
-                  ? `${redCount} indicators critical — 48-hour checklist active`
+                {actionProtocolActive
+                  ? `${redCount} indicators critical — 48-hour protocol active`
                   : `${redCount} indicator${redCount !== 1 ? 's' : ''} at red level`
                 }
               </p>
@@ -88,7 +88,7 @@ export const ThreatBanner: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0 ml-4">
-            {tightenUpActive && (
+            {actionProtocolActive && (
               <>
                 <div className="hidden sm:flex items-center gap-2">
                   <span className="text-xs font-mono text-red-300/70">
@@ -112,9 +112,9 @@ export const ThreatBanner: React.FC = () => {
           </div>
         </button>
 
-        {/* Expandable checklist (tighten-up only) */}
+        {/* Expandable checklist */}
         <AnimatePresence>
-          {expanded && tightenUpActive && (
+          {expanded && actionProtocolActive && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
@@ -151,7 +151,7 @@ export const ThreatBanner: React.FC = () => {
                     <div key={cat}>
                       <h4 className="text-xs font-medium text-white/30 uppercase tracking-wider mb-1.5">{cat}</h4>
                       <div className="space-y-0.5">
-                        {TIGHTEN_UP_CHECKLIST.filter(c => c.category === cat).map(item => {
+                        {ACTION_PROTOCOL_CHECKLIST.filter(c => c.category === cat).map(item => {
                           const done = completed.has(item.id);
                           return (
                             <button

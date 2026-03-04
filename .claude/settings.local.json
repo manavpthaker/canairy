@@ -21,7 +21,14 @@
       "Bash(git pull:*)",
       "Bash(git fetch:*)",
       "Bash(git merge:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "WebFetch(domain:labs.google.com)",
+      "Bash(pgrep:*)",
+      "Bash(pkill:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(node -e:*)",
+      "Bash(lsof:*)"
     ]
   }
 }

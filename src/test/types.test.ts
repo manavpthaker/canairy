@@ -4,11 +4,12 @@ import { DOMAIN_META, Domain } from '../types';
 describe('DOMAIN_META', () => {
   const allDomains: Domain[] = [
     'economy', 'jobs_labor', 'rights_governance', 'security_infrastructure',
-    'oil_axis', 'ai_window', 'global_conflict', 'domestic_control', 'cult',
+    'oil_axis', 'ai_window', 'global_conflict', 'domestic_control', 'social_cohesion',
+    'supply_chain', 'energy',
   ];
 
-  it('has entries for all 9 domains', () => {
-    expect(Object.keys(DOMAIN_META)).toHaveLength(9);
+  it('has entries for all 11 domains', () => {
+    expect(Object.keys(DOMAIN_META)).toHaveLength(11);
     allDomains.forEach(domain => {
       expect(DOMAIN_META[domain]).toBeDefined();
     });
@@ -32,8 +33,8 @@ describe('DOMAIN_META', () => {
     expect(DOMAIN_META.domestic_control.weight).toBe(1.25);
   });
 
-  it('cult has lowest weight (0.75)', () => {
-    expect(DOMAIN_META.cult.weight).toBe(0.75);
+  it('social_cohesion has lowest weight (0.75)', () => {
+    expect(DOMAIN_META.social_cohesion.weight).toBe(0.75);
   });
 
   it('standard domains are weighted 1.0', () => {

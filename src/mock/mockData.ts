@@ -61,10 +61,50 @@ export const mockIndicators: IndicatorData[] = [
     updateFrequency: 'Quarterly',
     status: { level: 'amber', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
+  {
+    id: 'luxury_01_collapse',
+    name: 'Luxury Sector Index',
+    domain: 'economy',
+    description: 'S&P Luxury Index 30-day drawdown — high-end spending collapse signals recession',
+    unit: '%',
+    thresholds: { green: { max: 5 }, amber: { min: 5, max: 15 }, red: { min: 15 }, threshold_amber: 5, threshold_red: 15 },
+    critical: true,
+    enabled: true,
+    dataSource: 'Bloomberg / S&P',
+    sourceUrl: 'https://www.spglobal.com/spdji/en/indices/',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 3.2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
 
   // ═══════════════════════════════════════════
-  // JOBS & LABOR (1 indicator)
+  // JOBS & LABOR (3 indicators)
   // ═══════════════════════════════════════════
+  {
+    id: 'job_01_jobless_claims',
+    name: 'Initial Jobless Claims',
+    domain: 'jobs_labor',
+    description: 'Weekly initial unemployment claims — earliest recession signal',
+    unit: 'K claims',
+    thresholds: { green: { max: 250 }, amber: { min: 250, max: 350 }, red: { min: 350 }, threshold_amber: 250, threshold_red: 350 },
+    enabled: true,
+    dataSource: 'DOL',
+    sourceUrl: 'https://www.dol.gov/ui/data.pdf',
+    updateFrequency: 'Weekly',
+    status: { level: 'green', value: 218, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'supply_pharmacy_shortage',
+    name: 'Drug Shortages',
+    domain: 'jobs_labor',
+    description: 'Critical medications in FDA shortage database — supply chain health indicator',
+    unit: 'drugs',
+    thresholds: { green: { max: 100 }, amber: { min: 100, max: 200 }, red: { min: 200 }, threshold_amber: 100, threshold_red: 200 },
+    enabled: true,
+    dataSource: 'FDA',
+    sourceUrl: 'https://www.accessdata.fda.gov/scripts/drugshortages',
+    updateFrequency: 'Daily',
+    status: { level: 'amber', value: 142, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+  },
   {
     id: 'job_01_strike_days',
     name: 'US Strike Days',
@@ -107,6 +147,32 @@ export const mockIndicators: IndicatorData[] = [
     sourceUrl: 'https://acleddata.com/data-export-tool/',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 18, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'power_02_dod_autonomy',
+    name: 'DoD Autonomous Systems',
+    domain: 'rights_governance',
+    description: 'DoD autonomous weapons programs with auto-execute authority — AI warfare governance risk',
+    unit: 'programs',
+    thresholds: { green: { max: 0 }, amber: { min: 0, max: 2 }, red: { min: 3 }, threshold_amber: 1, threshold_red: 3 },
+    enabled: true,
+    dataSource: 'DoD / CBO Reports',
+    sourceUrl: 'https://www.cbo.gov/topics/defense-and-national-security',
+    updateFrequency: 'Quarterly',
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'liberty_01_litigation',
+    name: 'Major Liberty Cases',
+    domain: 'rights_governance',
+    description: 'ACLU/EFF major civil liberty cases filed (90-day count) — legal battleground indicator',
+    unit: 'cases',
+    thresholds: { green: { max: 5 }, amber: { min: 5, max: 15 }, red: { min: 15 }, threshold_amber: 5, threshold_red: 15 },
+    enabled: true,
+    dataSource: 'ACLU / Court Records',
+    sourceUrl: 'https://www.aclu.org/court-cases',
+    updateFrequency: 'Weekly',
+    status: { level: 'amber', value: 8, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
   },
 
   // ═══════════════════════════════════════════
@@ -206,6 +272,46 @@ export const mockIndicators: IndicatorData[] = [
     sourceUrl: 'https://www.jodidata.org/oil/',
     updateFrequency: 'Monthly',
     status: { level: 'green', value: 1.15, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'oil_03_jodi_inventory',
+    name: 'Global Oil Inventory',
+    domain: 'oil_axis',
+    description: 'JODI global crude oil inventory days of cover — supply buffer indicator',
+    unit: 'days',
+    thresholds: { green: { min: 60 }, amber: { min: 45, max: 60 }, red: { max: 45 }, threshold_amber: 60, threshold_red: 45 },
+    enabled: true,
+    dataSource: 'JODI / IEA',
+    sourceUrl: 'https://www.jodidata.org/oil/',
+    updateFrequency: 'Monthly',
+    status: { level: 'green', value: 65, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'spr_01_level',
+    name: 'Strategic Petroleum Reserve',
+    domain: 'oil_axis',
+    description: 'US SPR crude oil stockpile in million barrels — national energy security buffer',
+    unit: 'million bbl',
+    thresholds: { green: { min: 450 }, amber: { min: 350, max: 450 }, red: { max: 350 }, threshold_amber: 450, threshold_red: 350 },
+    critical: true,
+    enabled: true,
+    dataSource: 'EIA',
+    sourceUrl: 'https://www.eia.gov/petroleum/supply/weekly/',
+    updateFrequency: 'Weekly',
+    status: { level: 'amber', value: 370, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'ofac_01_designations',
+    name: 'OFAC Sanctions (Oil)',
+    domain: 'oil_axis',
+    description: 'OFAC sanctions designations targeting oil trade entities (30-day count)',
+    unit: 'designations',
+    thresholds: { green: { max: 2 }, amber: { min: 2, max: 8 }, red: { min: 8 }, threshold_amber: 2, threshold_red: 8 },
+    enabled: true,
+    dataSource: 'OFAC / Treasury',
+    sourceUrl: 'https://ofac.treasury.gov/recent-actions',
+    updateFrequency: 'Weekly',
+    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
 
   // ═══════════════════════════════════════════
@@ -323,6 +429,46 @@ export const mockIndicators: IndicatorData[] = [
     status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
   {
+    id: 'nuclear_01_tests',
+    name: 'Nuclear/Missile Tests',
+    domain: 'global_conflict',
+    description: 'Nuclear detonation or ICBM tests (90-day count) — existential threat signal',
+    unit: 'tests',
+    thresholds: { green: { max: 2 }, amber: { min: 2, max: 5 }, red: { min: 10 }, threshold_amber: 2, threshold_red: 10 },
+    enabled: true,
+    dataSource: 'CNS',
+    sourceUrl: 'https://www.ctbto.org/specials/testing-times/',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'hormuz_war_risk',
+    name: 'Hormuz War Risk Premium',
+    domain: 'global_conflict',
+    description: 'Shipping war risk insurance premium for Strait of Hormuz transit — oil chokepoint risk',
+    unit: '%',
+    thresholds: { green: { max: 0.5 }, amber: { min: 0.5, max: 2 }, red: { min: 2 }, threshold_amber: 0.5, threshold_red: 2 },
+    enabled: true,
+    dataSource: "Lloyd's",
+    sourceUrl: 'https://www.lloyds.com/market-resources/marine',
+    updateFrequency: 'Weekly',
+    status: { level: 'green', value: 0.3, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'taiwan_exclusion_zone',
+    name: 'Taiwan Exclusion Zone',
+    domain: 'global_conflict',
+    description: 'Active Chinese military exclusion zones near Taiwan — blockade precursor signal',
+    unit: 'zones',
+    thresholds: { green: { max: 0 }, amber: { min: 0, max: 1 }, red: { min: 2 }, threshold_amber: 1, threshold_red: 2 },
+    critical: true,
+    enabled: true,
+    dataSource: 'Taiwan MND',
+    sourceUrl: 'https://www.mnd.gov.tw/english/',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
     id: 'russia_nato_escalation',
     name: 'Russia-NATO Index',
     domain: 'global_conflict',
@@ -434,12 +580,245 @@ export const mockIndicators: IndicatorData[] = [
   },
 
   // ═══════════════════════════════════════════
-  // CULT SIGNALS (4 indicators — all disabled/mock)
+  // SUPPLY CHAIN (3 indicators)
   // ═══════════════════════════════════════════
+  {
+    id: 'supply_01_port_congestion',
+    name: 'Port Congestion',
+    domain: 'supply_chain',
+    description: 'Vessels waiting at LA/Long Beach ports — supply chain bottleneck indicator',
+    unit: 'vessels',
+    thresholds: { green: { max: 15 }, amber: { min: 15, max: 40 }, red: { min: 40 }, threshold_amber: 15, threshold_red: 40 },
+    enabled: true,
+    dataSource: 'Port of LA / Marine Traffic',
+    sourceUrl: 'https://www.portoflosangeles.org/',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 12, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'supply_02_freight_index',
+    name: 'Container Freight Rate',
+    domain: 'supply_chain',
+    description: 'Freightos Baltic Index container rate (USD/FEU) — shipping cost indicator',
+    unit: 'USD/FEU',
+    thresholds: { green: { max: 3000 }, amber: { min: 3000, max: 6000 }, red: { min: 6000 }, threshold_amber: 3000, threshold_red: 6000 },
+    enabled: true,
+    dataSource: 'Freightos Baltic Index',
+    sourceUrl: 'https://fbx.freightos.com/',
+    updateFrequency: 'Weekly',
+    status: { level: 'green', value: 2500, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'supply_03_chip_lead_time',
+    name: 'Semiconductor Lead Time',
+    domain: 'supply_chain',
+    description: 'Average chip delivery lead time in weeks — tech supply chain stress',
+    unit: 'weeks',
+    thresholds: { green: { max: 14 }, amber: { min: 14, max: 26 }, red: { min: 26 }, threshold_amber: 14, threshold_red: 26 },
+    enabled: true,
+    dataSource: 'Industry Reports',
+    sourceUrl: 'https://www.semiconductors.org/',
+    updateFrequency: 'Monthly',
+    status: { level: 'amber', value: 18, trend: 'down', lastUpdate: now, dataSource: 'LIVE' }
+  },
+
+  // ═══════════════════════════════════════════
+  // ENERGY (3 indicators)
+  // ═══════════════════════════════════════════
+  {
+    id: 'energy_01_spr_level',
+    name: 'Strategic Petroleum Reserve',
+    domain: 'energy',
+    description: 'SPR crude oil stockpile in million barrels — energy security buffer',
+    unit: 'million bbl',
+    thresholds: { green: { min: 450 }, amber: { min: 350, max: 450 }, red: { max: 350 }, threshold_amber: 450, threshold_red: 350 },
+    critical: true,
+    enabled: true,
+    dataSource: 'EIA Weekly Petroleum Status',
+    sourceUrl: 'https://www.eia.gov/petroleum/supply/weekly/',
+    updateFrequency: 'Weekly',
+    status: { level: 'amber', value: 370, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'energy_02_nat_gas_storage',
+    name: 'Natural Gas Storage',
+    domain: 'energy',
+    description: 'Natural gas working storage in billion cubic feet — heating/power buffer',
+    unit: 'Bcf',
+    thresholds: { green: { min: 2500 }, amber: { min: 1800, max: 2500 }, red: { max: 1800 }, threshold_amber: 2500, threshold_red: 1800 },
+    enabled: true,
+    dataSource: 'EIA Natural Gas Storage',
+    sourceUrl: 'https://www.eia.gov/naturalgas/storage/',
+    updateFrequency: 'Weekly',
+    status: { level: 'green', value: 2650, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'energy_03_grid_emergency',
+    name: 'Grid Emergency Declarations',
+    domain: 'energy',
+    description: 'Active grid emergency declarations (DOE OE-417) — power reliability indicator',
+    unit: 'declarations',
+    thresholds: { green: { max: 1 }, amber: { min: 1, max: 3 }, red: { min: 3 }, threshold_amber: 1, threshold_red: 3 },
+    critical: true,
+    enabled: true,
+    dataSource: 'DOE OE-417 Reports',
+    sourceUrl: 'https://www.oe.energy.gov/oe417.htm',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+
+  // ═══════════════════════════════════════════
+  // BANKING (3 indicators — added to economy)
+  // ═══════════════════════════════════════════
+  {
+    id: 'bank_01_failures',
+    name: 'Bank Failures (90d)',
+    domain: 'economy',
+    description: 'FDIC bank failures in last 90 days — financial system stress',
+    unit: 'banks',
+    thresholds: { green: { max: 1 }, amber: { min: 1, max: 3 }, red: { min: 3 }, threshold_amber: 1, threshold_red: 3 },
+    critical: true,
+    enabled: true,
+    dataSource: 'FDIC Failed Bank List',
+    sourceUrl: 'https://www.fdic.gov/resources/resolutions/bank-failures/failed-bank-list/',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'bank_02_discount_window',
+    name: 'Fed Discount Window',
+    domain: 'economy',
+    description: 'Federal Reserve discount window borrowing ($ billions) — bank liquidity stress',
+    unit: 'billion USD',
+    thresholds: { green: { max: 5 }, amber: { min: 5, max: 50 }, red: { min: 50 }, threshold_amber: 5, threshold_red: 50 },
+    enabled: true,
+    dataSource: 'Federal Reserve H.4.1',
+    sourceUrl: 'https://www.federalreserve.gov/releases/h41/',
+    updateFrequency: 'Weekly',
+    status: { level: 'green', value: 2.1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'bank_03_deposit_flow',
+    name: 'Weekly Deposit Change',
+    domain: 'economy',
+    description: 'Week-over-week change in commercial bank deposits ($ billions) — bank run indicator',
+    unit: 'billion USD',
+    thresholds: { green: { min: -20 }, amber: { min: -50, max: -20 }, red: { max: -50 }, threshold_amber: -20, threshold_red: -50 },
+    critical: true,
+    enabled: true,
+    dataSource: 'Federal Reserve H.8',
+    sourceUrl: 'https://www.federalreserve.gov/releases/h8/',
+    updateFrequency: 'Weekly',
+    status: { level: 'green', value: 5.2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+
+  // ═══════════════════════════════════════════
+  // FLIGHTS / AIRSPACE (3 indicators)
+  // ═══════════════════════════════════════════
+  {
+    id: 'flight_01_ground_stops',
+    name: 'FAA Ground Stops',
+    domain: 'security_infrastructure',
+    description: 'Active FAA ground stop programs — major airspace disruption signal',
+    unit: 'ground stops',
+    thresholds: { green: { max: 2 }, amber: { min: 2, max: 5 }, red: { min: 5 }, threshold_amber: 2, threshold_red: 5 },
+    critical: true,
+    enabled: true,
+    dataSource: 'FAA NAS Status',
+    sourceUrl: 'https://nasstatus.faa.gov/',
+    updateFrequency: 'Real-time',
+    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'flight_02_delay_pct',
+    name: 'System-Wide Delays',
+    domain: 'security_infrastructure',
+    description: 'Percentage of major airports with active delays — air travel disruption',
+    unit: '%',
+    thresholds: { green: { max: 10 }, amber: { min: 10, max: 25 }, red: { min: 25 }, threshold_amber: 10, threshold_red: 25 },
+    enabled: true,
+    dataSource: 'FAA NAS Status',
+    sourceUrl: 'https://nasstatus.faa.gov/',
+    updateFrequency: 'Real-time',
+    status: { level: 'green', value: 8, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'flight_03_tfr_count',
+    name: 'Active TFRs',
+    domain: 'security_infrastructure',
+    description: 'Temporary Flight Restrictions active — airspace security/VIP indicator',
+    unit: 'TFRs',
+    thresholds: { green: { max: 20 }, amber: { min: 20, max: 40 }, red: { min: 40 }, threshold_amber: 20, threshold_red: 40 },
+    enabled: true,
+    dataSource: 'FAA TFR System',
+    sourceUrl: 'https://tfr.faa.gov/',
+    updateFrequency: 'Real-time',
+    status: { level: 'green', value: 15, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+
+  // ═══════════════════════════════════════════
+  // TRAVEL (3 indicators)
+  // ═══════════════════════════════════════════
+  {
+    id: 'travel_01_advisories',
+    name: 'Level 4 Travel Advisories',
+    domain: 'domestic_control',
+    description: 'Countries with "Do Not Travel" advisory — global instability indicator',
+    unit: 'countries',
+    thresholds: { green: { max: 15 }, amber: { min: 15, max: 25 }, red: { min: 25 }, threshold_amber: 15, threshold_red: 25 },
+    enabled: true,
+    dataSource: 'State Department',
+    sourceUrl: 'https://travel.state.gov/content/travel/en/traveladvisories.html',
+    updateFrequency: 'Daily',
+    status: { level: 'amber', value: 19, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'travel_02_border_wait',
+    name: 'Border Wait Times',
+    domain: 'domestic_control',
+    description: 'Average US border crossing wait time in minutes — mobility friction indicator',
+    unit: 'minutes',
+    thresholds: { green: { max: 30 }, amber: { min: 30, max: 60 }, red: { min: 60 }, threshold_amber: 30, threshold_red: 60 },
+    enabled: true,
+    dataSource: 'CBP Border Wait Times',
+    sourceUrl: 'https://bwt.cbp.gov/',
+    updateFrequency: 'Real-time',
+    status: { level: 'green', value: 22, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'travel_03_tsa_throughput',
+    name: 'TSA Throughput',
+    domain: 'domestic_control',
+    description: 'TSA checkpoint volume as % of 2019 baseline — air travel demand signal',
+    unit: '% of 2019',
+    thresholds: { green: { min: 85 }, amber: { min: 60, max: 85 }, red: { max: 60 }, threshold_amber: 85, threshold_red: 60 },
+    enabled: true,
+    dataSource: 'TSA Passenger Volumes',
+    sourceUrl: 'https://www.tsa.gov/travel/passenger-volumes',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 97, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+
+  // ═══════════════════════════════════════════
+  // SOCIAL COHESION (5 indicators)
+  // ═══════════════════════════════════════════
+  {
+    id: 'education_01_closures',
+    name: 'School Closures',
+    domain: 'social_cohesion',
+    description: 'K-12 schools with unplanned closures (7-day count) — community stability indicator',
+    unit: 'schools',
+    thresholds: { green: { max: 50 }, amber: { min: 50, max: 200 }, red: { min: 200 }, threshold_amber: 50, threshold_red: 200 },
+    enabled: true,
+    dataSource: 'NCES / State Education Depts',
+    sourceUrl: 'https://nces.ed.gov/',
+    updateFrequency: 'Weekly',
+    status: { level: 'green', value: 28, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
   {
     id: 'cult_trend_01_twitter',
     name: '#AIGod / #Basilisk Tweets',
-    domain: 'cult',
+    domain: 'social_cohesion',
     description: 'X/Twitter 24h volume of #AIGod, #Basilisk, #JoinTheComet — cult formation signal',
     unit: 'tweets',
     thresholds: { green: { max: 10000 }, amber: { min: 10000, max: 50000 }, red: { min: 50000 }, threshold_amber: 10000, threshold_red: 50000 },
@@ -452,7 +831,7 @@ export const mockIndicators: IndicatorData[] = [
   {
     id: 'cult_meme_01_tokens',
     name: 'Cult ERC-20 Tokens',
-    domain: 'cult',
+    domain: 'social_cohesion',
     description: 'New ERC-20 tokens with cult+AI in name (7-day count) — blockchain cult signal',
     unit: 'tokens',
     thresholds: { green: { max: 5 }, amber: { min: 5, max: 20 }, red: { min: 20 }, threshold_amber: 5, threshold_red: 20 },
@@ -465,7 +844,7 @@ export const mockIndicators: IndicatorData[] = [
   {
     id: 'cult_event_01_protests',
     name: 'AI Cult Protests',
-    domain: 'cult',
+    domain: 'social_cohesion',
     description: 'ACLED protests mentioning AI + god/cult/church (30-day count)',
     unit: 'protests',
     thresholds: { green: { max: 1 }, amber: { min: 1, max: 4 }, red: { min: 4 }, threshold_amber: 1, threshold_red: 4 },
@@ -478,7 +857,7 @@ export const mockIndicators: IndicatorData[] = [
   {
     id: 'cult_media_01_trends',
     name: 'AI Religion Trends',
-    domain: 'cult',
+    domain: 'social_cohesion',
     description: 'Google Trends score for "AI religion" (US weekly) — cultural shift signal',
     unit: 'score',
     thresholds: { green: { max: 15 }, amber: { min: 15, max: 40 }, red: { min: 40 }, threshold_amber: 15, threshold_red: 40 },
@@ -544,7 +923,19 @@ export const mockHOPIScore: HOPIScore = {
       indicators: ['dc_control_countdown', 'national_guard_metros', 'ice_detention_surge', 'dhs_removal_expansion', 'hill_control_legislation', 'liberty_litigation_count'],
       criticalAlerts: []
     },
-    cult: {
+    supply_chain: {
+      score: 0.18,
+      weight: 1.25,
+      indicators: ['supply_01_port_congestion', 'supply_02_freight_index', 'supply_03_chip_lead_time'],
+      criticalAlerts: []
+    },
+    energy: {
+      score: 0.20,
+      weight: 1.25,
+      indicators: ['energy_01_spr_level', 'energy_02_nat_gas_storage', 'energy_03_grid_emergency'],
+      criticalAlerts: []
+    },
+    social_cohesion: {
       score: 0.05,
       weight: 0.75,
       indicators: ['cult_trend_01_twitter', 'cult_meme_01_tokens', 'cult_event_01_protests', 'cult_media_01_trends'],
