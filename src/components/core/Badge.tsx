@@ -18,12 +18,12 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
 
     const variantClasses = {
       default: 'badge-default',
-      outline: 'bg-transparent text-bmb-secondary border border-bmb-border',
-      accent: 'bg-bmb-accent/10 text-bmb-accent border border-bmb-accent/20',
+      outline: 'bg-transparent text-olive-secondary border border-olive',
+      accent: 'bg-amber-400/10 text-amber-400 border border-amber-400/20',
       green: 'badge-success',
       amber: 'badge-warning',
       red: 'badge-danger',
-      unknown: 'bg-bmb-secondary/10 text-bmb-secondary border border-bmb-secondary/20',
+      unknown: 'bg-white/10 text-olive-secondary border border-white/20',
     };
 
     return (
@@ -38,15 +38,15 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
         {...props}
       >
         {dot && (
-          <span 
+          <span
             className={cn(
               'w-1.5 h-1.5 rounded-full mr-1.5',
-              variant === 'green' && 'bg-bmb-success',
-              variant === 'amber' && 'bg-bmb-warning',
-              variant === 'red' && 'bg-bmb-danger',
-              variant === 'accent' && 'bg-bmb-accent',
-              (variant === 'default' || variant === 'outline' || variant === 'unknown') && 'bg-bmb-secondary'
-            )} 
+              variant === 'green' && 'bg-emerald-400',
+              variant === 'amber' && 'bg-amber-400',
+              variant === 'red' && 'bg-red-400',
+              variant === 'accent' && 'bg-amber-400',
+              (variant === 'default' || variant === 'outline' || variant === 'unknown') && 'bg-olive-secondary'
+            )}
           />
         )}
         {children}

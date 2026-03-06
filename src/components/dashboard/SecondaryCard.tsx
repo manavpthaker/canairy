@@ -1,7 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Clock } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { useStore } from '../../store';
+import { getDisplayName } from '../../data/indicatorTranslations';
 
 export interface SecondaryCardData {
   id: string;
@@ -37,6 +40,15 @@ const URGENCY_CONFIG = {
 
 export const SecondaryCard: React.FC<SecondaryCardProps> = ({ data, index = 0 }) => {
   const urgencyConfig = URGENCY_CONFIG[data.urgency];
+  const indicators = useStore((s) => s.indicators);
+
+  // Resolve indicator names from IDs
+  const sourceIndicators = data.indicatorIds
+    .map((id) => {
+      const indicator = indicators.find((i) => i.id === id);
+      return indicator ? { id, name: getDisplayName(id) || indicator.name } : null;
+    })
+    .filter(Boolean) as { id: string; name: string }[];
 
   return (
     <motion.div
@@ -72,6 +84,27 @@ export const SecondaryCard: React.FC<SecondaryCardProps> = ({ data, index = 0 })
           {data.action.label}
           <ArrowRight className="w-3 h-3" />
         </a>
+      )}
+
+      {/* Source indicators */}
+      {sourceIndicators.length > 0 && (
+        <div className="mt-2 pt-2 border-t border-white/[0.04]">
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="text-[10px] text-olive-muted">Based on:</span>
+            {sourceIndicators.slice(0, 2).map((ind) => (
+              <Link
+                key={ind.id}
+                to={`/indicator/${ind.id}`}
+                className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-olive-data hover:bg-white/[0.08] hover:text-olive-secondary transition-colors"
+              >
+                {ind.name}
+              </Link>
+            ))}
+            {sourceIndicators.length > 2 && (
+              <span className="text-[10px] text-olive-muted">+{sourceIndicators.length - 2}</span>
+            )}
+          </div>
+        </div>
       )}
     </motion.div>
   );

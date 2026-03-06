@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * Dashboard Page
+ *
+ * Briefing-first layout: Status → Intelligence Briefing → Phase Readiness → Monitoring
+ * The intelligence briefing is the primary element - synthesizing indicators into actionable narrative.
+ */
+
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { RefreshCw, Eye, Sparkles } from 'lucide-react';
+import { RefreshCw, Eye, Sparkles, ChevronDown } from 'lucide-react';
 import { useStore, selectSynthesisCards, selectAIInsights, selectLeadAIInsight, selectSecondaryAIInsights } from '../store';
 import { IndicatorData } from '../types';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
@@ -8,15 +15,22 @@ import { DashboardLoader } from '../components/dashboard/DashboardLoader';
 import { ThreatBanner } from '../components/dashboard/ThreatBanner';
 import { StatusHeading } from '../components/dashboard/StatusHeading';
 import { OutcomeSentence } from '../components/dashboard/OutcomeSentence';
+import { ActionPlanPreview } from '../components/dashboard/ActionPlanPreview';
 import { PhaseReadinessCard } from '../components/dashboard/PhaseReadinessCard';
+import { ActionList } from '../components/dashboard/ActionList';
 import { LeadCard, LeadCardData } from '../components/dashboard/LeadCard';
 import { SecondaryCardsGrid, CompactRow, CompactRowData } from '../components/dashboard/SecondaryCard';
 import { AIInsightCard, AIAnalysisSummary } from '../components/dashboard/AIInsightCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { getDisplayName, getImpact, getAction } from '../data/indicatorTranslations';
+import { generateActionList, generateOutcomeSentence, getStatusHeading } from '../data/actionGenerator';
+import { useActionCompletion, usePhaseTaskCompletion } from '../hooks/useTaskCompletion';
+import { BriefingCard } from '../components/briefing';
+import { useBriefing } from '../hooks/useBriefing';
 
 export const Dashboard: React.FC = () => {
   const [selectedIndicator, setSelectedIndicator] = useState<IndicatorData | null>(null);
+  const [showLegacyInsights, setShowLegacyInsights] = useState(false);
 
   const {
     indicators,
@@ -28,12 +42,37 @@ export const Dashboard: React.FC = () => {
     detailPanelCardId,
     setDetailPanelCardId,
     aiAnalysisLoading,
+    systemPhase,
   } = useStore();
 
   const synthesisCards = useStore(selectSynthesisCards);
   const aiAnalysis = useStore(selectAIInsights);
   const leadAIInsight = useStore(selectLeadAIInsight);
   const secondaryAIInsights = useStore(selectSecondaryAIInsights);
+
+  // Intelligence briefing hook
+  const phaseNum = typeof systemPhase === 'number' ? systemPhase : (systemPhase === 'tighten-up' ? 7 : 2);
+  const { briefing, isLoading: briefingLoading, refresh: refreshBriefing } = useBriefing(indicators, {
+    userPhase: phaseNum,
+    autoRefresh: true,
+  });
+
+  // Action completion persistence
+  const { completedIds: actionCompletedIds, toggle: toggleAction } = useActionCompletion();
+  const { completedIds: phaseCompletedIds } = usePhaseTaskCompletion();
+
+  // Merge completed IDs for action generation
+  const allCompletedIds = useMemo(() => {
+    const merged = new Set<string>();
+    actionCompletedIds.forEach(id => merged.add(id));
+    phaseCompletedIds.forEach(id => merged.add(id));
+    return merged;
+  }, [actionCompletedIds, phaseCompletedIds]);
+
+  // Generate action list from indicators and phase tasks
+  const actionList = useMemo(() => {
+    return generateActionList(indicators, allCompletedIds, phaseNum);
+  }, [indicators, allCompletedIds, phaseNum]);
 
   // Open detail panel when lead card is clicked
   const handleLeadCardClick = () => {
@@ -50,7 +89,6 @@ export const Dashboard: React.FC = () => {
   }, [indicators.length]);
 
   // Fallback card data when synthesis hasn't run yet
-  // Uses translation map for human-readable language
   const getFallbackCards = () => {
     const redIndicators = indicators.filter(i => i.status.level === 'red');
     const amberIndicators = indicators.filter(i => i.status.level === 'amber');
@@ -58,16 +96,15 @@ export const Dashboard: React.FC = () => {
     let leadCard: LeadCardData | null = null;
 
     if (redIndicators.length >= 2) {
-      // TIGHTEN-UP scenario - action-first language
       const impacts = redIndicators.slice(0, 2).map(i => getImpact(i.id, 'red'));
       leadCard = {
         id: 'fallback-action-protocol',
-        headline: 'Start your emergency checklist now',
+        headline: 'Check your action plan now',
         body: `${impacts.join('. ')} Having cash, fuel, and supplies ready protects your family.`,
         urgency: 'today',
         indicatorIds: redIndicators.map(i => i.id),
         severity: 9,
-        action: { label: 'Open 48-hour checklist', href: '/checklist' },
+        action: { label: 'Open action plan', href: '/action-plan' },
       };
     } else if (redIndicators.length === 1) {
       const ind = redIndicators[0];
@@ -80,10 +117,9 @@ export const Dashboard: React.FC = () => {
         urgency: 'today',
         indicatorIds: [ind.id],
         severity: 7,
-        action: { label: 'Add to checklist', href: '/checklist' },
+        action: { label: 'View action plan', href: '/action-plan' },
       };
     } else if (amberIndicators.length >= 3) {
-      // Multiple amber - encourage preparation without alarm
       const topIndicator = amberIndicators[0];
       const action = getAction(topIndicator.id, 'amber');
       const impact = getImpact(topIndicator.id, 'amber');
@@ -94,7 +130,7 @@ export const Dashboard: React.FC = () => {
         urgency: 'week',
         indicatorIds: amberIndicators.map(i => i.id),
         severity: 5,
-        action: { label: 'Review checklist', href: '/checklist' },
+        action: { label: 'Review action plan', href: '/action-plan' },
       };
     }
 
@@ -108,12 +144,11 @@ export const Dashboard: React.FC = () => {
     return { leadCard, secondaryCards: [], compactRows };
   };
 
-  // Use synthesis cards if available, otherwise fallback
   const cards = synthesisCards || getFallbackCards();
 
   return (
     <>
-      <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-4xl">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-5 w-full">
         {/* Loading state */}
         {loading && indicators.length === 0 && (
           <DashboardLoader message="Loading indicator data..." />
@@ -145,143 +180,45 @@ export const Dashboard: React.FC = () => {
               <ThreatBanner />
             </ErrorBoundary>
 
-            {/* ──── 2. STATUS HEADING ──── */}
+            {/* ──── 2. ACTION PLAN PREVIEW ──── */}
             <ErrorBoundary isolate>
-              <div className="pt-2">
-                <StatusHeading />
-                <OutcomeSentence />
-              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+              >
+                <ActionPlanPreview />
+              </motion.div>
             </ErrorBoundary>
 
-            {/* ──── 3. PHASE READINESS CARD ──── */}
+            {/* ──── 3. INTELLIGENCE BRIEFING (Why these actions) ──── */}
             <ErrorBoundary isolate>
-              <PhaseReadinessCard />
-            </ErrorBoundary>
-
-            {/* ──── 4. LEAD CARD ──── */}
-            <ErrorBoundary isolate>
-              {synthesisLoading ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="lead-card p-5"
-                >
-                  <div className="animate-pulse space-y-3">
-                    <div className="w-24 h-5 bg-white/5 rounded" />
-                    <div className="w-3/4 h-6 bg-white/5 rounded" />
-                    <div className="w-full h-4 bg-white/5 rounded" />
-                    <div className="w-2/3 h-4 bg-white/5 rounded" />
-                  </div>
-                </motion.div>
-              ) : cards.leadCard ? (
-                <LeadCard
-                  data={{
-                    ...cards.leadCard,
-                    confidence: synthesisOutput?.leadCard ? 'moderate' : undefined,
-                    signalCount: synthesisOutput?.leadCard?.matchedIndicators.length,
-                  }}
-                  onClick={handleLeadCardClick}
-                  isSelected={detailPanelCardId === synthesisOutput?.leadCard?.pattern.id}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="pt-2"
+              >
+                <BriefingCard
+                  briefing={briefing}
+                  isLoading={briefingLoading}
+                  onRefresh={refreshBriefing}
                 />
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="lead-card p-5"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="urgency-pill urgency-knowing">No urgent items</span>
-                  </div>
-                  <h3 className="font-display text-display-lead text-olive-primary mb-2">
-                    All systems nominal
-                  </h3>
-                  <p className="text-body-card text-olive-secondary leading-relaxed">
-                    No indicators require immediate attention. Continue routine monitoring
-                    and maintain your preparedness checklist.
-                  </p>
-                </motion.div>
-              )}
+              </motion.div>
             </ErrorBoundary>
 
-            {/* ──── 5. AI INSIGHTS (True AI-Generated Analysis) ──── */}
-            <ErrorBoundary isolate>
-              {aiAnalysisLoading ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-4"
-                >
-                  <div className="flex items-center gap-2 text-xs text-olive-muted">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-                    <span>AI is analyzing indicators...</span>
-                  </div>
-                  <div className="secondary-card p-5 animate-pulse">
-                    <div className="w-32 h-4 bg-white/5 rounded mb-3" />
-                    <div className="w-3/4 h-5 bg-white/5 rounded mb-2" />
-                    <div className="w-full h-4 bg-white/5 rounded" />
-                  </div>
-                </motion.div>
-              ) : aiAnalysis && aiAnalysis.insights.length > 0 ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="space-y-4"
-                >
-                  {/* AI Overall Assessment */}
-                  {aiAnalysis.outcomeSentence && (
-                    <AIAnalysisSummary
-                      overallAssessment={aiAnalysis.outcomeSentence}
-                      hiddenConnections={aiAnalysis.hiddenConnections}
-                      familyFocusedSummary={aiAnalysis.familyFocusedSummary}
-                      phaseRelevance={aiAnalysis.phaseRelevance}
-                    />
-                  )}
-
-                  {/* Lead AI Insight */}
-                  {leadAIInsight && (
-                    <AIInsightCard
-                      insight={leadAIInsight}
-                      variant="lead"
-                    />
-                  )}
-
-                  {/* Secondary AI Insights */}
-                  {secondaryAIInsights.length > 0 && (
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      {secondaryAIInsights.map((insight) => (
-                        <AIInsightCard
-                          key={insight.id}
-                          insight={insight}
-                          variant="secondary"
-                        />
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              ) : null}
-            </ErrorBoundary>
-
-            {/* ──── 6. SECONDARY CARDS (Pattern-Based Fallback) ──── */}
-            {(!aiAnalysis || aiAnalysis.insights.length === 0) && cards.secondaryCards && cards.secondaryCards.length > 0 && (
-              <ErrorBoundary isolate>
-                <SecondaryCardsGrid cards={cards.secondaryCards as any} />
-              </ErrorBoundary>
-            )}
-
-            {/* ──── 7. COMPACT ROWS ──── */}
+            {/* ──── 4. ALSO MONITORING (Compact Rows) ──── */}
             {cards.compactRows && cards.compactRows.length > 0 && (
               <ErrorBoundary isolate>
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
+                  transition={{ delay: 0.2 }}
                 >
                   <h3 className="text-xs font-medium text-olive-tertiary uppercase tracking-wider mb-2">
                     Also monitoring
                   </h3>
-                  <div className="secondary-card divide-y divide-olive">
+                  <div className="glass-card divide-y divide-white/5">
                     {cards.compactRows.map((row, index) => (
                       <CompactRow key={row.id} data={row} index={index} />
                     ))}
@@ -290,10 +227,51 @@ export const Dashboard: React.FC = () => {
               </ErrorBoundary>
             )}
 
+            {/* ──── 6. LEGACY AI INSIGHTS (Collapsible) ──── */}
+            {aiAnalysis && aiAnalysis.insights.length > 0 && (
+              <ErrorBoundary isolate>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.25 }}
+                >
+                  <button
+                    onClick={() => setShowLegacyInsights(!showLegacyInsights)}
+                    className="w-full flex items-center justify-between py-2 text-left text-xs font-medium text-olive-tertiary uppercase tracking-wider hover:text-olive-secondary transition-colors"
+                  >
+                    <span>Additional Analysis</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${showLegacyInsights ? 'rotate-180' : ''}`} />
+                  </button>
+                  {showLegacyInsights && (
+                    <div className="space-y-4 mt-2">
+                      {aiAnalysis.outcomeSentence && (
+                        <AIAnalysisSummary
+                          overallAssessment={aiAnalysis.outcomeSentence}
+                          hiddenConnections={aiAnalysis.hiddenConnections}
+                          familyFocusedSummary={aiAnalysis.familyFocusedSummary}
+                          phaseRelevance={aiAnalysis.phaseRelevance}
+                        />
+                      )}
+                      {leadAIInsight && (
+                        <AIInsightCard insight={leadAIInsight} variant="lead" />
+                      )}
+                      {secondaryAIInsights.length > 0 && (
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          {secondaryAIInsights.map((insight) => (
+                            <AIInsightCard key={insight.id} insight={insight} variant="secondary" />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
+              </ErrorBoundary>
+            )}
+
             {/* ──── BOTTOM MICROCOPY ──── */}
             <div className="text-center py-8">
               <p className="text-xs text-olive-muted">
-                Preparedness is confidence. Monitor, plan, act.
+                Intelligence briefing powered by Canairy
               </p>
             </div>
           </>

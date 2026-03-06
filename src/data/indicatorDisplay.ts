@@ -85,6 +85,59 @@ export const INDICATOR_SOURCES: Record<string, { name: string; abbrev: string }>
 
   // Social Cohesion
   'education_01_closures': { name: 'NCES / State Education Depts', abbrev: 'NCES' },
+
+  // Banking & Finance
+  'bank_01_failures': { name: 'FDIC Failed Bank List', abbrev: 'FDIC' },
+  'bank_02_discount_window': { name: 'Federal Reserve H.4.1', abbrev: 'Fed' },
+  'bank_03_deposit_flow': { name: 'Federal Reserve H.8', abbrev: 'Fed' },
+
+  // Food & Agriculture
+  'food_01_crop_condition': { name: 'USDA Crop Progress Report', abbrev: 'USDA' },
+  'food_02_livestock_disease': { name: 'USDA APHIS', abbrev: 'USDA' },
+  'food_03_fertilizer_price': { name: 'USDA / Green Markets', abbrev: 'USDA' },
+  'food_04_processing_capacity': { name: 'USDA / Industry Reports', abbrev: 'USDA' },
+
+  // Housing
+  'housing_01_delinquency': { name: 'Mortgage Bankers Association', abbrev: 'MBA' },
+  'housing_02_foreclosure': { name: 'ATTOM Data Solutions', abbrev: 'ATTOM' },
+  'housing_03_rate_shock': { name: 'Freddie Mac PMMS', abbrev: 'Freddie Mac' },
+
+  // Supply Chain
+  'supply_01_port_congestion': { name: 'Marine Exchange / Port Authorities', abbrev: 'Marine Ex' },
+  'supply_02_freight_index': { name: 'Freightos Baltic Index', abbrev: 'FBX' },
+  'supply_03_chip_lead_time': { name: 'Susquehanna / Industry Data', abbrev: 'SIG' },
+
+  // Energy
+  'energy_02_nat_gas_storage': { name: 'EIA Natural Gas Weekly', abbrev: 'EIA' },
+  'energy_03_grid_emergency': { name: 'NERC / Regional Grid Operators', abbrev: 'NERC' },
+
+  // Telecom & Infrastructure
+  'telecom_01_bgp_anomalies': { name: 'BGPStream / RIPE NCC', abbrev: 'BGPStream' },
+  'telecom_02_cell_outages': { name: 'Downdetector / FCC', abbrev: 'FCC' },
+  'telecom_03_undersea_cable': { name: 'TeleGeography / Industry', abbrev: 'TeleGeo' },
+
+  // Travel & Transportation
+  'travel_01_advisories': { name: 'State Department Travel Advisories', abbrev: 'State Dept' },
+  'travel_02_border_wait': { name: 'CBP Border Wait Times', abbrev: 'CBP' },
+  'travel_03_tsa_throughput': { name: 'TSA Checkpoint Data', abbrev: 'TSA' },
+  'flight_01_ground_stops': { name: 'FAA Operations', abbrev: 'FAA' },
+  'flight_02_delay_pct': { name: 'FAA / FlightAware', abbrev: 'FAA' },
+  'flight_03_tfr_count': { name: 'FAA NOTAM System', abbrev: 'FAA' },
+
+  // Water
+  'water_01_reservoir_level': { name: 'USBR / State Water Resources', abbrev: 'USBR' },
+  'water_02_treatment_alerts': { name: 'EPA Safe Drinking Water', abbrev: 'EPA' },
+  'water_03_drought_monitor': { name: 'US Drought Monitor', abbrev: 'USDM' },
+
+  // Social / Culture
+  'cult_event_01_protests': { name: 'ACLED / Crowd Counting Consortium', abbrev: 'ACLED' },
+  'cult_media_01_trends': { name: 'Google Trends / Social Blade', abbrev: 'Google' },
+  'cult_meme_01_tokens': { name: 'CoinGecko / DeFi Llama', abbrev: 'CoinGecko' },
+  'cult_trend_01_twitter': { name: 'X/Twitter Trends API', abbrev: 'X' },
+
+  // Domestic Control (additional)
+  'dc_control_countdown': { name: 'Congressional Research Service', abbrev: 'CRS' },
+  'liberty_litigation_count': { name: 'ACLU / Court Records', abbrev: 'ACLU' },
 };
 
 export function getSourceDisplay(indicatorId: string, rawSource?: string): string {

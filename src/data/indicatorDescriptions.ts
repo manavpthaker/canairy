@@ -150,8 +150,8 @@ const descriptions: Record<string, IndicatorDescription> = {
       red: 'Significant oil trade bypassing USD',
     },
   },
-  oil_03_ofac_designations: {
-    id: 'oil_03_ofac_designations',
+  ofac_01_designations: {
+    id: 'ofac_01_designations',
     name: 'OFAC Designations',
     whyItMatters: 'Sanctions on Indian/Chinese oil entities signal escalating economic warfare that can boomerang into higher energy prices.',
     thresholds: {
@@ -244,8 +244,8 @@ const descriptions: Record<string, IndicatorDescription> = {
       red: 'Full activation — conflict imminent (jump to Phase 6+)',
     },
   },
-  nuclear_test_activity: {
-    id: 'nuclear_test_activity',
+  nuclear_01_tests: {
+    id: 'nuclear_01_tests',
     name: 'Nuclear/Missile Tests',
     whyItMatters: 'Nuclear tests and ICBM launches signal deterrence failure risk.',
     thresholds: {
@@ -377,6 +377,422 @@ const descriptions: Record<string, IndicatorDescription> = {
       amber: 'Growing mainstream interest',
       red: 'Mainstream cultural shift underway',
     },
+  },
+
+  // BANKING STRESS (Critical for financial briefings)
+  bank_01_failures: {
+    id: 'bank_01_failures',
+    name: 'Bank Failures',
+    whyItMatters: 'Bank failures signal systemic stress. SVB\'s collapse in March 2023 froze $175B in deposits overnight. When banks fail, ATMs can shut down, wire transfers halt, and direct deposits may not arrive.',
+    thresholds: {
+      green: 'No bank failures — banking system stable',
+      amber: 'Small bank failures — monitor your bank\'s health',
+      red: 'Major bank failures — withdraw emergency cash NOW',
+    },
+    historicalContext: 'March 2023: SVB, Signature, First Republic failed within weeks. 2008: 25 banks failed in crisis year.',
+  },
+  bank_02_discount_window: {
+    id: 'bank_02_discount_window',
+    name: 'Fed Discount Window',
+    whyItMatters: 'Banks borrowing from the Fed\'s emergency window means they can\'t get funds elsewhere. This is the banking system\'s "911 call." High borrowing preceded both the 2008 crisis and March 2023 bank runs.',
+    thresholds: {
+      green: 'Low emergency borrowing — banks healthy',
+      amber: 'Elevated borrowing — banks under stress',
+      red: 'Emergency levels — banking crisis imminent',
+    },
+    historicalContext: 'Discount window borrowing spiked to $153B in March 2023, highest since 2008 crisis.',
+  },
+  bank_03_deposit_flow: {
+    id: 'bank_03_deposit_flow',
+    name: 'Bank Deposit Flows',
+    whyItMatters: 'Money fleeing banks is the clearest sign of a bank run in progress. Deposits leaving your bank mean the bank may not have cash when you need it.',
+    thresholds: {
+      green: 'Normal deposit levels',
+      amber: 'Deposits declining — early warning sign',
+      red: 'Mass deposit outflows — your bank may be at risk',
+    },
+  },
+
+  // JOBS & LABOR
+  job_01_jobless_claims: {
+    id: 'job_01_jobless_claims',
+    name: 'Initial Jobless Claims',
+    whyItMatters: 'Weekly unemployment claims are the earliest signal of job market health. Rising claims mean layoffs are spreading — your industry could be next.',
+    thresholds: {
+      green: 'Claims low — job market healthy',
+      amber: 'Claims rising — layoffs spreading',
+      red: 'Claims spiking — major recession signal',
+    },
+    historicalContext: 'COVID: Claims hit 6.8M in one week (April 2020). Recessions typically see sustained 400K+ claims.',
+  },
+
+  // FLIGHT & TRAVEL
+  flight_01_ground_stops: {
+    id: 'flight_01_ground_stops',
+    name: 'FAA Ground Stops',
+    whyItMatters: 'Ground stops halt all flights to an airport. System-wide stops signal major infrastructure failure — your travel plans could be stranded for days.',
+    thresholds: {
+      green: 'Normal operations',
+      amber: 'Regional ground stops — check your flights',
+      red: 'System-wide ground stops — travel severely disrupted',
+    },
+    historicalContext: 'January 2023: FAA system outage caused first nationwide ground stop since 9/11.',
+  },
+  flight_02_delay_pct: {
+    id: 'flight_02_delay_pct',
+    name: 'Flight Delay Rate',
+    whyItMatters: 'High delay rates mean the system is stressed. Beyond 25%, cascading failures are likely — book backup options.',
+    thresholds: {
+      green: 'Normal delays (<15%)',
+      amber: 'Elevated delays (15-25%) — build buffer time',
+      red: 'Systemic delays (>25%) — expect cancellations',
+    },
+  },
+  flight_03_tfr_count: {
+    id: 'flight_03_tfr_count',
+    name: 'Temporary Flight Restrictions',
+    whyItMatters: 'TFRs indicate security events or disasters. High counts mean airspace is being controlled — major events are happening.',
+    thresholds: {
+      green: 'Normal TFR count',
+      amber: 'Elevated restrictions — security events active',
+      red: 'Widespread restrictions — major security situation',
+    },
+  },
+  travel_01_advisories: {
+    id: 'travel_01_advisories',
+    name: 'Travel Advisories',
+    whyItMatters: 'State Department advisories indicate where Americans face elevated risk. "Do Not Travel" means evacuate or don\'t go.',
+    thresholds: {
+      green: 'Few high-level advisories',
+      amber: 'Multiple Level 3-4 advisories',
+      red: 'Widespread "Do Not Travel" warnings',
+    },
+  },
+  travel_02_border_wait: {
+    id: 'travel_02_border_wait',
+    name: 'Border Wait Times',
+    whyItMatters: 'Long border waits signal enforcement surges or closures. If you live near the border or have cross-border needs, plan accordingly.',
+    thresholds: {
+      green: 'Normal processing times',
+      amber: 'Extended waits (2-4 hours)',
+      red: 'Severe delays or closures',
+    },
+  },
+  travel_03_tsa_throughput: {
+    id: 'travel_03_tsa_throughput',
+    name: 'TSA Passenger Volume',
+    whyItMatters: 'TSA numbers show real travel demand. Sharp drops indicate people are avoiding travel — a leading indicator of fear.',
+    thresholds: {
+      green: 'Normal passenger volumes',
+      amber: 'Declining travel (-20-40%)',
+      red: 'Travel collapse (-40%+) — major event',
+    },
+  },
+
+  // ENERGY
+  spr_01_level: {
+    id: 'spr_01_level',
+    name: 'Strategic Petroleum Reserve',
+    whyItMatters: 'The SPR is America\'s emergency fuel supply. When it drops below 400M barrels, we have less cushion for oil shocks. Low reserves mean higher prices when crises hit.',
+    thresholds: {
+      green: 'Reserves adequate (>450M barrels)',
+      amber: 'Reserves declining (350-450M)',
+      red: 'Critically low (<350M) — fuel prices vulnerable',
+    },
+    historicalContext: 'SPR fell to 372M barrels in 2023 — lowest since 1984. Used to combat 2022 gas price spike.',
+  },
+  energy_02_nat_gas_storage: {
+    id: 'energy_02_nat_gas_storage',
+    name: 'Natural Gas Storage',
+    whyItMatters: 'Gas storage levels determine winter heating costs. Low storage before winter means price spikes — budget for 2-3x heating bills.',
+    thresholds: {
+      green: 'Storage above 5-year average',
+      amber: 'Storage below average — expect higher bills',
+      red: 'Critical shortage — heating cost crisis likely',
+    },
+  },
+  energy_03_grid_emergency: {
+    id: 'energy_03_grid_emergency',
+    name: 'Grid Emergency Alerts',
+    whyItMatters: 'Grid emergency alerts mean blackouts are possible. Your household should activate backup power plans.',
+    thresholds: {
+      green: 'No grid emergencies',
+      amber: 'Watch alerts — have backups ready',
+      red: 'Rolling blackouts likely — activate backup power',
+    },
+    historicalContext: 'February 2021 Texas freeze: 4.5M homes lost power for days. 246 people died.',
+  },
+  oil_03_jodi_inventory: {
+    id: 'oil_03_jodi_inventory',
+    name: 'Global Oil Inventories',
+    whyItMatters: 'JODI tracks worldwide oil stocks. Declining global inventories mean less buffer against supply shocks — prices will spike faster.',
+    thresholds: {
+      green: 'Global inventories stable',
+      amber: 'Inventories declining',
+      red: 'Critical shortage — price spike imminent',
+    },
+  },
+
+  // SUPPLY CHAIN
+  supply_01_port_congestion: {
+    id: 'supply_01_port_congestion',
+    name: 'Port Congestion',
+    whyItMatters: '40% of US imports flow through LA/Long Beach. Ships waiting offshore mean empty shelves in 2-3 weeks. Stock up before shortages hit.',
+    thresholds: {
+      green: 'Ports flowing normally',
+      amber: 'Ships backing up — order essentials now',
+      red: 'Major congestion — expect shortages',
+    },
+    historicalContext: '2021: 100+ ships waited offshore LA. Led to holiday supply shortages and inflation spike.',
+  },
+  supply_02_freight_index: {
+    id: 'supply_02_freight_index',
+    name: 'Freight Rate Index',
+    whyItMatters: 'Shipping costs flow directly to store prices. When container rates spike, consumer prices follow 2-3 months later.',
+    thresholds: {
+      green: 'Normal freight rates',
+      amber: 'Rates rising — imported goods will cost more',
+      red: 'Rate spike — significant price increases coming',
+    },
+    historicalContext: '2021: Container rates went from $2K to $20K. Drove 2022 inflation surge.',
+  },
+  supply_03_chip_lead_time: {
+    id: 'supply_03_chip_lead_time',
+    name: 'Semiconductor Lead Time',
+    whyItMatters: 'Chips are in everything — cars, phones, appliances. Long lead times mean product shortages and price hikes.',
+    thresholds: {
+      green: 'Normal lead times (10-15 weeks)',
+      amber: 'Extended (15-25 weeks) — expect delays',
+      red: 'Severe shortage (25+ weeks) — buy now if needed',
+    },
+    historicalContext: '2021: Auto plants shut down due to chip shortage. New car prices rose 12%.',
+  },
+  supply_pharmacy_shortage: {
+    id: 'supply_pharmacy_shortage',
+    name: 'Drug Shortages',
+    whyItMatters: 'FDA tracks active drug shortages. Your medications may become unavailable — talk to your doctor about alternatives.',
+    thresholds: {
+      green: 'Few critical shortages',
+      amber: 'Multiple shortages — check your meds',
+      red: 'Widespread shortages — secure supply',
+    },
+    historicalContext: 'Ozempic/Adderall shortages in 2023 affected millions. Some lasted 18+ months.',
+  },
+
+  // GLOBAL CONFLICT
+  hormuz_war_risk: {
+    id: 'hormuz_war_risk',
+    name: 'Hormuz War Risk Premium',
+    whyItMatters: '21% of world oil flows through the Strait of Hormuz. Rising insurance premiums signal shipping fears — oil prices will follow.',
+    thresholds: {
+      green: 'Normal insurance rates',
+      amber: 'Risk premium rising — oil price pressure',
+      red: 'Major premium spike — disruption expected',
+    },
+    historicalContext: 'Iran tensions in 2019 caused tanker attacks and brief oil price spikes.',
+  },
+  taiwan_exclusion_zone: {
+    id: 'taiwan_exclusion_zone',
+    name: 'Taiwan Exclusion Zones',
+    whyItMatters: 'China establishing exclusion zones around Taiwan would signal blockade preparation. Taiwan makes 92% of advanced chips — expect global tech shortages.',
+    thresholds: {
+      green: 'No exclusion zones',
+      amber: 'Zones declared — semiconductor risk HIGH',
+      red: 'Blockade imminent — buy electronics NOW',
+    },
+  },
+
+  // DOMESTIC GOVERNANCE
+  power_02_dod_autonomy: {
+    id: 'power_02_dod_autonomy',
+    name: 'DoD AI Autonomy',
+    whyItMatters: 'Policies allowing autonomous weapons systems indicate reduced human oversight over lethal force.',
+    thresholds: {
+      green: 'Human-in-loop required',
+      amber: 'Human-on-loop being debated',
+      red: 'Autonomous weapons authorized',
+    },
+  },
+  education_01_closures: {
+    id: 'education_01_closures',
+    name: 'School Closures',
+    whyItMatters: 'Mass school closures affect child care and family routines. May indicate pandemic, unrest, or budget crises.',
+    thresholds: {
+      green: 'Normal operations',
+      amber: 'Some districts affected — check yours',
+      red: 'Widespread closures — backup childcare needed',
+    },
+  },
+  liberty_01_litigation: {
+    id: 'liberty_01_litigation',
+    name: 'Civil Rights Litigation',
+    whyItMatters: 'Rising ACLU/civil rights lawsuits indicate rights are being tested. Know your rights and document interactions.',
+    thresholds: {
+      green: 'Baseline litigation',
+      amber: 'Elevated challenges — rights under pressure',
+      red: 'Rights under broad assault',
+    },
+  },
+  luxury_01_collapse: {
+    id: 'luxury_01_collapse',
+    name: 'Luxury Market Collapse',
+    whyItMatters: 'Luxury spending is a leading indicator — when wealthy consumers cut back, recession follows. Tighten your budget.',
+    thresholds: {
+      green: 'Luxury market healthy',
+      amber: 'High-end spending declining',
+      red: 'Luxury collapse — recession likely',
+    },
+  },
+
+  // WATER INFRASTRUCTURE
+  water_01_reservoir_level: {
+    id: 'water_01_reservoir_level',
+    name: 'Major Reservoir Levels',
+    whyItMatters: 'Major reservoirs supply drinking water and irrigation for millions. Low levels mean water restrictions, higher prices, and potential rationing. Lake Mead dropping exposed 2021 water crisis.',
+    thresholds: {
+      green: 'Reservoirs healthy (>70%)',
+      amber: 'Levels declining — expect water restrictions',
+      red: 'Critical shortage — rationing likely',
+    },
+    historicalContext: '2022: Lake Mead hit lowest level since 1937. Mandatory cuts to Arizona, Nevada.',
+  },
+  water_02_treatment_alerts: {
+    id: 'water_02_treatment_alerts',
+    name: 'Water Treatment Alerts',
+    whyItMatters: 'Boil notices and treatment failures mean your tap water may not be safe. Stock bottled water and water filters.',
+    thresholds: {
+      green: 'No significant alerts',
+      amber: 'Multiple regions affected — check your utility',
+      red: 'Widespread alerts — secure water supply',
+    },
+    historicalContext: 'Jackson MS 2022: 150K lost water for weeks after treatment failure.',
+  },
+  water_03_drought_monitor: {
+    id: 'water_03_drought_monitor',
+    name: 'Extreme Drought Coverage',
+    whyItMatters: 'Extreme drought destroys crops, kills livestock, and depletes aquifers. Food prices spike, and some regions may become uninhabitable.',
+    thresholds: {
+      green: 'Drought minimal (<10% US)',
+      amber: 'Significant drought (10-25%)',
+      red: 'Crisis-level drought — food supply at risk',
+    },
+    historicalContext: '2012 drought covered 65% of US, caused $30B in crop losses.',
+  },
+
+  // TELECOMMUNICATIONS
+  telecom_01_bgp_anomalies: {
+    id: 'telecom_01_bgp_anomalies',
+    name: 'Internet Routing Anomalies',
+    whyItMatters: 'BGP hijacks can redirect or intercept internet traffic. Major anomalies can take down banking, communications, and emergency services.',
+    thresholds: {
+      green: 'Internet routing stable',
+      amber: 'Anomalies detected — monitor services',
+      red: 'Major routing disruption — expect outages',
+    },
+    historicalContext: 'Pakistan 2008: Accidentally took YouTube offline globally for hours.',
+  },
+  telecom_02_cell_outages: {
+    id: 'telecom_02_cell_outages',
+    name: 'Cell Network Outages',
+    whyItMatters: 'Major cell outages cut off communication and 911 access. Have backup communication plans (landline, radio, neighbor coordination).',
+    thresholds: {
+      green: 'Networks operational',
+      amber: 'Regional outages — check your carrier',
+      red: 'Widespread outages — activate backup comms',
+    },
+    historicalContext: 'AT&T Feb 2024: 70K+ lost service for hours. 911 calls failed.',
+  },
+  telecom_03_undersea_cable: {
+    id: 'telecom_03_undersea_cable',
+    name: 'Undersea Cable Incidents',
+    whyItMatters: '95% of international data flows through undersea cables. Damage isolates regions and can be act of sabotage. Russia has mapped all cables.',
+    thresholds: {
+      green: 'No active incidents',
+      amber: 'Cable damage reported — international bandwidth reduced',
+      red: 'Multiple cables affected — potential sabotage',
+    },
+    historicalContext: 'Red Sea 2024: Houthi attacks threatened 25% of Asia-Europe bandwidth.',
+  },
+
+  // HOUSING & MORTGAGE
+  housing_01_delinquency: {
+    id: 'housing_01_delinquency',
+    name: 'Mortgage Delinquency',
+    whyItMatters: 'Rising delinquencies precede foreclosure waves. If your neighbors can\'t pay, your property value drops. Check your mortgage options.',
+    thresholds: {
+      green: 'Delinquencies stable (<2%)',
+      amber: 'Rising delinquencies — housing stress building',
+      red: 'Crisis levels — foreclosure wave coming',
+    },
+    historicalContext: '2009: Delinquency hit 10%. Foreclosures devastated neighborhoods.',
+  },
+  housing_02_foreclosure: {
+    id: 'housing_02_foreclosure',
+    name: 'Foreclosure Activity',
+    whyItMatters: 'Foreclosures flood the market with cheap homes, dragging down all property values. May signal economic opportunity or neighborhood decline.',
+    thresholds: {
+      green: 'Foreclosures below normal',
+      amber: 'Activity rising — housing market stressed',
+      red: 'Foreclosure wave — property values at risk',
+    },
+    historicalContext: '2010: 2.9M foreclosure filings. Median home price dropped 30%.',
+  },
+  housing_03_rate_shock: {
+    id: 'housing_03_rate_shock',
+    name: 'ARM Reset Exposure',
+    whyItMatters: 'Adjustable-rate mortgages resetting at higher rates cause payment shock. Homeowners may face 50%+ payment increases.',
+    thresholds: {
+      green: 'Few resets coming',
+      amber: 'Significant reset wave ahead — refinance if possible',
+      red: 'Major payment shock wave — defaults likely',
+    },
+    historicalContext: '2007: ARM resets triggered the subprime crisis cascade.',
+  },
+
+  // FOOD PRODUCTION
+  food_01_crop_condition: {
+    id: 'food_01_crop_condition',
+    name: 'US Crop Health',
+    whyItMatters: 'Poor crop conditions mean lower yields and higher grocery prices 3-6 months later. Stock staples before price spikes.',
+    thresholds: {
+      green: 'Crops healthy (60%+ Good/Excellent)',
+      amber: 'Crops stressed — prices will rise',
+      red: 'Crop failure — stock up now',
+    },
+    historicalContext: '2012 drought: Corn yields dropped 27%. Food prices spiked 2013.',
+  },
+  food_02_livestock_disease: {
+    id: 'food_02_livestock_disease',
+    name: 'Livestock Disease Alerts',
+    whyItMatters: 'Avian flu, African swine fever, and other diseases can wipe out herds. Meat prices spike, and zoonotic diseases may spread to humans.',
+    thresholds: {
+      green: 'No major outbreaks',
+      amber: 'Active outbreak — expect meat price increases',
+      red: 'Widespread disease — supply disruption likely',
+    },
+    historicalContext: '2015 bird flu: 50M birds killed. Egg prices doubled.',
+  },
+  food_03_fertilizer_price: {
+    id: 'food_03_fertilizer_price',
+    name: 'Fertilizer Costs',
+    whyItMatters: 'Fertilizer drives crop yields. When prices spike, farmers plant less, and food prices follow 6-12 months later.',
+    thresholds: {
+      green: 'Prices near average',
+      amber: 'Prices elevated — food inflation coming',
+      red: 'Price spike — expect grocery increases',
+    },
+    historicalContext: '2022: Russia/Ukraine war tripled fertilizer prices. Global food crisis followed.',
+  },
+  food_04_processing_capacity: {
+    id: 'food_04_processing_capacity',
+    name: 'Meat Processing Capacity',
+    whyItMatters: 'Only 4 companies process 85% of US beef. When plants shut down, meat disappears from shelves within days.',
+    thresholds: {
+      green: 'Capacity normal (>90%)',
+      amber: 'Capacity reduced — meat prices rising',
+      red: 'Critical shortage — empty shelves possible',
+    },
+    historicalContext: 'COVID 2020: Plant closures caused meat shortages. Beef prices up 20%.',
   },
 };
 

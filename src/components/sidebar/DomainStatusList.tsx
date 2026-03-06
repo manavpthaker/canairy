@@ -13,6 +13,10 @@ import {
   Truck,
   Zap,
   ChevronRight,
+  Waves,
+  Radio,
+  Home,
+  Wheat,
 } from 'lucide-react';
 import { useStore } from '../../store';
 import { Domain, DOMAIN_META } from '../../types';
@@ -30,6 +34,10 @@ const DOMAIN_ICONS: Record<Domain, React.ComponentType<{ className?: string }>> 
   supply_chain: Truck,
   energy: Zap,
   social_cohesion: Users,
+  water_infrastructure: Waves,
+  telecommunications: Radio,
+  housing_mortgage: Home,
+  food_production: Wheat,
 };
 
 interface DomainStatus {

@@ -294,7 +294,7 @@ export class NewsIntelligenceService {
         {
           title: "Federal Reserve Signals Cautious Approach to Rate Policy",
           description: "Treasury auction shows mixed demand as investors weigh inflation concerns against growth outlook. The 10-year auction tail widened to 3.5 basis points.",
-          url: "https://www.wsj.com",
+          url: "https://news.google.com/search?q=treasury+auction+demand+federal+reserve",
           source: { id: "wsj", name: "Wall Street Journal" },
           publishedAt: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -305,7 +305,7 @@ export class NewsIntelligenceService {
         {
           title: "Bond Markets Flash Warning Signs as Auction Demand Weakens",
           description: "Weak demand at Treasury auctions raises concerns about investor appetite for U.S. debt.",
-          url: "https://www.bloomberg.com",
+          url: "https://news.google.com/search?q=bond+market+treasury+yields",
           source: { id: "bloomberg", name: "Bloomberg" },
           publishedAt: new Date(now - 8 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -318,7 +318,7 @@ export class NewsIntelligenceService {
         {
           title: "China Conducts Military Exercises Near Taiwan Strait",
           description: "PLA Air Force sends 28 aircraft into Taiwan's ADIZ, marking largest incursion this month. Semiconductor supply chain concerns rise.",
-          url: "https://www.reuters.com",
+          url: "https://news.google.com/search?q=china+taiwan+military+PLA",
           source: { id: "reuters", name: "Reuters" },
           publishedAt: new Date(now - 4 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -329,7 +329,7 @@ export class NewsIntelligenceService {
         {
           title: "TSMC Contingency Plans Amid Rising Cross-Strait Tensions",
           description: "World's largest chipmaker reviews supply chain resilience as military activity increases in the region.",
-          url: "https://www.ft.com",
+          url: "https://news.google.com/search?q=TSMC+taiwan+semiconductor+supply+chain",
           source: { id: "ft", name: "Financial Times" },
           publishedAt: new Date(now - 12 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -342,7 +342,7 @@ export class NewsIntelligenceService {
         {
           title: "Market Volatility Spikes on Economic Uncertainty",
           description: "10-year Treasury yields swing 15 basis points intraday as investors brace for Fed announcement.",
-          url: "https://www.bloomberg.com",
+          url: "https://news.google.com/search?q=treasury+yield+volatility+market",
           source: { id: "bloomberg", name: "Bloomberg" },
           publishedAt: new Date(now - 1 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -353,7 +353,7 @@ export class NewsIntelligenceService {
         {
           title: "Wild Swings in Bond Market Raise Systemic Risk Concerns",
           description: "Treasury market liquidity deteriorates amid elevated volatility, regulators monitoring closely.",
-          url: "https://www.wsj.com",
+          url: "https://news.google.com/search?q=bond+market+liquidity+volatility",
           source: { id: "wsj", name: "Wall Street Journal" },
           publishedAt: new Date(now - 6 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -366,7 +366,7 @@ export class NewsIntelligenceService {
         {
           title: "Russia Expands Oil Trade with BRICS Nations, Bypassing Dollar",
           description: "Indian refiners increasingly pay for Russian crude in non-dollar currencies as sanctions reshape global oil trade.",
-          url: "https://www.reuters.com",
+          url: "https://news.google.com/search?q=russia+oil+BRICS+sanctions",
           source: { id: "reuters", name: "Reuters" },
           publishedAt: new Date(now - 5 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -377,7 +377,7 @@ export class NewsIntelligenceService {
         {
           title: "De-Dollarization Accelerates in Energy Markets",
           description: "BRICS nations settle growing share of oil trades in local currencies, challenging petrodollar system.",
-          url: "https://www.ft.com",
+          url: "https://news.google.com/search?q=dedollarization+oil+BRICS+currency",
           source: { id: "ft", name: "Financial Times" },
           publishedAt: new Date(now - 18 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -390,7 +390,7 @@ export class NewsIntelligenceService {
         {
           title: "mBridge CBDC Platform Processes Record Gulf Oil Settlement",
           description: "Central bank digital currency pilot sees surge in cross-border oil trade settlements, bypassing SWIFT.",
-          url: "https://www.bloomberg.com",
+          url: "https://news.google.com/search?q=mBridge+CBDC+oil+settlement",
           source: { id: "bloomberg", name: "Bloomberg" },
           publishedAt: new Date(now - 10 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -403,7 +403,7 @@ export class NewsIntelligenceService {
         {
           title: "ICE Detention Facilities Near Capacity Amid Enforcement Surge",
           description: "Immigration detention population reaches 45,000 as enhanced interior enforcement continues.",
-          url: "https://www.reuters.com",
+          url: "https://news.google.com/search?q=ICE+detention+immigration+enforcement",
           source: { id: "reuters", name: "Reuters" },
           publishedAt: new Date(now - 3 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -416,7 +416,7 @@ export class NewsIntelligenceService {
         {
           title: "NATO Activates High-Readiness Forces Amid Eastern European Tensions",
           description: "Alliance places 300,000 troops on heightened alert status, largest activation since Cold War.",
-          url: "https://www.bbc.com",
+          url: "https://news.google.com/search?q=NATO+troops+readiness+Europe",
           source: { id: "bbc-news", name: "BBC News" },
           publishedAt: new Date(now - 7 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -429,7 +429,7 @@ export class NewsIntelligenceService {
         {
           title: "Global Armed Conflicts Reach Highest Level Since World War II",
           description: "ACLED data shows 56 active conflicts worldwide, with escalation across multiple regions.",
-          url: "https://www.reuters.com",
+          url: "https://news.google.com/search?q=global+conflicts+armed+wars",
           source: { id: "reuters", name: "Reuters" },
           publishedAt: new Date(now - 14 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -442,7 +442,7 @@ export class NewsIntelligenceService {
         {
           title: "AI-Generated Video Causes Brief Market Panic",
           description: "Deepfake video of Federal Reserve official briefly crashes bond futures before detection.",
-          url: "https://www.wsj.com",
+          url: "https://news.google.com/search?q=deepfake+AI+misinformation+market",
           source: { id: "wsj", name: "Wall Street Journal" },
           publishedAt: new Date(now - 20 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",
@@ -455,7 +455,7 @@ export class NewsIntelligenceService {
         {
           title: "National Guard Deployed to Major Cities Amid Civil Unrest",
           description: "Six metropolitan areas receive National Guard support for critical infrastructure protection.",
-          url: "https://www.bbc.com",
+          url: "https://news.google.com/search?q=national+guard+deployment+cities",
           source: { id: "bbc-news", name: "BBC News" },
           publishedAt: new Date(now - 16 * 60 * 60 * 1000).toISOString(),
           content: "Demo content",

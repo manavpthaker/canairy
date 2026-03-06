@@ -228,9 +228,19 @@ export const NewsFeed: React.FC<NewsFeedProps> = ({
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <h4 className="text-white font-medium mb-1 line-clamp-2">
-                        {article.title}
-                      </h4>
+                      <a
+                        href={article.url !== '#' ? article.url : undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={article.url !== '#' ? 'hover:text-blue-400 transition-colors' : ''}
+                      >
+                        <h4 className="text-white font-medium mb-1 line-clamp-2">
+                          {article.title}
+                          {article.url !== '#' && (
+                            <ExternalLink className="w-3 h-3 inline ml-2 text-white/30" />
+                          )}
+                        </h4>
+                      </a>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-sm text-white/30">
                           {article.source.name}

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Filter } from 'lucide-react';
+import { Filter, Search, X } from 'lucide-react';
 import { useStore } from '../store';
 import { IndicatorData } from '../types';
 import { IndicatorCard } from '../components/indicators/IndicatorCard';
@@ -25,6 +25,7 @@ export const Indicators: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
   const [selectedIndicator, setSelectedIndicator] = useState<IndicatorData | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Initialize domain filter from URL params
   const domainParam = searchParams.get('domain');
@@ -56,15 +57,19 @@ export const Indicators: React.FC = () => {
   // Also filter out indicators without valid sources (data integration pending)
   const processedIndicators = useMemo(() => {
     const deduped = deduplicateIndicators(indicators);
+    const searchLower = searchQuery.toLowerCase().trim();
     const filtered = deduped.filter(indicator => {
       // Hide indicators without valid sources
       if (!hasValidSource(indicator.id)) return false;
       if (statusFilter !== 'all' && indicator.status.level !== statusFilter) return false;
       if (domainFilter !== 'all' && indicator.domain !== domainFilter) return false;
+      // Search by name or description
+      if (searchLower && !indicator.name.toLowerCase().includes(searchLower) &&
+          !indicator.description?.toLowerCase().includes(searchLower)) return false;
       return true;
     });
     return sortIndicators(filtered);
-  }, [indicators, statusFilter, domainFilter]);
+  }, [indicators, statusFilter, domainFilter, searchQuery]);
 
   const filteredIndicators = processedIndicators;
   // Only count indicators with valid sources
@@ -199,6 +204,29 @@ export const Indicators: React.FC = () => {
 
           {/* Filter row */}
           <div className="flex items-center gap-3 mt-3 flex-wrap">
+            {/* Search input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-olive-muted" />
+              <input
+                type="text"
+                placeholder="Search indicators..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 pr-8 py-1.5 w-48 rounded-lg bg-white/5 border border-white/10 text-sm text-olive-primary placeholder:text-olive-muted focus:outline-none focus:border-white/20 transition-colors"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-olive-muted hover:text-olive-secondary"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="w-px h-4 bg-white/10" />
+
             {/* Status filters */}
             <FilterPill
               label="All"

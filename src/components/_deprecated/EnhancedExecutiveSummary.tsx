@@ -150,7 +150,7 @@ export const EnhancedExecutiveSummary: React.FC = () => {
     }
 
     // This month impacts
-    if (redIndicators.some(i => i.id === 'oil_01_russian_brics' || i.id === 'oil_03_ofac_designations')) {
+    if (redIndicators.some(i => i.id === 'oil_01_russian_brics' || i.id === 'ofac_01_designations')) {
       timeline.push({
         timeframe: 'this-month',
         description: 'Energy prices rising as oil trade shifts away from USD'

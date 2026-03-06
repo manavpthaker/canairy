@@ -2,7 +2,7 @@ import axios from 'axios';
 import { IndicatorData, HOPIScore, SystemStatus, Phase } from '../types';
 import { mockIndicators, mockHOPIScore, mockSystemStatus } from '../mock/mockData';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5555/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5555/api/v1';
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true' || false;
 
 const api = axios.create({
@@ -32,10 +32,12 @@ export const apiService = {
     if (USE_MOCK_DATA) {
       return mockIndicators;
     }
-    
+
     try {
-      const { data } = await api.get('/indicators');
-      return data.indicators;
+      const { data } = await api.get('/indicators/');
+      // Handle both array and {indicators: []} response formats
+      const indicators = Array.isArray(data) ? data : data.indicators;
+      return indicators || mockIndicators;
     } catch (error) {
       console.log('Using mock indicators due to API error');
       return mockIndicators;
@@ -59,9 +61,10 @@ export const apiService = {
     if (USE_MOCK_DATA) {
       return mockHOPIScore;
     }
-    
+
     try {
-      const { data } = await api.get('/hopi');
+      // Note: HOPI endpoint is at root level, not /v1/
+      const { data } = await axios.get('http://localhost:5555/api/v1/hopi');
       return data;
     } catch (error) {
       console.log('Using mock HOPI score due to API error');

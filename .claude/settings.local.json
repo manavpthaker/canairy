@@ -28,7 +28,23 @@
       "Bash(cat:*)",
       "Bash(ls:*)",
       "Bash(node -e:*)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(comm -23:*)",
+      "Bash(pip install:*)",
+      "Bash(PYTHONPATH=src python3:*)",
+      "Bash(xargs kill -9)",
+      "Bash(xargs:*)",
+      "Bash(for f in cisa_cyber nws_alerts faa_flights state_dept_travel cbp_travel who_disease market_volatility)",
+      "Bash(do)",
+      "Bash([ -f \"/Users/manavthaker/Documents/GitHub/canairy/src/collectors/$f.py\" ])",
+      "Bash(echo:*)",
+      "Bash(done)",
+      "Bash(__NEW_LINE__ echo \"\")",
+      "Bash(for f in treasury treasury_auctions jobless_claims gdp_growth)",
+      "Bash(for f in grocery_cpi)",
+      "Bash(for f in eia_energy)",
+      "Bash(for f in acled_protests global_conflict)",
+      "Bash(\"https://api.weather.gov/alerts/active?status=actual&limit=5\")"
     ]
   }
 }

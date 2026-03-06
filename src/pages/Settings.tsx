@@ -477,6 +477,9 @@ export const Settings: React.FC = () => {
             Reset
           </button>
         </div>
+        <p className="text-center text-xs text-white/20 mt-3">
+          Settings are saved to this device only
+        </p>
       </div>
     </>
   );

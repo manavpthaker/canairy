@@ -11,6 +11,7 @@ import {
   Zap,
   CheckCircle2,
   Circle,
+  Printer,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../store';
@@ -54,16 +55,25 @@ export const ResiliencePlaybook: React.FC = () => {
             <ChevronDown className="w-3 h-3 text-white/15 rotate-[-90deg]" />
             <span className="text-white/50 text-sm">Playbook</span>
           </div>
-          <div className="flex items-center gap-4 mt-4">
-            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-              <Shield className="w-6 h-6 text-white/40" />
+          <div className="flex items-center justify-between gap-4 mt-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                <Shield className="w-6 h-6 text-white/40" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Your Family's Plan</h1>
+                <p className="text-white/30">
+                  Step-by-step guide for every level of preparedness — from basics to full resilience
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Your Family's Plan</h1>
-              <p className="text-white/30">
-                Step-by-step guide for every level of preparedness — from basics to full resilience
-              </p>
-            </div>
+            <button
+              onClick={() => window.print()}
+              className="hidden sm:flex btn btn-secondary text-sm"
+            >
+              <Printer className="w-4 h-4" />
+              Print
+            </button>
           </div>
 
           {/* Current phase badge */}

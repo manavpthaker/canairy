@@ -73,14 +73,14 @@ export const ThreatBanner: React.FC = () => {
                 'text-sm sm:text-base font-display font-bold tracking-wide',
                 actionProtocolActive ? 'text-red-300' : 'text-amber-300'
               )}>
-                {actionProtocolActive ? 'ACTION REQUIRED' : 'ELEVATED ALERT'}
+                {actionProtocolActive ? 'Phase 7 — High Priority' : 'Elevated Phase'}
               </h2>
               <p className={cn(
                 'text-xs sm:text-sm truncate',
                 actionProtocolActive ? 'text-red-300/60' : 'text-amber-300/60'
               )}>
                 {actionProtocolActive
-                  ? `${redCount} indicators critical — 48-hour protocol active`
+                  ? `${redCount} critical indicators — prioritize these actions`
                   : `${redCount} indicator${redCount !== 1 ? 's' : ''} at red level`
                 }
               </p>
@@ -125,7 +125,7 @@ export const ThreatBanner: React.FC = () => {
               <div className="px-4 sm:px-6 pb-5 border-t border-red-500/10">
                 <div className="flex items-center gap-2 py-3 text-xs text-red-300/50">
                   <Clock className="w-3.5 h-3.5" />
-                  <span>Complete within 48 hours of activation</span>
+                  <span>Priority actions for current conditions</span>
                 </div>
 
                 {/* Triggering indicators */}

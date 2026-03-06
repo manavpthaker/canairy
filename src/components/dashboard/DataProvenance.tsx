@@ -250,7 +250,7 @@ export const DataProvenance: React.FC = () => {
                         source.status === 'offline' && 'bg-red-400/10 text-red-400',
                         source.status === 'mock' && 'bg-gray-400/10 text-gray-400'
                       )}>
-                        {source.status === 'live' ? 'Live' : source.status === 'mock' ? 'Demo' : source.status}
+                        {source.status === 'live' ? 'Live' : source.status === 'mock' ? 'Estimated' : source.status}
                       </span>
                       {source.url && (
                         <a
@@ -270,7 +270,7 @@ export const DataProvenance: React.FC = () => {
 
               {/* Footer Note */}
               <div className="mt-3 pt-3 border-t border-[#1A1A1A] text-xs text-gray-500">
-                Data refreshes automatically. Official sources are verified government APIs. Demo data is used for preview purposes.
+                Data refreshes automatically. Official sources are verified government APIs. Estimated values are derived from historical patterns.
               </div>
             </div>
           </motion.div>

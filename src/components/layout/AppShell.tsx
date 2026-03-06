@@ -3,15 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home,
   Eye,
-  CheckSquare,
-  Shield,
-  BarChart3,
+  ClipboardList,
   Settings,
   RefreshCw,
   Menu,
   X,
   Bell,
-  BookOpen,
 } from 'lucide-react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { useStore } from '../../store';
@@ -23,23 +20,21 @@ import { Tooltip } from '../ui/Tooltip';
 import { generateInsightCardWithEvidence } from '../../services/synthesis/evidenceGenerator';
 import { cn } from '../../utils/cn';
 
-// Left nav items - icon only on desktop
+// Left nav items - icon only on desktop (simplified to 5 items)
 const NAV_ITEMS = [
   { path: '/dashboard', icon: Home, label: 'Home' },
   { path: '/indicators', icon: Eye, label: 'Indicators' },
-  { path: '/checklist', icon: CheckSquare, label: 'Checklist' },
-  { path: '/playbook', icon: BookOpen, label: 'Playbook' },
-  { path: '/analytics', icon: BarChart3, label: 'Analytics' },
+  { path: '/action-plan', icon: ClipboardList, label: 'Action Plan' },
   { path: '/alerts', icon: Bell, label: 'Alerts' },
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 
-// Bottom tab bar items (mobile)
+// Bottom tab bar items (mobile) - same 5 items
 const BOTTOM_TABS = [
   { path: '/dashboard', icon: Home, label: 'Home' },
-  { path: '/checklist', icon: CheckSquare, label: 'Actions' },
+  { path: '/action-plan', icon: ClipboardList, label: 'Actions' },
   { path: '/indicators', icon: Eye, label: 'Monitor' },
-  { path: '/playbook', icon: Shield, label: 'Plan' },
+  { path: '/alerts', icon: Bell, label: 'Alerts' },
   { path: '/settings', icon: Settings, label: 'More' },
 ];
 
@@ -105,37 +100,26 @@ export const AppShell: React.FC = () => {
         )}
       >
         <div className="flex flex-col h-full items-center">
-          {/* Monogram Logo */}
-          <div className="py-4 flex items-center justify-center w-full">
-            <Link
-              to="/dashboard"
-              onClick={() => setShowMobileNav(false)}
-              className="flex items-center gap-2"
-            >
-              {/* Desktop: Monogram only */}
-              <span className="hidden lg:block text-sm font-display font-bold text-olive-primary">
-                C<span className="text-amber-400">ai</span>
-              </span>
-              {/* Mobile: Full name */}
-              <span className="lg:hidden text-olive-primary font-display font-semibold text-lg">
-                Can<span className="text-amber-400">ai</span>ry
-              </span>
-            </Link>
+          {/* Mobile close button */}
+          <div className="py-4 flex items-center justify-end w-full lg:hidden px-3">
             <button
               onClick={() => setShowMobileNav(false)}
               aria-label="Close navigation menu"
-              className="p-1.5 text-olive-tertiary hover:text-olive-primary lg:hidden rounded-lg hover:bg-white/5 ml-auto mr-3"
+              className="p-1.5 text-olive-tertiary hover:text-olive-primary rounded-lg hover:bg-white/5"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
+
+          {/* Spacer for desktop to align nav items */}
+          <div className="hidden lg:block h-4" />
 
           {/* Navigation */}
           <nav aria-label="Primary navigation" className="flex-1 w-full px-2 py-2">
             <div className="flex flex-col items-center gap-1">
               {NAV_ITEMS.map(item => {
                 const active = isActive(item.path);
-                const showBadge = item.path === '/checklist' && redCount > 0;
+                const showBadge = item.path === '/action-plan' && redCount > 0;
 
                 const navLink = (
                   <Link
@@ -211,79 +195,94 @@ export const AppShell: React.FC = () => {
 
       {/* ── Main Content Area ── */}
       <div className={cn(
-        'flex-1 min-h-screen flex',
+        'flex-1 min-h-screen flex flex-col',
         'lg:ml-14' // Account for 56px left nav
       )}>
-        {/* Main Feed - full width when no sidebar, 60% when sidebar present */}
-        <main
-          id="main-content"
-          className={cn(
-            'flex-1 min-h-screen flex flex-col',
-            'pb-16 lg:pb-0', // Bottom padding for mobile tabs
-            'transition-all duration-300',
-            // Only constrain width when dashboard with sidebar
-            showRightSidebar && 'lg:w-[60%] lg:flex-none',
-            isPanelOpen && 'lg:w-[45%] lg:flex-none'
-          )}
-        >
-          {/* Mobile Header */}
-          <header className="lg:hidden bg-olive-nav/80 backdrop-blur-xl border-b border-olive sticky top-0 z-10">
-            <div className="px-4 py-3 flex items-center justify-between">
+        {/* Desktop Header with Logo */}
+        <header className="hidden lg:flex items-center justify-between px-8 py-4 border-b border-olive/50">
+          <Link to="/dashboard" className="flex items-center gap-2">
+            <span className="text-lg font-display font-bold text-olive-primary">
+              Can<span className="text-amber-400">ai</span>ry
+            </span>
+          </Link>
+          <div className="text-xs text-olive-muted">
+            Household Resilience Monitor
+          </div>
+        </header>
+
+        {/* Mobile Header */}
+        <header className="lg:hidden bg-olive-nav/80 backdrop-blur-xl border-b border-olive sticky top-0 z-10">
+          <div className="px-4 py-3 flex items-center justify-between">
+            <button
+              onClick={() => setShowMobileNav(true)}
+              aria-label="Open navigation menu"
+              className="p-2 text-olive-tertiary hover:text-olive-primary hover:bg-white/5 rounded-xl transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            <Link to="/dashboard">
+              <CanaryLogo size="sm" showText={true} />
+            </Link>
+
+            {showRightSidebar ? (
               <button
-                onClick={() => setShowMobileNav(true)}
-                aria-label="Open navigation menu"
+                onClick={() => setShowMobileSidebar(true)}
+                aria-label="Open sidebar"
                 className="p-2 text-olive-tertiary hover:text-olive-primary hover:bg-white/5 rounded-xl transition-colors"
               >
-                <Menu className="w-5 h-5" />
+                <Eye className="w-5 h-5" />
               </button>
-
-              <Link to="/dashboard">
-                <CanaryLogo size="sm" showText={true} />
-              </Link>
-
-              {showRightSidebar ? (
-                <button
-                  onClick={() => setShowMobileSidebar(true)}
-                  aria-label="Open sidebar"
-                  className="p-2 text-olive-tertiary hover:text-olive-primary hover:bg-white/5 rounded-xl transition-colors"
-                >
-                  <Eye className="w-5 h-5" />
-                </button>
-              ) : (
-                <div className="w-9 h-9" /> // Spacer for layout balance
-              )}
-            </div>
-          </header>
-
-          {/* Page content */}
-          <div className="flex-1">
-            <ErrorBoundary>
-              <Outlet />
-            </ErrorBoundary>
+            ) : (
+              <div className="w-9 h-9" /> // Spacer for layout balance
+            )}
           </div>
-        </main>
+        </header>
 
-        {/* Right Sidebar (35% on desktop) - Dashboard only, hidden when panel open */}
-        {showRightSidebar && (
-          <aside
+        {/* Content row with main + sidebar */}
+        <div className="flex-1 flex">
+          {/* Main Feed - centered with max-width */}
+          <main
+            id="main-content"
             className={cn(
-              'hidden lg:flex lg:flex-col',
-              'lg:w-[35%] lg:flex-none',
-              'bg-olive-sidebar border-l border-olive',
-              'h-screen sticky top-0 overflow-y-auto'
+              'flex-1 min-h-screen flex flex-col',
+              'pb-16 lg:pb-0', // Bottom padding for mobile tabs
+              'transition-all duration-300',
+              // Centered main content area - wider
+              showRightSidebar && 'lg:max-w-5xl lg:mx-auto lg:w-full lg:px-8',
+              isPanelOpen && 'lg:w-[50%] lg:flex-none lg:max-w-none lg:mx-0'
             )}
           >
-            <RightSidebar />
-          </aside>
-        )}
+            {/* Page content */}
+            <div className="flex-1">
+              <ErrorBoundary>
+                <Outlet />
+              </ErrorBoundary>
+            </div>
+          </main>
 
-        {/* Card Detail Panel - replaces right sidebar when open */}
-        {isDashboard && (
-          <CardDetailPanel
-            card={detailCard}
-            onClose={handleClosePanel}
-          />
-        )}
+          {/* Right Sidebar - fixed width on right edge */}
+          {showRightSidebar && (
+            <aside
+              className={cn(
+                'hidden lg:flex lg:flex-col',
+                'lg:w-80 lg:flex-none',
+                'bg-olive-sidebar border-l border-olive',
+                'h-[calc(100vh-65px)] sticky top-[65px] overflow-y-auto'
+              )}
+            >
+              <RightSidebar />
+            </aside>
+          )}
+
+          {/* Card Detail Panel - replaces right sidebar when open */}
+          {isDashboard && (
+            <CardDetailPanel
+              card={detailCard}
+              onClose={handleClosePanel}
+            />
+          )}
+        </div>
       </div>
 
       {/* ── Mobile Sidebar Drawer (Dashboard only) ── */}
