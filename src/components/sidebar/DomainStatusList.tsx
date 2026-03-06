@@ -16,7 +16,9 @@ import {
   Waves,
   Radio,
   Home,
-  Wheat,
+  Plane,
+  PlaneTakeoff,
+  TrendingUp,
 } from 'lucide-react';
 import { useStore } from '../../store';
 import { Domain, DOMAIN_META } from '../../types';
@@ -37,7 +39,9 @@ const DOMAIN_ICONS: Record<Domain, React.ComponentType<{ className?: string }>> 
   water_infrastructure: Waves,
   telecommunications: Radio,
   housing_mortgage: Home,
-  food_production: Wheat,
+  travel_mobility: Plane,
+  aviation: PlaneTakeoff,
+  cult_meta: TrendingUp,
 };
 
 interface DomainStatus {

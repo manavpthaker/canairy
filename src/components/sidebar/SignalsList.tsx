@@ -1,20 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { ExternalLink, RefreshCw, AlertCircle } from 'lucide-react';
 import { useStore } from '../../store';
-import { getSignalHeadline, INDICATOR_TRANSLATIONS } from '../../data/indicatorTranslations';
 
-interface Signal {
-  id: string;
-  headline: string;
-  source: string;
-  url: string;  // Required - every signal must link to source
-  trend?: 'up' | 'down' | 'neutral';
-  timestamp?: string;
-}
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5555/api/v1';
 
-// Source URLs for indicators - link to specific data pages
-const SOURCE_URLS: Record<string, string> = {
+// Source URLs for indicators - link to specific data/news pages
+export const SOURCE_URLS: Record<string, string> = {
   // Economy
   econ_01_treasury_tail: 'https://www.treasurydirect.gov/auctions/auction-query/',
   econ_02_grocery_cpi: 'https://www.bls.gov/news.release/cpi.nr0.htm',
@@ -89,141 +81,179 @@ const SOURCE_URLS: Record<string, string> = {
   TRAC: 'https://trac.syr.edu/immigration/',
 };
 
-// Get URL for a signal based on indicator ID or source name
-const getSignalUrl = (indicatorId: string, source: string): string => {
-  // Try indicator-specific URL first
-  if (SOURCE_URLS[indicatorId]) {
-    return SOURCE_URLS[indicatorId];
+interface NewsArticle {
+  title: string;
+  description?: string;
+  url: string;
+  source: string;
+  published?: string;
+}
+
+// Get categories based on elevated indicators
+const getCategories = (indicators: any[]): string => {
+  const redIndicators = indicators.filter(i => i.status.level === 'red');
+  const amberIndicators = indicators.filter(i => i.status.level === 'amber');
+  const elevatedDomains = new Set([
+    ...redIndicators.map(i => i.domain),
+    ...amberIndicators.map(i => i.domain),
+  ]);
+
+  const categories: string[] = ['breaking'];
+
+  if (elevatedDomains.has('economy') || elevatedDomains.has('jobs_labor')) {
+    categories.push('economy');
   }
-  // Fall back to source-based URL
-  if (SOURCE_URLS[source]) {
-    return SOURCE_URLS[source];
+  if (elevatedDomains.has('security_infrastructure')) {
+    categories.push('security');
   }
-  // Default fallback
-  return 'https://www.reuters.com/';
+  if (elevatedDomains.has('global_conflict') || elevatedDomains.has('travel_mobility')) {
+    categories.push('world', 'conflict');
+  }
+
+  return categories.join(',');
+};
+
+// Format relative time
+const formatTimeAgo = (dateStr?: string): string => {
+  if (!dateStr) return '';
+  try {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  } catch {
+    return '';
+  }
 };
 
 export const SignalsList: React.FC = () => {
   const { indicators } = useStore();
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Generate signals from indicator changes using news-style headlines
-  const generateSignals = (): Signal[] => {
-    const signals: Signal[] = [];
+  const fetchNews = async () => {
+    setLoading(true);
+    setError(null);
 
-    // Get red indicators first (most urgent)
-    const redIndicators = indicators.filter(i => i.status.level === 'red');
-    const amberIndicators = indicators.filter(i => i.status.level === 'amber');
+    try {
+      const categories = getCategories(indicators);
+      const response = await fetch(`${API_BASE_URL}/news/?categories=${categories}`);
 
-    // Generate news-style headlines for red indicators
-    redIndicators.slice(0, 3).forEach(ind => {
-      const translation = INDICATOR_TRANSLATIONS[ind.id];
-      const source = translation?.sourceAbbrev || ind.domain.replace('_', ' ');
-      signals.push({
-        id: `red-${ind.id}`,
-        headline: getSignalHeadline(ind.id, 'red'),
-        source,
-        url: getSignalUrl(ind.id, source),
-        trend: 'up',
-        timestamp: 'Now',
-      });
-    });
+      if (!response.ok) {
+        throw new Error('Failed to fetch news');
+      }
 
-    // Generate news-style headlines for amber indicators
-    amberIndicators.slice(0, 5).forEach(ind => {
-      const translation = INDICATOR_TRANSLATIONS[ind.id];
-      const source = translation?.sourceAbbrev || ind.domain.replace('_', ' ');
-      signals.push({
-        id: `amber-${ind.id}`,
-        headline: getSignalHeadline(ind.id, 'amber'),
-        source,
-        url: getSignalUrl(ind.id, source),
-        trend: ind.status.trend === 'up' ? 'up' : ind.status.trend === 'down' ? 'down' : 'neutral',
-        timestamp: '2h ago',
-      });
-    });
-
-    // Add contextual signals if we have space
-    if (signals.length < 6 && amberIndicators.some(i => i.domain === 'economy')) {
-      signals.push({
-        id: 'context-economy',
-        headline: 'Fed signals interest rate hold through Q2',
-        source: 'Bloomberg',
-        url: 'https://www.bloomberg.com/markets',
-        trend: 'neutral',
-        timestamp: '4h ago',
-      });
-    }
-
-    if (signals.length < 7 && amberIndicators.some(i => i.domain === 'supply_chain')) {
-      signals.push({
-        id: 'context-supply',
-        headline: 'West Coast port talks continue without resolution',
-        source: 'AP',
-        url: 'https://apnews.com/hub/supply-chain',
-        trend: 'neutral',
-        timestamp: '6h ago',
-      });
-    }
-
-    return signals.slice(0, 8);
-  };
-
-  const signals = generateSignals();
-
-  const getTrendIcon = (trend?: 'up' | 'down' | 'neutral') => {
-    switch (trend) {
-      case 'up':
-        return <TrendingUp className="w-3 h-3 text-red-400" />;
-      case 'down':
-        return <TrendingDown className="w-3 h-3 text-green-400" />;
-      default:
-        return <Minus className="w-3 h-3 text-olive-tertiary" />;
+      const data = await response.json();
+      setArticles(data);
+    } catch (err) {
+      console.error('News fetch error:', err);
+      setError('Could not load news');
+      setArticles([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (signals.length === 0) {
+  useEffect(() => {
+    fetchNews();
+    // Refresh every 10 minutes
+    const interval = setInterval(fetchNews, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [indicators.length]);
+
+  if (loading && articles.length === 0) {
+    return (
+      <div className="space-y-2 py-2">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="animate-pulse">
+            <div className="h-4 bg-white/5 rounded w-full mb-1" />
+            <div className="h-3 bg-white/5 rounded w-2/3" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error && articles.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <AlertCircle className="w-5 h-5 text-olive-tertiary mx-auto mb-2" />
+        <p className="text-xs text-olive-tertiary">{error}</p>
+        <button
+          onClick={fetchNews}
+          className="mt-2 text-xs text-olive-secondary hover:text-amber-400 flex items-center gap-1 mx-auto"
+        >
+          <RefreshCw className="w-3 h-3" />
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (articles.length === 0) {
     return (
       <div className="text-center py-4 text-olive-tertiary text-sm">
-        No active signals
+        No news available
       </div>
     );
   }
 
   return (
     <div className="space-y-0">
-      {signals.map((signal, index) => (
+      {articles.slice(0, 8).map((article, index) => (
         <motion.a
-          key={signal.id}
-          href={signal.url}
+          key={`${article.url}-${index}`}
+          href={article.url}
           target="_blank"
           rel="noopener noreferrer"
           initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.05 }}
-          className="block py-3 border-b border-white/5 group cursor-pointer"
+          transition={{ delay: index * 0.03 }}
+          className="block py-2.5 border-b border-white/5 group cursor-pointer"
         >
           <div className="flex items-start gap-2">
-            <div className="mt-1 flex-shrink-0">
-              {getTrendIcon(signal.trend)}
-            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-olive-primary leading-snug group-hover:text-amber-400 transition-colors">
-                {signal.headline}
+              <p className="text-sm text-olive-primary leading-snug group-hover:text-amber-400 transition-colors line-clamp-2">
+                {article.title}
               </p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs font-mono text-olive-tertiary">{signal.source}</span>
-                {signal.timestamp && (
+                <span className="text-[10px] font-mono text-olive-tertiary truncate max-w-[100px]">
+                  {article.source}
+                </span>
+                {article.published && (
                   <>
-                    <span className="text-olive-muted">·</span>
-                    <span className="text-xs font-mono text-olive-muted">{signal.timestamp}</span>
+                    <span className="text-olive-muted text-[10px]">·</span>
+                    <span className="text-[10px] text-olive-muted">
+                      {formatTimeAgo(article.published)}
+                    </span>
                   </>
                 )}
-                <ExternalLink className="w-2.5 h-2.5 text-olive-muted opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
+                <ExternalLink className="w-2.5 h-2.5 text-olive-muted opacity-0 group-hover:opacity-100 transition-opacity ml-auto flex-shrink-0" />
               </div>
             </div>
           </div>
         </motion.a>
       ))}
+
+      {/* Refresh button */}
+      <div className="pt-3 flex items-center justify-center gap-2">
+        <button
+          onClick={fetchNews}
+          disabled={loading}
+          className="text-[10px] text-olive-muted hover:text-olive-secondary flex items-center gap-1 transition-colors"
+        >
+          <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+          {loading ? 'Refreshing...' : 'Refresh'}
+        </button>
+      </div>
     </div>
   );
 };

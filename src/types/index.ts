@@ -31,24 +31,29 @@ export type Domain =
   | 'social_cohesion'
   | 'water_infrastructure'
   | 'telecommunications'
-  | 'housing_mortgage';
+  | 'housing_mortgage'
+  | 'travel_mobility'
+  | 'aviation'
+  | 'cult_meta';
 
 export const DOMAIN_META: Record<Domain, { label: string; weight: number; icon: string }> = {
   economy:                 { label: 'Economy',          weight: 1.0,  icon: 'DollarSign' },
   jobs_labor:              { label: 'Jobs & Labor',     weight: 1.0,  icon: 'Briefcase' },
-  rights_governance:       { label: 'Rights & Gov',     weight: 1.0,  icon: 'Scale' },
+  rights_governance:       { label: 'Rights & Gov',     weight: 1.1,  icon: 'Scale' },
   security_infrastructure: { label: 'Security & Infra', weight: 1.25, icon: 'ShieldAlert' },
   oil_axis:                { label: 'Oil Axis',         weight: 1.0,  icon: 'Fuel' },
   ai_window:               { label: 'AI Window',        weight: 1.0,  icon: 'Brain' },
-  global_conflict:         { label: 'Global Conflict',  weight: 1.5,  icon: 'Globe' },
-  domestic_control:        { label: 'Domestic Control', weight: 1.25, icon: 'Landmark' },
-  supply_chain:            { label: 'Supply Chain',     weight: 1.25, icon: 'Truck' },
-  energy:                  { label: 'Energy',           weight: 1.25, icon: 'Zap' },
+  global_conflict:         { label: 'Global Conflict',  weight: 1.25, icon: 'Globe' },
+  domestic_control:        { label: 'Domestic Control', weight: 1.2,  icon: 'Landmark' },
+  supply_chain:            { label: 'Supply Chain',     weight: 1.0,  icon: 'Truck' },
+  energy:                  { label: 'Energy',           weight: 1.1,  icon: 'Zap' },
   social_cohesion:         { label: 'Social Cohesion',  weight: 0.75, icon: 'Users' },
-  water_infrastructure:    { label: 'Water',            weight: 1.25, icon: 'Droplets' },
-  telecommunications:      { label: 'Telecom',          weight: 1.0,  icon: 'Radio' },
-  housing_mortgage:        { label: 'Housing',          weight: 1.0,  icon: 'Home' },
-  // food_production removed - no working data sources
+  water_infrastructure:    { label: 'Water',            weight: 0.9,  icon: 'Droplets' },
+  telecommunications:      { label: 'Telecom',          weight: 0.9,  icon: 'Radio' },
+  housing_mortgage:        { label: 'Housing',          weight: 0.9,  icon: 'Home' },
+  travel_mobility:         { label: 'Travel',           weight: 0.8,  icon: 'Plane' },
+  aviation:                { label: 'Aviation',         weight: 0.8,  icon: 'PlaneTakeoff' },
+  cult_meta:               { label: 'Social Signals',   weight: 0.7,  icon: 'TrendingUp' },
 };
 
 export interface Indicator {
@@ -153,3 +158,31 @@ export interface UserContext {
   phaseTasksTotal: number;
   householdDescription?: string;     // "Family with toddler"
 }
+
+/**
+ * M-Phase (Migration Phase) for relocation task surfacing
+ * Triggered by domestic control indicator conditions
+ */
+export type MPhaseLevel = 0 | 1 | 2;
+
+export interface MPhaseInfo {
+  level: MPhaseLevel;
+  name: string;
+  description: string;
+  triggerReason: string;
+}
+
+export const M_PHASE_INFO: Record<MPhaseLevel, Omit<MPhaseInfo, 'level' | 'triggerReason'>> = {
+  0: {
+    name: 'Document Review',
+    description: 'Passport and vital document review tasks surface',
+  },
+  1: {
+    name: 'Visa Research',
+    description: 'Begin researching relocation options',
+  },
+  2: {
+    name: 'Trial Relocation',
+    description: 'Test relocation logistics',
+  },
+};

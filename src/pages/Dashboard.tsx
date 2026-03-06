@@ -1,32 +1,29 @@
 /**
  * Dashboard Page
  *
- * Briefing-first layout: Status → Intelligence Briefing → Phase Readiness → Monitoring
- * The intelligence briefing is the primary element - synthesizing indicators into actionable narrative.
+ * Streamlined layout:
+ * 1. Welcome banner (first visit)
+ * 2. Threat/Phase banner with actions (main CTA)
+ * 3. What's happening (signals driving the plan)
+ * 4. Also monitoring (low priority tracking with detail)
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { RefreshCw, Eye, Sparkles, ChevronDown } from 'lucide-react';
+import { RefreshCw, Eye, ChevronDown, ChevronRight } from 'lucide-react';
 import { useStore, selectSynthesisCards, selectAIInsights, selectLeadAIInsight, selectSecondaryAIInsights } from '../store';
-import { IndicatorData } from '../types';
+import { IndicatorData, DOMAIN_META } from '../types';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
 import { DashboardLoader } from '../components/dashboard/DashboardLoader';
 import { ThreatBanner } from '../components/dashboard/ThreatBanner';
-import { StatusHeading } from '../components/dashboard/StatusHeading';
-import { OutcomeSentence } from '../components/dashboard/OutcomeSentence';
-import { ActionPlanPreview } from '../components/dashboard/ActionPlanPreview';
-import { PhaseReadinessCard } from '../components/dashboard/PhaseReadinessCard';
-import { ActionList } from '../components/dashboard/ActionList';
+import { WelcomeBanner } from '../components/dashboard/WelcomeBanner';
 import { LeadCard, LeadCardData } from '../components/dashboard/LeadCard';
 import { SecondaryCardsGrid, CompactRow, CompactRowData } from '../components/dashboard/SecondaryCard';
 import { AIInsightCard, AIAnalysisSummary } from '../components/dashboard/AIInsightCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { getDisplayName, getImpact, getAction } from '../data/indicatorTranslations';
-import { generateActionList, generateOutcomeSentence, getStatusHeading } from '../data/actionGenerator';
-import { useActionCompletion, usePhaseTaskCompletion } from '../hooks/useTaskCompletion';
-import { BriefingCard } from '../components/briefing';
-import { useBriefing } from '../hooks/useBriefing';
+import { cn } from '../utils/cn';
 
 export const Dashboard: React.FC = () => {
   const [selectedIndicator, setSelectedIndicator] = useState<IndicatorData | null>(null);
@@ -36,12 +33,7 @@ export const Dashboard: React.FC = () => {
     indicators,
     loading,
     refreshAll,
-    synthesisLoading,
-    synthesisOutput,
     runSynthesis,
-    detailPanelCardId,
-    setDetailPanelCardId,
-    aiAnalysisLoading,
     systemPhase,
   } = useStore();
 
@@ -50,36 +42,10 @@ export const Dashboard: React.FC = () => {
   const leadAIInsight = useStore(selectLeadAIInsight);
   const secondaryAIInsights = useStore(selectSecondaryAIInsights);
 
-  // Intelligence briefing hook
-  const phaseNum = typeof systemPhase === 'number' ? systemPhase : (systemPhase === 'tighten-up' ? 7 : 2);
-  const { briefing, isLoading: briefingLoading, refresh: refreshBriefing } = useBriefing(indicators, {
-    userPhase: phaseNum,
-    autoRefresh: true,
-  });
-
-  // Action completion persistence
-  const { completedIds: actionCompletedIds, toggle: toggleAction } = useActionCompletion();
-  const { completedIds: phaseCompletedIds } = usePhaseTaskCompletion();
-
-  // Merge completed IDs for action generation
-  const allCompletedIds = useMemo(() => {
-    const merged = new Set<string>();
-    actionCompletedIds.forEach(id => merged.add(id));
-    phaseCompletedIds.forEach(id => merged.add(id));
-    return merged;
-  }, [actionCompletedIds, phaseCompletedIds]);
-
-  // Generate action list from indicators and phase tasks
-  const actionList = useMemo(() => {
-    return generateActionList(indicators, allCompletedIds, phaseNum);
-  }, [indicators, allCompletedIds, phaseNum]);
-
-  // Open detail panel when lead card is clicked
-  const handleLeadCardClick = () => {
-    if (synthesisOutput?.leadCard) {
-      setDetailPanelCardId(synthesisOutput.leadCard.pattern.id);
-    }
-  };
+  // Count indicators by level
+  const redCount = indicators.filter(i => i.status.level === 'red').length;
+  const amberCount = indicators.filter(i => i.status.level === 'amber').length;
+  const elevatedCount = redCount + amberCount;
 
   // Run synthesis when indicators change
   useEffect(() => {
@@ -175,65 +141,131 @@ export const Dashboard: React.FC = () => {
 
         {indicators.length > 0 && (
           <>
-            {/* ──── 1. THREAT BANNER (when action protocol active) ──── */}
+            {/* ──── 1. WELCOME BANNER (First visit only) ──── */}
+            <ErrorBoundary isolate>
+              <WelcomeBanner />
+            </ErrorBoundary>
+
+            {/* ──── 2. THREAT/PHASE BANNER (main CTA with actions) ──── */}
             <ErrorBoundary isolate>
               <ThreatBanner />
             </ErrorBoundary>
 
-            {/* ──── 2. ACTION PLAN PREVIEW ──── */}
-            <ErrorBoundary isolate>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 }}
-              >
-                <ActionPlanPreview />
-              </motion.div>
-            </ErrorBoundary>
-
-            {/* ──── 3. INTELLIGENCE BRIEFING (Why these actions) ──── */}
-            <ErrorBoundary isolate>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="pt-2"
-              >
-                <BriefingCard
-                  briefing={briefing}
-                  isLoading={briefingLoading}
-                  onRefresh={refreshBriefing}
-                />
-              </motion.div>
-            </ErrorBoundary>
-
-            {/* ──── 4. ALSO MONITORING (Compact Rows) ──── */}
-            {cards.compactRows && cards.compactRows.length > 0 && (
+            {/* ──── 3. WHAT'S HAPPENING (Signals) ──── */}
+            {(cards.leadCard || (cards.secondaryCards && cards.secondaryCards.length > 0)) && (
               <ErrorBoundary isolate>
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="pt-2"
                 >
-                  <h3 className="text-xs font-medium text-olive-tertiary uppercase tracking-wider mb-2">
-                    Also monitoring
+                  <h3 className="text-xs font-medium text-olive-tertiary uppercase tracking-wider mb-3">
+                    What's happening — {elevatedCount} signal{elevatedCount !== 1 ? 's' : ''} elevated
                   </h3>
-                  <div className="glass-card divide-y divide-white/5">
-                    {cards.compactRows.map((row, index) => (
-                      <CompactRow key={row.id} data={row} index={index} />
-                    ))}
+
+                  <div className="space-y-4">
+                    {cards.leadCard && (
+                      <LeadCard data={cards.leadCard} />
+                    )}
+                    {cards.secondaryCards && cards.secondaryCards.length > 0 && (
+                      <SecondaryCardsGrid cards={cards.secondaryCards.filter(Boolean) as any} />
+                    )}
                   </div>
                 </motion.div>
               </ErrorBoundary>
             )}
 
-            {/* ──── 6. LEGACY AI INSIGHTS (Collapsible) ──── */}
+            {/* ──── 4. ALSO MONITORING (Enhanced with domain grouping) ──── */}
+            <ErrorBoundary isolate>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15 }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-medium text-olive-tertiary uppercase tracking-wider">
+                    Also monitoring
+                  </h3>
+                  <Link
+                    to="/indicators"
+                    className="text-xs text-olive-400 hover:text-olive-300 transition-colors flex items-center gap-1"
+                  >
+                    View all
+                    <ChevronRight className="w-3 h-3" />
+                  </Link>
+                </div>
+                <div className="glass-card p-4">
+                  {/* Group by domain with counts */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {Object.entries(
+                      indicators.reduce((acc, ind) => {
+                        const domain = ind.domain;
+                        if (!acc[domain]) {
+                          acc[domain] = { green: 0, amber: 0, red: 0 };
+                        }
+                        acc[domain][ind.status.level === 'unknown' ? 'green' : ind.status.level]++;
+                        return acc;
+                      }, {} as Record<string, { green: number; amber: number; red: number }>)
+                    )
+                      .filter(([domain]) => DOMAIN_META[domain as keyof typeof DOMAIN_META])
+                      .sort((a, b) => {
+                        // Sort by severity (red first, then amber)
+                        const aScore = a[1].red * 10 + a[1].amber;
+                        const bScore = b[1].red * 10 + b[1].amber;
+                        return bScore - aScore;
+                      })
+                      .slice(0, 9)
+                      .map(([domain, counts]) => {
+                        const meta = DOMAIN_META[domain as keyof typeof DOMAIN_META];
+                        const hasRed = counts.red > 0;
+                        const hasAmber = counts.amber > 0;
+                        return (
+                          <Link
+                            key={domain}
+                            to={`/indicators?domain=${encodeURIComponent(domain)}`}
+                            className={cn(
+                              'flex items-center justify-between px-3 py-2 rounded-lg transition-colors',
+                              'hover:bg-white/5',
+                              hasRed ? 'bg-red-500/5' : hasAmber ? 'bg-amber-500/5' : 'bg-white/[0.02]'
+                            )}
+                          >
+                            <span className={cn(
+                              'text-sm truncate',
+                              hasRed ? 'text-red-300' : hasAmber ? 'text-amber-300' : 'text-olive-300'
+                            )}>
+                              {meta?.label || domain}
+                            </span>
+                            <div className="flex items-center gap-1.5 flex-shrink-0">
+                              {counts.red > 0 && (
+                                <span className="text-[10px] font-mono text-red-400 bg-red-500/15 px-1.5 py-0.5 rounded">
+                                  {counts.red}
+                                </span>
+                              )}
+                              {counts.amber > 0 && (
+                                <span className="text-[10px] font-mono text-amber-400 bg-amber-500/15 px-1.5 py-0.5 rounded">
+                                  {counts.amber}
+                                </span>
+                              )}
+                              {counts.red === 0 && counts.amber === 0 && (
+                                <span className="w-2 h-2 rounded-full bg-green-500/60" />
+                              )}
+                            </div>
+                          </Link>
+                        );
+                      })}
+                  </div>
+                </div>
+              </motion.div>
+            </ErrorBoundary>
+
+            {/* ──── 5. LEGACY AI INSIGHTS (Collapsible) ──── */}
             {aiAnalysis && aiAnalysis.insights.length > 0 && (
               <ErrorBoundary isolate>
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.25 }}
+                  transition={{ delay: 0.2 }}
                 >
                   <button
                     onClick={() => setShowLegacyInsights(!showLegacyInsights)}
