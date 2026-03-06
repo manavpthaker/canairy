@@ -516,9 +516,9 @@ export const CardDetailPanel: React.FC<CardDetailPanelProps> = ({
                   })}
                 </div>
 
-                {/* Add all to checklist */}
+                {/* Add all to action plan */}
                 <button className="w-full mt-4 py-2.5 rounded-lg bg-olive-hover hover:bg-white/10 text-sm font-medium text-olive-primary transition-colors">
-                  Add all to checklist
+                  Add to action plan
                 </button>
               </CollapsibleSection>
             </motion.div>

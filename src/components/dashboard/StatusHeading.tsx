@@ -26,13 +26,13 @@ const STATUS_CONFIG: Record<StatusLevel, StatusConfig> = {
     glowColor: 'shadow-[0_0_30px_rgba(245,158,11,0.2)]',
   },
   act_now: {
-    label: 'Act Now',
+    label: 'Phase 5',
     color: 'text-red-400',
     bgColor: 'bg-red-500/10',
     glowColor: 'shadow-[0_0_30px_rgba(239,68,68,0.2)]',
   },
   action_protocol: {
-    label: 'ACTION PROTOCOL',
+    label: 'Phase 7',
     color: 'text-red-300',
     bgColor: 'bg-red-500/15',
     glowColor: 'shadow-[0_0_40px_rgba(239,68,68,0.3)]',

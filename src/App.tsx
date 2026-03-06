@@ -11,13 +11,12 @@ const Landing = lazy(() => import('./pages/Landing').then(m => ({ default: m.Lan
 const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
 const Indicators = lazy(() => import('./pages/Indicators').then(m => ({ default: m.Indicators })));
 const IndicatorDetails = lazy(() => import('./pages/IndicatorDetails').then(m => ({ default: m.IndicatorDetails })));
+const FamilyActionPlan = lazy(() => import('./pages/FamilyActionPlan').then(m => ({ default: m.FamilyActionPlan })));
 const News = lazy(() => import('./pages/News').then(m => ({ default: m.News })));
 const Analytics = lazy(() => import('./pages/Analytics').then(m => ({ default: m.Analytics })));
 const Alerts = lazy(() => import('./pages/Alerts').then(m => ({ default: m.Alerts })));
 const Reports = lazy(() => import('./pages/Reports').then(m => ({ default: m.Reports })));
 const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
-const FamilyChecklist = lazy(() => import('./pages/FamilyChecklist').then(m => ({ default: m.FamilyChecklist })));
-const ResiliencePlaybook = lazy(() => import('./pages/ResiliencePlaybook').then(m => ({ default: m.ResiliencePlaybook })));
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 function App() {
@@ -64,13 +63,12 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/indicators" element={<Indicators />} />
               <Route path="/indicator/:id" element={<IndicatorDetails />} />
+              <Route path="/action-plan" element={<FamilyActionPlan />} />
               <Route path="/news" element={<News />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/checklist" element={<FamilyChecklist />} />
-              <Route path="/playbook" element={<ResiliencePlaybook />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

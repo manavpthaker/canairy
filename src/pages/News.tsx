@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Newspaper,
@@ -14,6 +14,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/core/Car
 import { Button } from '../components/core/Button';
 import { Badge } from '../components/core/Badge';
 import { cn } from '../utils/cn';
+import { useStore } from '../store';
 
 type NewsFilter = 'all' | 'high' | 'medium' | 'low' | 'indicators';
 type DomainFilter = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'security_infrastructure' | 'oil_axis' | 'ai_window' | 'global_conflict' | 'domestic_control' | 'social_cohesion';
@@ -34,6 +35,14 @@ export const News: React.FC = () => {
   const [domainFilter, setDomainFilter] = useState<DomainFilter>('all');
   const [selectedIndicator, setSelectedIndicator] = useState<string | null>(null);
   const [showIndicatorFilter, setShowIndicatorFilter] = useState(false);
+
+  // Get real indicator counts from store
+  const indicators = useStore(s => s.indicators);
+  const statusCounts = useMemo(() => ({
+    red: indicators.filter(i => i.status.level === 'red').length,
+    amber: indicators.filter(i => i.status.level === 'amber').length,
+    green: indicators.filter(i => i.status.level === 'green').length,
+  }), [indicators]);
 
   const getFilteredView = () => {
     if (selectedIndicator) {
@@ -189,15 +198,15 @@ export const News: React.FC = () => {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-white/50">High Priority</span>
-                    <Badge variant="red" size="sm">2 indicators</Badge>
+                    <Badge variant="red" size="sm">{statusCounts.red} indicator{statusCounts.red !== 1 ? 's' : ''}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-white/50">Monitoring</span>
-                    <Badge variant="amber" size="sm">3 indicators</Badge>
+                    <Badge variant="amber" size="sm">{statusCounts.amber} indicator{statusCounts.amber !== 1 ? 's' : ''}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-white/50">Normal</span>
-                    <Badge variant="green" size="sm">11 indicators</Badge>
+                    <Badge variant="green" size="sm">{statusCounts.green} indicator{statusCounts.green !== 1 ? 's' : ''}</Badge>
                   </div>
                 </div>
               </CardContent>

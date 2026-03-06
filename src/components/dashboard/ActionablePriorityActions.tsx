@@ -364,9 +364,9 @@ export const ActionablePriorityActions: React.FC = () => {
           <AlertTriangle className="w-4 h-4" />
           <span>{actions.filter(a => a.urgency === 'immediate').length} immediate actions</span>
         </div>
-        <button className="text-white/20 hover:text-white/50 transition-colors">
-          View full checklist →
-        </button>
+        <a href="/action-plan" className="text-white/20 hover:text-white/50 transition-colors">
+          View full action plan →
+        </a>
       </div>
     </div>
   );

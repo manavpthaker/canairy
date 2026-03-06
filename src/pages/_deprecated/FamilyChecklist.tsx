@@ -4,6 +4,8 @@ import {
   Check,
   Shield,
   Printer,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../store';
@@ -15,10 +17,12 @@ import { cn } from '../utils/cn';
 export const FamilyChecklist: React.FC = () => {
   const { currentPhase } = useStore();
   const phaseNumber = currentPhase?.number ?? 0;
+  const [showAllPhases, setShowAllPhases] = useState(false);
 
   const relevantPhases = useMemo(() => {
+    if (showAllPhases) return PHASES;
     return PHASES.filter(p => p.number <= phaseNumber + 1);
-  }, [phaseNumber]);
+  }, [phaseNumber, showAllPhases]);
 
   const [completedItems, setCompletedItems] = useState<Set<string>>(() => {
     try {
@@ -73,13 +77,25 @@ export const FamilyChecklist: React.FC = () => {
                 <p className="text-white/30 text-sm">Practical steps to keep your family ready</p>
               </div>
             </div>
-            <button
-              onClick={() => window.print()}
-              className="hidden sm:flex btn btn-secondary text-sm"
-            >
-              <Printer className="w-4 h-4" />
-              Print
-            </button>
+            <div className="hidden sm:flex items-center gap-2">
+              <button
+                onClick={() => setShowAllPhases(!showAllPhases)}
+                className={cn(
+                  "btn text-sm",
+                  showAllPhases ? "btn-primary" : "btn-secondary"
+                )}
+              >
+                {showAllPhases ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showAllPhases ? 'Show Relevant' : 'Show All Phases'}
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="btn btn-secondary text-sm"
+              >
+                <Printer className="w-4 h-4" />
+                Print
+              </button>
+            </div>
           </div>
 
           {/* Progress microcopy */}

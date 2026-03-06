@@ -1,7 +1,6 @@
 import React from 'react';
 import { SignalsList } from '../sidebar/SignalsList';
 import { DomainStatusList } from '../sidebar/DomainStatusList';
-import { QuickActionsList } from '../sidebar/QuickActionsList';
 
 export const RightSidebar: React.FC = () => {
   return (
@@ -15,19 +14,11 @@ export const RightSidebar: React.FC = () => {
       </section>
 
       {/* Domain Status */}
-      <section className="p-4 border-b border-olive flex-1">
+      <section className="p-4 flex-1">
         <h3 className="text-xs font-medium text-olive-tertiary uppercase tracking-wider mb-3">
           Domain Status
         </h3>
         <DomainStatusList />
-      </section>
-
-      {/* Quick Actions */}
-      <section className="p-4">
-        <h3 className="text-xs font-medium text-olive-tertiary uppercase tracking-wider mb-3">
-          Quick Actions
-        </h3>
-        <QuickActionsList />
       </section>
     </div>
   );

@@ -111,6 +111,23 @@ export const INDICATOR_TRANSLATIONS: Record<string, IndicatorTranslation> = {
     sourceAbbrev: 'BEA',
   },
 
+  'luxury_01_collapse': {
+    id: 'luxury_01_collapse',
+    systemName: 'LuxuryCollapse',
+    displayName: 'Luxury Sector',
+    amberImpact: 'Luxury goods sector weakening — often precedes broader recession',
+    redImpact: 'Luxury sector collapsing — recession typically follows in 3-6 months',
+    amberAction: 'Shore up emergency savings. Delay major discretionary purchases',
+    redAction: 'Maximize cash reserves. Prepare for potential job market disruption',
+    amberOutcomePhrase: 'early recession signals in consumer spending',
+    redOutcomePhrase: 'recession warning signs in luxury sector collapse',
+    dataPointTemplate: 'Luxury index: down {value}% (normal: +/- 5%)',
+    amberHeadline: 'Luxury goods stocks decline as consumer confidence wavers',
+    redHeadline: 'Luxury sector crashes in worst decline since 2008',
+    source: 'Bloomberg / S&P',
+    sourceAbbrev: 'Bloomberg',
+  },
+
   // ═══════════════════════════════════════════════════════════════════════════
   // GLOBAL CONFLICT DOMAIN
   // ═══════════════════════════════════════════════════════════════════════════
@@ -435,25 +452,6 @@ export const INDICATOR_TRANSLATIONS: Record<string, IndicatorTranslation> = {
     sourceAbbrev: 'Semi',
   },
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ENERGY DOMAIN
-  // ═══════════════════════════════════════════════════════════════════════════
-  'energy_01_spr_level': {
-    id: 'energy_01_spr_level',
-    systemName: 'SPRLevel',
-    displayName: 'Strategic Reserves',
-    amberImpact: 'Strategic petroleum reserves below normal levels',
-    redImpact: 'Fuel reserves critically depleted',
-    amberAction: 'Keep vehicle tanks topped off',
-    redAction: 'Fill all vehicles. Stock safe fuel reserves',
-    amberOutcomePhrase: 'lower fuel reserves than usual',
-    redOutcomePhrase: 'critically low fuel supplies',
-    dataPointTemplate: 'SPR: {value}M barrels',
-    amberHeadline: 'Strategic petroleum reserve falls below 400M barrels',
-    redHeadline: 'US fuel reserves hit lowest level since 1984',
-    source: 'EIA',
-    sourceAbbrev: 'EIA',
-  },
 };
 
 /**

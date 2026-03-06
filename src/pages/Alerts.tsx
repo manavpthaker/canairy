@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   Bell,
@@ -8,6 +8,7 @@ import {
   Zap,
   Info,
   AlertTriangle,
+  X,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../store';
@@ -20,7 +21,7 @@ type AlertFilter = 'all' | 'critical' | 'warning' | 'info';
 
 interface AlertItem {
   id: string;
-  type: 'red_threshold' | 'tighten_up' | 'phase_change' | 'trend_warning';
+  type: 'red_threshold' | 'high_phase' | 'phase_change' | 'trend_warning';
   indicatorId?: string;
   indicatorName?: string;
   domain?: string;
@@ -33,6 +34,30 @@ export const Alerts: React.FC = () => {
   const { indicators } = useStore();
   const [filter, setFilter] = useState<AlertFilter>('all');
 
+  // Dismissed alerts (persisted to localStorage)
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem('canairy_dismissed_alerts');
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+
+  const dismissAlert = useCallback((alertId: string) => {
+    setDismissedIds(prev => {
+      const next = new Set(prev);
+      next.add(alertId);
+      localStorage.setItem('canairy_dismissed_alerts', JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+
+  const clearDismissed = useCallback(() => {
+    setDismissedIds(new Set());
+    localStorage.removeItem('canairy_dismissed_alerts');
+  }, []);
+
   const alerts = useMemo(() => {
     const items: AlertItem[] = [];
     const now = new Date().toISOString();
@@ -40,9 +65,9 @@ export const Alerts: React.FC = () => {
     const redCount = indicators.filter(i => i.status.level === 'red').length;
     if (redCount >= 2) {
       items.push({
-        id: 'tighten-up',
-        type: 'tighten_up',
-        message: `Multiple areas need attention (${redCount} critical). Check your Actions checklist for specific steps.`,
+        id: 'high-phase',
+        type: 'high_phase',
+        message: `Multiple areas need attention (${redCount} critical). Check your action plan for specific steps.`,
         severity: 'critical',
         timestamp: now,
       });
@@ -83,10 +108,12 @@ export const Alerts: React.FC = () => {
     return items;
   }, [indicators]);
 
-  const filtered = filter === 'all' ? alerts : alerts.filter(a => a.severity === filter);
-  const criticalCount = alerts.filter(a => a.severity === 'critical').length;
-  const warningCount = alerts.filter(a => a.severity === 'warning').length;
-  const infoCount = alerts.filter(a => a.severity === 'info').length;
+  // Filter out dismissed alerts
+  const activeAlerts = alerts.filter(a => !dismissedIds.has(a.id));
+  const filtered = filter === 'all' ? activeAlerts : activeAlerts.filter(a => a.severity === filter);
+  const criticalCount = activeAlerts.filter(a => a.severity === 'critical').length;
+  const warningCount = activeAlerts.filter(a => a.severity === 'warning').length;
+  const infoCount = activeAlerts.filter(a => a.severity === 'info').length;
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
@@ -140,19 +167,29 @@ export const Alerts: React.FC = () => {
           </div>
 
           {/* Filter */}
-          <div className="flex items-center gap-1 bg-white/[0.04] rounded-xl p-1 w-fit overflow-x-auto">
-            {(['all', 'critical', 'warning', 'info'] as AlertFilter[]).map(f => (
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-1 bg-white/[0.04] rounded-xl p-1 w-fit overflow-x-auto">
+              {(['all', 'critical', 'warning', 'info'] as AlertFilter[]).map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={cn(
+                    'px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap',
+                    filter === f ? 'bg-white/[0.08] text-white' : 'text-white/30 hover:text-white/50'
+                  )}
+                >
+                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                </button>
+              ))}
+            </div>
+            {dismissedIds.size > 0 && (
               <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={cn(
-                  'px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap',
-                  filter === f ? 'bg-white/[0.08] text-white' : 'text-white/30 hover:text-white/50'
-                )}
+                onClick={clearDismissed}
+                className="text-xs text-white/30 hover:text-white/50 transition-colors"
               >
-                {f.charAt(0).toUpperCase() + f.slice(1)}
+                Show {dismissedIds.size} dismissed
               </button>
-            ))}
+            )}
           </div>
         </div>
       </div>
@@ -184,14 +221,23 @@ export const Alerts: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                    {alert.indicatorId && (
-                      <Link
-                        to={`/indicator/${alert.indicatorId}`}
-                        className="flex-shrink-0 p-2 text-white/15 hover:text-white/40 hover:bg-white/5 rounded-lg transition-colors"
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {alert.indicatorId && (
+                        <Link
+                          to={`/indicator/${alert.indicatorId}`}
+                          className="p-2 text-white/15 hover:text-white/40 hover:bg-white/5 rounded-lg transition-colors"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => dismissAlert(alert.id)}
+                        className="p-2 text-white/15 hover:text-white/40 hover:bg-white/5 rounded-lg transition-colors"
+                        title="Dismiss alert"
                       >
-                        <ChevronRight className="w-4 h-4" />
-                      </Link>
-                    )}
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </GlassCard>
               </motion.div>

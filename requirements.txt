@@ -9,9 +9,6 @@ python-dotenv==1.0.0
 # Scheduling
 APScheduler==3.10.4
 
-# Performance
-gevent==23.9.1
-
 # Data Processing
 pandas>=2.0.0
 numpy>=1.24.0

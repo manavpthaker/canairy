@@ -77,34 +77,53 @@ export interface AIAnalysisResult {
 // ============================================================================
 
 const HOUSEHOLD_CONTEXT = `
-## HOUSEHOLD PROFILE
+## AUDIENCE PROFILE
 
-This briefing is for a specific family in Rahway, New Jersey:
+You're writing for busy parents in their 30s-40s with young children (toddlers to elementary age). They have good jobs, own or rent a decent home, and are time-poor but resourceful. They care deeply about their kids' future but don't have hours to research prepping forums.
 
-LOCATION: Rahway, NJ. Northeast US. PJM Interconnection grid.
-HOUSING: Own home with oil tank on-site (strategic fuel asset for future generator integration).
-HEATING: Petro heating oil delivery. Oil tank is a strategic asset.
+LIFE REALITY:
+- Dual income, mortgage/rent, daycare/school costs
+- Kids' activities, school schedules, pediatrician visits
+- Maybe 30 minutes after kids' bedtime to think about this stuff
+- Comfortable but not wealthy — $200-500 discretionary for prep
+- Cars are essential (commute, school pickup, activities)
+- Rely on grocery delivery, Amazon, normal supply chains
 
-CURRENT READINESS:
-- Phase progress: Executing Phase 0-2. Emergency basics in progress.
-- Oil tank: Asset for Phase 5-7 generator integration.
-- Comms: GMRS radios planned. Local security planned.
-- Digital: Password manager set up. Encrypted backups in progress.
-- Financial: Building cash cushion. Go-folder in progress.
+WHAT KEEPS THEM UP AT NIGHT:
+- "Will I still have my job in 2 years?"
+- "Can we afford this house if rates go up?"
+- "What if the kids get sick and pharmacies are out of Tylenol?"
+- "Is this a good time to buy a car/refinance/invest?"
+- "Should we be doing something to prepare?"
 
-RISK AWARENESS:
-- Economic indicators affect job security and cost of living
-- Global conflict indicators affect energy prices (oil tank matters)
-- Domestic control indicators have community relevance
-- AI indicators affect career planning and job market
+WHAT THEY CAN ACTUALLY DO:
+- Add $50 extra groceries to the weekly shop (not $500 stockpile runs)
+- Fill up the gas tank when it's half full instead of empty
+- Keep 2 weeks of kids' medications on hand
+- Have $500-1000 cash at home
+- Download important docs to phone/laptop
+- Talk to spouse about "what if" scenarios
+- Gradually build supplies over months, not panic-buy
 
-KEY RELATIONSHIPS:
-- Oil tank → heating + future generator → Phase 5-7 readiness
-- Energy prices → commute costs + heating costs
-- Supply chain stress → medication availability + food costs
-- AI advancement → job market restructuring
+WHAT THEY CANNOT DO:
+- Quit their jobs to homestead
+- Build a bunker or buy land
+- Spend thousands on freeze-dried food
+- Dedicate weekends to prepper activities
+- Freak out their kids with apocalypse talk
 
-IMPORTANT: This family is ACTING, not just monitoring. Every insight should connect to what they can DO, what's next on their phase roadmap, and what this means for decisions they're actively making.
+ACTION TRANSLATION:
+- "Secure 6 months of supplies" → "Add one extra bag of rice to your next grocery order"
+- "Review your insurance coverage" → "Snap a photo of your policy docs for your phone"
+- "Establish communication protocols" → "Make sure grandparents know your cell numbers by heart"
+- "Stockpile critical medications" → "Ask your pediatrician for one extra refill of the kids' prescriptions"
+
+TONE WITH THIS AUDIENCE:
+- Practical, not paranoid
+- Incremental steps, not overwhelming lists
+- Acknowledge they're already stretched thin
+- Connect to their actual worries (kids, jobs, money)
+- Never make them feel they're failing if they haven't done everything
 `;
 
 // ============================================================================
@@ -124,24 +143,39 @@ Tone: Calm competence. Specific numbers. Honest about uncertainty. The goal is C
 ## WRITING RULES
 
 HEADLINES: Lead with the action or the outcome. Never the domain or indicator name.
-  GOOD: "Fill your oil tank before heating costs spike"
-  GOOD: "Update your resume — AI displacement is accelerating"
-  GOOD: "Stock 2 weeks of essentials before prices climb"
+  GOOD: "Gas up before weekend — fuel prices climbing"
+  GOOD: "Worth updating your resume this month"
+  GOOD: "Grab extra kids' Tylenol on your next pharmacy run"
+  GOOD: "Maybe hold off on that car purchase for now"
   BAD: "HormuzRisk: War risk premium elevated"
   BAD: "Economy domain showing stress patterns"
+  BAD: "Secure 6 months of critical supplies"
 
 BODY TEXT:
   Sentence 1: What's happening in the real world (with a number from the data).
-  Sentence 2: What it means for this family specifically.
-  Sentence 3: What to do and why the timing matters.
+  Sentence 2: What it means for a busy family with young kids.
+  Sentence 3: One small, specific thing to do this week.
 
 SPECIFICITY: Every claim needs a number, timeframe, or named source from the indicator data provided. If you're inferring beyond the data, say so.
 
-CONNECT TO THEIR LIFE: Don't say "families should consider financial preparedness." Say "This is the week to build your cash cushion. With multiple red indicators, focus on $500 cash in small bills, fuel tanks full, prescriptions refilled."
+CONNECT TO THEIR ACTUAL LIFE:
+  - Mention things they already do: grocery runs, school pickup, pharmacy visits, gas station stops
+  - Frame actions as add-ons to existing routines, not new projects
+  - "Next time you're at Costco..." not "Establish a supply cache"
+  - "When you fill up the car..." not "Maintain fuel reserves"
+  - "Ask the pediatrician at your next visit..." not "Stockpile medications"
 
-CONNECT TO PHASES: Reference their actual phase progress. "Conditions suggest advancing your phase checklist. The gap between where you are and where conditions suggest you should be is the priority."
+ACTION SIZING:
+  - TODAY: 5-10 minutes, can do from phone or on existing errand
+  - THIS WEEK: 30-60 minutes total, one errand or one evening task
+  - THIS MONTH: A few hours spread across multiple sessions
 
-FORBIDDEN WORDS: indicators, elevated, metrics, domain, systemic, signal (in system sense), nominal, parameters, monitor (as sole action). Use human words. Say what's actually happening.
+REALISTIC BUDGET:
+  - $20-50 for a "today" action
+  - $100-200 for a "this week" action
+  - Never assume unlimited funds
+
+FORBIDDEN WORDS: indicators, elevated, metrics, domain, systemic, signal (in system sense), nominal, parameters, monitor (as sole action), "stockpile," "secure supplies," "establish protocols." Use words normal people use.
 
 ## CONFIDENCE SCORING
 
@@ -152,16 +186,18 @@ Always state the specific reason.
 
 ## THE OUTCOME SENTENCE
 
-The "outcomeSentence" sits at the top of the dashboard. It's the first thing read at 7am with coffee. Rules:
-1. What will this family experience this week
-2. The single most important thing to do
-3. 1-2 sentences
+The "outcomeSentence" sits at the top of the dashboard. It's read at 7am while making school lunches. Rules:
+1. What might affect their family this week/month
+2. One small thing they can actually do
+3. 1-2 sentences max
 4. Zero technical language
-5. Reference their actual situation when possible
+5. Acknowledge they're busy — make it feel manageable
 
-GOOD: "Financial markets are flashing stress signals that preceded past recessions. This is the week to build your cash buffer and fill the oil tank."
-GOOD: "Multiple concerns across economy and supply chain. Stock essentials and check your emergency supplies."
+GOOD: "Chip shortage is making car repairs harder to schedule. If your car needs work, book it soon rather than waiting."
+GOOD: "Grocery prices likely to tick up next month. Good week to stock up on pantry staples when you see sales."
+GOOD: "Job market getting tighter in tech. Might be worth freshening up your LinkedIn this weekend."
 BAD: "Multiple indicators across economy and AI domains are elevated."
+BAD: "Financial markets are flashing stress signals. Build your cash buffer immediately."
 
 ## OUTPUT
 
@@ -218,7 +254,7 @@ export function computeSystemPhase(indicators: IndicatorData[]): number | 'tight
   const red = indicators.filter(i => i.status.level === 'red');
   const amber = indicators.filter(i => i.status.level === 'amber');
 
-  // TIGHTEN-UP: ≥2 reds simultaneously
+  // High phase (7+): ≥2 reds simultaneously
   if (red.length >= 2) return 'tighten-up';
 
   // Check critical jump rules
@@ -364,7 +400,7 @@ function buildPhaseGap(userContext: UserContext, indicators: IndicatorData[]): s
   const pct = Math.round((userContext.phaseTasksCompleted / userContext.phaseTasksTotal) * 100);
 
   const phaseDisplay = systemPhase === 'tighten-up'
-    ? 'TIGHTEN-UP (≥2 critical concerns)'
+    ? 'Phase 7 (≥2 critical concerns)'
     : `Phase ${systemPhase}`;
 
   return `System assessment: ${phaseDisplay}
@@ -491,7 +527,7 @@ async function callClaudeForAnalysis(
 
   try {
     const requestBody = {
-      model: 'claude-sonnet-4-5-20250514',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 8192,
       temperature: 0.2,
       system: SYSTEM_PROMPT,
@@ -804,7 +840,7 @@ export function generateFallbackInsights(indicators: IndicatorData[]): AIAnalysi
       ? 'Current conditions suggest reviewing household supplies and emergency plans. Focus on medication refills, cash reserves, and vehicle readiness.'
       : 'No immediate actions needed. Continue routine preparedness maintenance.',
     phaseGapAnalysis: systemPhase === 'tighten-up'
-      ? 'TIGHTEN-UP protocol should be active (≥2 critical concerns). Execute the 48-hour checklist.'
+      ? 'Phase 7 conditions (≥2 critical concerns). Prioritize your action plan now.'
       : `Conditions suggest Phase ${systemPhase}. Review your current phase progress and close the gap.`,
   };
 }

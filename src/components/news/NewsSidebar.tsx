@@ -206,9 +206,20 @@ export const NewsSidebar: React.FC<NewsSidebarProps> = ({
                     >
                       {/* Article header */}
                       <div className="mb-2">
-                        <h3 className="text-sm font-medium text-white line-clamp-2 mb-1">
-                          {article.title}
-                        </h3>
+                        <a
+                          href={article.url !== '#' ? article.url : undefined}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className={article.url !== '#' ? 'hover:text-blue-400 transition-colors' : ''}
+                        >
+                          <h3 className="text-sm font-medium text-white line-clamp-2 mb-1">
+                            {article.title}
+                            {article.url !== '#' && (
+                              <ExternalLink className="w-3 h-3 inline ml-1.5 text-white/30" />
+                            )}
+                          </h3>
+                        </a>
                         <div className="flex items-center gap-2 text-xs">
                           <span className={cn("font-medium", getCredibilityColor(article.source_credibility?.score))}>
                             {article.source.name}

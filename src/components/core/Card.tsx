@@ -17,9 +17,9 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     };
 
     const variantClasses = {
-      default: 'bg-bmb-dark border border-bmb-border',
-      bordered: 'bg-transparent border-2 border-bmb-border',
-      elevated: 'bg-bmb-dark border border-bmb-border shadow-xl',
+      default: 'bg-olive-card border border-olive',
+      bordered: 'bg-transparent border-2 border-olive',
+      elevated: 'bg-olive-card border border-olive shadow-xl',
       glass: 'glass',
     };
 
@@ -53,7 +53,7 @@ export const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
       ref={ref}
       className={cn(
         'flex flex-col space-y-1.5',
-        separator && 'pb-6 mb-6 border-b border-bmb-border',
+        separator && 'pb-6 mb-6 border-b border-olive',
         className
       )}
       {...props}
@@ -73,7 +73,7 @@ export const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className, as: Component = 'h3', ...props }, ref) => (
     <Component
       ref={ref}
-      className={cn('text-lg font-semibold text-bmb-primary', className)}
+      className={cn('text-lg font-semibold text-olive-primary', className)}
       {...props}
     />
   )
@@ -87,7 +87,7 @@ export const CardDescription = React.forwardRef<HTMLParagraphElement, CardDescri
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn('text-sm text-bmb-secondary', className)}
+      className={cn('text-sm text-olive-secondary', className)}
       {...props}
     />
   )
@@ -115,7 +115,7 @@ export const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
       ref={ref}
       className={cn(
         'flex items-center',
-        separator && 'pt-6 mt-6 border-t border-bmb-border',
+        separator && 'pt-6 mt-6 border-t border-olive',
         className
       )}
       {...props}

@@ -13,41 +13,80 @@ interface Signal {
   timestamp?: string;
 }
 
-// Source URLs for indicators
+// Source URLs for indicators - link to specific data pages
 const SOURCE_URLS: Record<string, string> = {
   // Economy
-  econ_01_treasury_tail: 'https://www.treasury.gov/resource-center/data-chart-center/interest-rates/Pages/TextView.aspx?data=yield',
-  econ_02_grocery_cpi: 'https://www.bls.gov/cpi/',
-  econ_03_stock_volatility: 'https://www.nyse.com/market-data',
-  econ_04_corporate_spreads: 'https://fred.stlouisfed.org/series/BAMLC0A0CM',
-  econ_05_bank_cds: 'https://fred.stlouisfed.org/series/BAMLC0A0CM',
-  // Supply chain
-  supply_chain_container: 'https://fbx.freightos.com/',
-  supply_chain_semiconductor: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/',
-  supply_chain_drug: 'https://www.accessdata.fda.gov/scripts/drugshortages/',
-  // Geopolitical
-  taiwan_pla: 'https://www.reuters.com/world/asia-pacific/',
-  taiwan_adiz: 'https://www.mnd.gov.tw/english/',
-  hormuz_insurance: 'https://www.lloyds.com/news-and-insights/risk-reports',
-  // Infrastructure
-  grid_frequency: 'https://www.eia.gov/electricity/gridmonitor/dashboard/electric_overview/US48/US48',
-  grid_reserve: 'https://www.nerc.com/pa/RAPA/ri/Pages/default.aspx',
-  cyber_cisa: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
-  // Health
-  health_cdc: 'https://www.cdc.gov/surveillance/index.html',
-  health_who: 'https://www.who.int/emergencies/disease-outbreak-news',
+  econ_01_treasury_tail: 'https://www.treasurydirect.gov/auctions/auction-query/',
+  econ_02_grocery_cpi: 'https://www.bls.gov/news.release/cpi.nr0.htm',
+  market_01_intraday_swing: 'https://finance.yahoo.com/quote/%5ETNX/',
+  green_g1_gdp_rates: 'https://www.bea.gov/data/gdp/gross-domestic-product',
+  luxury_01_collapse: 'https://www.bloomberg.com/markets/sectors/consumer-discretionary',
+
+  // Global Conflict
+  taiwan_pla_activity: 'https://www.mnd.gov.tw/english/',
+  taiwan_exclusion_zone: 'https://www.mnd.gov.tw/english/',
+  global_conflict_intensity: 'https://acleddata.com/dashboard/',
+  nato_high_readiness: 'https://www.nato.int/cps/en/natohq/news.htm',
+  russia_nato_escalation: 'https://www.reuters.com/world/europe/',
+  nuclear_01_tests: 'https://www.ctbto.org/specials/testing-times/',
+  defense_spending_growth: 'https://www.sipri.org/databases/milex',
+  hormuz_war_risk: 'https://www.lloyds.com/market-resources/marine',
+
+  // Domestic Control
+  ice_detention_surge: 'https://trac.syr.edu/immigration/detentionstats/',
+  dhs_removal_expansion: 'https://www.federalregister.gov/agencies/homeland-security-department',
+  national_guard_metros: 'https://www.nationalguard.mil/News/',
+  hill_control_legislation: 'https://www.congress.gov/',
+
+  // Security & Infrastructure
+  cyber_01_cisa_kev: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
+  cyber_02_ai_ransomware: 'https://www.cisa.gov/stopransomware/ransomware-alerts',
+  grid_01_pjm_outages: 'https://www.oe.energy.gov/oe417.htm',
+  bio_01_h2h_countries: 'https://www.who.int/emergencies/disease-outbreak-news',
+
+  // Oil Axis
+  oil_01_russian_brics: 'https://energyandcleanair.org/russia-fossil-tracker/',
+  oil_02_mbridge_settlements: 'https://www.bis.org/about/bisih/topics/cbdc/mbridge.htm',
+  oil_03_jodi_inventory: 'https://www.jodidata.org/oil/',
+  oil_04_refinery_ratio: 'https://www.jodidata.org/oil/',
+  spr_01_level: 'https://www.eia.gov/petroleum/supply/weekly/',
+  ofac_01_designations: 'https://ofac.treasury.gov/recent-actions',
+
+  // AI Window
+  compute_01_training_cost: 'https://epochai.org/trends',
+  labor_ai_01_layoffs: 'https://layoffs.fyi/',
+  info_02_deepfake_shocks: 'https://www.sec.gov/news/market-alerts',
+
+  // Jobs & Labor
+  job_01_jobless_claims: 'https://www.dol.gov/ui/data.pdf',
+  job_01_strike_days: 'https://striketracker.ilr.cornell.edu/',
+  supply_pharmacy_shortage: 'https://www.accessdata.fda.gov/scripts/drugshortages/',
+
+  // Rights & Governance
+  power_01_ai_surveillance: 'https://legiscan.com/gaits/search',
+  civil_01_acled_protests: 'https://acleddata.com/data-export-tool/',
+  power_02_dod_autonomy: 'https://www.cbo.gov/topics/defense-and-national-security',
+  liberty_01_litigation: 'https://www.aclu.org/court-cases',
+
+  // Social Cohesion
+  education_01_closures: 'https://nces.ed.gov/',
+
   // Default fallbacks by source
-  BLS: 'https://www.bls.gov/',
-  Treasury: 'https://www.treasury.gov/',
-  Fed: 'https://www.federalreserve.gov/',
-  CISA: 'https://www.cisa.gov/',
-  CDC: 'https://www.cdc.gov/',
-  WHO: 'https://www.who.int/',
-  EIA: 'https://www.eia.gov/',
+  BLS: 'https://www.bls.gov/news.release/',
+  Treasury: 'https://www.treasury.gov/resource-center/',
+  Fed: 'https://www.federalreserve.gov/newsevents.htm',
+  CISA: 'https://www.cisa.gov/news-events/alerts',
+  CDC: 'https://www.cdc.gov/media/',
+  WHO: 'https://www.who.int/emergencies/disease-outbreak-news',
+  EIA: 'https://www.eia.gov/petroleum/weekly/',
   Reuters: 'https://www.reuters.com/',
   Bloomberg: 'https://www.bloomberg.com/markets',
   AP: 'https://apnews.com/',
   NYSE: 'https://www.nyse.com/market-data',
+  ACLED: 'https://acleddata.com/',
+  NATO: 'https://www.nato.int/cps/en/natohq/news.htm',
+  DOL: 'https://www.dol.gov/newsroom/',
+  TRAC: 'https://trac.syr.edu/immigration/',
 };
 
 // Get URL for a signal based on indicator ID or source name

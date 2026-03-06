@@ -6,7 +6,7 @@ import { getOutcomePhrase, getAction } from '../../data/indicatorTranslations';
 
 export const OutcomeSentence: React.FC = () => {
   const { indicators } = useStore();
-  const actionProtocolActive = useStore(selectTightenUpActive);
+  const isHighPhase = useStore(selectTightenUpActive);
 
   const redIndicators = indicators.filter(i => i.status.level === 'red');
   const amberIndicators = indicators.filter(i => i.status.level === 'amber');
@@ -14,11 +14,11 @@ export const OutcomeSentence: React.FC = () => {
   // Generate family-friendly outcome sentence using translation map
   // Must pass the "kitchen table test" - readable to your partner over coffee
   const outcomeSentence = useMemo(() => {
-    // Action Protocol active (2+ reds) - urgent but clear
-    if (actionProtocolActive) {
+    // High phase active (2+ reds) - urgent but clear
+    if (isHighPhase) {
       const phrases = redIndicators.slice(0, 2).map(i => getOutcomePhrase(i.id, 'red'));
       const experiencePart = phrases.join(' and ');
-      return `Multiple signals suggest ${experiencePart}. Start the emergency checklist now.`;
+      return `Multiple signals suggest ${experiencePart}. Check your action plan now.`;
     }
 
     // Red indicators present - specific impacts
@@ -46,7 +46,7 @@ export const OutcomeSentence: React.FC = () => {
 
     // All clear - reassuring, actionable
     return `No unusual signals this week. A good time to review your supplies and keep building readiness.`;
-  }, [indicators, actionProtocolActive, redIndicators, amberIndicators]);
+  }, [indicators, isHighPhase, redIndicators, amberIndicators]);
 
   return (
     <motion.p

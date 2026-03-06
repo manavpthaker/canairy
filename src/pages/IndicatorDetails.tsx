@@ -135,41 +135,56 @@ export const IndicatorDetails: React.FC = () => {
           {/* Thresholds */}
           <div className="glass-card p-6">
             <h2 className="text-sm font-medium text-white/20 uppercase tracking-wider mb-4">Thresholds</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                  <span className="text-white/50">Green</span>
+            {(() => {
+              // Get threshold values with fallbacks to alternative format
+              const thresholds = indicator.thresholds;
+              const amberThreshold = thresholds?.threshold_amber ?? thresholds?.amber?.min;
+              const redThreshold = thresholds?.threshold_red ?? thresholds?.red?.min;
+              const hasThresholds = amberThreshold !== undefined && redThreshold !== undefined;
+              const isInverted = indicator.greenFlag; // For green flags, lower is better
+
+              return (
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                      <span className="text-white/50">Green</span>
+                    </div>
+                    <span className="text-white/30 font-mono text-sm">
+                      {hasThresholds
+                        ? (isInverted ? `> ${amberThreshold}` : `< ${amberThreshold}`) + ` ${indicator.unit}`
+                        : 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                      <span className="text-white/50">Amber</span>
+                    </div>
+                    <span className="text-white/30 font-mono text-sm">
+                      {hasThresholds
+                        ? `${amberThreshold} — ${redThreshold} ${indicator.unit}`
+                        : 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                      <span className="text-white/50">Red</span>
+                    </div>
+                    <span className="text-white/30 font-mono text-sm">
+                      {hasThresholds
+                        ? (isInverted ? `< ${redThreshold}` : `> ${redThreshold}`) + ` ${indicator.unit}`
+                        : 'N/A'}
+                    </span>
+                  </div>
                 </div>
-                <span className="text-white/30 font-mono text-sm">
-                  {indicator.thresholds?.threshold_amber !== undefined ? `< ${indicator.thresholds.threshold_amber} ${indicator.unit}` : 'N/A'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                  <span className="text-white/50">Amber</span>
-                </div>
-                <span className="text-white/30 font-mono text-sm">
-                  {indicator.thresholds?.threshold_red !== undefined
-                    ? `${indicator.thresholds.threshold_amber} — ${indicator.thresholds.threshold_red} ${indicator.unit}`
-                    : 'N/A'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                  <span className="text-white/50">Red</span>
-                </div>
-                <span className="text-white/30 font-mono text-sm">
-                  {indicator.thresholds?.threshold_red !== undefined ? `> ${indicator.thresholds.threshold_red} ${indicator.unit}` : 'N/A'}
-                </span>
-              </div>
-            </div>
+              );
+            })()}
             {indicator.critical && (
               <div className="mt-4 pt-4 border-t border-white/[0.04] flex items-center gap-2 text-sm text-red-400">
                 <AlertTriangle className="w-4 h-4" />
-                Critical indicator — contributes to TIGHTEN-UP protocol
+                Critical indicator — affects overall phase level
               </div>
             )}
           </div>
