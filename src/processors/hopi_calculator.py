@@ -15,71 +15,96 @@ class HOPICalculator:
     def __init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)
         
-        # Domain definitions with weights
+        # Domain definitions with weights (updated per 57-indicator registry)
         self.domains = {
             'economy': {
                 'weight': 1.0,
-                'indicators': ['Treasury', 'GroceryCPI', 'MarketVolatility', 'GDPGrowth', 'MBridgeSettlements'],
+                'indicators': ['Treasury', 'GroceryCPI', 'MarketVolatility', 'GDPGrowth',
+                              'BankFailures', 'DiscountWindow', 'DepositFlow'],
                 'critical': ['MarketVolatility']
             },
             'jobs_labor': {
                 'weight': 1.0,
-                'indicators': ['JoblessClaims', 'StrikeTracker', 'LuxuryCollapse'],
+                'indicators': ['JoblessClaims', 'StrikeActivity', 'LuxuryCollapse'],
                 'critical': []
             },
             'rights_governance': {
-                'weight': 1.0,
-                'indicators': ['LegiScan', 'ACLEDProtests', 'ICEDetention', 'TaiwanZone', 'DoDAutonomy'],
-                'critical': ['TaiwanZone']  # Open-ended closure = critical
+                'weight': 1.1,
+                'indicators': ['AISurveillance', 'ACLEDProtests'],
+                'critical': []
             },
             'security_infrastructure': {
                 'weight': 1.25,
-                'indicators': ['CISACyber', 'GridOutages', 'WHODisease', 'HormuzRisk', 'PharmacyShortage'],
+                'indicators': ['CISACyber', 'GridReliability', 'WHODisease', 'HormuzRisk',
+                              'PharmacyShortage', 'CDCAlerts', 'FEMADisasters'],
                 'critical': []
             },
-            'oil_axis': {
+            'energy': {
+                'weight': 1.1,
+                'indicators': ['SPR', 'NatGasStorage', 'GridEmergency', 'OFACOil'],
+                'critical': []
+            },
+            'supply_chain': {
                 'weight': 1.0,
-                'indicators': ['CREAOil', 'MBridgeSettlements', 'OFACDesignations', 'JODIOil'],
+                'indicators': ['PortCongestion', 'FreightIndex', 'ChipLeadTime',
+                              'PharmacyShortageIndex', 'JODIOil'],
+                'critical': []
+            },
+            'telecommunications': {
+                'weight': 0.9,
+                'indicators': ['UnderseaCable', 'BGPAnomalies', 'CellOutages'],
+                'critical': []
+            },
+            'water_infrastructure': {
+                'weight': 0.9,
+                'indicators': ['WaterAlerts', 'ReservoirLevel'],
                 'critical': []
             },
             'ai_window': {
                 'weight': 1.0,
-                'indicators': ['AILayoffs', 'AIRansomware', 'DeepfakeShocks', 'LaborDisplacement'],
-                'critical': ['DeepfakeShocks']
+                'indicators': ['AILayoffs'],
+                'critical': []
             },
             'global_conflict': {
-                'weight': 1.5,
-                'indicators': ['GlobalConflict', 'TaiwanPLA', 'NATOReadiness', 'NuclearTests', 'RussiaNATO', 'DefenseSpending'],
+                'weight': 1.25,
+                'indicators': ['GlobalConflict', 'TaiwanPLA', 'NATOReadiness',
+                              'NuclearTests', 'DefenseSpending'],
                 'critical': ['NATOReadiness']
             },
             'domestic_control': {
-                'weight': 1.25,
-                'indicators': ['DCControl', 'GuardMetros', 'ICEDetentions', 'DHSRemoval', 'HillLegislation', 'LibertyLitigation'],
-                'critical': ['GuardMetros', 'DHSRemoval']
+                'weight': 1.2,
+                'indicators': ['ICEDetention', 'FederalRegulations', 'LibertyLitigation', 'ControlBills'],
+                'critical': []
             },
-            'cult': {
-                'weight': 0.75,
-                'indicators': ['AGIMilestones', 'SchoolClosures'],
+            'travel_mobility': {
+                'weight': 0.8,
+                'indicators': ['TravelAdvisories', 'BorderWait', 'TSAThroughput'],
+                'critical': []
+            },
+            'housing_mortgage': {
+                'weight': 0.9,
+                'indicators': ['MortgageDelinquency', 'RateShock'],
+                'critical': []
+            },
+            'aviation': {
+                'weight': 0.8,
+                'indicators': ['GroundStops', 'FlightDelays', 'TFRCount'],
+                'critical': []
+            },
+            'cult_meta': {
+                'weight': 0.7,
+                'indicators': ['SocialStressSignals'],
                 'critical': []
             }
         }
         
-        # Pair caps to prevent double-counting
+        # Pair caps to prevent double-counting correlated indicators
         self.pair_caps = [
             {
-                'pair': ['ICEDetention', 'ICEDetentions'],
-                'domain': 'domestic_control',
-                'cap_factor': 1.0  # Cap at what one red would contribute
-            },
-            {
-                'pair': ['MBridgeSettlements', 'CREAOil'],
-                'domain': 'oil_axis',
+                # Pharmacy shortage count vs severity index
+                'pair': ['PharmacyShortage', 'PharmacyShortageIndex'],
+                'domain': 'supply_chain',
                 'cap_factor': 1.5  # Cap at 1.5x a single red
-            },
-            {
-                'pair': ['TaiwanZone', 'TaiwanPLA'],
-                'domain': 'global_conflict',
-                'cap_factor': 2.0  # Cap at 2x a single red
             }
         ]
         
@@ -235,11 +260,23 @@ class HOPICalculator:
     
     def _calculate_hopi(self, domain_scores: Dict[str, float]) -> float:
         """Calculate overall HOPI as weighted mean of domain scores."""
-        # Special weights for HOPI calculation
+        # Domain weights for HOPI calculation (per 57-indicator registry)
         hopi_weights = {
-            'global_conflict': 1.5,
+            'economy': 1.0,
+            'jobs_labor': 1.0,
+            'rights_governance': 1.1,
             'security_infrastructure': 1.25,
-            'domestic_control': 1.25
+            'energy': 1.1,
+            'supply_chain': 1.0,
+            'telecommunications': 0.9,
+            'water_infrastructure': 0.9,
+            'ai_window': 1.0,
+            'global_conflict': 1.25,
+            'domestic_control': 1.2,
+            'travel_mobility': 0.8,
+            'housing_mortgage': 0.9,
+            'aviation': 0.8,
+            'cult_meta': 0.7
         }
         
         total_weighted = 0.0

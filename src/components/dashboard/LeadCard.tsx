@@ -1,10 +1,11 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { AlertTriangle, ArrowRight, Clock, ChevronRight } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Clock, ChevronDown, ChevronUp, ExternalLink, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useStore } from '../../store';
-import { getDisplayName } from '../../data/indicatorTranslations';
+import { getDisplayName, getImpact, getAction, INDICATOR_TRANSLATIONS } from '../../data/indicatorTranslations';
+import { SOURCE_URLS } from '../sidebar/SignalsList';
 
 export interface LeadCardData {
   id: string;
@@ -51,17 +52,58 @@ const CONFIDENCE_COLORS = {
   low: 'text-red-400',
 };
 
+// Get URL for a signal based on indicator ID or source name
+const getSignalUrl = (indicatorId: string, source: string): string => {
+  if (SOURCE_URLS[indicatorId]) return SOURCE_URLS[indicatorId];
+  if (SOURCE_URLS[source]) return SOURCE_URLS[source];
+  return 'https://www.reuters.com/';
+};
+
 export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected }) => {
+  const [expanded, setExpanded] = useState(false);
   const urgencyConfig = URGENCY_CONFIG[data.urgency];
   const indicators = useStore((s) => s.indicators);
 
-  // Resolve indicator names from IDs
+  // Resolve full indicator data from IDs
   const sourceIndicators = data.indicatorIds
     .map((id) => {
       const indicator = indicators.find((i) => i.id === id);
-      return indicator ? { id, name: getDisplayName(id) || indicator.name } : null;
+      if (!indicator) return null;
+      const translation = INDICATOR_TRANSLATIONS[id];
+      return {
+        id,
+        name: getDisplayName(id) || indicator.name,
+        indicator,
+        translation,
+        impact: getImpact(id, indicator.status.level),
+        action: getAction(id, indicator.status.level),
+        source: translation?.sourceAbbrev || indicator.domain.replace('_', ' '),
+        url: getSignalUrl(id, translation?.sourceAbbrev || ''),
+      };
     })
-    .filter(Boolean) as { id: string; name: string }[];
+    .filter(Boolean) as {
+      id: string;
+      name: string;
+      indicator: any;
+      translation: any;
+      impact: string;
+      action: string;
+      source: string;
+      url: string;
+    }[];
+
+  const handleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpanded(!expanded);
+  };
+
+  const getTrendIcon = (trend?: string) => {
+    switch (trend) {
+      case 'up': return <TrendingUp className="w-3 h-3 text-red-400" />;
+      case 'down': return <TrendingDown className="w-3 h-3 text-green-400" />;
+      default: return <Minus className="w-3 h-3 text-olive-tertiary" />;
+    }
+  };
 
   return (
     <motion.div
@@ -74,7 +116,6 @@ export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected })
         data.urgency === 'today' && 'lead-card-red',
         data.urgency === 'week' && 'lead-card-amber',
         onClick && 'cursor-pointer hover:bg-white/[0.02] transition-colors',
-        // Selected state: left border highlight + brighter background
         isSelected && 'border-l-3 border-l-amber-500 bg-white/[0.04]'
       )}
     >
@@ -111,11 +152,11 @@ export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected })
         {data.body}
       </p>
 
-      {/* Footer: Action + Learn more */}
+      {/* Footer: Action + Expand toggle */}
       <div className="flex items-center justify-between">
         {data.action && (
-          <a
-            href={data.action.href}
+          <Link
+            to={data.action.href}
             onClick={(e) => e.stopPropagation()}
             className={cn(
               'inline-flex items-center gap-2 text-sm font-medium',
@@ -127,41 +168,202 @@ export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected })
           >
             {data.action.label}
             <ArrowRight className="w-4 h-4" />
-          </a>
+          </Link>
         )}
-        {onClick && (
+        {sourceIndicators.length > 0 && (
           <button
+            onClick={handleExpand}
             className="inline-flex items-center gap-1 text-xs text-olive-tertiary hover:text-olive-secondary transition-colors ml-auto"
           >
-            Learn more
-            <ChevronRight className="w-3 h-3" />
+            {expanded ? 'Hide details' : 'Show details'}
+            {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           </button>
         )}
       </div>
 
-      {/* Source indicators */}
-      {sourceIndicators.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-white/[0.04]">
-          <p className="text-[10px] text-olive-muted mb-1.5">Based on:</p>
-          <div className="flex flex-wrap gap-1.5">
-            {sourceIndicators.slice(0, 3).map((ind) => (
-              <Link
-                key={ind.id}
-                to={`/indicator/${ind.id}`}
-                onClick={(e) => e.stopPropagation()}
-                className="text-[10px] px-2 py-0.5 rounded-md bg-white/[0.04] text-olive-data hover:bg-white/[0.08] hover:text-olive-secondary transition-colors"
-              >
-                {ind.name}
-              </Link>
-            ))}
-            {sourceIndicators.length > 3 && (
-              <span className="text-[10px] text-olive-muted px-1">
-                +{sourceIndicators.length - 3} more
-              </span>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Expandable Details Section */}
+      <AnimatePresence>
+        {expanded && sourceIndicators.length > 0 && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-5">
+
+              {/* ═══ WHAT'S DRIVING THIS ═══ */}
+              <div>
+                <h4 className="text-xs font-semibold text-olive-primary uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  What's Driving This
+                </h4>
+                <div className="space-y-3">
+                  {sourceIndicators.map((ind) => (
+                    <div
+                      key={ind.id}
+                      className="rounded-xl bg-white/[0.03] border border-white/[0.04] overflow-hidden"
+                    >
+                      {/* Indicator header */}
+                      <div className="px-4 py-3 flex items-center justify-between border-b border-white/[0.04]">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            {getTrendIcon(ind.indicator.status.trend)}
+                            <span className={cn(
+                              'text-sm font-semibold',
+                              ind.indicator.status.level === 'red' && 'text-red-300',
+                              ind.indicator.status.level === 'amber' && 'text-amber-300',
+                              ind.indicator.status.level === 'green' && 'text-green-300'
+                            )}>
+                              {ind.name}
+                            </span>
+                          </div>
+                          <span className={cn(
+                            'text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wide',
+                            ind.indicator.status.level === 'red' && 'bg-red-500/20 text-red-400',
+                            ind.indicator.status.level === 'amber' && 'bg-amber-500/20 text-amber-400',
+                            ind.indicator.status.level === 'green' && 'bg-green-500/20 text-green-400'
+                          )}>
+                            {ind.indicator.status.level}
+                          </span>
+                        </div>
+                        <a
+                          href={ind.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-[10px] text-olive-tertiary hover:text-amber-400 transition-colors flex items-center gap-1"
+                        >
+                          {ind.source}
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
+                      </div>
+
+                      {/* News headline - what's happening */}
+                      {ind.translation && (
+                        <div className="px-4 py-3 bg-white/[0.01]">
+                          <p className="text-sm text-olive-primary font-medium leading-snug">
+                            {ind.indicator.status.level === 'red'
+                              ? ind.translation.redHeadline
+                              : ind.translation.amberHeadline}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Data point */}
+                      <div className="px-4 py-2 border-t border-white/[0.04] flex items-center justify-between">
+                        <span className="text-xs text-olive-muted">Current reading:</span>
+                        <span className="text-sm font-mono text-olive-data">
+                          {ind.translation?.dataPointTemplate
+                            ? ind.translation.dataPointTemplate.replace('{value}', String(ind.indicator.status.value))
+                            : ind.indicator.status.value}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* ═══ WHY IT MATTERS ═══ */}
+              <div>
+                <h4 className="text-xs font-semibold text-olive-primary uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                  Why It Matters
+                </h4>
+                <div className="space-y-2">
+                  {sourceIndicators.map((ind) => (
+                    <div key={ind.id} className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02]">
+                      <div className={cn(
+                        'w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
+                        ind.indicator.status.level === 'red' && 'bg-red-500/15',
+                        ind.indicator.status.level === 'amber' && 'bg-amber-500/15'
+                      )}>
+                        <span className={cn(
+                          'text-xs font-bold',
+                          ind.indicator.status.level === 'red' && 'text-red-400',
+                          ind.indicator.status.level === 'amber' && 'text-amber-400'
+                        )}>
+                          !
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-olive-secondary leading-relaxed">
+                          <span className="font-medium text-olive-primary">{ind.name}:</span>{' '}
+                          {ind.impact}
+                        </p>
+                        {ind.translation && (
+                          <p className="text-xs text-olive-muted mt-1.5 italic">
+                            This means {ind.indicator.status.level === 'red'
+                              ? ind.translation.redOutcomePhrase
+                              : ind.translation.amberOutcomePhrase} for your household.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* ═══ WHAT TO DO ═══ */}
+              {sourceIndicators.some(ind => ind.action) && (
+                <div>
+                  <h4 className="text-xs font-semibold text-olive-primary uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    What To Do
+                  </h4>
+                  <div className="space-y-2">
+                    {sourceIndicators
+                      .filter(ind => ind.action)
+                      .map((ind, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-start gap-3 p-3 rounded-lg bg-green-500/[0.03] border border-green-500/10"
+                        >
+                          <div className="w-5 h-5 rounded-full bg-green-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-xs font-bold text-green-400">{idx + 1}</span>
+                          </div>
+                          <div>
+                            <p className="text-sm text-olive-primary leading-relaxed">
+                              {ind.action}
+                            </p>
+                            <p className="text-[10px] text-olive-muted mt-1">
+                              Based on {ind.name}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ═══ DATA SOURCES ═══ */}
+              <div className="pt-3 border-t border-white/[0.04]">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] text-olive-muted uppercase tracking-wider">
+                    Verify with sources
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {sourceIndicators.map((ind) => (
+                    <a
+                      key={ind.id}
+                      href={ind.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] text-xs text-olive-secondary hover:bg-white/[0.08] hover:text-amber-400 transition-colors border border-white/[0.04]"
+                    >
+                      {ind.translation?.source || ind.source}
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

@@ -503,6 +503,69 @@ async def refresh_indicator(indicator_id: str):
     return await get_indicator(indicator_id)
 
 
+# ─── NEWS ENDPOINTS ───
+# Import news router
+try:
+    from api.routers.news import router as news_router
+    app.include_router(news_router, prefix="/api/v1/news", tags=["news"])
+    logger.info("News router mounted at /api/v1/news")
+except ImportError as e:
+    logger.warning(f"News router not available: {e}")
+    # Fallback: simple news endpoint
+    import httpx
+    import feedparser
+    import asyncio
+    import re
+
+    NEWS_FEEDS = [
+        ("Reuters World", "https://www.reutersagency.com/feed/?best-topics=world"),
+        ("BBC World", "https://feeds.bbci.co.uk/news/world/rss.xml"),
+        ("AP News", "https://rsshub.app/apnews/topics/apf-topnews"),
+    ]
+
+    async def fetch_feed_simple(client, name, url):
+        try:
+            response = await client.get(url, timeout=10.0)
+            if response.status_code == 200:
+                feed = feedparser.parse(response.content)
+                articles = []
+                for entry in feed.entries[:5]:
+                    title = entry.get('title', '').strip()
+                    link = entry.get('link', '')
+                    desc = entry.get('summary', entry.get('description', '')).strip()
+                    desc = re.sub(r'<[^>]+>', '', desc)[:200]
+                    if title and link:
+                        articles.append({
+                            "title": title,
+                            "description": desc,
+                            "url": link,
+                            "source": name,
+                            "published": None,
+                        })
+                return articles
+        except Exception:
+            pass
+        return []
+
+    @app.get("/api/v1/news")
+    async def get_news_fallback(categories: str = "breaking"):
+        async with httpx.AsyncClient(
+            headers={"User-Agent": "Canairy/1.0"},
+            follow_redirects=True
+        ) as client:
+            tasks = [fetch_feed_simple(client, name, url) for name, url in NEWS_FEEDS]
+            results = await asyncio.gather(*tasks)
+
+        all_articles = []
+        seen = set()
+        for articles in results:
+            for a in articles:
+                if a["url"] not in seen:
+                    seen.add(a["url"])
+                    all_articles.append(a)
+        return all_articles[:15]
+
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 5555))

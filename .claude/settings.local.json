@@ -44,7 +44,11 @@
       "Bash(for f in grocery_cpi)",
       "Bash(for f in eia_energy)",
       "Bash(for f in acled_protests global_conflict)",
-      "Bash(\"https://api.weather.gov/alerts/active?status=actual&limit=5\")"
+      "Bash(\"https://api.weather.gov/alerts/active?status=actual&limit=5\")",
+      "Bash(sort grep -oE '_ind\\\\\\(\"\"[a-z_0-9]+\"\"' /Users/manavthaker/Documents/GitHub/canairy/api/simple_main.py)",
+      "Bash(sort echo \"=== In API but NOT in frontend ===\" comm -23 /tmp/api_ids.txt /tmp/frontend_ids.txt echo \"\" echo \"=== In frontend but NOT in API ===\" comm -13 /tmp/api_ids.txt /tmp/frontend_ids.txt)",
+      "Bash(sort -u grep -oE '_ind\\\\\\(\"\"[a-z_0-9]+\"\"' /Users/manavthaker/Documents/GitHub/canairy/api/simple_main.py)",
+      "Bash(comm:*)"
     ]
   }
 }

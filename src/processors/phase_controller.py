@@ -11,17 +11,24 @@ import logging
 
 class PhaseController:
     """Controls phase transitions with hysteresis and critical rules."""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(self.__class__.__name__)
-        
+
         # Current phase
         self.current_phase = 0
-        
+
+        # M-phase for relocation tracking (0, 1, or 2)
+        self.current_m_phase = 0
+
         # Phase history for hysteresis
         self.phase_history = deque(maxlen=100)  # Keep last 100 transitions
         self.poll_history = deque(maxlen=10)   # Keep last 10 polls
-        
+
+        # Domestic control history for M-phase tracking
+        self.domestic_amber_start: Optional[datetime] = None
+        self.domestic_red_start: Optional[datetime] = None
+
         # Last phase change time for cooldown
         self.last_phase_change = datetime.utcnow()
         
@@ -167,9 +174,12 @@ class PhaseController:
             self.current_phase = new_phase
             phase_changed = True
         
+        # Calculate M-phase for relocation tracking
+        m_phase = self._calculate_m_phase(hopi_result, indicators)
+
         # Get phase info and actions
         phase_info = self.phases.get(self.current_phase, self.phases[0])
-        
+
         return {
             'phase': self.current_phase,
             'phase_name': phase_info['name'],
@@ -180,6 +190,8 @@ class PhaseController:
             'target_phase': target_phase,
             'hysteresis_active': target_phase != new_phase,
             'critical_active': critical_phase > 0,
+            'm_phase': m_phase,
+            'm_phase_info': self.get_m_phase_info() if m_phase > 0 else None,
             'timestamp': datetime.utcnow().isoformat() + 'Z'
         }
     
@@ -325,8 +337,94 @@ class PhaseController:
     def get_phase_history(self, hours: int = 24) -> List[Dict]:
         """Get recent phase transitions."""
         cutoff = datetime.utcnow() - timedelta(hours=hours)
-        
+
         return [
             transition for transition in self.phase_history
             if transition['timestamp'] >= cutoff
         ]
+
+    def _calculate_m_phase(self, hopi_result: Dict, indicators: Dict[str, Dict]) -> int:
+        """
+        Calculate M-phase for relocation task surfacing.
+
+        M-0: Domestic Control domain score ≥0.4 → passport/document review
+        M-1: ICE + 2 domestic indicators all amber for 30+ days → visa research
+        M-2: 2+ Domestic Control reds for 14+ days → trial relocation
+
+        Returns: 0, 1, or 2
+        """
+        domain_scores = hopi_result.get('domain_scores', {})
+        domestic_score = domain_scores.get('domestic_control', 0.0)
+
+        # Count domestic control indicators by color
+        domestic_indicators = ['ICEDetention', 'FederalRegulations', 'LibertyLitigation',
+                              'ControlBills', 'GuardMetros', 'DHSRemoval']
+        amber_count = 0
+        red_count = 0
+
+        for ind_name in domestic_indicators:
+            if ind_name in indicators:
+                color = indicators[ind_name].get('color', 0)
+                if color == 1:
+                    amber_count += 1
+                elif color == 2:
+                    red_count += 1
+
+        now = datetime.utcnow()
+
+        # Check M-2: 2+ reds sustained 14+ days
+        if red_count >= 2:
+            if self.domestic_red_start is None:
+                self.domestic_red_start = now
+            elif now - self.domestic_red_start >= timedelta(days=14):
+                self.current_m_phase = 2
+                self.logger.warning("M-2 triggered: 2+ domestic reds for 14+ days")
+                return 2
+        else:
+            self.domestic_red_start = None
+
+        # Check M-1: ICE + 2 others all amber for 30+ days
+        ice_amber = indicators.get('ICEDetention', {}).get('color') == 1
+        if ice_amber and amber_count >= 3:  # ICE + at least 2 others
+            if self.domestic_amber_start is None:
+                self.domestic_amber_start = now
+            elif now - self.domestic_amber_start >= timedelta(days=30):
+                self.current_m_phase = max(self.current_m_phase, 1)
+                self.logger.warning("M-1 triggered: ICE + 2 domestic ambers for 30+ days")
+                return 1
+        else:
+            self.domestic_amber_start = None
+
+        # Check M-0: Domain score ≥0.4
+        if domestic_score >= 0.4:
+            self.current_m_phase = max(self.current_m_phase, 0)
+            return 0
+
+        return self.current_m_phase
+
+    def get_m_phase(self) -> int:
+        """Get current M-phase level."""
+        return self.current_m_phase
+
+    def get_m_phase_info(self) -> Dict:
+        """Get M-phase details for action plan."""
+        m_phase_info = {
+            0: {
+                'name': 'Document Review',
+                'description': 'Passport/document review tasks surface',
+                'actions': ['Verify passport expiration', 'Gather vital documents', 'Review overseas assets']
+            },
+            1: {
+                'name': 'Visa Research',
+                'description': 'Begin researching relocation options',
+                'actions': ['Research visa requirements for target countries', 'Contact immigration attorney',
+                           'Evaluate property/asset portability']
+            },
+            2: {
+                'name': 'Trial Relocation',
+                'description': 'Test relocation logistics',
+                'actions': ['Book trial stay in target location', 'Test banking/communication',
+                           'Establish local contacts']
+            }
+        }
+        return m_phase_info.get(self.current_m_phase, m_phase_info[0])
