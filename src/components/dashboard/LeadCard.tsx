@@ -7,8 +7,16 @@ import { useStore } from '../../store';
 import { getDisplayName, getImpact, getAction, INDICATOR_TRANSLATIONS } from '../../data/indicatorTranslations';
 import { SOURCE_URLS } from '../sidebar/SignalsList';
 
+export interface ActionItem {
+  id: string;
+  text: string;
+  estimateMinutes?: number;
+  completed?: boolean;
+}
+
 export interface LeadCardData {
   id: string;
+  category: string; // e.g., "OIL SECURITY SLIPPING", "INFRASTRUCTURE UNDER SUSTAINED ATTACK"
   headline: string;
   body: string;
   urgency: 'today' | 'week' | 'knowing';
@@ -16,6 +24,9 @@ export interface LeadCardData {
   severity: number;
   confidence?: 'high' | 'moderate' | 'low';
   signalCount?: number;
+  actions?: ActionItem[]; // Specific actions with time estimates
+  whyItMatters?: string; // Household-specific explanation
+  timestamp?: string; // ISO timestamp
   action?: {
     label: string;
     href: string;
@@ -30,19 +41,28 @@ interface LeadCardProps {
 
 const URGENCY_CONFIG = {
   today: {
-    label: 'Do this today',
+    label: 'Immediate',
+    badgeLabel: 'Action needed',
     className: 'urgency-today',
     borderColor: 'border-red-500/40',
+    dotColor: 'bg-red-500',
+    textColor: 'text-red-400',
   },
   week: {
     label: 'This week',
+    badgeLabel: 'Action needed',
     className: 'urgency-week',
     borderColor: 'border-amber-500/40',
+    dotColor: 'bg-amber-500',
+    textColor: 'text-amber-400',
   },
   knowing: {
     label: 'Worth knowing',
+    badgeLabel: 'Monitor',
     className: 'urgency-knowing',
     borderColor: 'border-olive-hover',
+    dotColor: 'bg-green-500',
+    textColor: 'text-green-400',
   },
 };
 
@@ -61,8 +81,21 @@ const getSignalUrl = (indicatorId: string, source: string): string => {
 
 export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected }) => {
   const [expanded, setExpanded] = useState(false);
+  const [completedActions, setCompletedActions] = useState<Set<string>>(new Set());
   const urgencyConfig = URGENCY_CONFIG[data.urgency];
   const indicators = useStore((s) => s.indicators);
+
+  const toggleAction = (actionId: string) => {
+    setCompletedActions(prev => {
+      const next = new Set(prev);
+      if (next.has(actionId)) {
+        next.delete(actionId);
+      } else {
+        next.add(actionId);
+      }
+      return next;
+    });
+  };
 
   // Resolve full indicator data from IDs
   const sourceIndicators = data.indicatorIds
@@ -105,6 +138,8 @@ export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected })
     }
   };
 
+  const actionCount = data.actions?.length || 0;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -112,74 +147,83 @@ export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected })
       transition={{ delay: 0.2 }}
       onClick={onClick}
       className={cn(
-        'lead-card p-5',
+        'lead-card p-5 flex gap-4',
         data.urgency === 'today' && 'lead-card-red',
         data.urgency === 'week' && 'lead-card-amber',
         onClick && 'cursor-pointer hover:bg-white/[0.02] transition-colors',
         isSelected && 'border-l-3 border-l-amber-500 bg-white/[0.04]'
       )}
     >
-      {/* Header: Urgency pill + confidence + icon */}
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <div className="flex items-center gap-3">
-          <span className={cn('urgency-pill', urgencyConfig.className)}>
-            <Clock className="w-3 h-3 mr-1" />
-            {urgencyConfig.label}
+      {/* Left: Status dot */}
+      <div className="flex-shrink-0 pt-1">
+        <div className={cn('w-3 h-3 rounded-full', urgencyConfig.dotColor)} />
+      </div>
+
+      {/* Right: Content */}
+      <div className="flex-1 min-w-0">
+        {/* Category + Urgency badge */}
+        <div className="flex items-center gap-3 mb-2">
+          <span className="text-[10px] font-semibold text-olive-tertiary uppercase tracking-wider">
+            {data.category}
           </span>
-          {data.confidence && (
-            <span className={cn('text-xs font-medium', CONFIDENCE_COLORS[data.confidence])}>
-              {data.confidence.charAt(0).toUpperCase() + data.confidence.slice(1)} confidence
-            </span>
-          )}
-          {data.signalCount && (
-            <span className="text-xs text-olive-muted">
-              · {data.signalCount} signals
-            </span>
+          <span className={cn('text-xs font-medium', urgencyConfig.textColor)}>
+            {urgencyConfig.badgeLabel}
+          </span>
+          {data.urgency !== 'knowing' && actionCount > 0 && (
+            <>
+              <span className="text-olive-muted text-xs">·</span>
+              <span className="text-xs text-olive-muted">
+                {actionCount} action{actionCount !== 1 ? 's' : ''} recommended
+              </span>
+              <span className="text-olive-muted text-xs">·</span>
+              <span className="text-xs text-olive-muted">
+                {urgencyConfig.label}
+              </span>
+            </>
           )}
         </div>
-        {data.severity >= 7 && (
-          <AlertTriangle className="w-5 h-5 text-red-400 animate-pulse" />
-        )}
-      </div>
 
-      {/* Headline */}
-      <h3 className="font-display text-display-lead text-olive-primary mb-2">
-        {data.headline}
-      </h3>
+        {/* Headline */}
+        <h3 className="font-display text-display-lead text-olive-primary mb-2">
+          {data.headline}
+        </h3>
 
-      {/* Body */}
-      <p className="text-body-card text-olive-secondary leading-relaxed mb-4">
-        {data.body}
-      </p>
+        {/* Body - truncated in collapsed state */}
+        <p className={cn(
+          'text-body-card text-olive-secondary leading-relaxed mb-4',
+          !expanded && 'line-clamp-2'
+        )}>
+          {data.body}
+        </p>
 
-      {/* Footer: Action + Expand toggle */}
-      <div className="flex items-center justify-between">
-        {data.action && (
-          <Link
-            to={data.action.href}
-            onClick={(e) => e.stopPropagation()}
-            className={cn(
-              'inline-flex items-center gap-2 text-sm font-medium',
-              data.urgency === 'today' && 'text-red-400 hover:text-red-300',
-              data.urgency === 'week' && 'text-amber-400 hover:text-amber-300',
-              data.urgency === 'knowing' && 'text-olive-secondary hover:text-olive-primary',
-              'transition-colors'
-            )}
-          >
-            {data.action.label}
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        )}
-        {sourceIndicators.length > 0 && (
-          <button
-            onClick={handleExpand}
-            className="inline-flex items-center gap-1 text-xs text-olive-tertiary hover:text-olive-secondary transition-colors ml-auto"
-          >
-            {expanded ? 'Hide details' : 'Show details'}
-            {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-          </button>
-        )}
-      </div>
+        {/* Footer: Action + Expand toggle */}
+        <div className="flex items-center justify-between">
+          {data.action && (
+            <Link
+              to={data.action.href}
+              onClick={(e) => e.stopPropagation()}
+              className={cn(
+                'inline-flex items-center gap-2 text-sm font-medium',
+                data.urgency === 'today' && 'text-red-400 hover:text-red-300',
+                data.urgency === 'week' && 'text-amber-400 hover:text-amber-300',
+                data.urgency === 'knowing' && 'text-olive-secondary hover:text-olive-primary',
+                'transition-colors'
+              )}
+            >
+              {data.action.label}
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          )}
+          {sourceIndicators.length > 0 && (
+            <button
+              onClick={handleExpand}
+              className="inline-flex items-center gap-1 text-xs text-olive-tertiary hover:text-olive-secondary transition-colors ml-auto"
+            >
+              {expanded ? 'Hide details' : 'Show details'}
+              {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+          )}
+        </div>
 
       {/* Expandable Details Section */}
       <AnimatePresence>
@@ -271,42 +315,105 @@ export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected })
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
                   Why It Matters
                 </h4>
-                <div className="space-y-2">
-                  {sourceIndicators.map((ind) => (
-                    <div key={ind.id} className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02]">
-                      <div className={cn(
-                        'w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
-                        ind.indicator.status.level === 'red' && 'bg-red-500/15',
-                        ind.indicator.status.level === 'amber' && 'bg-amber-500/15'
-                      )}>
-                        <span className={cn(
-                          'text-xs font-bold',
-                          ind.indicator.status.level === 'red' && 'text-red-400',
-                          ind.indicator.status.level === 'amber' && 'text-amber-400'
+                {data.whyItMatters ? (
+                  <div className="p-3 rounded-lg bg-white/[0.02]">
+                    <p className="text-sm text-olive-secondary leading-relaxed">
+                      {data.whyItMatters}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {sourceIndicators.map((ind) => (
+                      <div key={ind.id} className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02]">
+                        <div className={cn(
+                          'w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
+                          ind.indicator.status.level === 'red' && 'bg-red-500/15',
+                          ind.indicator.status.level === 'amber' && 'bg-amber-500/15'
                         )}>
-                          !
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-sm text-olive-secondary leading-relaxed">
-                          <span className="font-medium text-olive-primary">{ind.name}:</span>{' '}
-                          {ind.impact}
-                        </p>
-                        {ind.translation && (
-                          <p className="text-xs text-olive-muted mt-1.5 italic">
-                            This means {ind.indicator.status.level === 'red'
-                              ? ind.translation.redOutcomePhrase
-                              : ind.translation.amberOutcomePhrase} for your household.
+                          <span className={cn(
+                            'text-xs font-bold',
+                            ind.indicator.status.level === 'red' && 'text-red-400',
+                            ind.indicator.status.level === 'amber' && 'text-amber-400'
+                          )}>
+                            !
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm text-olive-secondary leading-relaxed">
+                            <span className="font-medium text-olive-primary">{ind.name}:</span>{' '}
+                            {ind.impact}
                           </p>
-                        )}
+                          {ind.translation && (
+                            <p className="text-xs text-olive-muted mt-1.5 italic">
+                              This means {ind.indicator.status.level === 'red'
+                                ? ind.translation.redOutcomePhrase
+                                : ind.translation.amberOutcomePhrase} for your household.
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* ═══ WHAT TO DO ═══ */}
-              {sourceIndicators.some(ind => ind.action) && (
+              {(data.actions && data.actions.length > 0) ? (
+                <div>
+                  <h4 className="text-xs font-semibold text-olive-primary uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    What To Do
+                  </h4>
+                  <div className="space-y-2">
+                    {data.actions.map((action) => {
+                      const isCompleted = completedActions.has(action.id);
+                      return (
+                        <div
+                          key={action.id}
+                          className={cn(
+                            'flex items-start gap-3 p-3 rounded-lg border transition-all',
+                            isCompleted
+                              ? 'bg-green-500/[0.08] border-green-500/20 opacity-70'
+                              : 'bg-green-500/[0.03] border-green-500/10 hover:bg-green-500/[0.05]'
+                          )}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleAction(action.id);
+                            }}
+                            className={cn(
+                              'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors',
+                              isCompleted
+                                ? 'bg-green-500 border-green-500'
+                                : 'border-green-500/30 hover:border-green-500/50'
+                            )}
+                          >
+                            {isCompleted && (
+                              <svg className="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </button>
+                          <div className="flex-1">
+                            <p className={cn(
+                              'text-sm leading-relaxed',
+                              isCompleted ? 'text-olive-tertiary line-through' : 'text-olive-primary'
+                            )}>
+                              {action.text}
+                            </p>
+                            {action.estimateMinutes && (
+                              <p className="text-[10px] text-olive-muted mt-1">
+                                ~{action.estimateMinutes} min
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : sourceIndicators.some(ind => ind.action) && (
                 <div>
                   <h4 className="text-xs font-semibold text-olive-primary uppercase tracking-wider mb-3 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
@@ -337,12 +444,22 @@ export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected })
                 </div>
               )}
 
-              {/* ═══ DATA SOURCES ═══ */}
+              {/* ═══ SOURCE + TIMESTAMP ═══ */}
               <div className="pt-3 border-t border-white/[0.04]">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] text-olive-muted uppercase tracking-wider">
                     Verify with sources
                   </span>
+                  {data.timestamp && (
+                    <span className="text-[10px] text-olive-muted">
+                      Updated {new Date(data.timestamp).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {sourceIndicators.map((ind) => (
@@ -364,6 +481,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({ data, onClick, isSelected })
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </motion.div>
   );
 };

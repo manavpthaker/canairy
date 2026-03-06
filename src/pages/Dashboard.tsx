@@ -61,15 +61,24 @@ export const Dashboard: React.FC = () => {
 
     let leadCard: LeadCardData | null = null;
 
+    // Helper to get domain category label
+    const getCategoryLabel = (ind: typeof indicators[0]): string => {
+      const domainLabel = DOMAIN_META[ind.domain]?.label || ind.domain;
+      return domainLabel.toUpperCase();
+    };
+
     if (redIndicators.length >= 2) {
       const impacts = redIndicators.slice(0, 2).map(i => getImpact(i.id, 'red'));
+      const primaryDomain = redIndicators[0].domain;
       leadCard = {
         id: 'fallback-action-protocol',
+        category: getCategoryLabel(redIndicators[0]),
         headline: 'Check your action plan now',
         body: `${impacts.join('. ')} Having cash, fuel, and supplies ready protects your family.`,
         urgency: 'today',
         indicatorIds: redIndicators.map(i => i.id),
         severity: 9,
+        timestamp: new Date().toISOString(),
         action: { label: 'Open action plan', href: '/action-plan' },
       };
     } else if (redIndicators.length === 1) {
@@ -78,11 +87,13 @@ export const Dashboard: React.FC = () => {
       const action = getAction(ind.id, 'red');
       leadCard = {
         id: `fallback-${ind.id}`,
+        category: getCategoryLabel(ind),
         headline: action,
         body: impact,
         urgency: 'today',
         indicatorIds: [ind.id],
         severity: 7,
+        timestamp: new Date().toISOString(),
         action: { label: 'View action plan', href: '/action-plan' },
       };
     } else if (amberIndicators.length >= 3) {
@@ -91,11 +102,13 @@ export const Dashboard: React.FC = () => {
       const impact = getImpact(topIndicator.id, 'amber');
       leadCard = {
         id: 'fallback-elevated',
+        category: getCategoryLabel(topIndicator),
         headline: action,
         body: `${impact}. Now is a good time to review your supplies and ensure everything is current.`,
         urgency: 'week',
         indicatorIds: amberIndicators.map(i => i.id),
         severity: 5,
+        timestamp: new Date().toISOString(),
         action: { label: 'Review action plan', href: '/action-plan' },
       };
     }
