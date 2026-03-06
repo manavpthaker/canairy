@@ -148,32 +148,6 @@ export const mockIndicators: IndicatorData[] = [
     updateFrequency: 'Daily',
     status: { level: 'green', value: 18, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
-  {
-    id: 'power_02_dod_autonomy',
-    name: 'DoD Autonomous Systems',
-    domain: 'rights_governance',
-    description: 'DoD autonomous weapons programs with auto-execute authority — AI warfare governance risk',
-    unit: 'programs',
-    thresholds: { green: { max: 0 }, amber: { min: 0, max: 2 }, red: { min: 3 }, threshold_amber: 1, threshold_red: 3 },
-    enabled: true,
-    dataSource: 'DoD / CBO Reports',
-    sourceUrl: 'https://www.cbo.gov/topics/defense-and-national-security',
-    updateFrequency: 'Quarterly',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
-    id: 'liberty_01_litigation',
-    name: 'Major Liberty Cases',
-    domain: 'rights_governance',
-    description: 'ACLU/EFF major civil liberty cases filed (90-day count) — legal battleground indicator',
-    unit: 'cases',
-    thresholds: { green: { max: 5 }, amber: { min: 5, max: 15 }, red: { min: 15 }, threshold_amber: 5, threshold_red: 15 },
-    enabled: true,
-    dataSource: 'ACLU / Court Records',
-    sourceUrl: 'https://www.aclu.org/court-cases',
-    updateFrequency: 'Weekly',
-    status: { level: 'amber', value: 8, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
-  },
 
   // ═══════════════════════════════════════════
   // SECURITY & INFRASTRUCTURE (3 indicators)
@@ -217,62 +191,49 @@ export const mockIndicators: IndicatorData[] = [
     updateFrequency: 'Daily',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
+  {
+    id: 'cdc_health_alerts',
+    name: 'CDC Health Alerts',
+    domain: 'security_infrastructure',
+    description: 'CDC health alert network notices (30-day count)',
+    unit: 'alerts',
+    thresholds: { green: { max: 5 }, amber: { min: 5, max: 15 }, red: { min: 15 }, threshold_amber: 5, threshold_red: 15 },
+    enabled: true,
+    dataSource: 'CDC RSS',
+    sourceUrl: 'https://www.cdc.gov/rss/',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'fema_disaster_declarations',
+    name: 'FEMA Disasters',
+    domain: 'security_infrastructure',
+    description: 'FEMA disaster declarations (30-day count)',
+    unit: 'declarations',
+    thresholds: { green: { max: 10 }, amber: { min: 10, max: 25 }, red: { min: 25 }, threshold_amber: 10, threshold_red: 25 },
+    enabled: true,
+    dataSource: 'FEMA API',
+    sourceUrl: 'https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 5, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'fda_drug_shortages',
+    name: 'FDA Drug Shortages',
+    domain: 'security_infrastructure',
+    description: 'Active FDA drug shortage listings',
+    unit: 'shortages',
+    thresholds: { green: { max: 50 }, amber: { min: 50, max: 100 }, red: { min: 100 }, threshold_amber: 50, threshold_red: 100 },
+    enabled: true,
+    dataSource: 'FDA',
+    sourceUrl: 'https://www.accessdata.fda.gov/scripts/drugshortages/',
+    updateFrequency: 'Daily',
+    status: { level: 'amber', value: 45, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
 
   // ═══════════════════════════════════════════
-  // OIL AXIS (4 indicators)
+  // OIL AXIS (2 indicators)
   // ═══════════════════════════════════════════
-  {
-    id: 'oil_01_russian_brics',
-    name: 'Russian Crude to BRICS',
-    domain: 'oil_axis',
-    description: 'Share of Russian crude going to BRICS nations (30-day %) — de-dollarization signal',
-    unit: '%',
-    thresholds: { green: { max: 60 }, amber: { min: 60, max: 75 }, red: { min: 75 }, threshold_amber: 60, threshold_red: 75 },
-    enabled: true,
-    dataSource: 'CREA',
-    sourceUrl: 'https://energyandcleanair.org/russia-fossil-tracker/',
-    updateFrequency: 'Monthly',
-    status: { level: 'amber', value: 68, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
-    id: 'oil_02_mbridge_settlements',
-    name: 'mBridge Settlement',
-    domain: 'oil_axis',
-    description: 'mBridge energy settlement volume (USD millions/day) — CBDC oil trade bypass',
-    unit: 'M USD/day',
-    thresholds: { green: { max: 50 }, amber: { min: 50, max: 300 }, red: { min: 300 }, threshold_amber: 50, threshold_red: 300 },
-    enabled: false,
-    dataSource: 'BIS Reports',
-    sourceUrl: 'https://www.bis.org/about/bisih/topics/cbdc/mbridge.htm',
-    updateFrequency: 'Quarterly',
-    status: { level: 'green', value: 32, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
-  },
-  {
-    id: 'oil_04_refinery_ratio',
-    name: 'Refinery Run Ratio',
-    domain: 'oil_axis',
-    description: 'Refinery run-rate ratio (India+China)/OECD — measures oil processing shift to East',
-    unit: 'ratio',
-    thresholds: { green: { max: 1.2 }, amber: { min: 1.2, max: 1.4 }, red: { min: 1.4 }, threshold_amber: 1.2, threshold_red: 1.4 },
-    enabled: true,
-    dataSource: 'JODI API',
-    sourceUrl: 'https://www.jodidata.org/oil/',
-    updateFrequency: 'Monthly',
-    status: { level: 'green', value: 1.15, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
-    id: 'oil_03_jodi_inventory',
-    name: 'Global Oil Inventory',
-    domain: 'oil_axis',
-    description: 'JODI global crude oil inventory days of cover — supply buffer indicator',
-    unit: 'days',
-    thresholds: { green: { min: 60 }, amber: { min: 45, max: 60 }, red: { max: 45 }, threshold_amber: 60, threshold_red: 45 },
-    enabled: true,
-    dataSource: 'JODI / IEA',
-    sourceUrl: 'https://www.jodidata.org/oil/',
-    updateFrequency: 'Monthly',
-    status: { level: 'green', value: 65, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
   {
     id: 'spr_01_level',
     name: 'Strategic Petroleum Reserve',
@@ -288,21 +249,21 @@ export const mockIndicators: IndicatorData[] = [
     status: { level: 'amber', value: 370, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
   {
-    id: 'ofac_01_designations',
+    id: 'oil_03_ofac_designations',
     name: 'OFAC Sanctions (Oil)',
     domain: 'oil_axis',
     description: 'OFAC sanctions designations targeting oil trade entities (30-day count)',
     unit: 'designations',
-    thresholds: { green: { max: 2 }, amber: { min: 2, max: 8 }, red: { min: 8 }, threshold_amber: 2, threshold_red: 8 },
+    thresholds: { green: { max: 1 }, amber: { min: 1, max: 5 }, red: { min: 5 }, threshold_amber: 1, threshold_red: 5 },
     enabled: true,
-    dataSource: 'OFAC / Treasury',
+    dataSource: 'Treasury OFAC',
     sourceUrl: 'https://ofac.treasury.gov/recent-actions',
     updateFrequency: 'Weekly',
-    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
 
   // ═══════════════════════════════════════════
-  // AI WINDOW (4 indicators)
+  // AI WINDOW (2 indicators)
   // ═══════════════════════════════════════════
   {
     id: 'labor_ai_01_layoffs',
@@ -311,52 +272,24 @@ export const mockIndicators: IndicatorData[] = [
     description: 'Monthly workers laid off citing AI/automation — labor displacement signal',
     unit: 'workers',
     thresholds: { green: { max: 5000 }, amber: { min: 5000, max: 25000 }, red: { min: 25000 }, threshold_amber: 5000, threshold_red: 25000 },
-    enabled: false,
-    dataSource: 'Layoffs.fyi',
+    enabled: true,
+    dataSource: 'Layoffs.fyi RSS',
     sourceUrl: 'https://layoffs.fyi/',
     updateFrequency: 'Monthly',
-    status: { level: 'green', value: 3200, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
+    status: { level: 'green', value: 3200, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
   {
-    id: 'cyber_02_ai_ransomware',
-    name: 'AI Ransomware',
+    id: 'cult_media_01_trends',
+    name: 'AI Religion Trends',
     domain: 'ai_window',
-    description: 'AI-assisted ransomware incidents (90-day count) — emerging cyber threat vector',
-    unit: 'incidents',
-    thresholds: { green: { max: 3 }, amber: { min: 3, max: 6 }, red: { min: 6 }, threshold_amber: 3, threshold_red: 6 },
+    description: 'Google Trends score for "AI religion" (US weekly) — cultural shift signal',
+    unit: 'score',
+    thresholds: { green: { max: 15 }, amber: { min: 15, max: 40 }, red: { min: 40 }, threshold_amber: 15, threshold_red: 40 },
     enabled: true,
-    dataSource: 'CISA ICS',
-    sourceUrl: 'https://www.cisa.gov/stopransomware/ransomware-alerts',
+    dataSource: 'Google Trends',
+    sourceUrl: 'https://trends.google.com/trends/explore?q=AI%20religion&geo=US',
     updateFrequency: 'Weekly',
-    status: { level: 'amber', value: 4, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
-    id: 'info_02_deepfake_shocks',
-    name: 'Deepfake Market Shocks',
-    domain: 'ai_window',
-    description: 'Deepfake-triggered market events per quarter — information warfare indicator',
-    unit: 'events',
-    thresholds: { green: { max: 0 }, amber: { min: 0, max: 1 }, red: { min: 2 }, threshold_amber: 1, threshold_red: 2 },
-    critical: true,
-    enabled: true,
-    dataSource: 'Composite',
-    sourceUrl: 'https://www.sec.gov/news/market-alerts',
-    updateFrequency: 'Continuous',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
-    id: 'compute_01_training_cost',
-    name: 'Training Cost Trend',
-    domain: 'ai_window',
-    description: '$/training-FLOP 6-month change (%) — green flag when costs drop fast',
-    unit: '%',
-    thresholds: { green: { max: -30 }, amber: { min: -30, max: 0 }, red: { min: 0 }, threshold_amber: -30, threshold_red: 0 },
-    greenFlag: true,
-    enabled: true,
-    dataSource: 'Epoch AI',
-    sourceUrl: 'https://epochai.org/trends',
-    updateFrequency: 'Monthly',
-    status: { level: 'green', value: -42, trend: 'down', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 8, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
 
   // ═══════════════════════════════════════════
@@ -403,14 +336,14 @@ export const mockIndicators: IndicatorData[] = [
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
   {
-    id: 'nuclear_01_tests',
+    id: 'nuclear_test_activity',
     name: 'Nuclear/Missile Tests',
     domain: 'global_conflict',
     description: 'Nuclear detonation or ICBM tests (90-day count) — existential threat signal',
     unit: 'tests',
-    thresholds: { green: { max: 2 }, amber: { min: 2, max: 5 }, red: { min: 10 }, threshold_amber: 2, threshold_red: 10 },
+    thresholds: { green: { max: 2 }, amber: { min: 2, max: 10 }, red: { min: 10 }, threshold_amber: 2, threshold_red: 10 },
     enabled: true,
-    dataSource: 'CNS',
+    dataSource: 'News RSS',
     sourceUrl: 'https://www.ctbto.org/specials/testing-times/',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
@@ -429,33 +362,6 @@ export const mockIndicators: IndicatorData[] = [
     status: { level: 'green', value: 0.3, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
   {
-    id: 'taiwan_exclusion_zone',
-    name: 'Taiwan Exclusion Zone',
-    domain: 'global_conflict',
-    description: 'Active Chinese military exclusion zones near Taiwan — blockade precursor signal',
-    unit: 'zones',
-    thresholds: { green: { max: 0 }, amber: { min: 0, max: 1 }, red: { min: 2 }, threshold_amber: 1, threshold_red: 2 },
-    critical: true,
-    enabled: true,
-    dataSource: 'Taiwan MND',
-    sourceUrl: 'https://www.mnd.gov.tw/english/',
-    updateFrequency: 'Daily',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
-    id: 'russia_nato_escalation',
-    name: 'Russia-NATO Index',
-    domain: 'global_conflict',
-    description: 'Russia-NATO escalation composite index — European theater risk',
-    unit: 'index',
-    thresholds: { green: { max: 30 }, amber: { min: 30, max: 60 }, red: { min: 80 }, threshold_amber: 30, threshold_red: 80 },
-    enabled: false,
-    dataSource: 'Composite',
-    sourceUrl: 'https://www.iiss.org/research-paper/',
-    updateFrequency: 'Daily',
-    status: { level: 'amber', value: 45, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
-  },
-  {
     id: 'defense_spending_growth',
     name: 'Defense Spending Growth',
     domain: 'global_conflict',
@@ -470,35 +376,8 @@ export const mockIndicators: IndicatorData[] = [
   },
 
   // ═══════════════════════════════════════════
-  // DOMESTIC CONTROL (6 indicators)
+  // DOMESTIC CONTROL (5 indicators)
   // ═══════════════════════════════════════════
-  {
-    id: 'dc_control_countdown',
-    name: 'DC Autonomy Countdown',
-    domain: 'domestic_control',
-    description: 'Days until DC autonomy revocation — federal control signal',
-    unit: 'days',
-    thresholds: { green: { min: 730 }, amber: { min: 365, max: 730 }, red: { max: 180 }, threshold_amber: 730, threshold_red: 365 },
-    enabled: false,
-    dataSource: 'Congress.gov',
-    sourceUrl: 'https://www.congress.gov/search?q=%7B%22congress%22%3A%22all%22%2C%22source%22%3A%22all%22%2C%22search%22%3A%22district+of+columbia%22%7D',
-    updateFrequency: 'Weekly',
-    status: { level: 'green', value: 900, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
-  },
-  {
-    id: 'national_guard_metros',
-    name: 'Guard Metro Deployments',
-    domain: 'domestic_control',
-    description: 'Major metros with National Guard deployment — domestic militarization signal',
-    unit: 'metros',
-    thresholds: { green: { max: 0 }, amber: { min: 0, max: 1 }, red: { min: 2 }, threshold_amber: 1, threshold_red: 2 },
-    critical: true,
-    enabled: true,
-    dataSource: 'News Aggregator',
-    sourceUrl: 'https://www.nationalguard.mil/News/',
-    updateFrequency: 'Daily',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
   {
     id: 'ice_detention_surge',
     name: 'ICE Detention Population',
@@ -514,44 +393,43 @@ export const mockIndicators: IndicatorData[] = [
     status: { level: 'unknown', value: null, trend: 'unknown', lastUpdate: now, dataSource: 'UNAVAILABLE' }
   },
   {
-    id: 'dhs_removal_expansion',
-    name: 'DHS Expedited Removal',
-    domain: 'domestic_control',
-    description: 'DHS expedited removal expansion status — civil liberties erosion indicator',
-    unit: 'status',
-    thresholds: { green: { max: 0 }, amber: { min: 0, max: 0 }, red: { min: 1 }, threshold_amber: 0, threshold_red: 1 },
-    critical: true,
-    enabled: true,
-    dataSource: 'Federal Register',
-    sourceUrl: 'https://www.federalregister.gov/agencies/homeland-security-department',
-    updateFrequency: 'Daily',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
-    id: 'hill_control_legislation',
-    name: 'Control Bills Advancing',
-    domain: 'domestic_control',
-    description: 'Control-oriented bills advancing in Congress (30-day count)',
-    unit: 'bills',
-    thresholds: { green: { max: 3 }, amber: { min: 3, max: 5 }, red: { min: 10 }, threshold_amber: 3, threshold_red: 10 },
-    enabled: true,
-    dataSource: 'LegiScan API',
-    sourceUrl: 'https://legiscan.com/US',
-    updateFrequency: 'Weekly',
-    status: { level: 'amber', value: 4, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
     id: 'liberty_litigation_count',
     name: 'Liberty Cases Active',
     domain: 'domestic_control',
     description: 'Major civil liberty cases currently active — legal battleground indicator',
     unit: 'cases',
-    thresholds: { green: { max: 5 }, amber: { min: 5, max: 10 }, red: { min: 20 }, threshold_amber: 5, threshold_red: 20 },
+    thresholds: { green: { max: 5 }, amber: { min: 5, max: 20 }, red: { min: 20 }, threshold_amber: 5, threshold_red: 20 },
     enabled: true,
-    dataSource: 'ACLU / EFF',
-    sourceUrl: 'https://www.aclu.org/court-cases',
+    dataSource: 'CourtListener',
+    sourceUrl: 'https://www.courtlistener.com/',
     updateFrequency: 'Weekly',
     status: { level: 'amber', value: 8, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'federal_regulations',
+    name: 'Federal Regulations',
+    domain: 'domestic_control',
+    description: 'Significant federal regulations published (7-day count)',
+    unit: 'regulations',
+    thresholds: { green: { max: 10 }, amber: { min: 10, max: 25 }, red: { min: 25 }, threshold_amber: 10, threshold_red: 25 },
+    enabled: true,
+    dataSource: 'Federal Register',
+    sourceUrl: 'https://www.federalregister.gov/',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 5, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'congress_activity',
+    name: 'Congressional Activity',
+    domain: 'domestic_control',
+    description: 'Congressional votes and actions (7-day count)',
+    unit: 'actions',
+    thresholds: { green: { max: 20 }, amber: { min: 20, max: 50 }, red: { min: 50 }, threshold_amber: 20, threshold_red: 50 },
+    enabled: true,
+    dataSource: 'GovTrack',
+    sourceUrl: 'https://www.govtrack.us/',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 15, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
 
   // ═══════════════════════════════════════════
@@ -761,76 +639,7 @@ export const mockIndicators: IndicatorData[] = [
   },
 
   // ═══════════════════════════════════════════
-  // SOCIAL COHESION (5 indicators)
-  // ═══════════════════════════════════════════
-  {
-    id: 'education_01_closures',
-    name: 'School Closures',
-    domain: 'social_cohesion',
-    description: 'K-12 schools with unplanned closures (7-day count) — community stability indicator',
-    unit: 'schools',
-    thresholds: { green: { max: 50 }, amber: { min: 50, max: 200 }, red: { min: 200 }, threshold_amber: 50, threshold_red: 200 },
-    enabled: true,
-    dataSource: 'NCES / State Education Depts',
-    sourceUrl: 'https://nces.ed.gov/',
-    updateFrequency: 'Weekly',
-    status: { level: 'green', value: 28, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
-    id: 'cult_trend_01_twitter',
-    name: '#AIGod / #Basilisk Tweets',
-    domain: 'social_cohesion',
-    description: 'X/Twitter 24h volume of #AIGod, #Basilisk, #JoinTheComet — cult formation signal',
-    unit: 'tweets',
-    thresholds: { green: { max: 10000 }, amber: { min: 10000, max: 50000 }, red: { min: 50000 }, threshold_amber: 10000, threshold_red: 50000 },
-    enabled: false,
-    dataSource: 'X API',
-    sourceUrl: 'https://x.com/search?q=%23AIGod',
-    updateFrequency: 'Daily',
-    status: { level: 'green', value: 4200, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
-  },
-  {
-    id: 'cult_meme_01_tokens',
-    name: 'Cult ERC-20 Tokens',
-    domain: 'social_cohesion',
-    description: 'New ERC-20 tokens with cult+AI in name (7-day count) — blockchain cult signal',
-    unit: 'tokens',
-    thresholds: { green: { max: 5 }, amber: { min: 5, max: 20 }, red: { min: 20 }, threshold_amber: 5, threshold_red: 20 },
-    enabled: false,
-    dataSource: 'Etherscan',
-    sourceUrl: 'https://etherscan.io/tokens',
-    updateFrequency: 'Weekly',
-    status: { level: 'green', value: 2, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
-  },
-  {
-    id: 'cult_event_01_protests',
-    name: 'AI Cult Protests',
-    domain: 'social_cohesion',
-    description: 'ACLED protests mentioning AI + god/cult/church (30-day count)',
-    unit: 'protests',
-    thresholds: { green: { max: 1 }, amber: { min: 1, max: 4 }, red: { min: 4 }, threshold_amber: 1, threshold_red: 4 },
-    enabled: false,
-    dataSource: 'ACLED API',
-    sourceUrl: 'https://acleddata.com/data-export-tool/',
-    updateFrequency: 'Monthly',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
-  },
-  {
-    id: 'cult_media_01_trends',
-    name: 'AI Religion Trends',
-    domain: 'social_cohesion',
-    description: 'Google Trends score for "AI religion" (US weekly) — cultural shift signal',
-    unit: 'score',
-    thresholds: { green: { max: 15 }, amber: { min: 15, max: 40 }, red: { min: 40 }, threshold_amber: 15, threshold_red: 40 },
-    enabled: false,
-    dataSource: 'Google Trends',
-    sourceUrl: 'https://trends.google.com/trends/explore?q=AI%20religion&geo=US',
-    updateFrequency: 'Weekly',
-    status: { level: 'green', value: 8, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
-  },
-
-  // ═══════════════════════════════════════════
-  // WATER INFRASTRUCTURE (3 indicators)
+  // WATER INFRASTRUCTURE (2 indicators)
   // ═══════════════════════════════════════════
   {
     id: 'water_01_reservoir_level',
@@ -922,19 +731,6 @@ export const mockIndicators: IndicatorData[] = [
     status: { level: 'green', value: 1.2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
   {
-    id: 'housing_02_foreclosure',
-    name: 'Foreclosure Filings',
-    domain: 'housing_mortgage',
-    description: 'Monthly foreclosure filings vs. 2019 baseline — housing crisis signal',
-    unit: '% of baseline',
-    thresholds: { green: { max: 100 }, amber: { min: 100, max: 150 }, red: { min: 150 }, threshold_amber: 100, threshold_red: 150 },
-    enabled: true,
-    dataSource: 'ATTOM / RealtyTrac',
-    sourceUrl: 'https://www.attomdata.com/news/market-trends/foreclosures/',
-    updateFrequency: 'Monthly',
-    status: { level: 'green', value: 85, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
     id: 'housing_03_rate_shock',
     name: 'ARM Reset Exposure',
     domain: 'housing_mortgage',
@@ -982,49 +778,37 @@ export const mockHOPIScore: HOPIScore = {
     security_infrastructure: {
       score: 0.18,
       weight: 1.25,
-      indicators: ['cyber_01_cisa_kev', 'grid_01_pjm_outages', 'bio_01_h2h_countries'],
+      indicators: ['cyber_01_cisa_kev', 'grid_01_pjm_outages', 'bio_01_h2h_countries', 'cdc_health_alerts', 'fema_disaster_declarations', 'fda_drug_shortages', 'supply_01_port_congestion', 'supply_02_freight_index', 'supply_03_chip_lead_time', 'supply_pharmacy_shortage', 'energy_03_grid_emergency', 'telecom_01_bgp_anomalies', 'telecom_02_cell_outages', 'telecom_03_undersea_cable', 'flight_01_ground_stops', 'flight_02_delay_pct', 'flight_03_tfr_count', 'travel_03_tsa_throughput'],
       criticalAlerts: []
     },
     oil_axis: {
       score: 0.25,
       weight: 1.0,
-      indicators: ['oil_01_russian_brics', 'oil_02_mbridge_settlements', 'ofac_01_designations', 'oil_04_refinery_ratio', 'spr_01_level', 'oil_03_jodi_inventory'],
+      indicators: ['spr_01_level', 'oil_03_ofac_designations'],
       criticalAlerts: []
     },
     ai_window: {
       score: 0.15,
       weight: 1.0,
-      indicators: ['labor_ai_01_layoffs', 'cyber_02_ai_ransomware', 'info_02_deepfake_shocks', 'compute_01_training_cost'],
+      indicators: ['labor_ai_01_layoffs', 'cult_media_01_trends'],
       criticalAlerts: []
     },
     global_conflict: {
       score: 0.38,
       weight: 1.5,
-      indicators: ['global_conflict_intensity', 'taiwan_pla_activity', 'nato_high_readiness', 'nuclear_01_tests', 'hormuz_war_risk', 'taiwan_exclusion_zone', 'russia_nato_escalation', 'defense_spending_growth'],
+      indicators: ['global_conflict_intensity', 'taiwan_pla_activity', 'nato_high_readiness', 'nuclear_test_activity', 'hormuz_war_risk', 'defense_spending_growth', 'travel_01_advisories'],
       criticalAlerts: []
     },
     domestic_control: {
       score: 0.30,
       weight: 1.25,
-      indicators: ['dc_control_countdown', 'national_guard_metros', 'ice_detention_surge', 'dhs_removal_expansion', 'hill_control_legislation', 'liberty_litigation_count'],
-      criticalAlerts: []
-    },
-    supply_chain: {
-      score: 0.18,
-      weight: 1.25,
-      indicators: ['supply_01_port_congestion', 'supply_02_freight_index', 'supply_03_chip_lead_time'],
+      indicators: ['ice_detention_surge', 'liberty_litigation_count', 'federal_regulations', 'congress_activity', 'travel_02_border_wait'],
       criticalAlerts: []
     },
     energy: {
       score: 0.20,
       weight: 1.25,
-      indicators: ['energy_02_nat_gas_storage', 'energy_03_grid_emergency'],
-      criticalAlerts: []
-    },
-    social_cohesion: {
-      score: 0.05,
-      weight: 0.75,
-      indicators: ['cult_trend_01_twitter', 'cult_meme_01_tokens', 'cult_event_01_protests', 'cult_media_01_trends'],
+      indicators: ['energy_02_nat_gas_storage'],
       criticalAlerts: []
     },
     water_infrastructure: {
@@ -1033,19 +817,12 @@ export const mockHOPIScore: HOPIScore = {
       indicators: ['water_01_reservoir_level', 'water_02_treatment_alerts'],
       criticalAlerts: []
     },
-    telecommunications: {
-      score: 0.05,
-      weight: 1.0,
-      indicators: ['telecom_01_bgp_anomalies', 'telecom_02_cell_outages', 'telecom_03_undersea_cable'],
-      criticalAlerts: []
-    },
     housing_mortgage: {
       score: 0.08,
       weight: 1.0,
-      indicators: ['housing_01_delinquency', 'housing_02_foreclosure', 'housing_03_rate_shock'],
+      indicators: ['housing_01_delinquency', 'housing_03_rate_shock'],
       criticalAlerts: []
     },
-    // food_production domain removed - no working data sources
   },
   timestamp: now
 };

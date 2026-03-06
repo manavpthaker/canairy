@@ -32,13 +32,12 @@ export function isCriticalIndicator(indicatorId: string): boolean {
 export const INDICATOR_SOURCES: Record<string, { name: string; abbrev: string }> = {
   // Global Conflict
   'taiwan_pla_activity': { name: 'Taiwan Ministry of National Defense', abbrev: 'Taiwan MND' },
-  'taiwan_exclusion_zone': { name: 'Taiwan Ministry of National Defense', abbrev: 'Taiwan MND' },
   'global_conflict_intensity': { name: 'Armed Conflict Location & Event Data', abbrev: 'ACLED' },
   'nato_high_readiness': { name: 'NATO / SHAPE', abbrev: 'NATO' },
-  'russia_nato_escalation': { name: 'Composite (ACLED + NATO + OSINT)', abbrev: 'Composite' },
-  'nuclear_01_tests': { name: 'CNS / James Martin Center', abbrev: 'CNS' },
+  'nuclear_test_activity': { name: 'News RSS / CNS', abbrev: 'News RSS' },
   'defense_spending_growth': { name: 'SIPRI Military Expenditure Database', abbrev: 'SIPRI' },
   'hormuz_war_risk': { name: "Lloyd's of London / Shipping Industry", abbrev: "Lloyd's" },
+  'travel_01_advisories': { name: 'State Department Travel Advisories', abbrev: 'State Dept' },
 
   // Economy
   'econ_01_treasury_tail': { name: 'Treasury Direct / Bloomberg', abbrev: 'Treasury' },
@@ -46,22 +45,11 @@ export const INDICATOR_SOURCES: Record<string, { name: string; abbrev: string }>
   'market_01_intraday_swing': { name: 'Bloomberg / Treasury', abbrev: 'Bloomberg' },
   'luxury_01_collapse': { name: 'Bloomberg / S&P', abbrev: 'Bloomberg' },
   'green_g1_gdp_rates': { name: 'Bureau of Economic Analysis', abbrev: 'BEA' },
-
-  // Domestic Control
-  'ice_detention_surge': { name: 'TRAC Immigration (Syracuse University)', abbrev: 'TRAC' },
-  'dhs_removal_expansion': { name: 'DHS / TRAC Immigration', abbrev: 'DHS/TRAC' },
-  'national_guard_metros': { name: 'National Guard Bureau', abbrev: 'NGB' },
-
-  // Security & Infrastructure
-  'cyber_01_cisa_kev': { name: 'CISA', abbrev: 'CISA' },
-  'cyber_02_ai_ransomware': { name: 'CISA / Recorded Future', abbrev: 'CISA' },
-  'grid_01_pjm_outages': { name: 'NERC / EIA', abbrev: 'NERC' },
-  'bio_01_h2h_countries': { name: 'WHO Disease Outbreak News', abbrev: 'WHO' },
-
-  // AI Window
-  'compute_01_training_cost': { name: 'Epoch AI', abbrev: 'Epoch AI' },
-  'labor_ai_01_layoffs': { name: 'Challenger Gray / BLS', abbrev: 'Challenger' },
-  'info_02_deepfake_shocks': { name: 'DFRLab / Stanford IO', abbrev: 'DFRLab' },
+  'bank_01_failures': { name: 'FDIC Failed Bank List', abbrev: 'FDIC' },
+  'bank_02_discount_window': { name: 'Federal Reserve H.4.1', abbrev: 'Fed' },
+  'bank_03_deposit_flow': { name: 'Federal Reserve H.8', abbrev: 'Fed' },
+  'housing_01_delinquency': { name: 'Mortgage Bankers Association', abbrev: 'MBA' },
+  'housing_03_rate_shock': { name: 'Freddie Mac PMMS', abbrev: 'Freddie Mac' },
 
   // Jobs & Labor
   'job_01_jobless_claims': { name: 'Department of Labor', abbrev: 'DOL' },
@@ -69,75 +57,45 @@ export const INDICATOR_SOURCES: Record<string, { name: string; abbrev: string }>
   'supply_pharmacy_shortage': { name: 'FDA Drug Shortage Database', abbrev: 'FDA' },
 
   // Rights & Governance
-  'power_01_ai_surveillance': { name: 'LegiScan / EFF Tracker', abbrev: 'LegiScan' },
+  'power_01_ai_surveillance': { name: 'OpenStates API', abbrev: 'OpenStates' },
   'civil_01_acled_protests': { name: 'ACLED', abbrev: 'ACLED' },
-  'power_02_dod_autonomy': { name: 'DoD / CBO Reports', abbrev: 'DoD' },
-  'hill_control_legislation': { name: 'Congress.gov / GovTrack', abbrev: 'Congress' },
-  'liberty_01_litigation': { name: 'ACLU / Court Records', abbrev: 'ACLU' },
+  'liberty_litigation_count': { name: 'CourtListener', abbrev: 'CourtListener' },
 
-  // Oil Axis
-  'oil_01_russian_brics': { name: 'CREA / Kpler', abbrev: 'CREA' },
-  'oil_02_mbridge_settlements': { name: 'BIS / Industry Reports', abbrev: 'BIS' },
-  'oil_03_jodi_inventory': { name: 'JODI / IEA', abbrev: 'JODI' },
-  'oil_04_refinery_ratio': { name: 'JODI / IEA', abbrev: 'JODI' },
-  'spr_01_level': { name: 'EIA', abbrev: 'EIA' },
-  'ofac_01_designations': { name: 'OFAC / Treasury', abbrev: 'OFAC' },
-
-  // Social Cohesion
-  'education_01_closures': { name: 'NCES / State Education Depts', abbrev: 'NCES' },
-
-  // Banking & Finance
-  'bank_01_failures': { name: 'FDIC Failed Bank List', abbrev: 'FDIC' },
-  'bank_02_discount_window': { name: 'Federal Reserve H.4.1', abbrev: 'Fed' },
-  'bank_03_deposit_flow': { name: 'Federal Reserve H.8', abbrev: 'Fed' },
-
-  // Food & Agriculture
-  'food_01_crop_condition': { name: 'USDA Crop Progress Report', abbrev: 'USDA' },
-  'food_02_livestock_disease': { name: 'USDA APHIS', abbrev: 'USDA' },
-  'food_03_fertilizer_price': { name: 'USDA / Green Markets', abbrev: 'USDA' },
-  'food_04_processing_capacity': { name: 'USDA / Industry Reports', abbrev: 'USDA' },
-
-  // Housing
-  'housing_01_delinquency': { name: 'Mortgage Bankers Association', abbrev: 'MBA' },
-  'housing_02_foreclosure': { name: 'ATTOM Data Solutions', abbrev: 'ATTOM' },
-  'housing_03_rate_shock': { name: 'Freddie Mac PMMS', abbrev: 'Freddie Mac' },
-
-  // Supply Chain
+  // Security & Infrastructure
+  'cyber_01_cisa_kev': { name: 'CISA', abbrev: 'CISA' },
+  'grid_01_pjm_outages': { name: 'NWS API', abbrev: 'NWS' },
+  'bio_01_h2h_countries': { name: 'WHO Disease Outbreak News', abbrev: 'WHO' },
+  'cdc_health_alerts': { name: 'CDC RSS', abbrev: 'CDC' },
+  'fema_disaster_declarations': { name: 'FEMA API', abbrev: 'FEMA' },
+  'fda_drug_shortages': { name: 'FDA Drug Shortages', abbrev: 'FDA' },
   'supply_01_port_congestion': { name: 'Marine Exchange / Port Authorities', abbrev: 'Marine Ex' },
   'supply_02_freight_index': { name: 'Freightos Baltic Index', abbrev: 'FBX' },
-  'supply_03_chip_lead_time': { name: 'Susquehanna / Industry Data', abbrev: 'SIG' },
-
-  // Energy
+  'supply_03_chip_lead_time': { name: 'News RSS / Industry Data', abbrev: 'News RSS' },
   'energy_02_nat_gas_storage': { name: 'EIA Natural Gas Weekly', abbrev: 'EIA' },
-  'energy_03_grid_emergency': { name: 'NERC / Regional Grid Operators', abbrev: 'NERC' },
-
-  // Telecom & Infrastructure
+  'energy_03_grid_emergency': { name: 'EIA / NERC', abbrev: 'EIA' },
   'telecom_01_bgp_anomalies': { name: 'BGPStream / RIPE NCC', abbrev: 'BGPStream' },
   'telecom_02_cell_outages': { name: 'Downdetector / FCC', abbrev: 'FCC' },
   'telecom_03_undersea_cable': { name: 'TeleGeography / Industry', abbrev: 'TeleGeo' },
-
-  // Travel & Transportation
-  'travel_01_advisories': { name: 'State Department Travel Advisories', abbrev: 'State Dept' },
-  'travel_02_border_wait': { name: 'CBP Border Wait Times', abbrev: 'CBP' },
-  'travel_03_tsa_throughput': { name: 'TSA Checkpoint Data', abbrev: 'TSA' },
   'flight_01_ground_stops': { name: 'FAA Operations', abbrev: 'FAA' },
   'flight_02_delay_pct': { name: 'FAA / FlightAware', abbrev: 'FAA' },
   'flight_03_tfr_count': { name: 'FAA NOTAM System', abbrev: 'FAA' },
-
-  // Water
+  'travel_03_tsa_throughput': { name: 'TSA Checkpoint Data', abbrev: 'TSA' },
   'water_01_reservoir_level': { name: 'USBR / State Water Resources', abbrev: 'USBR' },
   'water_02_treatment_alerts': { name: 'EPA Safe Drinking Water', abbrev: 'EPA' },
-  'water_03_drought_monitor': { name: 'US Drought Monitor', abbrev: 'USDM' },
 
-  // Social / Culture
-  'cult_event_01_protests': { name: 'ACLED / Crowd Counting Consortium', abbrev: 'ACLED' },
-  'cult_media_01_trends': { name: 'Google Trends / Social Blade', abbrev: 'Google' },
-  'cult_meme_01_tokens': { name: 'CoinGecko / DeFi Llama', abbrev: 'CoinGecko' },
-  'cult_trend_01_twitter': { name: 'X/Twitter Trends API', abbrev: 'X' },
+  // Domestic Control
+  'ice_detention_surge': { name: 'ICE Statistics', abbrev: 'ICE' },
+  'federal_regulations': { name: 'Federal Register', abbrev: 'Fed Register' },
+  'congress_activity': { name: 'GovTrack', abbrev: 'GovTrack' },
+  'travel_02_border_wait': { name: 'CBP Border Wait Times', abbrev: 'CBP' },
 
-  // Domestic Control (additional)
-  'dc_control_countdown': { name: 'Congressional Research Service', abbrev: 'CRS' },
-  'liberty_litigation_count': { name: 'ACLU / Court Records', abbrev: 'ACLU' },
+  // Oil Axis
+  'spr_01_level': { name: 'EIA', abbrev: 'EIA' },
+  'oil_03_ofac_designations': { name: 'Treasury OFAC', abbrev: 'OFAC' },
+
+  // AI Window
+  'labor_ai_01_layoffs': { name: 'Layoffs.fyi RSS', abbrev: 'Layoffs.fyi' },
+  'cult_media_01_trends': { name: 'Google Trends', abbrev: 'Google' },
 };
 
 export function getSourceDisplay(indicatorId: string, rawSource?: string): string {
