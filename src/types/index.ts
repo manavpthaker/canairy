@@ -4,10 +4,10 @@ export type AlertLevel = 'green' | 'amber' | 'red' | 'unknown';
 
 export type IndicatorStatus = {
   level: AlertLevel;
-  value: number | string;
-  trend?: 'up' | 'down' | 'stable';
+  value: number | string | null;
+  trend?: 'up' | 'down' | 'stable' | 'unknown';
   lastUpdate: string;
-  dataSource: 'LIVE' | 'MANUAL' | 'MOCK';
+  dataSource: 'LIVE' | 'MANUAL' | 'MOCK' | 'UNAVAILABLE';
   daysSustained?: number;  // How many days at current level
 };
 
@@ -28,7 +28,10 @@ export type Domain =
   | 'domestic_control'
   | 'supply_chain'
   | 'energy'
-  | 'social_cohesion';
+  | 'social_cohesion'
+  | 'water_infrastructure'
+  | 'telecommunications'
+  | 'housing_mortgage';
 
 export const DOMAIN_META: Record<Domain, { label: string; weight: number; icon: string }> = {
   economy:                 { label: 'Economy',          weight: 1.0,  icon: 'DollarSign' },
@@ -42,6 +45,10 @@ export const DOMAIN_META: Record<Domain, { label: string; weight: number; icon: 
   supply_chain:            { label: 'Supply Chain',     weight: 1.25, icon: 'Truck' },
   energy:                  { label: 'Energy',           weight: 1.25, icon: 'Zap' },
   social_cohesion:         { label: 'Social Cohesion',  weight: 0.75, icon: 'Users' },
+  water_infrastructure:    { label: 'Water',            weight: 1.25, icon: 'Droplets' },
+  telecommunications:      { label: 'Telecom',          weight: 1.0,  icon: 'Radio' },
+  housing_mortgage:        { label: 'Housing',          weight: 1.0,  icon: 'Home' },
+  // food_production removed - no working data sources
 };
 
 export interface Indicator {
@@ -60,6 +67,7 @@ export interface Indicator {
   critical?: boolean;
   greenFlag?: boolean;
   enabled?: boolean;
+  unavailable?: boolean; // Data source temporarily unavailable - gray out in UI
   dataSource: string;
   sourceUrl?: string; // Link to the official data source for transparency
   updateFrequency: string;

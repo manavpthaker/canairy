@@ -49,7 +49,7 @@ app.add_middleware(
 # ─── Try to initialize live data service ───
 data_service = None
 try:
-    from data_service import get_data_service
+    from api.data_service import get_data_service
     data_service = get_data_service()
     logger.info(f"Live data service initialized with collectors: {list(data_service._collectors.keys())}")
 except Exception as e:
@@ -66,8 +66,20 @@ def _ind(id: str, name: str, domain: str, desc: str, unit: str,
          value: Any, level: str, trend: str, source: str,
          threshold_amber: float, threshold_red: float,
          critical: bool = False, green_flag: bool = False,
-         enabled: bool = True) -> Dict[str, Any]:
+         enabled: bool = True, unavailable: bool = False) -> Dict[str, Any]:
     """Build an indicator dict matching the frontend IndicatorData shape."""
+    # If unavailable, show blank values
+    if unavailable:
+        status_value = None
+        status_level = "unknown"
+        status_trend = "unknown"
+        data_source = "UNAVAILABLE"
+    else:
+        status_value = value
+        status_level = level
+        status_trend = trend
+        data_source = "MOCK"
+
     return {
         "id": id,
         "name": name,
@@ -84,22 +96,23 @@ def _ind(id: str, name: str, domain: str, desc: str, unit: str,
         "critical": critical,
         "greenFlag": green_flag,
         "enabled": enabled,
+        "unavailable": unavailable,
         "dataSource": source,
         "updateFrequency": "60m",
         "status": {
-            "level": level,
-            "value": value,
-            "trend": trend,
+            "level": status_level,
+            "value": status_value,
+            "trend": status_trend,
             "lastUpdate": _now(),
-            "dataSource": "MOCK",
+            "dataSource": data_source,
         },
     }
 
 
 def get_all_mock_indicators() -> List[Dict[str, Any]]:
-    """Return all 34 indicators with mock data."""
+    """Return indicators - only those with live collectors + unavailable placeholders."""
     return [
-        # ── Economy (4) ──
+        # ── Economy ──
         _ind("econ_01_treasury_tail", "10Y Auction Tail", "economy",
              "10-year Treasury auction tail in basis points", "bps",
              2.1, "green", "stable", "US Treasury API", 3, 7),
@@ -112,112 +125,137 @@ def get_all_mock_indicators() -> List[Dict[str, Any]]:
         _ind("green_g1_gdp_rates", "GDP Green Flag", "economy",
              "US real GDP growth rate", "condition",
              0, "amber", "stable", "BEA / FRED", 1, 0, green_flag=True),
+        _ind("bank_01_failures", "Bank Failures", "economy",
+             "FDIC bank failures year-to-date", "banks",
+             2, "green", "stable", "FDIC", 3, 10),
+        _ind("bank_02_discount_window", "Fed Discount Window", "economy",
+             "Federal Reserve discount window borrowing", "B USD",
+             5.2, "green", "stable", "Federal Reserve", 10, 50),
+        _ind("bank_03_deposit_flow", "Bank Deposit Flows", "economy",
+             "Weekly change in commercial bank deposits", "B USD",
+             -12, "amber", "down", "Federal Reserve H.8", -20, -50),
+        _ind("housing_01_delinquency", "Mortgage Delinquency", "economy",
+             "Mortgage delinquency rate (30+ days)", "%",
+             3.8, "amber", "up", "Freddie Mac PMMS", 3.5, 6.0),
+        _ind("luxury_01_collapse", "Luxury Market", "economy",
+             "Luxury goods index vs S&P 500", "ratio",
+             0.92, "amber", "down", "Yahoo Finance", 0.95, 0.85),
 
-        # ── Jobs & Labor (1) ──
+        # ── Jobs & Labor ──
+        _ind("job_01_jobless_claims", "Initial Jobless Claims", "jobs_labor",
+             "Weekly initial unemployment claims", "K claims",
+             228, "green", "stable", "DOL / FRED", 250, 350),
         _ind("job_01_strike_days", "US Strike Days", "jobs_labor",
              "US strike worker-days per month", "worker-days",
              78000, "green", "stable", "Cornell ILR", 100000, 500000),
 
-        # ── Rights & Governance (2) ──
-        _ind("power_01_ai_surveillance", "AI Surveillance Bills", "rights_governance",
-             "AI-surveillance bills advancing per month", "bills",
-             6, "amber", "up", "LegiScan API", 3, 10),
+        # ── Rights & Governance ──
         _ind("civil_01_acled_protests", "US Protests (7d avg)", "rights_governance",
              "ACLED US protests 7-day average", "protests/day",
-             18, "green", "stable", "ACLED API", 25, 75),
+             18, "green", "stable", "News RSS", 25, 75),
 
-        # ── Security & Infrastructure (3) ──
+        # ── Security & Infrastructure ──
         _ind("cyber_01_cisa_kev", "CISA KEV + ICS", "security_infrastructure",
              "CISA Known Exploited Vulnerabilities (90-day count)", "vulns",
              4, "amber", "up", "CISA JSON Feed", 2, 5),
-        _ind("grid_01_pjm_outages", "PJM Grid Outages", "security_infrastructure",
-             "PJM outages affecting ≥50k customers per quarter", "outages",
-             1, "green", "stable", "DOE OE-417", 1, 2),
+        _ind("grid_01_pjm_outages", "NWS Severe Alerts", "security_infrastructure",
+             "NWS extreme+severe weather alerts active", "alerts",
+             1, "green", "stable", "NWS API", 3, 8),
         _ind("bio_01_h2h_countries", "Novel H2H Pathogen", "security_infrastructure",
              "Countries with novel human-to-human transmission (14-day)", "countries",
              0, "green", "stable", "WHO DON RSS", 1, 3),
+        _ind("supply_01_port_congestion", "Port Congestion", "security_infrastructure",
+             "Ships waiting at major US ports", "ships",
+             28, "amber", "up", "Marine Exchange", 20, 50),
+        _ind("supply_02_freight_index", "Freight Index", "security_infrastructure",
+             "Freightos Baltic Index", "index",
+             1850, "green", "stable", "Freightos", 2500, 5000),
+        _ind("supply_03_chip_lead_time", "Chip Lead Times", "security_infrastructure",
+             "Semiconductor lead times (weeks)", "weeks",
+             14, "amber", "up", "News RSS", 12, 20),
+        _ind("supply_pharmacy_shortage", "Pharmacy Shortages", "security_infrastructure",
+             "FDA drug shortage list additions (30-day)", "drugs",
+             8, "amber", "up", "FDA", 5, 15),
+        _ind("energy_02_nat_gas_storage", "Natural Gas Storage", "energy",
+             "Natural gas storage vs 5-year average", "%",
+             -5, "green", "stable", "EIA", -10, -20),
+        _ind("energy_03_grid_emergency", "Grid Emergencies", "security_infrastructure",
+             "NERC grid emergency declarations (30-day)", "emergencies",
+             1, "green", "stable", "EIA", 2, 5),
+        _ind("telecom_01_bgp_anomalies", "BGP Anomalies", "security_infrastructure",
+             "BGP routing anomalies (24h)", "anomalies",
+             45, "green", "stable", "BGPStream", 100, 500),
+        _ind("telecom_02_cell_outages", "Cell Network Outages", "security_infrastructure",
+             "Major cell network outages (7-day)", "outages",
+             2, "green", "stable", "Downdetector", 5, 15, unavailable=True),
+        _ind("telecom_03_undersea_cable", "Undersea Cable Events", "security_infrastructure",
+             "Undersea cable damage/repair events (90-day)", "events",
+             3, "amber", "up", "TeleGeography", 2, 5),
+        _ind("water_01_reservoir_level", "Reservoir Levels", "water_infrastructure",
+             "Major reservoir levels vs capacity", "%",
+             68, "green", "stable", "USBR", 50, 30, unavailable=True),
+        _ind("water_02_treatment_alerts", "Water Treatment Alerts", "water_infrastructure",
+             "EPA water treatment violations (30-day)", "violations",
+             15, "amber", "up", "EPA SDWIS", 10, 30),
+        _ind("flight_01_ground_stops", "FAA Ground Stops", "security_infrastructure",
+             "FAA ground stop events (7-day)", "events",
+             3, "green", "stable", "FAA", 5, 15),
+        _ind("flight_02_delay_pct", "Flight Delays", "security_infrastructure",
+             "Flights delayed >15 min (%)", "%",
+             18, "green", "stable", "FAA", 25, 40),
+        _ind("flight_03_tfr_count", "Temporary Flight Restrictions", "security_infrastructure",
+             "Active TFRs (non-standard)", "TFRs",
+             12, "green", "stable", "FAA", 20, 40),
+        _ind("travel_03_tsa_throughput", "TSA Throughput", "security_infrastructure",
+             "TSA checkpoint throughput vs 2019", "%",
+             95, "green", "stable", "TSA", 80, 60),
 
-        # ── Oil Axis (4) ──
-        _ind("oil_01_russian_brics", "Russian Crude to BRICS", "oil_axis",
-             "Share of Russian crude going to BRICS nations", "%",
-             68, "amber", "up", "CREA", 60, 75),
-        _ind("oil_02_mbridge_settlements", "mBridge Settlement", "oil_axis",
-             "mBridge energy settlement volume", "M USD/day",
-             32, "green", "up", "BIS Reports", 50, 300, enabled=False),
+        # ── Oil & Energy ──
         _ind("oil_03_ofac_designations", "OFAC Designations", "oil_axis",
              "OFAC sanctions designations (30-day count)", "designations",
              0, "green", "stable", "Treasury OFAC", 1, 5),
-        _ind("oil_04_refinery_ratio", "Refinery Run Ratio", "oil_axis",
-             "Refinery run-rate ratio (India+China)/OECD", "ratio",
-             1.15, "green", "stable", "JODI API", 1.2, 1.4),
+        _ind("spr_01_level", "Strategic Petroleum Reserve", "oil_axis",
+             "SPR level vs 10-year average", "%",
+             -42, "red", "down", "EIA", -20, -35),
 
-        # ── AI Window (4) ──
+        # ── AI Window ──
         _ind("labor_ai_01_layoffs", "AI-Linked Layoffs", "ai_window",
              "Monthly workers laid off citing AI/automation", "workers",
-             3200, "green", "stable", "Layoffs.fyi", 5000, 25000, enabled=False),
-        _ind("cyber_02_ai_ransomware", "AI Ransomware", "ai_window",
-             "AI-assisted ransomware incidents (90-day)", "incidents",
-             4, "amber", "up", "CISA ICS", 3, 6),
-        _ind("info_02_deepfake_shocks", "Deepfake Market Shocks", "ai_window",
-             "Deepfake-triggered market events per quarter", "events",
-             0, "green", "stable", "Composite", 1, 2, critical=True),
-        _ind("compute_01_training_cost", "Training Cost Trend", "ai_window",
-             "$/training-FLOP 6-month change (%)", "%",
-             -42, "green", "down", "Epoch AI", -30, 0, green_flag=True),
+             3200, "green", "stable", "Layoffs.fyi RSS", 5000, 25000),
+        _ind("cult_media_01_trends", "AI Religion Trends", "ai_window",
+             "Google Trends score for 'AI religion' (US weekly)", "score",
+             8, "green", "stable", "Google Trends", 15, 40),
 
-        # ── Global Conflict (6) ──
+        # ── Global Conflict ──
         _ind("global_conflict_intensity", "Global Battle Intensity", "global_conflict",
              "ACLED global battle-related events 90-day average", "events/day",
-             720, "amber", "up", "ACLED API", 500, 2000, enabled=False),
+             720, "amber", "up", "News RSS", 500, 2000),
         _ind("taiwan_pla_activity", "Taiwan PLA Incursions", "global_conflict",
              "PLA aircraft incursions into Taiwan ADIZ (14-day avg)", "aircraft/day",
              28, "amber", "up", "Taiwan MND", 20, 100),
         _ind("nato_high_readiness", "NATO High Readiness", "global_conflict",
              "NATO high-readiness force activations", "activations",
-             0, "green", "stable", "NATO / News", 1, 2, critical=True),
+             0, "green", "stable", "NATO News RSS", 1, 2, critical=True),
         _ind("nuclear_test_activity", "Nuclear/Missile Tests", "global_conflict",
              "Nuclear detonation or ICBM tests (90-day count)", "tests",
-             1, "green", "stable", "CTBTO / KCNA", 2, 10),
-        _ind("russia_nato_escalation", "Russia-NATO Index", "global_conflict",
-             "Russia-NATO escalation composite index", "index",
-             45, "amber", "up", "Composite", 30, 80, enabled=False),
+             1, "green", "stable", "News RSS", 2, 10),
         _ind("defense_spending_growth", "Defense Spending Growth", "global_conflict",
              "Global defense spending year-over-year growth", "%",
-             6.2, "amber", "up", "SIPRI", 5, 15, enabled=False),
+             6.2, "amber", "up", "SIPRI RSS", 5, 15),
+        _ind("travel_01_advisories", "Travel Advisories", "global_conflict",
+             "Countries with Level 3-4 travel advisories", "countries",
+             18, "green", "stable", "State Dept", 25, 40),
+        _ind("hormuz_war_risk", "Hormuz War Risk", "global_conflict",
+             "Lloyd's war risk insurance premium", "%",
+             0.8, "amber", "up", "News RSS", 0.5, 1.5),
 
-        # ── Domestic Control (6) ──
-        _ind("dc_control_countdown", "DC Autonomy Countdown", "domestic_control",
-             "Days until DC autonomy revocation", "days",
-             900, "green", "stable", "Congress.gov", 730, 365, enabled=False),
-        _ind("national_guard_metros", "Guard Metro Deployments", "domestic_control",
-             "Major metros with National Guard deployment", "metros",
-             0, "green", "stable", "News Aggregator", 1, 2, critical=True),
+        # ── Domestic Control ──
+        _ind("travel_02_border_wait", "Border Wait Times", "domestic_control",
+             "Average US border crossing wait time", "minutes",
+             45, "green", "stable", "CBP", 60, 120),
         _ind("ice_detention_surge", "ICE Detention Population", "domestic_control",
              "ICE detention population", "detainees",
-             62000, "amber", "up", "ICE Statistics", 50000, 150000),
-        _ind("dhs_removal_expansion", "DHS Expedited Removal", "domestic_control",
-             "DHS expedited removal expansion status", "status",
-             0, "green", "stable", "Federal Register", 0, 1, critical=True),
-        _ind("hill_control_legislation", "Control Bills Advancing", "domestic_control",
-             "Control-oriented bills advancing in Congress", "bills",
-             4, "amber", "up", "LegiScan API", 3, 10),
-        _ind("liberty_litigation_count", "Liberty Cases Active", "domestic_control",
-             "Major civil liberty cases currently active", "cases",
-             8, "amber", "up", "ACLU / EFF", 5, 20),
-
-        # ── Cult Signals (4 — all disabled) ──
-        _ind("cult_trend_01_twitter", "#AIGod / #Basilisk Tweets", "cult",
-             "X/Twitter 24h volume of AI-cult hashtags", "tweets",
-             4200, "green", "stable", "X API", 10000, 50000, enabled=False),
-        _ind("cult_meme_01_tokens", "Cult ERC-20 Tokens", "cult",
-             "New ERC-20 tokens with cult+AI in name", "tokens",
-             2, "green", "stable", "Etherscan", 5, 20, enabled=False),
-        _ind("cult_event_01_protests", "AI Cult Protests", "cult",
-             "ACLED protests mentioning AI + god/cult/church", "protests",
-             0, "green", "stable", "ACLED API", 1, 4, enabled=False),
-        _ind("cult_media_01_trends", "AI Religion Trends", "cult",
-             "Google Trends score for 'AI religion' (US weekly)", "score",
-             8, "green", "stable", "Google Trends", 15, 40, enabled=False),
+             62000, "amber", "up", "ICE Statistics", 50000, 150000, unavailable=True),
     ]
 
 
