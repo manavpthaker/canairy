@@ -30,7 +30,8 @@ class NWSAlertsCollector(BaseCollector):
     """Collects severe weather alert counts from NWS."""
 
     ALERTS_URL = "https://api.weather.gov/alerts/active"
-    USER_AGENT = "(Canairy Resilience Monitor, canairy-alerts@example.com)"
+    # NWS requires a valid contact email in User-Agent
+    USER_AGENT = "Canairy/1.0 (canairy.app; contact@canairy.app)"
 
     def __init__(self, config):
         super().__init__(config)
@@ -54,10 +55,11 @@ class NWSAlertsCollector(BaseCollector):
         """Fetch active extreme+severe weather alerts."""
         try:
             headers = {"User-Agent": self.USER_AGENT, "Accept": "application/geo+json"}
-            params = {"severity": "extreme,severe", "status": "actual"}
+            # NWS API only accepts status param, we filter severity in code
+            params = {"status": "actual"}
 
             response = requests.get(
-                self.ALERTS_URL, params=params, headers=headers, timeout=10
+                self.ALERTS_URL, params=params, headers=headers, timeout=15
             )
             if response.status_code != 200:
                 self.logger.warning(f"NWS API returned {response.status_code}")

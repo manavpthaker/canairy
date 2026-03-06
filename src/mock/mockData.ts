@@ -53,7 +53,7 @@ export const mockIndicators: IndicatorData[] = [
     domain: 'economy',
     description: 'US real GDP ≥4% y/y for 2 quarters AND 10Y yield <4% — positive signal to relax preparedness',
     unit: 'condition',
-    thresholds: { green: { max: 1 }, amber: { min: 0, max: 1 }, red: { min: 0 } },
+    thresholds: { green: { max: 1 }, amber: { min: 0, max: 1 }, red: { min: 0 }, threshold_amber: 1, threshold_red: 0 },
     greenFlag: true,
     enabled: true,
     dataSource: 'BEA / FRED',
@@ -248,19 +248,6 @@ export const mockIndicators: IndicatorData[] = [
     status: { level: 'green', value: 32, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
-    id: 'oil_03_ofac_designations',
-    name: 'OFAC Designations',
-    domain: 'oil_axis',
-    description: 'OFAC sanctions designations on India/China oil entities (30-day count)',
-    unit: 'designations',
-    thresholds: { green: { max: 0 }, amber: { min: 0, max: 5 }, red: { min: 5 }, threshold_amber: 1, threshold_red: 5 },
-    enabled: true,
-    dataSource: 'Treasury OFAC',
-    sourceUrl: 'https://ofac.treasury.gov/recent-actions',
-    updateFrequency: 'Weekly',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
     id: 'oil_04_refinery_ratio',
     name: 'Refinery Run Ratio',
     domain: 'oil_axis',
@@ -363,7 +350,7 @@ export const mockIndicators: IndicatorData[] = [
     domain: 'ai_window',
     description: '$/training-FLOP 6-month change (%) — green flag when costs drop fast',
     unit: '%',
-    thresholds: { green: { max: -30 }, amber: { min: -30, max: 0 }, red: { min: 0 } },
+    thresholds: { green: { max: -30 }, amber: { min: -30, max: 0 }, red: { min: 0 }, threshold_amber: -30, threshold_red: 0 },
     greenFlag: true,
     enabled: true,
     dataSource: 'Epoch AI',
@@ -414,19 +401,6 @@ export const mockIndicators: IndicatorData[] = [
     sourceUrl: 'https://www.nato.int/cps/en/natohq/news.htm',
     updateFrequency: 'Daily',
     status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
-  {
-    id: 'nuclear_test_activity',
-    name: 'Nuclear/Missile Tests',
-    domain: 'global_conflict',
-    description: 'Nuclear detonation or ICBM tests (90-day count) — existential threat signal',
-    unit: 'tests',
-    thresholds: { green: { max: 2 }, amber: { min: 2, max: 5 }, red: { min: 10 }, threshold_amber: 2, threshold_red: 10 },
-    enabled: true,
-    dataSource: 'CTBTO / KCNA',
-    sourceUrl: 'https://www.ctbto.org/specials/testing-times/',
-    updateFrequency: 'Daily',
-    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
   },
   {
     id: 'nuclear_01_tests',
@@ -533,10 +507,11 @@ export const mockIndicators: IndicatorData[] = [
     unit: 'detainees',
     thresholds: { green: { max: 50000 }, amber: { min: 50000, max: 80000 }, red: { min: 150000 }, threshold_amber: 50000, threshold_red: 150000 },
     enabled: true,
+    unavailable: true, // ICE page scraping needs update - can be fixed
     dataSource: 'ICE Statistics',
     sourceUrl: 'https://www.ice.gov/detain/detention-management',
     updateFrequency: 'Weekly',
-    status: { level: 'amber', value: 62000, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'unknown', value: null, trend: 'unknown', lastUpdate: now, dataSource: 'UNAVAILABLE' }
   },
   {
     id: 'dhs_removal_expansion',
@@ -623,22 +598,8 @@ export const mockIndicators: IndicatorData[] = [
   },
 
   // ═══════════════════════════════════════════
-  // ENERGY (3 indicators)
+  // ENERGY (2 indicators - SPR consolidated to oil_axis)
   // ═══════════════════════════════════════════
-  {
-    id: 'energy_01_spr_level',
-    name: 'Strategic Petroleum Reserve',
-    domain: 'energy',
-    description: 'SPR crude oil stockpile in million barrels — energy security buffer',
-    unit: 'million bbl',
-    thresholds: { green: { min: 450 }, amber: { min: 350, max: 450 }, red: { max: 350 }, threshold_amber: 450, threshold_red: 350 },
-    critical: true,
-    enabled: true,
-    dataSource: 'EIA Weekly Petroleum Status',
-    sourceUrl: 'https://www.eia.gov/petroleum/supply/weekly/',
-    updateFrequency: 'Weekly',
-    status: { level: 'amber', value: 370, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
-  },
   {
     id: 'energy_02_nat_gas_storage',
     name: 'Natural Gas Storage',
@@ -867,6 +828,131 @@ export const mockIndicators: IndicatorData[] = [
     updateFrequency: 'Weekly',
     status: { level: 'green', value: 8, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
+
+  // ═══════════════════════════════════════════
+  // WATER INFRASTRUCTURE (3 indicators)
+  // ═══════════════════════════════════════════
+  {
+    id: 'water_01_reservoir_level',
+    name: 'Major Reservoir Levels',
+    domain: 'water_infrastructure',
+    description: 'Average capacity of top 25 US reservoirs — drought and water supply indicator',
+    unit: '% capacity',
+    thresholds: { green: { min: 70 }, amber: { min: 40, max: 70 }, red: { max: 40 }, threshold_amber: 70, threshold_red: 40 },
+    enabled: true,
+    unavailable: true, // Data source parsing issue - can be fixed
+    dataSource: 'USBR / USACE',
+    sourceUrl: 'https://www.usbr.gov/uc/water/',
+    updateFrequency: 'Weekly',
+    status: { level: 'unknown', value: null, trend: 'unknown', lastUpdate: now, dataSource: 'UNAVAILABLE' }
+  },
+  {
+    id: 'water_02_treatment_alerts',
+    name: 'Treatment Plant Alerts',
+    domain: 'water_infrastructure',
+    description: 'EPA drinking water advisories and boil notices — water safety signal',
+    unit: 'active alerts',
+    thresholds: { green: { max: 5 }, amber: { min: 5, max: 15 }, red: { min: 15 }, threshold_amber: 5, threshold_red: 15 },
+    enabled: true,
+    dataSource: 'EPA SDWIS',
+    sourceUrl: 'https://www.epa.gov/ground-water-and-drinking-water',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 3, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  // REMOVED: water_03_drought_monitor - USDM API no longer accessible, no alternative source
+
+  // ═══════════════════════════════════════════
+  // TELECOMMUNICATIONS (3 indicators)
+  // ═══════════════════════════════════════════
+  {
+    id: 'telecom_01_bgp_anomalies',
+    name: 'BGP Route Anomalies',
+    domain: 'telecommunications',
+    description: 'Major internet routing anomalies detected — potential outages or attacks',
+    unit: 'events/day',
+    thresholds: { green: { max: 5 }, amber: { min: 5, max: 20 }, red: { min: 20 }, threshold_amber: 5, threshold_red: 20 },
+    enabled: true,
+    dataSource: 'BGPStream / CAIDA',
+    sourceUrl: 'https://bgpstream.caida.org/',
+    updateFrequency: 'Real-time',
+    status: { level: 'green', value: 2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'telecom_02_cell_outages',
+    name: 'Cell Network Outages',
+    domain: 'telecommunications',
+    description: 'Major carrier outages affecting >100K users — communication reliability',
+    unit: 'active outages',
+    thresholds: { green: { max: 1 }, amber: { min: 1, max: 3 }, red: { min: 3 }, threshold_amber: 1, threshold_red: 3 },
+    enabled: true,
+    unavailable: true, // FCC endpoint timeout - can be fixed
+    dataSource: 'Downdetector / FCC',
+    sourceUrl: 'https://downdetector.com/',
+    updateFrequency: 'Real-time',
+    status: { level: 'unknown', value: null, trend: 'unknown', lastUpdate: now, dataSource: 'UNAVAILABLE' }
+  },
+  {
+    id: 'telecom_03_undersea_cable',
+    name: 'Undersea Cable Status',
+    domain: 'telecommunications',
+    description: 'Active undersea cable damage or suspicious activity — international connectivity',
+    unit: 'incidents',
+    thresholds: { green: { max: 0 }, amber: { min: 1, max: 2 }, red: { min: 2 }, threshold_amber: 1, threshold_red: 2 },
+    enabled: true,
+    dataSource: 'TeleGeography',
+    sourceUrl: 'https://www.submarinecablemap.com/',
+    updateFrequency: 'Daily',
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+
+  // ═══════════════════════════════════════════
+  // HOUSING & MORTGAGE (3 indicators)
+  // ═══════════════════════════════════════════
+  {
+    id: 'housing_01_delinquency',
+    name: 'Mortgage Delinquency',
+    domain: 'housing_mortgage',
+    description: '90+ day delinquency rate on mortgages — foreclosure wave indicator',
+    unit: '%',
+    thresholds: { green: { max: 2 }, amber: { min: 2, max: 4 }, red: { min: 4 }, threshold_amber: 2, threshold_red: 4 },
+    enabled: true,
+    dataSource: 'MBA / FRED',
+    sourceUrl: 'https://fred.stlouisfed.org/series/DRSFRMACBS',
+    updateFrequency: 'Quarterly',
+    status: { level: 'green', value: 1.2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'housing_02_foreclosure',
+    name: 'Foreclosure Filings',
+    domain: 'housing_mortgage',
+    description: 'Monthly foreclosure filings vs. 2019 baseline — housing crisis signal',
+    unit: '% of baseline',
+    thresholds: { green: { max: 100 }, amber: { min: 100, max: 150 }, red: { min: 150 }, threshold_amber: 100, threshold_red: 150 },
+    enabled: true,
+    dataSource: 'ATTOM / RealtyTrac',
+    sourceUrl: 'https://www.attomdata.com/news/market-trends/foreclosures/',
+    updateFrequency: 'Monthly',
+    status: { level: 'green', value: 85, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+  {
+    id: 'housing_03_rate_shock',
+    name: 'ARM Reset Exposure',
+    domain: 'housing_mortgage',
+    description: 'ARMs resetting in next 12 months as % of total mortgages — payment shock risk',
+    unit: '%',
+    thresholds: { green: { max: 3 }, amber: { min: 3, max: 8 }, red: { min: 8 }, threshold_amber: 3, threshold_red: 8 },
+    enabled: true,
+    dataSource: 'MBA',
+    sourceUrl: 'https://www.mba.org/news-and-research',
+    updateFrequency: 'Quarterly',
+    status: { level: 'green', value: 2.1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+  },
+
+  // REMOVED: FOOD PRODUCTION domain (4 indicators)
+  // food_01_crop_condition - USDA NASS API requires separate key, no alternative
+  // food_02_livestock_disease - USDA APHIS times out, no alternative
+  // food_03_fertilizer_price - World Bank scraping failed, no alternative
+  // food_04_processing_capacity - USDA AMS API changed, no alternative
 ];
 
 export const mockHOPIScore: HOPIScore = {
@@ -902,7 +988,7 @@ export const mockHOPIScore: HOPIScore = {
     oil_axis: {
       score: 0.25,
       weight: 1.0,
-      indicators: ['oil_01_russian_brics', 'oil_02_mbridge_settlements', 'oil_03_ofac_designations', 'oil_04_refinery_ratio'],
+      indicators: ['oil_01_russian_brics', 'oil_02_mbridge_settlements', 'ofac_01_designations', 'oil_04_refinery_ratio', 'spr_01_level', 'oil_03_jodi_inventory'],
       criticalAlerts: []
     },
     ai_window: {
@@ -914,7 +1000,7 @@ export const mockHOPIScore: HOPIScore = {
     global_conflict: {
       score: 0.38,
       weight: 1.5,
-      indicators: ['global_conflict_intensity', 'taiwan_pla_activity', 'nato_high_readiness', 'nuclear_test_activity', 'russia_nato_escalation', 'defense_spending_growth'],
+      indicators: ['global_conflict_intensity', 'taiwan_pla_activity', 'nato_high_readiness', 'nuclear_01_tests', 'hormuz_war_risk', 'taiwan_exclusion_zone', 'russia_nato_escalation', 'defense_spending_growth'],
       criticalAlerts: []
     },
     domestic_control: {
@@ -932,7 +1018,7 @@ export const mockHOPIScore: HOPIScore = {
     energy: {
       score: 0.20,
       weight: 1.25,
-      indicators: ['energy_01_spr_level', 'energy_02_nat_gas_storage', 'energy_03_grid_emergency'],
+      indicators: ['energy_02_nat_gas_storage', 'energy_03_grid_emergency'],
       criticalAlerts: []
     },
     social_cohesion: {
@@ -940,7 +1026,26 @@ export const mockHOPIScore: HOPIScore = {
       weight: 0.75,
       indicators: ['cult_trend_01_twitter', 'cult_meme_01_tokens', 'cult_event_01_protests', 'cult_media_01_trends'],
       criticalAlerts: []
-    }
+    },
+    water_infrastructure: {
+      score: 0.12,
+      weight: 1.25,
+      indicators: ['water_01_reservoir_level', 'water_02_treatment_alerts'],
+      criticalAlerts: []
+    },
+    telecommunications: {
+      score: 0.05,
+      weight: 1.0,
+      indicators: ['telecom_01_bgp_anomalies', 'telecom_02_cell_outages', 'telecom_03_undersea_cable'],
+      criticalAlerts: []
+    },
+    housing_mortgage: {
+      score: 0.08,
+      weight: 1.0,
+      indicators: ['housing_01_delinquency', 'housing_02_foreclosure', 'housing_03_rate_shock'],
+      criticalAlerts: []
+    },
+    // food_production domain removed - no working data sources
   },
   timestamp: now
 };

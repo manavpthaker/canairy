@@ -78,11 +78,14 @@ class GroceryCPICollector(BaseCollector):
                 
                 if data['status'] == 'REQUEST_SUCCEEDED':
                     series_data = data['Results']['series'][0]['data']
-                    
-                    # Get latest 4 months of data
-                    if len(series_data) >= 4:
-                        latest = float(series_data[0]['value'])
-                        three_months_ago = float(series_data[3]['value'])
+
+                    # Filter out entries with '-' or invalid values
+                    valid_data = [d for d in series_data if d.get('value', '-') != '-']
+
+                    # Get latest 4 months of valid data
+                    if len(valid_data) >= 4:
+                        latest = float(valid_data[0]['value'])
+                        three_months_ago = float(valid_data[3]['value'])
                         
                         # Calculate 3-month change and annualize
                         three_month_change = ((latest / three_months_ago) - 1) * 100

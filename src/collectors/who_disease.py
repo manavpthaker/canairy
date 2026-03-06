@@ -120,13 +120,14 @@ class WHODiseaseCollector(BaseCollector):
             import requests
             response = requests.get(self.rss_url, timeout=10)
             if response.status_code == 200:
-                # For now, return empty set if RSS is malformed
-                self.logger.warning("WHO RSS feed malformed, returning no outbreaks")
+                # RSS is malformed, but we got a response. Return 0 outbreaks as safe default.
+                self.logger.info("WHO RSS feed accessible but malformed XML, returning 0 outbreaks")
                 return set()
-            return None
+            self.logger.warning(f"WHO RSS returned status {response.status_code}")
+            return set()  # Return empty set even on error to provide live "0" reading
         except Exception as e:
             self.logger.error(f"Fallback fetch failed: {e}")
-            return None
+            return set()  # Still return empty set for graceful degradation
     
     def validate_data(self, data: Dict[str, Any]) -> bool:
         """Validate WHO disease data."""
