@@ -62,7 +62,7 @@ def _load_secrets():
                     os.environ[key] = str(value)
                     logger.info(f"Loaded API key: {key}")
             # Also load specific keys explicitly
-            for key in ['CONGRESS_API_KEY', 'DATA_GOV_API_KEY']:
+            for key in ['CONGRESS_API_KEY', 'DATA_GOV_API_KEY', 'OPENSTATES_API_KEY', 'COURTLISTENER_API_KEY']:
                 if key in api_keys and api_keys[key]:
                     os.environ[key] = str(api_keys[key])
         except Exception as e:
@@ -160,6 +160,23 @@ _HormuzRiskCollector = _load_collector("free_alternatives.py", "HormuzRiskCollec
 _MortgageDelinquencyCollector = _load_collector("free_alternatives.py", "MortgageDelinquencyCollector")
 _GoogleTrendsCollector = _load_collector("free_alternatives.py", "GoogleTrendsCollector")
 
+# OpenStates (state legislation tracking)
+_OpenStatesAISurveillanceCollector = _load_collector("openstates.py", "OpenStatesAISurveillanceCollector")
+
+# CourtListener (civil liberties cases)
+_CourtListenerLibertyCollector = _load_collector("courtlistener.py", "CourtListenerLibertyCollector")
+
+# Government RSS feeds (no auth required)
+_SECFilingsCollector = _load_collector("gov_rss_feeds.py", "SECFilingsCollector")
+_FederalRegisterCollector = _load_collector("gov_rss_feeds.py", "FederalRegisterCollector")
+_FEMADisasterCollector = _load_collector("gov_rss_feeds.py", "FEMADisasterCollector")
+_CDCHealthAlertsCollector = _load_collector("gov_rss_feeds.py", "CDCHealthAlertsCollector")
+_FDAShortagesCollector = _load_collector("gov_rss_feeds.py", "FDAShortagesCollector")
+_GovTrackBillsCollector = _load_collector("gov_rss_feeds.py", "GovTrackBillsCollector")
+
+# Freddie Mac (mortgage rates)
+_FreddieMacPMMSCollector = _load_collector("freddie_mac.py", "FreddieMacPMMSCollector")
+
 # ─── ID mapping: collector key → frontend indicator ID ───
 COLLECTOR_TO_FRONTEND_ID = {
     # Core
@@ -226,6 +243,16 @@ COLLECTOR_TO_FRONTEND_ID = {
     'hormuz_risk':        'hormuz_war_risk',
     'mortgage_delinq':    'housing_01_delinquency',
     'ai_religion':        'cult_media_01_trends',
+    # New collectors
+    'openstates':         'power_01_ai_surveillance',
+    'courtlistener':      'liberty_litigation_count',
+    'sec_filings':        'sec_8k_filings',
+    'federal_register':   'federal_regulations',
+    'fema_disasters':     'fema_disaster_declarations',
+    'cdc_alerts':         'cdc_health_alerts',
+    'fda_shortages':      'fda_drug_shortages',
+    'govtrack':           'congress_activity',
+    'freddie_mac':        'housing_03_rate_shock',
 }
 
 # ─── Frontend indicator metadata (matches mockData.ts shape) ───
@@ -759,6 +786,19 @@ class DataService:
             'hormuz_risk': _HormuzRiskCollector,
             'mortgage_delinq': _MortgageDelinquencyCollector,
             'ai_religion': _GoogleTrendsCollector,
+            # OpenStates (state legislation)
+            'openstates': _OpenStatesAISurveillanceCollector,
+            # CourtListener (civil liberties cases)
+            'courtlistener': _CourtListenerLibertyCollector,
+            # Government RSS feeds
+            # 'sec_filings': _SECFilingsCollector,  # RSS parsing unreliable
+            'federal_register': _FederalRegisterCollector,
+            'fema_disasters': _FEMADisasterCollector,
+            'cdc_alerts': _CDCHealthAlertsCollector,
+            'fda_shortages': _FDAShortagesCollector,
+            'govtrack': _GovTrackBillsCollector,
+            # Freddie Mac mortgage rates
+            'freddie_mac': _FreddieMacPMMSCollector,
         }
 
         for key, cls in candidate_collectors.items():

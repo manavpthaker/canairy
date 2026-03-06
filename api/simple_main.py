@@ -140,6 +140,9 @@ def get_all_mock_indicators() -> List[Dict[str, Any]]:
         _ind("luxury_01_collapse", "Luxury Market", "economy",
              "Luxury goods index vs S&P 500", "ratio",
              0.92, "amber", "down", "Yahoo Finance", 0.95, 0.85),
+        _ind("housing_03_rate_shock", "Mortgage Rate Shock", "economy",
+             "30-year fixed mortgage rate", "%",
+             7.1, "red", "up", "Freddie Mac PMMS", 6.5, 7.0),
 
         # ── Jobs & Labor ──
         _ind("job_01_jobless_claims", "Initial Jobless Claims", "jobs_labor",
@@ -153,6 +156,12 @@ def get_all_mock_indicators() -> List[Dict[str, Any]]:
         _ind("civil_01_acled_protests", "US Protests (7d avg)", "rights_governance",
              "ACLED US protests 7-day average", "protests/day",
              18, "green", "stable", "News RSS", 25, 75),
+        _ind("power_01_ai_surveillance", "AI Surveillance Bills", "rights_governance",
+             "AI/surveillance bills advancing in state legislatures", "bills",
+             6, "amber", "up", "OpenStates", 3, 10),
+        _ind("liberty_litigation_count", "Liberty Cases Active", "rights_governance",
+             "Major civil liberty cases in federal courts", "cases",
+             8, "amber", "up", "CourtListener", 5, 20),
 
         # ── Security & Infrastructure ──
         _ind("cyber_01_cisa_kev", "CISA KEV + ICS", "security_infrastructure",
@@ -164,6 +173,15 @@ def get_all_mock_indicators() -> List[Dict[str, Any]]:
         _ind("bio_01_h2h_countries", "Novel H2H Pathogen", "security_infrastructure",
              "Countries with novel human-to-human transmission (14-day)", "countries",
              0, "green", "stable", "WHO DON RSS", 1, 3),
+        _ind("cdc_health_alerts", "CDC Health Alerts", "security_infrastructure",
+             "CDC health alert network notices (30-day)", "alerts",
+             2, "green", "stable", "CDC RSS", 5, 15),
+        _ind("fema_disaster_declarations", "FEMA Disasters", "security_infrastructure",
+             "FEMA disaster declarations (30-day)", "declarations",
+             5, "green", "stable", "FEMA API", 10, 25),
+        _ind("fda_drug_shortages", "FDA Drug Shortages", "security_infrastructure",
+             "Active FDA drug shortage listings", "shortages",
+             45, "amber", "stable", "FDA", 50, 100),
         _ind("supply_01_port_congestion", "Port Congestion", "security_infrastructure",
              "Ships waiting at major US ports", "ships",
              28, "amber", "up", "Marine Exchange", 20, 50),
@@ -256,6 +274,12 @@ def get_all_mock_indicators() -> List[Dict[str, Any]]:
         _ind("ice_detention_surge", "ICE Detention Population", "domestic_control",
              "ICE detention population", "detainees",
              62000, "amber", "up", "ICE Statistics", 50000, 150000, unavailable=True),
+        _ind("federal_regulations", "Federal Regulations", "domestic_control",
+             "Significant federal regulations (7-day)", "regulations",
+             5, "green", "stable", "Federal Register", 10, 25),
+        _ind("congress_activity", "Congressional Activity", "domestic_control",
+             "Congressional votes and actions (7-day)", "actions",
+             15, "green", "stable", "GovTrack", 20, 50),
     ]
 
 
