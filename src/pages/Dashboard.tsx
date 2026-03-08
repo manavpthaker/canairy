@@ -23,6 +23,8 @@ import { SecondaryCardsGrid, CompactRow, CompactRowData } from '../components/da
 import { AIInsightCard, AIAnalysisSummary } from '../components/dashboard/AIInsightCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { getDisplayName, getImpact, getAction } from '../data/indicatorTranslations';
+import { SIGNAL_CONTENT_BY_DOMAIN, SignalContent } from '../data/signalContent';
+import { SecondaryCardData } from '../components/dashboard/SecondaryCard';
 import { cn } from '../utils/cn';
 
 export const Dashboard: React.FC = () => {
@@ -60,34 +62,73 @@ export const Dashboard: React.FC = () => {
     const amberIndicators = indicators.filter(i => i.status.level === 'amber');
 
     let leadCard: LeadCardData | null = null;
+    const secondaryCards: SecondaryCardData[] = [];
 
-    // Helper to get domain category label
-    const getCategoryLabel = (ind: typeof indicators[0]): string => {
-      const domainLabel = DOMAIN_META[ind.domain]?.label || ind.domain;
-      return domainLabel.toUpperCase();
-    };
+    // Group indicators by domain to find signal patterns
+    const domainGroups = [...redIndicators, ...amberIndicators].reduce((acc, ind) => {
+      if (!acc[ind.domain]) acc[ind.domain] = [];
+      acc[ind.domain].push(ind);
+      return acc;
+    }, {} as Record<string, typeof indicators>);
 
-    if (redIndicators.length >= 2) {
-      const impacts = redIndicators.slice(0, 2).map(i => getImpact(i.id, 'red'));
-      const primaryDomain = redIndicators[0].domain;
+    // Find the most severe domain for lead card
+    const sortedDomains = Object.entries(domainGroups)
+      .map(([domain, inds]) => ({
+        domain,
+        inds,
+        redCount: inds.filter(i => i.status.level === 'red').length,
+        amberCount: inds.filter(i => i.status.level === 'amber').length,
+        signalContent: SIGNAL_CONTENT_BY_DOMAIN[domain],
+      }))
+      .filter(d => d.signalContent) // Only domains with predefined content
+      .sort((a, b) => {
+        // Sort by red count first, then amber
+        if (b.redCount !== a.redCount) return b.redCount - a.redCount;
+        return b.amberCount - a.amberCount;
+      });
+
+    // Generate lead card from most severe domain
+    if (sortedDomains.length > 0) {
+      const lead = sortedDomains[0];
+      const hasRed = lead.redCount > 0;
       leadCard = {
-        id: 'fallback-action-protocol',
-        category: getCategoryLabel(redIndicators[0]),
-        headline: 'Check your action plan now',
-        body: `${impacts.join('. ')} Having cash, fuel, and supplies ready protects your family.`,
-        urgency: 'today',
-        indicatorIds: redIndicators.map(i => i.id),
-        severity: 9,
+        id: `signal-${lead.domain}`,
+        category: lead.signalContent.category,
+        headline: lead.signalContent.headline,
+        body: lead.signalContent.body,
+        urgency: hasRed ? 'today' : 'week',
+        indicatorIds: lead.inds.map(i => i.id),
+        severity: hasRed ? 8 : 5,
+        actions: lead.signalContent.actions,
+        whyItMatters: lead.signalContent.whyItMatters,
         timestamp: new Date().toISOString(),
         action: { label: 'Open action plan', href: '/action-plan' },
       };
-    } else if (redIndicators.length === 1) {
+
+      // Generate secondary cards from other elevated domains
+      sortedDomains.slice(1, 5).forEach((d, idx) => {
+        const hasRedSec = d.redCount > 0;
+        secondaryCards.push({
+          id: `signal-secondary-${d.domain}`,
+          category: d.signalContent.category,
+          headline: d.signalContent.headline,
+          body: d.signalContent.body,
+          urgency: hasRedSec ? 'today' : (d.amberCount >= 2 ? 'week' : 'knowing'),
+          indicatorIds: d.inds.map(i => i.id),
+          actions: d.signalContent.actions,
+          whyItMatters: d.signalContent.whyItMatters,
+          timestamp: new Date().toISOString(),
+        });
+      });
+    } else if (redIndicators.length >= 1) {
+      // Fallback if no predefined signal content
       const ind = redIndicators[0];
       const impact = getImpact(ind.id, 'red');
       const action = getAction(ind.id, 'red');
+      const domainLabel = DOMAIN_META[ind.domain]?.label || ind.domain;
       leadCard = {
         id: `fallback-${ind.id}`,
-        category: getCategoryLabel(ind),
+        category: domainLabel.toUpperCase(),
         headline: action,
         body: impact,
         urgency: 'today',
@@ -100,9 +141,10 @@ export const Dashboard: React.FC = () => {
       const topIndicator = amberIndicators[0];
       const action = getAction(topIndicator.id, 'amber');
       const impact = getImpact(topIndicator.id, 'amber');
+      const domainLabel = DOMAIN_META[topIndicator.domain]?.label || topIndicator.domain;
       leadCard = {
         id: 'fallback-elevated',
-        category: getCategoryLabel(topIndicator),
+        category: domainLabel.toUpperCase(),
         headline: action,
         body: `${impact}. Now is a good time to review your supplies and ensure everything is current.`,
         urgency: 'week',
@@ -120,7 +162,7 @@ export const Dashboard: React.FC = () => {
       href: `/indicators?highlight=${ind.id}`,
     }));
 
-    return { leadCard, secondaryCards: [], compactRows };
+    return { leadCard, secondaryCards, compactRows };
   };
 
   const cards = synthesisCards || getFallbackCards();
