@@ -253,14 +253,14 @@ export function synthesizeCards(
   };
 
   scoredPatterns.forEach((scored, index) => {
-    if (index === 0 && scored.totalScore >= 40) {
-      // Highest score becomes lead card (if score is high enough)
+    if (index === 0 && scored.totalScore >= 35) {
+      // Highest score becomes lead card
       output.leadCard = scored;
-    } else if (index <= 3 && scored.totalScore >= 30) {
-      // Next 2-3 become secondary cards
+    } else if (index <= 5 && scored.totalScore >= 25) {
+      // Next 5 become secondary cards (expanded from 3)
       output.secondaryCards.push(scored);
-    } else if (index <= 8 && scored.totalScore >= 20) {
-      // Next 3-5 become compact rows
+    } else if (index <= 12 && scored.totalScore >= 15) {
+      // Next 7 become compact rows (expanded from 5)
       output.compactRows.push(scored);
     } else {
       // Rest are omitted
@@ -278,18 +278,33 @@ export function scoredPatternToCardData(scored: ScoredPattern) {
   const urgency: 'today' | 'week' | 'knowing' =
     scored.severityScore >= 70 ? 'today' : scored.severityScore >= 40 ? 'week' : 'knowing';
 
+  // Generate whatToDo summary from action template
+  const whatToDoSummary = scored.pattern.actionTemplate
+    ? scored.pattern.actionTemplate
+    : urgency === 'today'
+      ? 'Review your action plan and check supplies.'
+      : urgency === 'week'
+        ? 'Take some time to review your preparedness.'
+        : 'Stay informed and monitor the situation.';
+
+  // Generate household impact based on urgency
+  const whyItMatters = urgency === 'today'
+    ? "This may require immediate attention. Having cash, supplies, and your action plan ready helps protect your family."
+    : urgency === 'week'
+      ? "This may affect your daily routine or require some preparation. Now is a good time to review your readiness."
+      : "Worth keeping an eye on. No action needed right now, but good to be aware.";
+
   return {
     id: scored.pattern.id,
     headline: scored.pattern.headlineTemplate,
-    body: scored.pattern.outcomeTemplate,
+    whatsHappening: `Here's what I'm seeing: ${scored.pattern.outcomeTemplate}`,
+    whyItMatters,
+    whatToDo: whatToDoSummary,
+    actions: scored.pattern.actionTemplate
+      ? [{ id: `${scored.pattern.id}-action-1`, text: scored.pattern.actionTemplate, estimateMinutes: 15 }]
+      : [],
     urgency,
     indicatorIds: scored.matchedIndicators.map(i => i.id),
     severity: scored.pattern.baseSeverity,
-    action: scored.pattern.actionTemplate
-      ? {
-          label: scored.pattern.actionTemplate,
-          href: scored.pattern.actionHref ?? '/checklist',
-        }
-      : undefined,
   };
 }

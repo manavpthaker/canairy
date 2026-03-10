@@ -17,7 +17,7 @@
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, ClipboardList, X } from 'lucide-react';
-import { useStore } from '../store';
+import { useStore, selectLeadAIInsight, selectSecondaryAIInsights } from '../store';
 import { getVisibleTiers, getTierProgress, computeReadinessFromTiers, getMPhaseTier } from '../data/phaseTasks';
 import { generateActionList } from '../data/actionGenerator';
 import { calculateMPhase, getVisibleMPhaseLevels } from '../utils/mphase';
@@ -96,6 +96,8 @@ function getAdaptiveSubtitle(threatState: ThreatState, incompleteActionCount: nu
 
 export const FamilyActionPlan: React.FC = () => {
   const { indicators, systemPhase } = useStore();
+  const leadInsight = useStore(selectLeadAIInsight);
+  const secondaryInsights = useStore(selectSecondaryAIInsights);
 
   // Refs for scrolling to sections
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -128,11 +130,65 @@ export const FamilyActionPlan: React.FC = () => {
     return getVisibleMPhaseLevels(mPhaseResult.level);
   }, [mPhaseResult.level]);
 
-  // Generate "This Week" actions from indicators
+  // Generate "This Week" actions - prioritize AI insights, fall back to static
   const thisWeekActions = useMemo(() => {
     const phase = typeof systemPhase === 'number' ? systemPhase : undefined;
-    return generateActionList(indicators, completedTiers, phase);
-  }, [indicators, completedTiers, systemPhase]);
+    const actions: ReturnType<typeof generateActionList> = [];
+
+    // Source 1: AI-generated actions from insights (highest priority)
+    const allInsights = [leadInsight, ...secondaryInsights].filter(Boolean);
+    for (const insight of allInsights) {
+      if (!insight) continue;
+
+      for (const actionItem of insight.actionItems || []) {
+        const actionId = `ai-${insight.id}-${actionItem.task.slice(0, 20).replace(/\s/g, '-')}`;
+        if (completedThisWeek.has(actionId)) continue;
+
+        const urgency: 'now' | 'today' | 'this-week' =
+          insight.urgency === 'today' ? 'today' :
+          insight.urgency === 'week' ? 'this-week' : 'this-week';
+
+        actions.push({
+          id: actionId,
+          task: actionItem.task,
+          why: actionItem.why,
+          timeEstimate: actionItem.timeEstimate,
+          urgency,
+          priority: actionItem.priority === 'critical' ? 1 : actionItem.priority === 'recommended' ? 2 : 3,
+          effort: actionItem.effort,
+          completed: false,
+          sourceInsightId: insight.id,
+          sourceDomains: insight.domains,
+          context: {
+            dataPoints: insight.dataPoint ? [insight.dataPoint] : [],
+            sources: insight.evidenceSources?.map(s => s.source) || [],
+            indicators: insight.domains,
+            historicalNote: insight.reasoning?.observation,
+            consequence: insight.reasoning?.familyImplication,
+          },
+        });
+      }
+    }
+
+    // Source 2: Static indicator-driven actions (fill in gaps)
+    const staticActions = generateActionList(indicators, completedTiers, phase);
+    for (const action of staticActions) {
+      // Skip if we already have a similar AI-generated action
+      const aiCoveredDomains = new Set(actions.flatMap(a => a.sourceDomains));
+      const hasOverlap = action.sourceDomains.some(d => aiCoveredDomains.has(d));
+      if (hasOverlap && !action.phaseTask) continue;
+
+      actions.push(action);
+    }
+
+    // Sort: now > today > this-week, then by priority
+    return actions.sort((a, b) => {
+      const urgencyOrder = { 'now': 0, 'today': 1, 'this-week': 2 };
+      const urgencyDiff = urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
+      if (urgencyDiff !== 0) return urgencyDiff;
+      return a.priority - b.priority;
+    });
+  }, [indicators, completedTiers, systemPhase, leadInsight, secondaryInsights, completedThisWeek]);
 
   // Visible tiers based on phase
   const visibleTiers = useMemo(() => {

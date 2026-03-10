@@ -117,15 +117,15 @@ export const ThreatBanner: React.FC = () => {
                 'text-sm sm:text-base font-display font-bold tracking-wide',
                 isHighPhase ? 'text-red-300' : 'text-amber-300'
               )}>
-                {isHighPhase ? `Phase ${systemPhase} — High Priority` : 'Elevated Conditions'}
+                {isHighPhase ? 'Time to Take Action' : 'Stay Alert'}
               </h2>
               <p className={cn(
                 'text-xs sm:text-sm',
                 isHighPhase ? 'text-red-300/60' : 'text-amber-300/60'
               )}>
                 {redCount > 0
-                  ? `${redCount} red indicator${redCount !== 1 ? 's' : ''} — review priority actions`
-                  : `${amberCount} amber indicators — stay prepared`
+                  ? `${redCount} condition${redCount !== 1 ? 's' : ''} need${redCount === 1 ? 's' : ''} your attention — see actions below`
+                  : `${amberCount} conditions worth watching — good time to review your plans`
                 }
               </p>
             </div>

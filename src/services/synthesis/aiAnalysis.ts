@@ -738,13 +738,13 @@ export function generateFallbackInsights(indicators: IndicatorData[]): AIAnalysi
       peripheralImpacts: ctx.peripheralImpacts,
     });
 
-    // Cap at 5 insights
-    if (insights.length >= 5) break;
+    // Cap at 12 insights (expanded to show more cards)
+    if (insights.length >= 12) break;
   }
 
   // Add generic fallback for indicators without context
   for (const ind of [...red, ...amber]) {
-    if (processed.has(ind.id) || insights.length >= 5) continue;
+    if (processed.has(ind.id) || insights.length >= 12) continue;
     processed.add(ind.id);
 
     const level = ind.status.level as 'amber' | 'red';

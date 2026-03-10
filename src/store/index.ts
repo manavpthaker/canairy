@@ -278,7 +278,10 @@ export const selectSynthesisCards = (state: AppState) => {
       return {
         ...baseCard,
         headline: enhanced.headline,
-        body: enhanced.body,
+        // Map enhanced fields to card structure
+        whatsHappening: enhanced.body ? `Here's what I'm seeing: ${enhanced.body}` : baseCard.whatsHappening,
+        whyItMatters: enhanced.whyItMatters || baseCard.whyItMatters,
+        whatToDo: enhanced.whatToDo || baseCard.whatToDo,
         urgency,
       };
     }
@@ -318,11 +321,11 @@ export const selectLeadAIInsight = (state: AppState): AIInsight | null => {
   return analysis.insights[0];
 };
 
-// Select secondary AI insights
+// Select secondary AI insights (expanded to show more)
 export const selectSecondaryAIInsights = (state: AppState): AIInsight[] => {
   const analysis = state.aiAnalysis;
   if (!analysis || analysis.insights.length <= 1) return [];
 
   const lead = selectLeadAIInsight(state);
-  return analysis.insights.filter(i => i.id !== lead?.id).slice(0, 3);
+  return analysis.insights.filter(i => i.id !== lead?.id).slice(0, 6);
 };

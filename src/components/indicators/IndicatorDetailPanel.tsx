@@ -38,8 +38,10 @@ import {
   getSourceInfo,
   formatTimeAgo,
   isCriticalIndicator,
+  getCardImpactLine,
 } from '../../data/indicatorDisplay';
 import { getDisplayName } from '../../data/indicatorTranslations';
+import { getIndicatorDescription } from '../../data/indicatorDescriptions';
 
 interface IndicatorDetailPanelProps {
   indicator: IndicatorData;
@@ -60,10 +62,12 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
 
   // Get enriched data
   const description = getDescription(indicator.id, indicator.description);
+  const richDescription = getIndicatorDescription(indicator.id);
   const householdRelevance = getHouseholdRelevance(indicator.id);
   const connectedIds = getConnectedIndicators(indicator.id);
   const phases = getPhaseRelevance(indicator.id);
   const sourceInfo = getSourceInfo(indicator.id);
+  const impactLine = getCardImpactLine(indicator.id, status.level as 'green' | 'amber' | 'red');
 
   // Ensure history exists
   const history = useMemo(() => {
@@ -207,13 +211,52 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
             )}
           </section>
 
-          {/* About This Indicator */}
+          {/* Current Status Summary */}
+          {impactLine && (
+            <section className={cn(
+              "p-4 rounded-xl border",
+              status.level === 'red' ? "bg-red-500/10 border-red-500/20" :
+              status.level === 'amber' ? "bg-amber-500/10 border-amber-500/20" :
+              "bg-emerald-500/10 border-emerald-500/20"
+            )}>
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className={cn(
+                  "w-4 h-4",
+                  status.level === 'red' ? "text-red-400" :
+                  status.level === 'amber' ? "text-amber-400" :
+                  "text-emerald-400"
+                )} />
+                <h3 className={cn(
+                  "text-sm font-medium",
+                  status.level === 'red' ? "text-red-400" :
+                  status.level === 'amber' ? "text-amber-400" :
+                  "text-emerald-400"
+                )}>Current Status</h3>
+              </div>
+              <p className={cn(
+                "text-sm leading-relaxed",
+                status.level === 'red' ? "text-red-300/90" :
+                status.level === 'amber' ? "text-amber-300/90" :
+                "text-emerald-300/90"
+              )}>{impactLine}</p>
+            </section>
+          )}
+
+          {/* What This Indicator Tracks */}
           <section className="p-4 bg-white/[0.02] rounded-xl border border-white/5">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-3">
               <Info className="w-4 h-4 text-olive-data" />
-              <h3 className="text-sm font-medium text-olive-secondary">About this indicator</h3>
+              <h3 className="text-sm font-medium text-olive-secondary">What we're tracking</h3>
             </div>
-            <p className="text-sm text-olive-secondary leading-relaxed">{description}</p>
+            <p className="text-sm text-olive-secondary leading-relaxed mb-3">
+              {richDescription?.whatWeTrack || description}
+            </p>
+            {richDescription?.whyItMatters && (
+              <div className="pt-3 border-t border-white/5">
+                <p className="text-xs font-medium text-olive-muted uppercase tracking-wider mb-1.5">Why it matters</p>
+                <p className="text-sm text-olive-primary leading-relaxed">{richDescription.whyItMatters}</p>
+              </div>
+            )}
           </section>
 
           {/* Why It Matters for Your Family */}
@@ -226,17 +269,35 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
               <p className="text-sm text-olive-secondary leading-relaxed mb-3">
                 {householdRelevance.impact}
               </p>
+
+              {/* Status-specific action guidance */}
               <div className="pt-3 border-t border-amber-500/10">
                 <div className="flex items-center gap-2 mb-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs font-medium text-amber-400 uppercase tracking-wider">
-                    What to do
+                  <AlertTriangle className={cn(
+                    "w-4 h-4",
+                    status.level === 'red' ? "text-red-400" : "text-amber-400"
+                  )} />
+                  <span className={cn(
+                    "text-xs font-medium uppercase tracking-wider",
+                    status.level === 'red' ? "text-red-400" : "text-amber-400"
+                  )}>
+                    What to do {status.level === 'red' ? 'now' : status.level === 'amber' ? 'this week' : ''}
                   </span>
                 </div>
                 <p className="text-sm text-olive-primary leading-relaxed">
-                  {householdRelevance.action}
+                  {richDescription?.actionGuidance?.[status.level as 'green' | 'amber' | 'red'] || householdRelevance.action}
                 </p>
               </div>
+
+              {/* Real world impact if available */}
+              {richDescription?.realWorldImpact && status.level !== 'green' && (
+                <div className="mt-3 pt-3 border-t border-amber-500/10">
+                  <p className="text-xs font-medium text-amber-400/70 uppercase tracking-wider mb-1.5">Real world example</p>
+                  <p className="text-sm text-olive-secondary leading-relaxed italic">
+                    "{richDescription.realWorldImpact}"
+                  </p>
+                </div>
+              )}
             </section>
           )}
 
@@ -244,33 +305,62 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
           {indicator.thresholds && (
             <section className="p-4 bg-white/[0.02] rounded-xl border border-white/5">
               <h3 className="text-sm font-medium text-olive-secondary mb-3">Alert Thresholds</h3>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span className="text-sm text-olive-secondary">Green (Normal)</span>
+              <div className="space-y-3">
+                {/* Green */}
+                <div className={cn(
+                  "p-2.5 rounded-lg border",
+                  status.level === 'green' ? "bg-emerald-500/10 border-emerald-500/30" : "border-white/5"
+                )}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span className="text-sm font-medium text-emerald-400">Green (Normal)</span>
+                    </div>
+                    <span className="text-xs font-mono text-olive-data">
+                      &lt; {indicator.thresholds.threshold_amber}
+                    </span>
                   </div>
-                  <span className="text-sm font-mono text-olive-data">
-                    &lt; {indicator.thresholds.threshold_amber}
-                  </span>
+                  {richDescription?.thresholds?.green && (
+                    <p className="text-xs text-olive-secondary ml-4">{richDescription.thresholds.green}</p>
+                  )}
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-amber-400" />
-                    <span className="text-sm text-olive-secondary">Amber (Caution)</span>
+
+                {/* Amber */}
+                <div className={cn(
+                  "p-2.5 rounded-lg border",
+                  status.level === 'amber' ? "bg-amber-500/10 border-amber-500/30" : "border-white/5"
+                )}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-amber-400" />
+                      <span className="text-sm font-medium text-amber-400">Amber (Caution)</span>
+                    </div>
+                    <span className="text-xs font-mono text-olive-data">
+                      {indicator.thresholds.threshold_amber} – {indicator.thresholds.threshold_red}
+                    </span>
                   </div>
-                  <span className="text-sm font-mono text-olive-data">
-                    {indicator.thresholds.threshold_amber} – {indicator.thresholds.threshold_red}
-                  </span>
+                  {richDescription?.thresholds?.amber && (
+                    <p className="text-xs text-olive-secondary ml-4">{richDescription.thresholds.amber}</p>
+                  )}
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-red-400" />
-                    <span className="text-sm text-olive-secondary">Red (Action Required)</span>
+
+                {/* Red */}
+                <div className={cn(
+                  "p-2.5 rounded-lg border",
+                  status.level === 'red' ? "bg-red-500/10 border-red-500/30" : "border-white/5"
+                )}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-red-400" />
+                      <span className="text-sm font-medium text-red-400">Red (Action Required)</span>
+                    </div>
+                    <span className="text-xs font-mono text-olive-data">
+                      ≥ {indicator.thresholds.threshold_red}
+                    </span>
                   </div>
-                  <span className="text-sm font-mono text-olive-data">
-                    ≥ {indicator.thresholds.threshold_red}
-                  </span>
+                  {richDescription?.thresholds?.red && (
+                    <p className="text-xs text-olive-secondary ml-4">{richDescription.thresholds.red}</p>
+                  )}
                 </div>
               </div>
             </section>
@@ -390,6 +480,19 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
               )}
             </div>
           </section>
+
+          {/* Historical Context */}
+          {richDescription?.historicalContext && (
+            <section className="p-4 bg-white/[0.02] rounded-xl border border-white/5">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="w-4 h-4 text-olive-data" />
+                <h3 className="text-sm font-medium text-olive-secondary">Historical Context</h3>
+              </div>
+              <p className="text-sm text-olive-secondary leading-relaxed italic">
+                {richDescription.historicalContext}
+              </p>
+            </section>
+          )}
 
           {/* Critical Indicator Badge */}
           {isCritical && (

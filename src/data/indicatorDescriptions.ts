@@ -25,22 +25,38 @@ const descriptions: Record<string, IndicatorDescription> = {
   econ_01_treasury_tail: {
     id: 'econ_01_treasury_tail',
     name: '10Y Auction Tail',
+    whatWeTrack: 'The "tail" is the difference between the expected yield and what investors actually demand at Treasury auctions. A large tail means weak demand — buyers are requiring higher interest rates to lend money to the US government.',
     whyItMatters: 'When Treasury auctions "tail" badly, it means buyers demand higher rates — banks holding bonds lose value, lending freezes, and a banking crisis can follow within weeks.',
+    realWorldImpact: 'The 2023 SVB collapse was preceded by Treasury market stress. Banks holding bonds at lower rates faced massive losses when yields spiked.',
     thresholds: {
       green: 'Normal auctions — banks stable',
       amber: 'Weak demand building — monitor bank health',
       red: 'Auction failure risk — protect deposits, increase cash',
     },
+    actionGuidance: {
+      green: 'No action needed. Treasury market functioning normally.',
+      amber: 'Review bank exposure. Consider spreading deposits across institutions. Lock in favorable mortgage rates.',
+      red: 'Increase cash on hand. Ensure deposits are within FDIC limits. Delay large financed purchases.',
+    },
+    historicalContext: 'Treasury auction tails above 5bp are historically rare and signal institutional stress. The March 2020 COVID crash and October 2023 bond rout both featured severe auction dysfunction.',
   },
   econ_02_grocery_cpi: {
     id: 'econ_02_grocery_cpi',
     name: 'Grocery CPI',
+    whatWeTrack: 'The 3-month annualized change in the Consumer Price Index for food at home. This measures how fast grocery prices are rising compared to the same period last year.',
     whyItMatters: 'Food prices hit every family directly. Sustained >8% annualized means real purchasing power erosion — your dollar buys less each week at the store.',
+    realWorldImpact: 'In 2022, grocery inflation hit 13.5% — the highest since 1979. A family of four saw weekly grocery costs increase by $50-75.',
     thresholds: {
       green: 'Normal food inflation — no action needed',
       amber: 'Prices rising faster than wages — budget accordingly',
       red: 'Food crisis territory — stock up before further spikes',
     },
+    actionGuidance: {
+      green: 'Shop normally. No special stocking needed.',
+      amber: 'Build a 2-week buffer of shelf-stable staples. Buy in bulk when prices dip.',
+      red: 'Stock 30 days of non-perishables immediately. Prioritize proteins and cooking essentials.',
+    },
+    historicalContext: 'Food inflation above 10% has historically triggered significant changes in shopping behavior and increased food bank usage by 30-40%.',
   },
   market_01_intraday_swing: {
     id: 'market_01_intraday_swing',
@@ -101,32 +117,56 @@ const descriptions: Record<string, IndicatorDescription> = {
   cyber_01_cisa_kev: {
     id: 'cyber_01_cisa_kev',
     name: 'CISA KEV + ICS',
+    whatWeTrack: 'The number of actively exploited cybersecurity vulnerabilities that CISA has flagged in the past 90 days, with emphasis on Industrial Control Systems (ICS) that run water plants, power grids, and pipelines.',
     whyItMatters: 'CISA flags actively exploited vulnerabilities in critical infrastructure. High counts mean water, power, and financial systems are under attack.',
+    realWorldImpact: 'The 2021 Colonial Pipeline ransomware attack caused fuel shortages across the East Coast for a week. The Oldsmar water treatment hack nearly poisoned a Florida town.',
     thresholds: {
       green: 'Low exploit activity',
       amber: 'Elevated cyber attacks on infrastructure',
       red: 'Critical infrastructure under sustained attack',
     },
+    actionGuidance: {
+      green: 'Keep devices updated. Use strong passwords with 2FA.',
+      amber: 'Update all devices immediately. Enable 2FA everywhere. Have cash on hand in case banking systems go offline.',
+      red: 'Prepare for service disruptions. Fill gas tanks. Have offline copies of important documents. Stock water.',
+    },
+    historicalContext: 'Critical infrastructure attacks have increased 300% since 2020. Russia, China, and Iran have demonstrated capability to disrupt US power grids.',
   },
   grid_01_pjm_outages: {
     id: 'grid_01_pjm_outages',
     name: 'PJM Grid Outages',
+    whatWeTrack: 'Major power outage events per quarter in the PJM Interconnection region, which serves 65 million people in 13 states from Illinois to New Jersey, including major cities like Chicago, Philadelphia, and Washington DC.',
     whyItMatters: 'Repeated large outages signal grid fragility. When this goes red, backup power is essential.',
+    realWorldImpact: 'The 2021 Texas grid collapse left 4.5 million without power for days. Over 200 people died from cold exposure and carbon monoxide poisoning from improper heater use.',
     thresholds: {
       green: 'Grid stable',
       amber: 'Pattern emerging — test backup power',
       red: 'Grid fragile — activate generator prep',
     },
+    actionGuidance: {
+      green: 'Maintain standard emergency supplies.',
+      amber: 'Test backup power systems. Charge all battery packs. Know where flashlights and candles are located.',
+      red: 'Run generator to verify function. Fill propane/gas. Ensure medical devices have battery backup. Know warming center locations.',
+    },
+    historicalContext: 'Grid reliability has declined 15% since 2000 due to aging infrastructure and increased extreme weather. Winter storm outages have doubled since 2015.',
   },
   bio_01_h2h_countries: {
     id: 'bio_01_h2h_countries',
     name: 'Novel H2H Pathogen',
+    whatWeTrack: 'The number of countries reporting sustained human-to-human transmission of novel pathogens that the WHO has flagged as concerning. This is the earliest warning system for pandemics.',
     whyItMatters: 'Novel H2H transmission in multiple countries is how pandemics start. Early detection gives weeks of preparation.',
+    realWorldImpact: 'COVID-19 was first reported to the WHO on December 31, 2019. By mid-January, cases appeared in Thailand and Japan. Families who acted in January were better prepared than those who waited.',
     thresholds: {
       green: 'No novel H2H events',
       amber: 'Emerging pathogen — verify N95 and med supply',
       red: 'Pandemic risk — activate health protocols',
     },
+    actionGuidance: {
+      green: 'Maintain standard first aid supplies and common medications.',
+      amber: 'Stock N95 masks and hand sanitizer. Refill prescriptions to 90-day supply. Review remote work/school options.',
+      red: 'Limit non-essential travel and gatherings. Ensure 30-day medication supply. Prepare for potential school closures and remote work.',
+    },
+    historicalContext: 'Three novel pathogens have reached pandemic potential since 2000: SARS (2003), H1N1 (2009), and COVID-19 (2020). Early warning provides 2-4 weeks of preparation advantage.',
   },
 
   // OIL AXIS

@@ -9,19 +9,18 @@
  * All detail lives in the modal/panel, not here.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { IndicatorData } from '../../types';
 import { cn } from '../../utils/cn';
-import { Sparkline, getSparklineColor } from './Sparkline';
-import { generateHistoricalData } from '../../utils/historicalDataGenerator';
 import {
   formatValue,
   formatDomain,
   getSourceDisplay,
   isCriticalIndicator,
   formatTimeAgo,
-  getCardImpactLine,
+  getHouseholdRelevance,
+  getDescription,
 } from '../../data/indicatorDisplay';
 import { getDisplayName } from '../../data/indicatorTranslations';
 
@@ -39,13 +38,6 @@ export const IndicatorCard: React.FC<IndicatorCardProps> = ({
   const { status, domain, unit } = indicator;
   const isCritical = isCriticalIndicator(indicator.id);
   const currentValue = typeof status.value === 'number' ? status.value : 0;
-
-  // Generate history if not present
-  useEffect(() => {
-    if (!indicator.history) {
-      indicator.history = generateHistoricalData(indicator, '7d');
-    }
-  }, [indicator]);
 
   // Status-driven styling
   const borderColor = {
@@ -178,24 +170,14 @@ export const IndicatorCard: React.FC<IndicatorCardProps> = ({
       {/* Row 4: Threshold bar (no labels) */}
       {hasThresholds && <div className="mt-3">{thresholdBarContent}</div>}
 
-      {/* Row 5: Impact line */}
-      {getCardImpactLine(indicator.id, status.level as 'green' | 'amber' | 'red') && (
-        <p className="text-[11px] text-olive-data mt-2 line-clamp-1">
-          {getCardImpactLine(indicator.id, status.level as 'green' | 'amber' | 'red')}
-        </p>
-      )}
-
-      {/* Row 6: Sparkline */}
-      <div className="mt-3">
-        <Sparkline
-          data={indicator.history}
-          color={getSparklineColor(status.level)}
-          height={36}
-        />
-      </div>
+      {/* Row 5: Preview description - why this matters to your family */}
+      <p className="text-[11px] text-olive-secondary mt-2 line-clamp-2 leading-relaxed">
+        {getHouseholdRelevance(indicator.id)?.impact ||
+         getDescription(indicator.id, indicator.description)}
+      </p>
 
       {/* Row 6: Timestamp */}
-      <p className="text-[10px] text-olive-data mt-2">
+      <p className="text-[10px] text-olive-data mt-3">
         Updated {formatTimeAgo(status.lastUpdate)}
       </p>
     </button>
