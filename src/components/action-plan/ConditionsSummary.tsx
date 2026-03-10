@@ -38,7 +38,6 @@ function getActionFocus(elevatedIndicators: IndicatorData[]): string {
 
 export const ConditionsSummary: React.FC<ConditionsSummaryProps> = ({
   indicators,
-  systemPhase,
 }) => {
   // Get indicators at caution (amber) or alert (red) level
   const elevatedIndicators = indicators.filter(
@@ -52,7 +51,6 @@ export const ConditionsSummary: React.FC<ConditionsSummaryProps> = ({
 
   const redCount = elevatedIndicators.filter(i => i.status.level === 'red').length;
   const amberCount = elevatedIndicators.filter(i => i.status.level === 'amber').length;
-  const phase = systemPhase === 'tighten-up' ? 'elevated' : systemPhase;
   const actionFocus = getActionFocus(elevatedIndicators);
 
   // Build the level description
@@ -82,7 +80,7 @@ export const ConditionsSummary: React.FC<ConditionsSummaryProps> = ({
         <div className="space-y-2">
           <p className="text-olive-200 text-sm leading-relaxed">
             <span className="font-medium text-olive-100">
-              Why Phase {phase} is active:
+              What's happening:
             </span>{' '}
             {elevatedIndicators.length} indicator{elevatedIndicators.length !== 1 ? 's' : ''}{' '}
             {levelDescription} —{' '}

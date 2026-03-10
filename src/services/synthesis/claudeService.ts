@@ -19,7 +19,9 @@ const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 export interface SynthesisResult {
   headline: string;
-  body: string;
+  body: string;                    // What's happening (legacy, maps to whatsHappening)
+  whyItMatters: string;            // Family impact
+  whatToDo: string;                // Quick action summary
   outcomeSentence: string;
   urgencyTag: 'Do this today' | 'This week' | 'Worth knowing';
 }
@@ -83,24 +85,25 @@ ${pattern.actionTemplate ? `Action: ${pattern.actionTemplate}` : ''}
 
 INSTRUCTIONS:
 1. Write a headline (5-8 words) that clearly states what's happening
-2. Write a body (2-3 sentences) that:
-   - States what this means for a household in plain terms
-   - Is specific about potential impacts (prices, availability, timing)
-   - Suggests one clear action if severity >= 7
-3. Write an outcome sentence (1 sentence) for the dashboard summary
-4. Assign urgency: "Do this today" (severity 8+), "This week" (severity 5-7), "Worth knowing" (severity <5)
+2. Write a body (2-3 sentences) starting with "Here's what I'm seeing:" that explains the situation conversationally
+3. Write whyItMatters (1-2 sentences) explaining how this affects the family specifically
+4. Write whatToDo (1 sentence) with a clear, actionable summary
+5. Write an outcome sentence (1 sentence) for the dashboard summary
+6. Assign urgency: "Do this today" (severity 8+), "This week" (severity 5-7), "Worth knowing" (severity <5)
 
 REQUIREMENTS:
 - "Coffee test": A busy parent reading over coffee should understand in 5 seconds
 - Be specific with numbers and timeframes when possible
 - No alarmism, but don't downplay genuine risks
-- Action-oriented language
+- Write like a trusted neighbor explaining the situation
 - No technical jargon
 
 Respond in JSON format:
 {
   "headline": "...",
   "body": "...",
+  "whyItMatters": "...",
+  "whatToDo": "...",
   "outcomeSentence": "...",
   "urgencyTag": "Do this today" | "This week" | "Worth knowing"
 }`;
@@ -184,6 +187,8 @@ function generateFallback(scoredPattern: ScoredPattern): SynthesisResult {
   return {
     headline: pattern.headlineTemplate,
     body: pattern.outcomeTemplate,
+    whyItMatters: pattern.outcomeTemplate,
+    whatToDo: pattern.actionTemplate || 'Review the situation and consider your options.',
     outcomeSentence: pattern.outcomeTemplate.split('.')[0] + '.',
     urgencyTag,
   };

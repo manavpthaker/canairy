@@ -164,7 +164,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'oil-axis-shift',
     name: 'Oil Trade Realignment',
     requiredConditions: [
-      { indicatorId: 'oil_01_russian_brics', level: 'amber' },
+      { indicatorId: 'oil_03_ofac_designations', level: 'amber' },
     ],
     baseSeverity: 5,
     outcomeTemplate:
@@ -234,10 +234,10 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'grid-stress',
     name: 'Grid Reliability Crisis',
     requiredConditions: [
-      { indicatorId: 'grid_emergency', level: 'red' },
+      { indicatorId: 'energy_03_grid_emergency', level: 'red' },
     ],
     optionalConditions: [
-      { indicatorId: 'pjm_grid_outage', level: 'amber' },
+      { indicatorId: 'grid_01_pjm_outages', level: 'amber' },
     ],
     baseSeverity: 8,
     outcomeTemplate:
@@ -252,10 +252,10 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'fuel-crisis',
     name: 'Fuel Supply Disruption',
     requiredConditions: [
-      { indicatorId: 'spr_level', level: 'red' },
+      { indicatorId: 'spr_01_level', level: 'red' },
     ],
     optionalConditions: [
-      { indicatorId: 'oil_01_wri_premium', level: 'amber' },
+      { indicatorId: 'hormuz_war_risk', level: 'amber' },
       { domain: 'oil_axis', level: 'amber' },
     ],
     baseSeverity: 7,
@@ -270,7 +270,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'nat-gas-shortage',
     name: 'Natural Gas Supply Risk',
     requiredConditions: [
-      { indicatorId: 'nat_gas_storage', level: 'red' },
+      { indicatorId: 'energy_02_nat_gas_storage', level: 'red' },
     ],
     baseSeverity: 6,
     outcomeTemplate:
@@ -288,8 +288,8 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'supply-chain-breakdown',
     name: 'Supply Chain Disruption',
     requiredConditions: [
-      { indicatorId: 'port_congestion', level: 'red' },
-      { indicatorId: 'freight_index', level: 'amber' },
+      { indicatorId: 'supply_01_port_congestion', level: 'red' },
+      { indicatorId: 'supply_02_freight_index', level: 'amber' },
     ],
     baseSeverity: 7,
     outcomeTemplate:
@@ -304,7 +304,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'chip-shortage',
     name: 'Semiconductor Shortage',
     requiredConditions: [
-      { indicatorId: 'chip_lead_time', level: 'red' },
+      { indicatorId: 'supply_03_chip_lead_time', level: 'red' },
     ],
     baseSeverity: 5,
     outcomeTemplate:
@@ -320,10 +320,10 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'cyber-attack',
     name: 'Critical Infrastructure Cyber Attack',
     requiredConditions: [
-      { indicatorId: 'cisa_kev_critical', level: 'red' },
+      { indicatorId: 'cyber_01_cisa_kev', level: 'red' },
     ],
     optionalConditions: [
-      { indicatorId: 'grid_emergency', level: 'amber' },
+      { indicatorId: 'energy_03_grid_emergency', level: 'amber' },
     ],
     baseSeverity: 8,
     outcomeTemplate:
@@ -338,7 +338,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'civil-unrest',
     name: 'Civil Unrest Risk',
     requiredConditions: [
-      { indicatorId: 'acled_protest_index', level: 'red' },
+      { indicatorId: 'civil_01_acled_protests', level: 'red' },
     ],
     optionalConditions: [
       { indicatorId: 'national_guard_metros', level: 'amber' },
@@ -359,10 +359,10 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'taiwan-crisis',
     name: 'Taiwan Strait Crisis',
     requiredConditions: [
-      { indicatorId: 'taiwan_01_sorties', level: 'red' },
+      { indicatorId: 'taiwan_pla_activity', level: 'red' },
     ],
     optionalConditions: [
-      { indicatorId: 'chip_lead_time', level: 'amber' },
+      { indicatorId: 'supply_03_chip_lead_time', level: 'amber' },
     ],
     baseSeverity: 9,
     outcomeTemplate:
@@ -394,10 +394,10 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'hormuz-closure',
     name: 'Hormuz Strait Risk',
     requiredConditions: [
-      { indicatorId: 'oil_01_wri_premium', level: 'red' },
+      { indicatorId: 'hormuz_war_risk', level: 'red' },
     ],
     optionalConditions: [
-      { indicatorId: 'spr_level', level: 'amber' },
+      { indicatorId: 'spr_01_level', level: 'amber' },
     ],
     baseSeverity: 8,
     outcomeTemplate:
@@ -415,7 +415,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'pandemic-risk',
     name: 'Pandemic Alert',
     requiredConditions: [
-      { indicatorId: 'who_h2h_novel', level: 'red' },
+      { indicatorId: 'bio_01_h2h_countries', level: 'red' },
     ],
     baseSeverity: 9,
     outcomeTemplate:
@@ -430,7 +430,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'pharma-shortage',
     name: 'Medication Shortage',
     requiredConditions: [
-      { indicatorId: 'fda_shortage_critical', level: 'red' },
+      { indicatorId: 'fda_drug_shortages', level: 'red' },
     ],
     baseSeverity: 7,
     outcomeTemplate:
@@ -448,10 +448,10 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'travel-disruption',
     name: 'Air Travel Disruption',
     requiredConditions: [
-      { indicatorId: 'ground_stops', level: 'red' },
+      { indicatorId: 'flight_01_ground_stops', level: 'red' },
     ],
     optionalConditions: [
-      { indicatorId: 'delay_pct', level: 'amber' },
+      { indicatorId: 'flight_02_delay_pct', level: 'amber' },
     ],
     baseSeverity: 5,
     outcomeTemplate:
@@ -464,7 +464,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
     id: 'border-crisis',
     name: 'Border Processing Crisis',
     requiredConditions: [
-      { indicatorId: 'border_wait', level: 'red' },
+      { indicatorId: 'travel_02_border_wait', level: 'red' },
     ],
     optionalConditions: [
       { indicatorId: 'dhs_removal_expansion', level: 'amber' },

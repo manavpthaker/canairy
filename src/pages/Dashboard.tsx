@@ -19,12 +19,10 @@ import { DashboardLoader } from '../components/dashboard/DashboardLoader';
 import { ThreatBanner } from '../components/dashboard/ThreatBanner';
 import { WelcomeBanner } from '../components/dashboard/WelcomeBanner';
 import { LeadCard, LeadCardData } from '../components/dashboard/LeadCard';
-import { SecondaryCardsGrid, CompactRow, CompactRowData } from '../components/dashboard/SecondaryCard';
-import { AIInsightCard, AIAnalysisSummary } from '../components/dashboard/AIInsightCard';
+import { SecondaryCardsGrid, CompactRowData } from '../components/dashboard/SecondaryCard';
+import { AIAnalysisSummary } from '../components/dashboard/AIInsightCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { getDisplayName, getImpact, getAction } from '../data/indicatorTranslations';
-import { SIGNAL_CONTENT_BY_DOMAIN, SignalContent } from '../data/signalContent';
-import { SecondaryCardData } from '../components/dashboard/SecondaryCard';
 import { cn } from '../utils/cn';
 
 export const Dashboard: React.FC = () => {
@@ -36,7 +34,6 @@ export const Dashboard: React.FC = () => {
     loading,
     refreshAll,
     runSynthesis,
-    systemPhase,
   } = useStore();
 
   const synthesisCards = useStore(selectSynthesisCards);
@@ -62,96 +59,57 @@ export const Dashboard: React.FC = () => {
     const amberIndicators = indicators.filter(i => i.status.level === 'amber');
 
     let leadCard: LeadCardData | null = null;
-    const secondaryCards: SecondaryCardData[] = [];
 
-    // Group indicators by domain to find signal patterns
-    const domainGroups = [...redIndicators, ...amberIndicators].reduce((acc, ind) => {
-      if (!acc[ind.domain]) acc[ind.domain] = [];
-      acc[ind.domain].push(ind);
-      return acc;
-    }, {} as Record<string, typeof indicators>);
-
-    // Find the most severe domain for lead card
-    const sortedDomains = Object.entries(domainGroups)
-      .map(([domain, inds]) => ({
-        domain,
-        inds,
-        redCount: inds.filter(i => i.status.level === 'red').length,
-        amberCount: inds.filter(i => i.status.level === 'amber').length,
-        signalContent: SIGNAL_CONTENT_BY_DOMAIN[domain],
-      }))
-      .filter(d => d.signalContent) // Only domains with predefined content
-      .sort((a, b) => {
-        // Sort by red count first, then amber
-        if (b.redCount !== a.redCount) return b.redCount - a.redCount;
-        return b.amberCount - a.amberCount;
-      });
-
-    // Generate lead card from most severe domain
-    if (sortedDomains.length > 0) {
-      const lead = sortedDomains[0];
-      const hasRed = lead.redCount > 0;
+    if (redIndicators.length >= 2) {
+      const impacts = redIndicators.slice(0, 2).map(i => getImpact(i.id, 'red'));
       leadCard = {
-        id: `signal-${lead.domain}`,
-        category: lead.signalContent.category,
-        headline: lead.signalContent.headline,
-        body: lead.signalContent.body,
-        urgency: hasRed ? 'today' : 'week',
-        indicatorIds: lead.inds.map(i => i.id),
-        severity: hasRed ? 8 : 5,
-        actions: lead.signalContent.actions,
-        whyItMatters: lead.signalContent.whyItMatters,
-        timestamp: new Date().toISOString(),
-        action: { label: 'Open action plan', href: '/action-plan' },
+        id: 'fallback-action-protocol',
+        headline: 'Multiple signals need your attention',
+        whatsHappening: `Here's what I'm seeing: ${impacts.join('. ')} When multiple indicators go red at once, it's worth taking a closer look at your household's readiness.`,
+        whyItMatters: "Having cash, fuel, and supplies ready protects your family when things move quickly. This is a good time to make sure your basics are covered.",
+        whatToDo: "Review your action plan and check your supplies.",
+        actions: [
+          { id: 'fallback-1', text: 'Open your action plan and review top priorities', estimateMinutes: 10 },
+          { id: 'fallback-2', text: 'Check cash on hand and essential supplies', estimateMinutes: 15 },
+        ],
+        urgency: 'today',
+        indicatorIds: redIndicators.map(i => i.id),
+        severity: 9,
       };
-
-      // Generate secondary cards from other elevated domains
-      sortedDomains.slice(1, 5).forEach((d, idx) => {
-        const hasRedSec = d.redCount > 0;
-        secondaryCards.push({
-          id: `signal-secondary-${d.domain}`,
-          category: d.signalContent.category,
-          headline: d.signalContent.headline,
-          body: d.signalContent.body,
-          urgency: hasRedSec ? 'today' : (d.amberCount >= 2 ? 'week' : 'knowing'),
-          indicatorIds: d.inds.map(i => i.id),
-          actions: d.signalContent.actions,
-          whyItMatters: d.signalContent.whyItMatters,
-          timestamp: new Date().toISOString(),
-        });
-      });
-    } else if (redIndicators.length >= 1) {
-      // Fallback if no predefined signal content
+    } else if (redIndicators.length === 1) {
       const ind = redIndicators[0];
       const impact = getImpact(ind.id, 'red');
       const action = getAction(ind.id, 'red');
-      const domainLabel = DOMAIN_META[ind.domain]?.label || ind.domain;
       leadCard = {
         id: `fallback-${ind.id}`,
-        category: domainLabel.toUpperCase(),
         headline: action,
-        body: impact,
+        whatsHappening: `Here's what happened: ${impact}`,
+        whyItMatters: "When an indicator goes red, it's worth paying attention. This may affect your daily routine or require some preparation.",
+        whatToDo: "Review the action plan for this indicator.",
+        actions: [
+          { id: 'fallback-single-1', text: 'Review the recommended actions for this signal', estimateMinutes: 5 },
+        ],
         urgency: 'today',
         indicatorIds: [ind.id],
         severity: 7,
-        timestamp: new Date().toISOString(),
-        action: { label: 'View action plan', href: '/action-plan' },
       };
     } else if (amberIndicators.length >= 3) {
       const topIndicator = amberIndicators[0];
       const action = getAction(topIndicator.id, 'amber');
       const impact = getImpact(topIndicator.id, 'amber');
-      const domainLabel = DOMAIN_META[topIndicator.domain]?.label || topIndicator.domain;
       leadCard = {
         id: 'fallback-elevated',
-        category: domainLabel.toUpperCase(),
         headline: action,
-        body: `${impact}. Now is a good time to review your supplies and ensure everything is current.`,
+        whatsHappening: `Here's what I'm tracking: ${impact}. Several indicators are showing elevated readings right now.`,
+        whyItMatters: "Nothing urgent, but now is a good time to review your supplies and ensure everything is current. A little preparation goes a long way.",
+        whatToDo: "Take a few minutes to review your action plan.",
+        actions: [
+          { id: 'fallback-amber-1', text: 'Review your action plan and priorities', estimateMinutes: 10 },
+          { id: 'fallback-amber-2', text: 'Check that supplies and documents are current', estimateMinutes: 15 },
+        ],
         urgency: 'week',
         indicatorIds: amberIndicators.map(i => i.id),
         severity: 5,
-        timestamp: new Date().toISOString(),
-        action: { label: 'Review action plan', href: '/action-plan' },
       };
     }
 
@@ -162,10 +120,76 @@ export const Dashboard: React.FC = () => {
       href: `/indicators?highlight=${ind.id}`,
     }));
 
-    return { leadCard, secondaryCards, compactRows };
+    return { leadCard, secondaryCards: [], compactRows };
   };
 
-  const cards = synthesisCards || getFallbackCards();
+  // Convert AI insights to card format (prioritized)
+  const aiInsightToCard = (insight: typeof leadAIInsight): LeadCardData | null => {
+    if (!insight) return null;
+
+    const urgency: 'today' | 'week' | 'knowing' = insight.urgency;
+    const actions = insight.actionItems?.map((a, i) => ({
+      id: `${insight.id}-action-${i}`,
+      text: a.task,
+      estimateMinutes: a.effort === 'quick' ? 10 : a.effort === 'moderate' ? 30 : 60,
+    })) || [];
+
+    return {
+      id: insight.id,
+      headline: insight.headline,
+      whatsHappening: insight.situationBrief || insight.body,
+      whyItMatters: insight.reasoning?.familyImplication || "This may affect your household's daily routine.",
+      whatToDo: insight.actionItems?.[0]?.task || insight.reasoning?.recommendation || "Review your action plan.",
+      actions,
+      urgency,
+      indicatorIds: insight.domains,
+      severity: urgency === 'today' ? 8 : urgency === 'week' ? 5 : 3,
+      confidence: insight.confidence,
+      signalCount: insight.evidenceSources?.length,
+    };
+  };
+
+  // Combine AI insights with pattern-based synthesis for maximum coverage
+  const getCards = () => {
+    const aiCards: ReturnType<typeof aiInsightToCard>[] = [];
+    let leadCard = null;
+
+    // Get AI-generated cards if available
+    if (leadAIInsight) {
+      leadCard = aiInsightToCard(leadAIInsight);
+      aiCards.push(...secondaryAIInsights.map(aiInsightToCard).filter(Boolean));
+    }
+
+    // Get pattern-based synthesis cards
+    const patternCards = synthesisCards || getFallbackCards();
+
+    // If no AI lead card, use pattern-based lead
+    if (!leadCard && patternCards.leadCard) {
+      leadCard = patternCards.leadCard;
+    }
+
+    // Combine secondary cards from both sources, avoiding duplicates
+    const allSecondaryCards = [
+      ...aiCards,
+      ...(patternCards.secondaryCards || []),
+    ].filter(Boolean);
+
+    // Deduplicate by id (AI insights take priority)
+    const seenIds = new Set<string>();
+    const uniqueSecondaryCards = allSecondaryCards.filter(card => {
+      if (!card || seenIds.has(card.id)) return false;
+      seenIds.add(card.id);
+      return true;
+    });
+
+    return {
+      leadCard,
+      secondaryCards: uniqueSecondaryCards.slice(0, 8), // Show up to 8 secondary cards
+      compactRows: patternCards.compactRows || [],
+    };
+  };
+
+  const cards = getCards();
 
   return (
     <>
@@ -225,6 +249,31 @@ export const Dashboard: React.FC = () => {
                     )}
                     {cards.secondaryCards && cards.secondaryCards.length > 0 && (
                       <SecondaryCardsGrid cards={cards.secondaryCards.filter(Boolean) as any} />
+                    )}
+                    {/* Compact rows for additional signals */}
+                    {cards.compactRows && cards.compactRows.length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                        <h4 className="text-[11px] font-medium text-olive-tertiary uppercase tracking-wider mb-2">
+                          Also worth noting
+                        </h4>
+                        <div className="grid gap-1">
+                          {cards.compactRows.slice(0, 6).map((row, idx) => (
+                            <Link
+                              key={row.id}
+                              to={row.href || '/action-plan'}
+                              className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/[0.03] transition-colors group"
+                            >
+                              <span className="text-xs text-olive-muted font-mono w-4">{idx + 1}</span>
+                              <span className="text-sm text-olive-secondary group-hover:text-olive-primary flex-1">
+                                {row.text}
+                              </span>
+                              <span className="text-[10px] text-olive-muted capitalize">
+                                {row.domain.replace(/_/g, ' ')}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </motion.div>
@@ -314,8 +363,8 @@ export const Dashboard: React.FC = () => {
               </motion.div>
             </ErrorBoundary>
 
-            {/* ──── 5. LEGACY AI INSIGHTS (Collapsible) ──── */}
-            {aiAnalysis && aiAnalysis.insights.length > 0 && (
+            {/* ──── 5. DEEPER ANALYSIS (Hidden connections, phase relevance) ──── */}
+            {aiAnalysis && (aiAnalysis.hiddenConnections?.length > 0 || aiAnalysis.phaseRelevance) && (
               <ErrorBoundary isolate>
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -326,29 +375,17 @@ export const Dashboard: React.FC = () => {
                     onClick={() => setShowLegacyInsights(!showLegacyInsights)}
                     className="w-full flex items-center justify-between py-2 text-left text-xs font-medium text-olive-tertiary uppercase tracking-wider hover:text-olive-secondary transition-colors"
                   >
-                    <span>Additional Analysis</span>
+                    <span>Deeper Analysis</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${showLegacyInsights ? 'rotate-180' : ''}`} />
                   </button>
                   {showLegacyInsights && (
                     <div className="space-y-4 mt-2">
-                      {aiAnalysis.outcomeSentence && (
-                        <AIAnalysisSummary
-                          overallAssessment={aiAnalysis.outcomeSentence}
-                          hiddenConnections={aiAnalysis.hiddenConnections}
-                          familyFocusedSummary={aiAnalysis.familyFocusedSummary}
-                          phaseRelevance={aiAnalysis.phaseRelevance}
-                        />
-                      )}
-                      {leadAIInsight && (
-                        <AIInsightCard insight={leadAIInsight} variant="lead" />
-                      )}
-                      {secondaryAIInsights.length > 0 && (
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          {secondaryAIInsights.map((insight) => (
-                            <AIInsightCard key={insight.id} insight={insight} variant="secondary" />
-                          ))}
-                        </div>
-                      )}
+                      <AIAnalysisSummary
+                        overallAssessment={aiAnalysis.outcomeSentence}
+                        hiddenConnections={aiAnalysis.hiddenConnections}
+                        familyFocusedSummary={aiAnalysis.familyFocusedSummary}
+                        phaseRelevance={aiAnalysis.phaseRelevance}
+                      />
                     </div>
                   )}
                 </motion.div>
