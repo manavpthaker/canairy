@@ -23,6 +23,28 @@ import {
 import { useStore } from '../../store';
 import { Domain, DOMAIN_META } from '../../types';
 import { cn } from '../../utils/cn';
+import { Tooltip } from '../ui/Tooltip';
+
+// Domain descriptions for tooltips
+const DOMAIN_DESCRIPTIONS: Record<Domain, string> = {
+  economy: 'Treasury markets, inflation, and overall economic stability',
+  jobs_labor: 'Employment trends, layoffs, and labor market health',
+  rights_governance: 'Civil liberties, rule of law, and democratic institutions',
+  security_infrastructure: 'Critical infrastructure protection and cybersecurity',
+  oil_axis: 'Oil markets, OPEC dynamics, and energy geopolitics',
+  ai_window: 'AI development pace and regulatory landscape',
+  global_conflict: 'International tensions, military activity, and war risk',
+  domestic_control: 'Immigration enforcement, surveillance, and civil unrest',
+  supply_chain: 'Shipping, logistics, and supply disruptions',
+  energy: 'Power grid stability and energy supply',
+  social_cohesion: 'Social trust, political polarization, and community bonds',
+  water_infrastructure: 'Water supply and infrastructure reliability',
+  telecommunications: 'Communications networks and internet access',
+  housing_mortgage: 'Housing market and mortgage conditions',
+  travel_mobility: 'Travel restrictions and freedom of movement',
+  aviation: 'Air travel availability and disruptions',
+  cult_meta: 'Cultural trends and social sentiment indicators',
+};
 
 const DOMAIN_ICONS: Record<Domain, React.ComponentType<{ className?: string }>> = {
   economy: DollarSign,
@@ -91,19 +113,20 @@ export const DomainStatusList: React.FC = () => {
     <div className="space-y-0.5">
       {domainStatuses.map((status, index) => {
         const Icon = DOMAIN_ICONS[status.domain];
+        const description = DOMAIN_DESCRIPTIONS[status.domain];
 
         return (
-          <motion.button
-            key={status.domain}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.03 }}
-            onClick={() => handleDomainClick(status.domain)}
-            className={cn(
-              'flex items-center justify-between w-full py-2.5 px-2 rounded-lg',
-              'hover:bg-white/5 transition-colors cursor-pointer group'
-            )}
-          >
+          <Tooltip key={status.domain} content={description} side="left">
+            <motion.button
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.03 }}
+              onClick={() => handleDomainClick(status.domain)}
+              className={cn(
+                'flex items-center justify-between w-full py-2.5 px-2 rounded-lg',
+                'hover:bg-white/5 transition-colors cursor-pointer group'
+              )}
+            >
             <div className="flex items-center gap-2.5">
               <Icon className={cn(
                 'w-4 h-4',
@@ -145,7 +168,8 @@ export const DomainStatusList: React.FC = () => {
                 className="text-olive-muted opacity-0 group-hover:opacity-100 transition-opacity ml-1"
               />
             </div>
-          </motion.button>
+            </motion.button>
+          </Tooltip>
         );
       })}
     </div>

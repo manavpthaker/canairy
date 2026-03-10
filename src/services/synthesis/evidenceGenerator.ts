@@ -415,7 +415,7 @@ export function generateInsightCardWithEvidence(
     action: scored.pattern.actionTemplate
       ? {
           label: scored.pattern.actionTemplate,
-          href: scored.pattern.actionHref || '/checklist',
+          href: scored.pattern.actionHref || '/action-plan',
         }
       : undefined,
     confidence,

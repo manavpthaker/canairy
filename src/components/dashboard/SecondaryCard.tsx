@@ -73,6 +73,16 @@ export const SecondaryCard: React.FC<SecondaryCardProps> = ({ data, index = 0 })
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.25 + index * 0.05 }}
       onClick={() => setIsExpanded(!isExpanded)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setIsExpanded(!isExpanded);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-expanded={isExpanded}
+      aria-label={`${data.headline}. ${isExpanded ? 'Click to collapse' : 'Click to expand for details'}`}
       className="secondary-card p-4 cursor-pointer hover:bg-white/[0.02] transition-colors"
     >
       {/* Header: Urgency tag + expand indicator */}

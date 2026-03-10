@@ -91,6 +91,8 @@ export const ThreatBanner: React.FC = () => {
         {/* Header */}
         <button
           onClick={() => setExpanded(!expanded)}
+          aria-expanded={expanded}
+          aria-label={`${isHighPhase ? 'Time to Take Action' : 'Stay Alert'}: ${redCount > 0 ? `${redCount} conditions need attention` : `${amberCount} conditions worth watching`}. ${expanded ? 'Click to collapse' : 'Click to expand for actions'}`}
           className="w-full px-4 sm:px-6 py-4 flex items-center justify-between text-left"
         >
           <div className="flex items-center gap-3 flex-1 min-w-0">

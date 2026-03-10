@@ -150,8 +150,8 @@ export const Alerts: React.FC = () => {
             </Link>
           </div>
 
-          {/* Summary */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
+          {/* Summary with explanations */}
+          <div className="grid grid-cols-3 gap-3 mb-4">
             <GlassCard padding="sm" glow={criticalCount > 0 ? 'red' : 'none'} className="text-center">
               <div className="text-2xl font-bold text-red-400">{criticalCount}</div>
               <div className="text-xs text-white/25">Need action</div>
@@ -164,6 +164,19 @@ export const Alerts: React.FC = () => {
               <div className="text-2xl font-bold text-blue-400/60">{infoCount}</div>
               <div className="text-xs text-white/25">Watching</div>
             </GlassCard>
+          </div>
+
+          {/* Alert level explanations */}
+          <div className="text-xs text-white/30 mb-6 p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+            <p className="font-medium text-white/40 mb-1.5">How alert levels work:</p>
+            <div className="space-y-1">
+              <p><span className="text-red-400">Need action</span> — Something has crossed a critical threshold. Review the recommended actions.</p>
+              <p><span className="text-amber-400">Worth knowing</span> — A signal has changed enough to be noteworthy, but no immediate action needed.</p>
+              <p><span className="text-blue-400/60">Watching</span> — Elevated but stable. We're keeping an eye on it so you don't have to.</p>
+            </div>
+            {infoCount > 10 && (
+              <p className="mt-2 text-white/20 italic">{infoCount} signals at "Watching" level is typical during moderate uncertainty.</p>
+            )}
           </div>
 
           {/* Filter */}

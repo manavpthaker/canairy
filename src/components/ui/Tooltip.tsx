@@ -7,6 +7,7 @@ interface TooltipProps {
   side?: 'top' | 'right' | 'bottom' | 'left';
   children: React.ReactElement;
   className?: string;
+  wrapperClassName?: string;
 }
 
 export const Tooltip: React.FC<TooltipProps> = ({
@@ -14,6 +15,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
   side = 'right',
   children,
   className,
+  wrapperClassName,
 }) => {
   const [visible, setVisible] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -59,7 +61,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         ref={triggerRef}
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
-        className="inline-flex"
+        className={cn('inline-flex', wrapperClassName)}
       >
         {children}
       </div>

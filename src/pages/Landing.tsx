@@ -6,12 +6,13 @@ import {
   Shield,
   Activity,
   Bell,
-  Eye,
   TrendingUp,
   Zap,
-  Globe,
+  ShoppingCart,
   Database,
   Clock,
+  CheckCircle,
+  AlertTriangle,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'canairy_seen_landing';
@@ -33,22 +34,24 @@ export const Landing: React.FC = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-green-500/5 rounded-full blur-[120px] pointer-events-none" />
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="max-w-3xl w-full relative z-10 pt-12 sm:pt-16"
+        transition={{ duration: 0.3 }}
+        className="max-w-3xl w-full relative z-10 pt-8 sm:pt-12"
       >
         {/* Header */}
-        <div className="text-center mb-10">
-          {/* Logo / Icon */}
+        <div className="text-center mb-8">
+          {/* Logo / Icon - Canary bird silhouette */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.5 }}
-            className="mb-6"
+            transition={{ duration: 0.3 }}
+            className="mb-5"
           >
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/[0.08]">
-              <Eye className="w-8 h-8 text-green-400" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+              <svg viewBox="0 0 24 24" className="w-7 h-7 text-amber-400" fill="currentColor">
+                <path d="M12 3c-1.5 0-2.8.6-3.8 1.5C7.2 5.5 6.5 7 6.5 8.5c0 1 .3 2 .8 2.8L4 14.5c-.3.3-.3.8 0 1.1l2 2c.3.3.8.3 1.1 0l1.5-1.5c.5.2 1 .4 1.5.4 0 1.5.5 2.8 1.5 3.8s2.3 1.5 3.8 1.5c1.5 0 2.8-.5 3.8-1.5s1.5-2.3 1.5-3.8c0-1.5-.5-2.8-1.5-3.8-.6-.6-1.3-1-2.1-1.3.1-.3.2-.7.2-1 0-1.5-.6-2.8-1.5-3.8C15 3.5 13.5 3 12 3zm0 2c1 0 1.9.4 2.5 1.1.7.7 1 1.5 1 2.4 0 .4-.1.8-.2 1.2-.7-.2-1.4-.2-2.1-.2-.7 0-1.4.1-2 .3-.1-.4-.2-.8-.2-1.3 0-.9.4-1.7 1-2.4.6-.7 1.5-1.1 2-1.1zm2.5 6c.9 0 1.7.4 2.4 1 .6.7 1 1.5 1 2.5s-.4 1.8-1 2.5c-.7.6-1.5 1-2.4 1-.9 0-1.8-.4-2.4-1-.7-.7-1-1.5-1-2.5s.4-1.8 1-2.5c.6-.6 1.5-1 2.4-1zm.5 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
+              </svg>
             </div>
           </motion.div>
 
@@ -56,53 +59,53 @@ export const Landing: React.FC = () => {
           <motion.h1
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-4xl sm:text-5xl font-display font-bold text-white mb-4 tracking-tight"
+            transition={{ delay: 0.1 }}
+            className="text-4xl sm:text-5xl font-display font-bold text-white mb-3 tracking-tight"
           >
             Canairy
           </motion.h1>
 
-          {/* Tagline */}
+          {/* Tagline - Family-centric, not doomsday */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-lg sm:text-xl text-white/50 leading-relaxed max-w-xl mx-auto"
+            transition={{ delay: 0.15 }}
+            className="text-lg sm:text-xl text-white/60 leading-relaxed max-w-lg mx-auto"
           >
-            A free, open monitoring dashboard that tracks early warning signs of societal disruption.
-            <span className="block mt-2 text-white/70">Like a canary in a coal mine — for the modern world.</span>
+            Your family's early warning system.
+            <span className="block mt-2 text-white/40">We watch 35+ economic and safety signals so you don't have to — and tell you exactly what to do about them.</span>
           </motion.p>
         </div>
 
-        {/* What This Is */}
+        {/* What We Track - Parent-friendly language */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 mb-6"
+          transition={{ delay: 0.2 }}
+          className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 mb-5"
         >
           <h2 className="text-sm font-medium text-white/40 uppercase tracking-wider mb-4">
-            What This Dashboard Tracks
+            What We Watch For You
           </h2>
 
           <div className="grid sm:grid-cols-3 gap-4">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-4 h-4 text-blue-400" />
+                <ShoppingCart className="w-4 h-4 text-blue-400" />
               </div>
               <div>
-                <p className="text-white font-medium text-sm">Economic Signals</p>
-                <p className="text-white/40 text-xs mt-0.5">Treasury auctions, inflation, currency shifts, supply chains</p>
+                <p className="text-white font-medium text-sm">Your Wallet</p>
+                <p className="text-white/40 text-xs mt-0.5">Grocery prices, job market, cost of living, your 401k</p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                <Globe className="w-4 h-4 text-amber-400" />
+                <TrendingUp className="w-4 h-4 text-amber-400" />
               </div>
               <div>
-                <p className="text-white font-medium text-sm">Geopolitical Risks</p>
-                <p className="text-white/40 text-xs mt-0.5">Conflict zones, shipping lanes, trade tensions, sanctions</p>
+                <p className="text-white font-medium text-sm">Supply & Shortages</p>
+                <p className="text-white/40 text-xs mt-0.5">Things that could affect what's on shelves or at the pump</p>
               </div>
             </div>
 
@@ -111,8 +114,44 @@ export const Landing: React.FC = () => {
                 <Zap className="w-4 h-4 text-red-400" />
               </div>
               <div>
-                <p className="text-white font-medium text-sm">Infrastructure</p>
-                <p className="text-white/40 text-xs mt-0.5">Power grid, cyber threats, communications, fuel supply</p>
+                <p className="text-white font-medium text-sm">Keeping Things Running</p>
+                <p className="text-white/40 text-xs mt-0.5">Power grid, internet, travel, the stuff daily life depends on</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Sample Dashboard Preview */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 mb-5"
+        >
+          <h2 className="text-sm font-medium text-white/40 uppercase tracking-wider mb-3">
+            Here's What Families Are Doing This Week
+          </h2>
+
+          <div className="space-y-2">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-white text-sm">Stock 2 weeks of shelf-stable essentials at current prices</p>
+                <p className="text-white/30 text-xs mt-0.5">Grocery prices up 4% this quarter</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+              <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-white text-sm">Update passwords on banking and email — enable 2FA</p>
+                <p className="text-white/30 text-xs mt-0.5">Elevated cyber activity detected</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+              <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-white text-sm">Check your 401k allocation — history shows staying the course wins</p>
+                <p className="text-white/30 text-xs mt-0.5">Market volatility elevated but within normal range</p>
               </div>
             </div>
           </div>
@@ -122,94 +161,95 @@ export const Landing: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 mb-6"
+          transition={{ delay: 0.3 }}
+          className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 mb-5"
         >
           <h2 className="text-sm font-medium text-white/40 uppercase tracking-wider mb-4">
-            What You'll Find Inside
+            How It Works
           </h2>
 
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
               <Activity className="w-4 h-4 text-green-400 flex-shrink-0" />
               <span className="text-white/70">
-                <span className="text-white font-medium">35+ live indicators</span> — pulled from government APIs, financial data providers, and official sources
+                <span className="text-white font-medium">35+ live indicators</span> — pulled from official government and financial sources
               </span>
             </div>
 
             <div className="flex items-center gap-3 text-sm">
               <Bell className="w-4 h-4 text-amber-400 flex-shrink-0" />
               <span className="text-white/70">
-                <span className="text-white font-medium">Simple status levels</span> — Green (normal), Amber (elevated), Red (action needed)
+                <span className="text-white font-medium">Green / Amber / Red</span> — instantly see what needs attention
               </span>
             </div>
 
             <div className="flex items-center gap-3 text-sm">
               <Shield className="w-4 h-4 text-blue-400 flex-shrink-0" />
               <span className="text-white/70">
-                <span className="text-white font-medium">Practical action checklists</span> — concrete steps families can take at each alert level
+                <span className="text-white font-medium">Weekly action plans</span> — specific steps, not vague warnings
               </span>
             </div>
 
             <div className="flex items-center gap-3 text-sm">
               <Database className="w-4 h-4 text-purple-400 flex-shrink-0" />
               <span className="text-white/70">
-                <span className="text-white font-medium">Transparent sources</span> — every data point links to its official source
+                <span className="text-white font-medium">Transparent sources</span> — every data point links to its origin
               </span>
             </div>
 
             <div className="flex items-center gap-3 text-sm">
               <Clock className="w-4 h-4 text-cyan-400 flex-shrink-0" />
               <span className="text-white/70">
-                <span className="text-white font-medium">Real-time updates</span> — data refreshes automatically, no manual checking required
+                <span className="text-white font-medium">2-minute weekly check-in</span> — updates automatically
               </span>
             </div>
           </div>
         </motion.div>
 
-        {/* Philosophy */}
+        {/* Founder note - attributed, human */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55 }}
-          className="text-center mb-8 px-4"
+          transition={{ delay: 0.35 }}
+          className="text-center mb-6 px-4"
         >
-          <p className="text-white/30 text-sm italic">
-            "Most people don't track macroeconomic signals or geopolitical developments — and they shouldn't have to.
-            This dashboard does the monitoring, so families can focus on living their lives until something actually needs attention."
+          <p className="text-white/40 text-sm italic leading-relaxed">
+            "I built this because I was spending hours each week trying to figure out what the news meant for my family.
+            I figured other parents might want the same shortcut."
           </p>
+          <p className="text-white/25 text-xs mt-2">— The Canairy Team</p>
         </motion.div>
 
-        {/* CTA */}
+        {/* CTA - Benefit-centric */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.4 }}
           className="text-center"
         >
           <button
             onClick={handleEnter}
-            className="group inline-flex items-center gap-3 px-8 py-4 bg-white text-[#09090B] rounded-xl font-medium text-lg hover:bg-white/90 transition-all"
+            className="group inline-flex items-center gap-3 px-8 py-4 bg-amber-400 text-[#09090B] rounded-xl font-medium text-lg hover:bg-amber-300 transition-all"
           >
-            <span>Enter the Dashboard</span>
+            <span>See this week's action plan</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
 
-          <p className="mt-4 text-xs text-white/25">
+          <p className="mt-4 text-xs text-white/30">
             Free and open source. No account required. No data collection.
           </p>
         </motion.div>
       </motion.div>
 
-      {/* Bottom attribution */}
+      {/* Bottom - Social proof instead of defensive tagline */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-        className="mt-auto pt-12 pb-6 text-center"
+        transition={{ delay: 0.5 }}
+        className="mt-auto pt-10 pb-6 text-center"
       >
-        <p className="text-xs text-white/15">
-          Preparedness isn't paranoia — it's peace of mind.
+        <p className="text-xs text-white/20">
+          Smart families plan ahead.
         </p>
       </motion.div>
     </div>
