@@ -13,6 +13,7 @@ import {
   Clock,
   CheckCircle,
   AlertTriangle,
+  Bird,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'canairy_seen_landing';
@@ -41,7 +42,7 @@ export const Landing: React.FC = () => {
       >
         {/* Header */}
         <div className="text-center mb-8">
-          {/* Logo / Icon - Canary bird silhouette */}
+          {/* Logo / Icon - Canary bird */}
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -49,9 +50,7 @@ export const Landing: React.FC = () => {
             className="mb-5"
           >
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-              <svg viewBox="0 0 24 24" className="w-7 h-7 text-amber-400" fill="currentColor">
-                <path d="M12 3c-1.5 0-2.8.6-3.8 1.5C7.2 5.5 6.5 7 6.5 8.5c0 1 .3 2 .8 2.8L4 14.5c-.3.3-.3.8 0 1.1l2 2c.3.3.8.3 1.1 0l1.5-1.5c.5.2 1 .4 1.5.4 0 1.5.5 2.8 1.5 3.8s2.3 1.5 3.8 1.5c1.5 0 2.8-.5 3.8-1.5s1.5-2.3 1.5-3.8c0-1.5-.5-2.8-1.5-3.8-.6-.6-1.3-1-2.1-1.3.1-.3.2-.7.2-1 0-1.5-.6-2.8-1.5-3.8C15 3.5 13.5 3 12 3zm0 2c1 0 1.9.4 2.5 1.1.7.7 1 1.5 1 2.4 0 .4-.1.8-.2 1.2-.7-.2-1.4-.2-2.1-.2-.7 0-1.4.1-2 .3-.1-.4-.2-.8-.2-1.3 0-.9.4-1.7 1-2.4.6-.7 1.5-1.1 2-1.1zm2.5 6c.9 0 1.7.4 2.4 1 .6.7 1 1.5 1 2.5s-.4 1.8-1 2.5c-.7.6-1.5 1-2.4 1-.9 0-1.8-.4-2.4-1-.7-.7-1-1.5-1-2.5s.4-1.8 1-2.5c.6-.6 1.5-1 2.4-1zm.5 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
-              </svg>
+              <Bird className="w-7 h-7 text-amber-400" />
             </div>
           </motion.div>
 
