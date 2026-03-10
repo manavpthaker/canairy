@@ -8,10 +8,11 @@
  * 4. Also monitoring (low priority tracking with detail)
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { RefreshCw, Eye, ChevronDown, ChevronRight } from 'lucide-react';
+import { RefreshCw, Eye, ChevronDown, ChevronRight, Clock } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 import { useStore, selectSynthesisCards, selectAIInsights, selectLeadAIInsight, selectSecondaryAIInsights } from '../store';
 import { IndicatorData, DOMAIN_META } from '../types';
 import { IndicatorModal } from '../components/indicators/IndicatorModal';
@@ -22,6 +23,7 @@ import { LeadCard, LeadCardData } from '../components/dashboard/LeadCard';
 import { SecondaryCardsGrid, CompactRowData } from '../components/dashboard/SecondaryCard';
 import { AIAnalysisSummary } from '../components/dashboard/AIInsightCard';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { DataSourceBanner } from '../components/common/DataSourceBanner';
 import { getDisplayName, getImpact, getAction } from '../data/indicatorTranslations';
 import { cn } from '../utils/cn';
 
@@ -32,9 +34,18 @@ export const Dashboard: React.FC = () => {
   const {
     indicators,
     loading,
+    usingFallbackData,
     refreshAll,
     runSynthesis,
   } = useStore();
+
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    await refreshAll();
+    setIsRetrying(false);
+  };
 
   const synthesisCards = useStore(selectSynthesisCards);
   const aiAnalysis = useStore(selectAIInsights);
@@ -45,6 +56,15 @@ export const Dashboard: React.FC = () => {
   const redCount = indicators.filter(i => i.status.level === 'red').length;
   const amberCount = indicators.filter(i => i.status.level === 'amber').length;
   const elevatedCount = redCount + amberCount;
+
+  // Calculate last update time from indicators
+  const lastUpdate = useMemo(() => {
+    if (indicators.length === 0) return null;
+    const mostRecent = indicators.reduce((latest, ind) =>
+      new Date(ind.status.lastUpdate) > new Date(latest.status.lastUpdate) ? ind : latest
+    );
+    return mostRecent.status.lastUpdate;
+  }, [indicators]);
 
   // Run synthesis when indicators change
   useEffect(() => {
@@ -225,6 +245,24 @@ export const Dashboard: React.FC = () => {
               <WelcomeBanner />
             </ErrorBoundary>
 
+            {/* ──── DATA SOURCE WARNING (when using fallback data) ──── */}
+            <DataSourceBanner
+              isUsingFallback={usingFallbackData}
+              onRetry={handleRetry}
+              isRetrying={isRetrying}
+            />
+
+            {/* ──── DATA FRESHNESS INDICATOR ──── */}
+            {lastUpdate && (
+              <div className="flex items-center justify-end gap-1.5 text-xs text-olive-muted -mt-2 mb-2">
+                <Clock className="w-3 h-3" />
+                <span>
+                  Last updated: {formatDistanceToNow(new Date(lastUpdate), { addSuffix: true })}
+                  {usingFallbackData && <span className="text-amber-400 ml-1">· Using cached data</span>}
+                </span>
+              </div>
+            )}
+
             {/* ──── 2. THREAT/PHASE BANNER (main CTA with actions) ──── */}
             <ErrorBoundary isolate>
               <ThreatBanner />
@@ -253,9 +291,12 @@ export const Dashboard: React.FC = () => {
                     {/* Compact rows for additional signals */}
                     {cards.compactRows && cards.compactRows.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                        <h4 className="text-[11px] font-medium text-olive-tertiary uppercase tracking-wider mb-2">
+                        <h4 className="text-[11px] font-medium text-olive-tertiary uppercase tracking-wider mb-1">
                           Also worth noting
                         </h4>
+                        <p className="text-[10px] text-olive-muted mb-3">
+                          Additional recommendations based on current conditions — important but not as time-sensitive.
+                        </p>
                         <div className="grid gap-1">
                           {cards.compactRows.slice(0, 6).map((row, idx) => (
                             <Link
@@ -373,10 +414,13 @@ export const Dashboard: React.FC = () => {
                 >
                   <button
                     onClick={() => setShowLegacyInsights(!showLegacyInsights)}
-                    className="w-full flex items-center justify-between py-2 text-left text-xs font-medium text-olive-tertiary uppercase tracking-wider hover:text-olive-secondary transition-colors"
+                    className="w-full flex items-center justify-between py-2 text-left hover:text-olive-secondary transition-colors"
                   >
-                    <span>Deeper Analysis</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${showLegacyInsights ? 'rotate-180' : ''}`} />
+                    <div>
+                      <span className="text-xs font-medium text-olive-tertiary uppercase tracking-wider">Deeper Analysis</span>
+                      <p className="text-[10px] text-olive-muted mt-0.5">AI-generated briefing connecting current signals</p>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 text-olive-tertiary transition-transform ${showLegacyInsights ? 'rotate-180' : ''}`} />
                   </button>
                   {showLegacyInsights && (
                     <div className="space-y-4 mt-2">

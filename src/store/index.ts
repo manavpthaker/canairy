@@ -36,6 +36,8 @@ interface AppState {
   // UI State
   loading: boolean;
   error: string | null;
+  usingFallbackData: boolean;  // True when API failed and using mock data
+  lastSuccessfulFetch: Date | null;  // Last time live data was fetched
   selectedIndicator: string | null;
   sidebarOpen: boolean;
   timeRange: '24h' | '7d' | '30d' | '90d';
@@ -79,6 +81,8 @@ export const useStore = create<AppState>()(
       aiAnalysisLoading: false,
       loading: false,
       error: null,
+      usingFallbackData: false,
+      lastSuccessfulFetch: null,
       selectedIndicator: null,
       sidebarOpen: true,
       timeRange: '7d',
@@ -88,26 +92,37 @@ export const useStore = create<AppState>()(
       fetchIndicators: async () => {
         set({ loading: true, error: null });
         try {
-          const indicators = await apiService.getIndicators();
-          set({ indicators, loading: false });
+          const response = await apiService.getIndicators();
+          set({
+            indicators: response.data,
+            loading: false,
+            usingFallbackData: response.isUsingFallback,
+            lastSuccessfulFetch: response.lastSuccessfulFetch || null
+          });
         } catch (error) {
-          set({ 
-            error: 'Failed to fetch indicators', 
-            loading: false 
+          set({
+            error: 'Failed to fetch indicators',
+            loading: false,
+            usingFallbackData: true
           });
         }
       },
 
       fetchHOPIScore: async () => {
         try {
-          const hopiScore = await apiService.getHOPIScore();
+          const hopiResponse = await apiService.getHOPIScore();
           const currentPhase = await apiService.getCurrentPhase();
 
           // Calculate system phase using centralized logic
-          const { indicators } = get();
+          const { indicators, usingFallbackData } = get();
           const systemPhase = computeSystemPhase(indicators);
 
-          set({ hopiScore, currentPhase, systemPhase });
+          set({
+            hopiScore: hopiResponse.data,
+            currentPhase,
+            systemPhase,
+            usingFallbackData: usingFallbackData || hopiResponse.isUsingFallback
+          });
         } catch (error) {
           console.error('Failed to fetch HOPI score:', error);
         }

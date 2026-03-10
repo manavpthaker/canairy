@@ -17,6 +17,7 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import { RightSidebar } from './RightSidebar';
 import { CardDetailPanel } from '../dashboard/CardDetailPanel';
 import { Tooltip } from '../ui/Tooltip';
+import { HelpPanel } from '../common/HelpPanel';
 import { generateInsightCardWithEvidence } from '../../services/synthesis/evidenceGenerator';
 import { cn } from '../../utils/cn';
 
@@ -121,52 +122,44 @@ export const AppShell: React.FC = () => {
                 const active = isActive(item.path);
                 const showBadge = item.path === '/action-plan' && redCount > 0;
 
-                const navLink = (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setShowMobileNav(false)}
-                    className={cn(
-                      'flex items-center gap-3 rounded-lg transition-all duration-200 relative group',
-                      // Desktop: icon-only centered, 40x40
-                      'lg:justify-center lg:w-10 lg:h-10',
-                      // Mobile: full width with label
-                      'w-full px-3 py-2.5 lg:px-0 lg:py-0',
-                      active
-                        ? 'text-amber-400 bg-amber-400/10'
-                        : 'text-olive-tertiary hover:text-olive-primary hover:bg-white/5'
-                    )}
-                  >
-                    {/* Active indicator: 3px left border pill */}
-                    {active && (
-                      <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-amber-400 lg:block hidden" />
-                    )}
-                    <item.icon className="w-5 h-5 flex-shrink-0" />
-                    <span className="lg:hidden flex-1">{item.label}</span>
-                    {showBadge && (
-                      <span className={cn(
-                        'flex items-center justify-center text-2xs bg-red-500/20 text-red-400 rounded-md font-medium',
-                        'lg:absolute lg:-top-0.5 lg:-right-0.5 lg:w-4 lg:h-4 lg:text-[10px]',
-                        'w-5 h-5'
-                      )}>
-                        {redCount}
-                      </span>
-                    )}
-                  </Link>
-                );
-
-                // Wrap with tooltip only on desktop
+                // Single link element - tooltip shown on desktop via CSS
                 return (
-                  <div key={item.path} className="w-full lg:w-auto">
-                    <div className="hidden lg:block">
-                      <Tooltip content={item.label} side="right">
-                        {navLink}
-                      </Tooltip>
-                    </div>
-                    <div className="lg:hidden">
-                      {navLink}
-                    </div>
-                  </div>
+                  <Tooltip key={item.path} content={item.label} side="right" wrapperClassName="w-full lg:w-auto">
+                    <Link
+                      to={item.path}
+                      onClick={() => setShowMobileNav(false)}
+                      aria-label={item.label}
+                      aria-current={active ? 'page' : undefined}
+                      className={cn(
+                        'flex items-center gap-3 rounded-lg transition-all duration-200 relative group',
+                        // Desktop: icon-only centered, 40x40
+                        'lg:justify-center lg:w-10 lg:h-10',
+                        // Mobile: full width with label
+                        'w-full px-3 py-2.5 lg:px-0 lg:py-0',
+                        active
+                          ? 'text-amber-400 bg-amber-400/10'
+                          : 'text-olive-secondary hover:text-olive-primary hover:bg-white/5'
+                      )}
+                    >
+                      {/* Active indicator: 3px left border pill */}
+                      {active && (
+                        <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-amber-400 lg:block hidden" />
+                      )}
+                      <item.icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+                      <span className="lg:hidden flex-1">{item.label}</span>
+                      {showBadge && (
+                        <span className={cn(
+                          'flex items-center justify-center text-2xs bg-red-500/20 text-red-400 rounded-md font-medium',
+                          'lg:absolute lg:-top-0.5 lg:-right-0.5 lg:w-4 lg:h-4 lg:text-[10px]',
+                          'w-5 h-5'
+                        )}
+                        aria-label={`${redCount} alerts`}
+                        >
+                          {redCount}
+                        </span>
+                      )}
+                    </Link>
+                  </Tooltip>
                 );
               })}
             </div>
@@ -200,13 +193,16 @@ export const AppShell: React.FC = () => {
       )}>
         {/* Desktop Header with Logo */}
         <header className="hidden lg:flex items-center justify-between px-8 py-4 border-b border-olive/50">
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <span className="text-lg font-display font-bold text-olive-primary">
+          <Link to="/dashboard" className="flex items-center gap-2" aria-label="Canairy - Go to Dashboard">
+            <span className="text-lg font-display font-bold text-olive-primary" aria-hidden="true">
               Can<span className="text-amber-400">ai</span>ry
             </span>
           </Link>
-          <div className="text-xs text-olive-muted">
-            Household Resilience Monitor
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-olive-muted">
+              Household Resilience Monitor
+            </span>
+            <HelpPanel />
           </div>
         </header>
 

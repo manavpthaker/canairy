@@ -91,6 +91,16 @@ export const LeadCard: React.FC<LeadCardProps> = ({ data, isSelected }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
       onClick={() => setIsExpanded(!isExpanded)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setIsExpanded(!isExpanded);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-expanded={isExpanded}
+      aria-label={`${data.headline}. ${isExpanded ? 'Click to collapse' : 'Click to expand for details'}`}
       className={cn(
         'lead-card p-5 cursor-pointer hover:bg-white/[0.02] transition-colors',
         data.urgency === 'today' && 'lead-card-red',

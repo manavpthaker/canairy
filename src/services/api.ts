@@ -26,21 +26,32 @@ api.interceptors.response.use(
   }
 );
 
+// Response type that indicates if fallback data is being used
+export interface ApiResponse<T> {
+  data: T;
+  isUsingFallback: boolean;
+  lastSuccessfulFetch?: Date;
+}
+
 export const apiService = {
   // Indicators
-  async getIndicators(): Promise<IndicatorData[]> {
+  async getIndicators(): Promise<ApiResponse<IndicatorData[]>> {
     if (USE_MOCK_DATA) {
-      return mockIndicators;
+      return { data: mockIndicators, isUsingFallback: true };
     }
 
     try {
       const { data } = await api.get('/indicators/');
       // Handle both array and {indicators: []} response formats
       const indicators = Array.isArray(data) ? data : data.indicators;
-      return indicators || mockIndicators;
+      return {
+        data: indicators || mockIndicators,
+        isUsingFallback: !indicators || indicators.length === 0,
+        lastSuccessfulFetch: new Date()
+      };
     } catch (error) {
       console.log('Using mock indicators due to API error');
-      return mockIndicators;
+      return { data: mockIndicators, isUsingFallback: true };
     }
   },
 
@@ -57,18 +68,18 @@ export const apiService = {
   },
 
   // HOPI Score and Phases
-  async getHOPIScore(): Promise<HOPIScore> {
+  async getHOPIScore(): Promise<ApiResponse<HOPIScore>> {
     if (USE_MOCK_DATA) {
-      return mockHOPIScore;
+      return { data: mockHOPIScore, isUsingFallback: true };
     }
 
     try {
       // Note: HOPI endpoint is at root level, not /v1/
       const { data } = await axios.get('http://localhost:5555/api/v1/hopi');
-      return data;
+      return { data, isUsingFallback: false, lastSuccessfulFetch: new Date() };
     } catch (error) {
       console.log('Using mock HOPI score due to API error');
-      return mockHOPIScore;
+      return { data: mockHOPIScore, isUsingFallback: true };
     }
   },
 

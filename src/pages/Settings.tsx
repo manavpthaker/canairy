@@ -14,6 +14,12 @@ import {
   Clock,
   Wifi,
   WifiOff,
+  Info,
+  HelpCircle,
+  ExternalLink,
+  BookOpen,
+  Shield,
+  MessageCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../store';
@@ -452,6 +458,87 @@ export const Settings: React.FC = () => {
                 {systemStatus?.activeAlerts ?? '—'}
               </span>
             </div>
+          </div>
+        </Section>
+
+        {/* ── About Canairy ── */}
+        <Section title="About Canairy" icon={Info} defaultOpen={false}>
+          <div className="space-y-4">
+            <p className="text-sm text-white/50 leading-relaxed">
+              Canairy is a free, open-source household resilience monitor. We track 35+ public data sources —
+              government APIs, financial data, infrastructure reports — and translate them into simple,
+              actionable recommendations for your family.
+            </p>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between px-3 py-2 bg-white/[0.03] rounded-lg">
+                <span className="text-sm text-white/30">Version</span>
+                <span className="text-sm text-white/50 font-mono">1.0.0</span>
+              </div>
+              <div className="flex items-center justify-between px-3 py-2 bg-white/[0.03] rounded-lg">
+                <span className="text-sm text-white/30">Indicators tracked</span>
+                <span className="text-sm text-white/50">{totalCount}</span>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+              <p className="text-xs text-amber-200/70 leading-relaxed">
+                <strong className="text-amber-300">Built by parents, for parents.</strong> We created Canairy because
+                we were tired of doomscrolling the news trying to figure out what it meant for our families. Now we check
+                once a week and know exactly what to do.
+              </p>
+            </div>
+          </div>
+        </Section>
+
+        {/* ── Help & Learning ── */}
+        <Section title="Help & Learning" icon={HelpCircle} defaultOpen={false}>
+          <div className="space-y-3">
+            <Link
+              to="/action-plan#how-it-works"
+              className="flex items-center gap-3 px-3 py-3 bg-white/[0.03] rounded-lg hover:bg-white/[0.06] transition-colors"
+            >
+              <BookOpen className="w-5 h-5 text-amber-400" />
+              <div className="flex-1">
+                <p className="text-sm text-white/70">How Canairy works</p>
+                <p className="text-xs text-white/30">Learn about our methodology and data sources</p>
+              </div>
+              <ExternalLink className="w-4 h-4 text-white/20" />
+            </Link>
+
+            <div className="flex items-center gap-3 px-3 py-3 bg-white/[0.03] rounded-lg">
+              <Shield className="w-5 h-5 text-green-400" />
+              <div className="flex-1">
+                <p className="text-sm text-white/70">What do the colors mean?</p>
+                <p className="text-xs text-white/30">
+                  <span className="text-emerald-400">Green</span> = normal,{' '}
+                  <span className="text-amber-400">Amber</span> = watch,{' '}
+                  <span className="text-red-400">Red</span> = act
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 px-3 py-3 bg-white/[0.03] rounded-lg">
+              <Clock className="w-5 h-5 text-blue-400" />
+              <div className="flex-1">
+                <p className="text-sm text-white/70">How often should I check?</p>
+                <p className="text-xs text-white/30">Most families check weekly. We'll alert you if something needs attention sooner.</p>
+              </div>
+            </div>
+
+            <a
+              href="https://github.com/canairy/canairy/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 px-3 py-3 bg-white/[0.03] rounded-lg hover:bg-white/[0.06] transition-colors"
+            >
+              <MessageCircle className="w-5 h-5 text-purple-400" />
+              <div className="flex-1">
+                <p className="text-sm text-white/70">Give feedback</p>
+                <p className="text-xs text-white/30">Report issues or suggest improvements</p>
+              </div>
+              <ExternalLink className="w-4 h-4 text-white/20" />
+            </a>
           </div>
         </Section>
 

@@ -60,7 +60,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Markets are swinging 2-3% daily — more than usual. Your 401k balance may fluctuate, but history shows staying the course beats panic selling.',
     headlineTemplate: 'Hold steady on investments this week',
     actionTemplate: 'Review portfolio allocation',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['economy'],
   },
   {
@@ -74,7 +74,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Grocery prices are up 5-8% from last quarter. Your weekly food bill will be $20-40 higher. Stocking up now locks in today\'s prices.',
     headlineTemplate: 'Stock up on essentials this week',
     actionTemplate: 'Add shelf-stable staples',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['economy'],
   },
   {
@@ -92,7 +92,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Markets are volatile and prices are climbing — a combination that often precedes economic slowdowns. Having 2-4 weeks of cash on hand provides security if ATMs or cards have issues.',
     headlineTemplate: 'Build your cash cushion this week',
     actionTemplate: 'Withdraw 2 weeks cash',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['economy'],
   },
   // ──────────────────────────────────────────────────────────────────────────────
@@ -109,7 +109,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Military activity near Taiwan has increased 40% this month. If tensions escalate, chip shortages could affect phones, laptops, and vehicles within weeks.',
     headlineTemplate: 'Order electronics before potential delays',
     actionTemplate: 'Review electronics needs',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['global_conflict'],
   },
   {
@@ -123,7 +123,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'State Department has issued new travel advisories for 3 regions. No direct domestic impact expected right now, but having your family\'s emergency plan fresh in everyone\'s mind matters.',
     headlineTemplate: 'Review your family emergency plan this week',
     actionTemplate: 'Confirm rally points with family',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['global_conflict'],
   },
   // ──────────────────────────────────────────────────────────────────────────────
@@ -140,7 +140,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'DHS has expanded enforcement operations to 4 additional cities this week. If your community could be affected, ensure everyone knows their rights and has emergency contacts ready.',
     headlineTemplate: 'Know your rights this week',
     actionTemplate: 'Share know-your-rights info',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['domestic_control'],
   },
   {
@@ -171,7 +171,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Major oil exporters are shifting away from dollar settlements. This could affect fuel prices 10-20% over the next quarter. Keeping your tank above half-full is good practice.',
     headlineTemplate: 'Keep fuel tanks topped off this month',
     actionTemplate: 'Fill vehicle tanks',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['oil_axis', 'energy'],
   },
   // ──────────────────────────────────────────────────────────────────────────────
@@ -191,7 +191,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'CISA is warning about 4 actively exploited software vulnerabilities this week. Update your phone, computer, and router. If you haven\'t changed passwords in 6 months, now is the time.',
     headlineTemplate: 'Update devices and passwords today',
     actionTemplate: 'Run all updates now',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['security_infrastructure'],
   },
   // ──────────────────────────────────────────────────────────────────────────────
@@ -208,7 +208,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Multiple banks are showing signs of stress similar to 2008. ATMs and card payments could be disrupted. Withdraw $500+ in small bills today — this is your financial go-bag.',
     headlineTemplate: 'Protect your deposits today',
     actionTemplate: 'Withdraw emergency cash',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     historicalPrecedent: '2008 financial crisis, 2023 SVB collapse',
     domains: ['economy'],
   },
@@ -223,7 +223,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Extreme market volatility. Circuit breakers may trigger. Avoid panic selling.',
     headlineTemplate: 'Markets in turmoil',
     actionTemplate: 'Screenshot all balances',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['economy'],
   },
 
@@ -244,7 +244,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Power grid under stress. Rolling blackouts possible. Charge devices and prepare backup power.',
     headlineTemplate: 'Power grid reliability concerns',
     actionTemplate: 'Charge all power banks and batteries',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     historicalPrecedent: 'Texas 2021 freeze, California rolling blackouts',
     domains: ['energy', 'security_infrastructure'],
   },
@@ -263,7 +263,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Strategic reserves depleted and supply chains stressed. Fuel prices may spike 30-50%.',
     headlineTemplate: 'Fuel supply under pressure',
     actionTemplate: 'Fill all vehicle fuel tanks',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['energy', 'oil_axis'],
   },
   {
@@ -277,7 +277,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Natural gas storage below normal. Heating costs may increase significantly this winter.',
     headlineTemplate: 'Natural gas supplies tight',
     actionTemplate: 'Review heating alternatives',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['energy'],
   },
 
@@ -296,7 +296,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Major port congestion causing delays. Essential goods may be scarce for 4-8 weeks.',
     headlineTemplate: 'Supply chain bottlenecks forming',
     actionTemplate: 'Stock essential supplies now',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     historicalPrecedent: '2021 port congestion crisis',
     domains: ['supply_chain'],
   },
@@ -330,7 +330,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Critical infrastructure under cyber attack. Banking, utilities, and communications may be affected.',
     headlineTemplate: 'Cyber threat to critical infrastructure',
     actionTemplate: 'Test offline communications',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     historicalPrecedent: 'Colonial Pipeline 2021, SolarWinds 2020',
     domains: ['security_infrastructure'],
   },
@@ -348,7 +348,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Elevated protest activity in major metros. Avoid affected areas and review family meeting points.',
     headlineTemplate: 'Civil unrest elevated',
     actionTemplate: 'Review family meeting locations',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['domestic_control', 'security_infrastructure'],
   },
 
@@ -369,7 +369,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Military activity in Taiwan Strait elevated. Global chip supply at risk. Major economic disruption possible.',
     headlineTemplate: 'Taiwan Strait tensions escalating',
     actionTemplate: 'Review Phase 4+ preparations',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     historicalPrecedent: '1996 Taiwan Strait crisis',
     domains: ['global_conflict', 'supply_chain'],
   },
@@ -387,7 +387,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'NATO forces at high readiness. Potential for significant escalation. Energy and supply impacts likely.',
     headlineTemplate: 'NATO-Russia tensions elevated',
     actionTemplate: 'Accelerate Phase 5+ preparations',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['global_conflict', 'oil_axis'],
   },
   {
@@ -404,7 +404,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Persian Gulf shipping at risk. Oil prices may double if strait is blocked. Fill vehicles immediately.',
     headlineTemplate: 'Persian Gulf shipping risk elevated',
     actionTemplate: 'Fill all vehicle fuel tanks',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['oil_axis', 'global_conflict'],
   },
 
@@ -422,7 +422,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Novel pathogen with human-to-human transmission confirmed. Mask up, stock medications, limit gatherings.',
     headlineTemplate: 'Novel pathogen H2H transmission',
     actionTemplate: 'Verify N95 cache and prescriptions',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     historicalPrecedent: 'COVID-19, H1N1',
     domains: ['security_infrastructure'],
   },
@@ -437,7 +437,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Critical medication shortages reported. Refill prescriptions immediately if possible.',
     headlineTemplate: 'Critical medication shortages',
     actionTemplate: 'Refill all prescriptions (90-day)',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['security_infrastructure', 'supply_chain'],
   },
 
@@ -491,7 +491,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Multiple critical systems under stress simultaneously. Activate full 48-hour protocol immediately.',
     headlineTemplate: 'Multi-domain crisis developing',
     actionTemplate: 'Complete full action protocol',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     historicalPrecedent: 'March 2020 pandemic + market crash',
     domains: ['economy', 'energy'],
   },
@@ -515,7 +515,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Infrastructure stress often cascades to schools first — they close before businesses do. If you have kids, mentally rehearse your backup childcare plan. Who watches them if school closes with 2 hours notice?',
     headlineTemplate: 'Line up backup childcare this week',
     actionTemplate: 'Confirm 2 backup childcare contacts',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['security_infrastructure'],
   },
 
@@ -531,7 +531,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Supply chain hiccups hit pharmacies within 2-3 weeks of port slowdowns. If anyone in your household takes daily medication — blood pressure, insulin, thyroid — call your pharmacy now about a 90-day refill. Insurance often covers it.',
     headlineTemplate: 'Refill prescriptions to 90-day supply',
     actionTemplate: 'Call pharmacy for 90-day fills',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['supply_chain'],
   },
 
@@ -550,7 +550,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Economic stress hits fixed-income households hardest. If you have elderly parents, this is a good week to check if they\'re managing heating bills, grocery costs, or pharmacy copays. A 10-minute call can catch problems early.',
     headlineTemplate: 'Check in on elderly family members',
     actionTemplate: 'Call parents/grandparents this weekend',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['economy'],
   },
 
@@ -566,7 +566,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Pet food and medications often face shortages before human supplies — they\'re lower priority in logistics chains. If you have pets, grab an extra month of food and any prescription meds. Pet insulin especially can become scarce.',
     headlineTemplate: 'Stock extra pet food and meds',
     actionTemplate: 'Buy 4-week pet food buffer',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['supply_chain'],
   },
 
@@ -583,7 +583,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'When systems get stressed, card networks and ATMs often fail first. Having $300-500 in small bills lets you buy gas, groceries, or medicine when everyone else is stuck. Keep it at home, not in your wallet.',
     headlineTemplate: 'Build your cash buffer this week',
     actionTemplate: 'Withdraw $300-500 in small bills',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['economy', 'security_infrastructure'],
   },
 
@@ -602,7 +602,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Energy and geopolitical stress can spike gas prices 30% in a week. If you commute, consider whether you could work remotely for a few days if prices jump. Having that conversation with your employer now is easier than asking during a crisis.',
     headlineTemplate: 'Confirm your work-from-home option',
     actionTemplate: 'Discuss remote work policy with manager',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['energy'],
   },
 
@@ -621,7 +621,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Neighbors help neighbors when systems fail. Do you know the names of the 3-4 households closest to you? This week, find a reason to introduce yourself if you haven\'t. Exchange phone numbers. These relationships matter when the power\'s out.',
     headlineTemplate: 'Meet your closest neighbors this week',
     actionTemplate: 'Exchange numbers with 3 neighbors',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['security_infrastructure'],
   },
 
@@ -640,7 +640,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Economic stress leads to more claims — and slower processing. Do you have photos of your home contents? Can you find your policy numbers offline? Spending 30 minutes documenting now saves days of frustration later.',
     headlineTemplate: 'Document home contents for insurance',
     actionTemplate: 'Photo inventory of valuables',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['economy'],
   },
 
@@ -659,7 +659,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Your car is your Plan B escape pod. Check: Is the tank above half? Are tires properly inflated? Is there a phone charger? Water? A paper map? If you had to drive 300 miles tonight, could you? Fix gaps this weekend.',
     headlineTemplate: 'Prep your vehicle go-kit this weekend',
     actionTemplate: 'Stock vehicle emergency kit',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['energy'],
   },
 
@@ -675,7 +675,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'If your phone died right now, could you call your family? Write down 5 critical numbers on paper. Export your password manager. Back up irreplaceable photos. Digital fragility is invisible until it isn\'t.',
     headlineTemplate: 'Back up critical info offline',
     actionTemplate: 'Write down 5 emergency numbers on paper',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['security_infrastructure'],
   },
 
@@ -694,7 +694,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Municipal water needs electricity to pump. A 48-hour outage means no tap water. Do you have 1 gallon per person per day for 3 days? That\'s 12 gallons for a family of 4. Fill some old bottles this week — it\'s free.',
     headlineTemplate: 'Check your water buffer this week',
     actionTemplate: 'Store 1 gallon per person per day (3 days)',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['security_infrastructure', 'energy'],
   },
 
@@ -711,7 +711,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Economic uncertainty hits layoffs 3-6 months before headlines predict. Is your resume updated? Do you have a skill you could freelance? Not to panic — but having a Plan B income source in your back pocket reduces stress significantly.',
     headlineTemplate: 'Update your resume this month',
     actionTemplate: 'Refresh resume and LinkedIn',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['economy', 'jobs_labor'],
   },
 
@@ -730,7 +730,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Conflict abroad affects more than news headlines. Components for cars, appliances, and medical devices may face 6-12 week delays. If you\'ve been putting off a repair or purchase, consider accelerating it before backlogs hit.',
     headlineTemplate: 'Accelerate delayed purchases or repairs',
     actionTemplate: 'Complete postponed equipment repairs',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['global_conflict', 'supply_chain'],
   },
 
@@ -746,7 +746,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Bank branches are shrinking — many areas now have only 1-2 nearby. Know where yours is and their hours. Have you tested that you can actually log in to your bank app? Do you know your password without the password manager?',
     headlineTemplate: 'Test your banking access this week',
     actionTemplate: 'Verify bank login and branch hours',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['economy'],
   },
 
@@ -765,7 +765,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Cell networks fail in crises — everyone calls at once. Does your family have a Plan B contact method? A landline? A specific radio channel? An out-of-state relative everyone checks in with? Decide now, not during the emergency.',
     headlineTemplate: 'Set up family communication backup',
     actionTemplate: 'Designate out-of-area contact person',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['security_infrastructure'],
   },
 
@@ -781,7 +781,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Prices rise fastest heading into winter. If you\'re planning to buy warm clothing, heating fuel, or holiday supplies, buying now locks in current prices. Waiting typically costs 15-25% more by December.',
     headlineTemplate: 'Buy winter supplies at current prices',
     actionTemplate: 'Purchase seasonal items now',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['economy'],
   },
 
@@ -798,7 +798,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Multiple stressors compound anxiety — and therapy waitlists are often 2-3 months long. If anyone in your household might benefit from support, making that call now means help is available when stress peaks, not after.',
     headlineTemplate: 'Line up mental health support now',
     actionTemplate: 'Research therapy/counseling options',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['economy', 'global_conflict'],
   },
 
@@ -814,7 +814,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Global supply chains are fragile; local food is resilient. Do you know your nearest farmers market? Any local farms with CSA boxes? Having one local food source means fresh produce even when grocery shelves empty.',
     headlineTemplate: 'Find your local food sources',
     actionTemplate: 'Identify 2 local farms or markets',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['supply_chain'],
   },
 
@@ -833,7 +833,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'If you had to leave home in 10 minutes, could you grab passports, birth certificates, insurance cards, and medication lists? Put copies in a single folder or small bag. Knowing where they are eliminates panic.',
     headlineTemplate: 'Organize your document go-folder',
     actionTemplate: 'Assemble critical documents in one place',
-    actionHref: '/checklist',
+    actionHref: '/action-plan',
     domains: ['domestic_control', 'security_infrastructure'],
   },
 
@@ -852,7 +852,7 @@ export const PATTERN_LIBRARY: Pattern[] = [
       'Inflation erodes savings sitting in checking accounts. If you have cash above your 3-month emergency fund, consider moving it somewhere earning interest — high-yield savings or I-bonds at least keep pace with inflation.',
     headlineTemplate: 'Move excess cash to high-yield savings',
     actionTemplate: 'Open high-yield savings account',
-    actionHref: '/playbook',
+    actionHref: '/action-plan',
     domains: ['economy'],
   },
 ];
