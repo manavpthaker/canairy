@@ -1,6 +1,7 @@
-# FastAPI Core (Vercel provides ASGI server)
+# FastAPI Core
 fastapi>=0.104.0
 pydantic>=2.5.0
+uvicorn[standard]>=0.24.0
 
 # HTTP clients
 httpx>=0.25.0
