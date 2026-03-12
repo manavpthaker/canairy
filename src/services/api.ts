@@ -5,6 +5,13 @@ import { mockIndicators, mockHOPIScore, mockSystemStatus } from '../mock/mockDat
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5555/api/v1';
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true' || false;
 
+// Derive WebSocket URL from API URL
+const getWsUrl = () => {
+  const url = new URL(API_BASE_URL);
+  const protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${protocol}//${url.host}/ws`;
+};
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
@@ -74,8 +81,7 @@ export const apiService = {
     }
 
     try {
-      // Note: HOPI endpoint is at root level, not /v1/
-      const { data } = await axios.get('http://localhost:5555/api/v1/hopi');
+      const { data } = await api.get('/hopi');
       return { data, isUsingFallback: false, lastSuccessfulFetch: new Date() };
     } catch (error) {
       console.log('Using mock HOPI score due to API error');
@@ -155,7 +161,7 @@ export class WebSocketService {
   private listeners: Map<string, Set<(...args: unknown[]) => void>> = new Map();
   private enabled = !USE_MOCK_DATA; // Disable WebSocket when using mock data
 
-  connect(url: string = 'ws://localhost:5555/ws') {
+  connect(url: string = getWsUrl()) {
     if (!this.enabled) {
       console.log('WebSocket disabled in mock mode');
       return;
