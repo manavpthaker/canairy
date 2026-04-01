@@ -6,6 +6,9 @@ import { synthesizeCards, SynthesisOutput, ScoredPattern, scoredPatternToCardDat
 import { synthesizeBatch, SynthesisResult } from '../services/synthesis';
 import { analyzeIndicators, generateFallbackInsights, AIAnalysisResult, AIInsight, getDefaultUserContext, computeSystemPhase } from '../services/synthesis/aiAnalysis';
 
+// Track if we've logged the fallback message
+let hasLoggedFallbackMessage = false;
+
 interface ChecklistProgress {
   completedPhase: number;
   currentPhaseProgress: number;
@@ -206,7 +209,10 @@ export const useStore = create<AppState>()(
             set({ aiAnalysis: result });
           } else {
             // Fall back to heuristic-based insights
-            console.log('Using fallback insights (no API key or API error)');
+            if (!hasLoggedFallbackMessage) {
+              console.info('Using pre-built insights');
+              hasLoggedFallbackMessage = true;
+            }
             const fallback = generateFallbackInsights(indicators);
             set({ aiAnalysis: fallback });
           }

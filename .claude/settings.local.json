@@ -48,7 +48,9 @@
       "Bash(sort grep -oE '_ind\\\\\\(\"\"[a-z_0-9]+\"\"' /Users/manavthaker/Documents/GitHub/canairy/api/simple_main.py)",
       "Bash(sort echo \"=== In API but NOT in frontend ===\" comm -23 /tmp/api_ids.txt /tmp/frontend_ids.txt echo \"\" echo \"=== In frontend but NOT in API ===\" comm -13 /tmp/api_ids.txt /tmp/frontend_ids.txt)",
       "Bash(sort -u grep -oE '_ind\\\\\\(\"\"[a-z_0-9]+\"\"' /Users/manavthaker/Documents/GitHub/canairy/api/simple_main.py)",
-      "Bash(comm:*)"
+      "Bash(comm:*)",
+      "Bash(wc:*)",
+      "Bash(dig:*)"
     ]
   }
 }

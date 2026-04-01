@@ -109,6 +109,9 @@ Respond in JSON format:
 }`;
 }
 
+// Track if we've already logged the API key warning
+let hasLoggedApiKeyWarning = false;
+
 /**
  * Call Claude API for synthesis
  */
@@ -116,7 +119,10 @@ async function callClaudeAPI(prompt: string): Promise<SynthesisResult | null> {
   const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
 
   if (!apiKey) {
-    console.warn('Claude API key not configured, using template fallback');
+    if (!hasLoggedApiKeyWarning) {
+      console.info('Claude API key not configured - using pre-written insights');
+      hasLoggedApiKeyWarning = true;
+    }
     return null;
   }
 
