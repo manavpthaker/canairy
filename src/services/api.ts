@@ -5,6 +5,9 @@ import { mockIndicators, mockHOPIScore, mockSystemStatus } from '../mock/mockDat
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5555/api/v1';
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true' || false;
 
+// Disable WebSocket in production (Render free tier doesn't support it)
+const IS_PRODUCTION = API_BASE_URL.includes('onrender.com') || API_BASE_URL.includes('https://');
+
 // Derive WebSocket URL from API URL
 const getWsUrl = () => {
   const url = new URL(API_BASE_URL);
@@ -159,11 +162,11 @@ export class WebSocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 3; // Reduced from 10
   private listeners: Map<string, Set<(...args: unknown[]) => void>> = new Map();
-  private enabled = !USE_MOCK_DATA; // Disable WebSocket when using mock data
+  private enabled = !USE_MOCK_DATA && !IS_PRODUCTION; // Disable WebSocket in mock mode or production
 
   connect(url: string = getWsUrl()) {
     if (!this.enabled) {
-      console.log('WebSocket disabled in mock mode');
+      // Silently skip WebSocket in production (Render doesn't support it)
       return;
     }
     

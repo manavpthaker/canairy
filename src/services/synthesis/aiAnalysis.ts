@@ -15,6 +15,9 @@ import { IndicatorData, UserContext } from '../../types';
 import { getDisplayName, getImpact, getAction } from '../../data/indicatorTranslations';
 import { getIndicatorContext } from './indicatorContext';
 
+// Track if we've already logged the API key warning
+let hasLoggedAIAnalysisWarning = false;
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -514,7 +517,10 @@ async function callClaudeForAnalysis(
   const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
 
   if (!apiKey) {
-    console.warn('Claude API key not configured - AI analysis unavailable');
+    if (!hasLoggedAIAnalysisWarning) {
+      console.info('AI analysis unavailable - using pre-built insights');
+      hasLoggedAIAnalysisWarning = true;
+    }
     return null;
   }
 
