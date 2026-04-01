@@ -52,9 +52,18 @@ app.add_middleware(
 # ─── Try to initialize live data service ───
 data_service = None
 try:
-    from api.data_service import get_data_service
+    # Try relative import first (when running as module)
+    from .data_service import get_data_service
     data_service = get_data_service()
     logger.info(f"Live data service initialized with collectors: {list(data_service._collectors.keys())}")
+except ImportError:
+    try:
+        # Fallback for direct execution
+        from data_service import get_data_service
+        data_service = get_data_service()
+        logger.info(f"Live data service initialized with collectors: {list(data_service._collectors.keys())}")
+    except Exception as e:
+        logger.warning(f"Live data service unavailable, using mock only: {e}")
 except Exception as e:
     logger.warning(f"Live data service unavailable, using mock only: {e}")
 
