@@ -311,15 +311,16 @@ class HormuzRiskCollector(BaseCollector):
                         if kw in text:
                             risk_score += weight
 
-                # Normalize to basis points (0-500 range)
-                risk_bps = min(risk_score * 10, 500)
+                # Convert to percentage (0-5% range typical for war risk premium)
+                # Raw score ~30 = ~3% typical elevated risk
+                risk_pct = min(risk_score / 10, 5.0)
 
                 return {
-                    'value': risk_bps,
+                    'value': round(risk_pct, 2),
                     'timestamp': datetime.utcnow().isoformat() + 'Z',
                     'collector': self.name,
                     'metadata': {
-                        'unit': 'basis_points',
+                        'unit': 'percent',
                         'raw_score': risk_score,
                         'source': 'News Analysis',
                         'data_source': 'LIVE'
@@ -334,7 +335,7 @@ class HormuzRiskCollector(BaseCollector):
 
     def _get_mock_data(self) -> Dict[str, Any]:
         return {
-            'value': 50,
+            'value': 0.8,  # 0.8% is typical baseline war risk premium
             'timestamp': datetime.utcnow().isoformat() + 'Z',
             'collector': self.name,
             'metadata': {'source': 'mock_data', 'data_source': 'MOCK'}
