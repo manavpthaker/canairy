@@ -147,15 +147,19 @@ class GlobalConflictNewsCollector(RSSBaseCollector):
                     total_conflicts += count
 
             if sources_checked > 0:
-                # Intensity score based on mentions
-                intensity = min(total_conflicts * 10, 1000)  # Cap at 1000
+                # Convert news mentions to estimated weekly events
+                # News typically covers a fraction of actual events
+                # Be more conservative: ~3 mentions per actual event on avg
+                # Threshold expects events/wk: green <150, amber 150-300, red >300
+                estimated_events_weekly = total_conflicts * 3
+                estimated_events_weekly = min(estimated_events_weekly, 500)  # Cap reasonably
 
                 return {
-                    'value': intensity,
+                    'value': round(estimated_events_weekly, 0),
                     'timestamp': datetime.utcnow().isoformat() + 'Z',
                     'collector': self.name,
                     'metadata': {
-                        'unit': 'conflict_intensity',
+                        'unit': 'events_per_week',
                         'news_mentions': total_conflicts,
                         'sources_checked': sources_checked,
                         'source': 'News RSS Feeds',
@@ -345,15 +349,18 @@ class AILayoffsCollector(RSSBaseCollector):
                                 else:
                                     layoff_count += 100  # Estimate if no number
 
-            # Cap at reasonable values
-            layoff_count = min(layoff_count, 50000)
+            # Cap at reasonable values and convert to K (thousands)
+            # Threshold expects K/month: green <10K, amber 10-50K, red >50K
+            layoff_count = min(layoff_count, 100000)
+            layoff_k = layoff_count / 1000.0
 
             return {
-                'value': layoff_count,
+                'value': round(layoff_k, 1),
                 'timestamp': datetime.utcnow().isoformat() + 'Z',
                 'collector': self.name,
                 'metadata': {
-                    'unit': 'estimated_layoffs',
+                    'unit': 'K_per_month',
+                    'raw_count': layoff_count,
                     'articles_checked': total_entries,
                     'source': 'News RSS',
                     'data_source': 'LIVE'
@@ -366,7 +373,7 @@ class AILayoffsCollector(RSSBaseCollector):
 
     def _get_mock_data(self) -> Dict[str, Any]:
         return {
-            'value': 5000,
+            'value': 5.0,  # 5K layoffs per month (in thousands)
             'timestamp': datetime.utcnow().isoformat() + 'Z',
             'collector': self.name,
             'metadata': {'source': 'mock_data', 'data_source': 'MOCK'}
@@ -390,23 +397,31 @@ class NuclearTestsCollector(RSSBaseCollector):
     def collect(self) -> Dict[str, Any]:
         """Collect nuclear/missile test news."""
         try:
-            test_count = 0
+            news_mentions = 0
 
             for feed_url in self.rss_feeds:
                 entries = self._fetch_rss(feed_url)
                 if entries:
-                    test_count += self._count_keywords(
+                    # Only count very specific test-related keywords
+                    news_mentions += self._count_keywords(
                         entries,
-                        ['nuclear test', 'missile test', 'ballistic missile', 'icbm', 'weapons test'],
-                        days=30
+                        ['conducted test', 'launched missile', 'test-fired', 'detonation detected'],
+                        days=90
                     )
 
+            # Multiple articles typically cover the same event
+            # Be conservative: ~10 articles per actual test event
+            # Threshold: green <0.5, amber 0.5-1, red >1
+            estimated_tests = news_mentions / 10.0
+            estimated_tests = min(estimated_tests, 5)  # Cap at 5 events
+
             return {
-                'value': test_count,
+                'value': round(estimated_tests, 1),
                 'timestamp': datetime.utcnow().isoformat() + 'Z',
                 'collector': self.name,
                 'metadata': {
-                    'unit': 'test_events_30d',
+                    'unit': 'estimated_tests_90d',
+                    'news_mentions': news_mentions,
                     'source': 'Arms Control/News RSS',
                     'data_source': 'LIVE'
                 }

@@ -27,6 +27,9 @@ services:
         value: https://canairy-api.onrender.com/api/v1
       - key: NODE_VERSION
         value: "18"
+      # AI Analysis (set in Render dashboard for Claude-powered insights)
+      - key: VITE_ANTHROPIC_API_KEY
+        sync: false
   
   # Backend FastAPI
   - type: web
