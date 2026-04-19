@@ -116,6 +116,16 @@ let hasLoggedApiKeyWarning = false;
  * Call Claude API for synthesis
  */
 async function callClaudeAPI(prompt: string): Promise<SynthesisResult | null> {
+  // Canairy AI synthesis is disabled to stop Anthropic token usage.
+  // Re-enable by setting VITE_CANAIRY_AI_ENABLED=true at build time.
+  if (import.meta.env.VITE_CANAIRY_AI_ENABLED !== 'true') {
+    if (!hasLoggedApiKeyWarning) {
+      console.info('Canairy AI synthesis disabled - using pre-written insights');
+      hasLoggedApiKeyWarning = true;
+    }
+    return null;
+  }
+
   const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
 
   if (!apiKey) {
