@@ -27,9 +27,8 @@ services:
         value: https://canairy-api.onrender.com/api/v1
       - key: NODE_VERSION
         value: "18"
-      # AI Analysis (set in Render dashboard for Claude-powered insights)
-      - key: VITE_ANTHROPIC_API_KEY
-        sync: false
+      # AI synthesis is disabled to stop Anthropic token usage.
+      # To re-enable: set VITE_CANAIRY_AI_ENABLED=true and re-add VITE_ANTHROPIC_API_KEY in the Render dashboard.
   
   # Backend FastAPI
   - type: web
