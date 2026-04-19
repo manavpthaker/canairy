@@ -50,6 +50,12 @@ async function callClaudeForBriefing(
   systemPrompt: string,
   userPrompt: string
 ): Promise<string | null> {
+  // Canairy AI synthesis is disabled to stop Anthropic token usage.
+  // Re-enable by setting VITE_CANAIRY_AI_ENABLED=true at build time.
+  if (import.meta.env.VITE_CANAIRY_AI_ENABLED !== 'true') {
+    return null;
+  }
+
   const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
 
   if (!apiKey) {
