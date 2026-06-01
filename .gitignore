@@ -51,3 +51,4 @@ Thumbs.db
 playwright-report/
 test-results/
 portfolio-assets/videos/
+.venv/
