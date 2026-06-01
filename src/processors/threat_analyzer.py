@@ -137,28 +137,48 @@ class ThreatAnalyzer:
             
         return threat_levels
         
+    def _metadata_thresholds(self, reading: Dict[str, Any]) -> Optional[Dict[str, float]]:
+        """
+        Pull amber/red thresholds from a collector's own metadata when present.
+
+        Collectors emit `threshold_amber`/`threshold_red` on the SAME scale as the
+        value they report, so these are more reliable than the config.yaml entries
+        (which can drift out of sync with a collector's value scale). Returns None
+        unless both thresholds are present and numeric.
+        """
+        md = reading.get('metadata', {}) or {}
+        amber = md.get('threshold_amber')
+        red = md.get('threshold_red')
+        try:
+            if amber is not None and red is not None:
+                return {'amber': float(amber), 'red': float(red)}
+        except (TypeError, ValueError):
+            pass
+        return None
+
     def _calculate_threat_level(self, collector_name: str, reading: Dict[str, Any]) -> str:
         """
         Calculate threat level for a specific reading.
-        
+
         Args:
             collector_name: Name of the collector
             reading: The reading data
-            
+
         Returns:
             Threat level: 'green', 'amber', or 'red'
         """
-        if collector_name not in self.thresholds:
-            self.logger.warning(f"No thresholds defined for {collector_name}")
-            return "unknown"
-            
         try:
             value = reading.get('value')
             if value is None:
                 return "unknown"
-                
-            thresholds = self.thresholds[collector_name]
-            
+
+            # Prefer the collector's own metadata thresholds (they match the scale of
+            # the value it emits); fall back to the config.yaml thresholds.
+            thresholds = self._metadata_thresholds(reading) or self.thresholds.get(collector_name)
+            if not thresholds:
+                self.logger.warning(f"No thresholds defined for {collector_name}")
+                return "unknown"
+
             # For string status values (Taiwan, DoD), handle differently
             if collector_name in ['TaiwanZone', 'DoDAutonomy']:
                 # Get string thresholds from config
@@ -205,14 +225,26 @@ class ThreatAnalyzer:
                     else:
                         return "green"
             else:
-                # Numeric comparison for other indicators
-                if value >= thresholds['red']:
-                    return "red"
-                elif value >= thresholds['amber']:
-                    return "amber"
+                # Numeric comparison. Orientation is inferred from the threshold
+                # ordering: amber <= red means higher is worse (the common case),
+                # amber > red means lower is worse (e.g. countdown indicators).
+                amber = thresholds['amber']
+                red = thresholds['red']
+                if amber <= red:
+                    if value >= red:
+                        return "red"
+                    elif value >= amber:
+                        return "amber"
+                    else:
+                        return "green"
                 else:
-                    return "green"
-                
+                    if value <= red:
+                        return "red"
+                    elif value <= amber:
+                        return "amber"
+                    else:
+                        return "green"
+
         except Exception as e:
             self.logger.error(f"Error calculating threat level for {collector_name}: {e}")
             return "unknown"
