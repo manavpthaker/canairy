@@ -188,3 +188,21 @@ def test_cron_endpoint_requires_secret(client, monkeypatch):
     monkeypatch.setenv("CRON_SECRET", "s3cret")
     assert client.get("/api/cron/collect").status_code == 401
     assert client.get("/api/cron/collect", headers={"Authorization": "Bearer wrong"}).status_code == 401
+
+
+@pytest.mark.parametrize("given,expected", [
+    ("postgres://u:p@h.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x",
+     "postgresql+psycopg://u:p@h.pooler.supabase.com:6543/postgres?sslmode=require"),
+    ("postgresql://u:p@h:5432/db", "postgresql+psycopg://u:p@h:5432/db"),
+    ("sqlite:///tmp/x.db", "sqlite:///tmp/x.db"),
+])
+def test_database_url_normalised(monkeypatch, given, expected):
+    monkeypatch.delenv("POSTGRES_URL", raising=False)
+    monkeypatch.setenv("DATABASE_URL", given)
+    assert store._database_url() == expected
+
+
+def test_postgres_url_used_when_database_url_missing(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("POSTGRES_URL", "postgres://u:p@h:5432/db")
+    assert store._database_url() == "postgresql+psycopg://u:p@h:5432/db"
