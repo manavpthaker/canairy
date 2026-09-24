@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from fastapi.testclient import TestClient
 
-from api import collect, store
+from api import catalog, collect, store
 from api.catalog import BY_ID, CATALOG, IndicatorDef, determine_level
 
 
@@ -38,6 +38,7 @@ def test_catalog_ids_unique_and_thresholds_distinct():
         assert d.amber != d.red, d.id
         assert d.tier in ("core", "experimental"), d.id
         assert d.max_age_hours > 0, d.id
+        assert d.area in catalog.AREAS, d.id
 
 
 def test_every_catalog_collector_loads():

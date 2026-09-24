@@ -50,6 +50,17 @@ readings = Table(
     Column("detail", Text),  # JSON: source label, error message, raw metadata
 )
 
+briefings = Table(
+    "briefings", metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("created_at", DateTime(timezone=True), nullable=False, index=True),
+    Column("fingerprint", Text, nullable=False),
+    # published | rejected | error. Only published briefings are served.
+    Column("status", String(16), nullable=False),
+    Column("body", Text),  # JSON briefing
+    Column("meta", Text),  # JSON: model, token usage, validation problems
+)
+
 
 # libpq rejects query parameters it doesn't know (Supabase adds e.g. `supa=`).
 _LIBPQ_PARAMS = {"sslmode", "sslrootcert", "connect_timeout", "application_name", "options", "target_session_attrs"}
@@ -243,3 +254,33 @@ def has_readings_before(indicator_id: str, when: datetime) -> bool:
             .limit(1)
         ).first()
     return row is not None
+
+
+def save_briefing(fingerprint: str, body: Optional[Dict[str, Any]], status: str, meta: Dict[str, Any]) -> None:
+    with engine().begin() as conn:
+        conn.execute(briefings.insert().values(
+            created_at=datetime.now(timezone.utc), fingerprint=fingerprint, status=status,
+            body=json.dumps(body) if body is not None else None, meta=json.dumps(meta, default=str),
+        ))
+
+
+def latest_briefing() -> Optional[Dict[str, Any]]:
+    """Most recent published briefing."""
+    with engine().connect() as conn:
+        row = conn.execute(
+            select(briefings).where(briefings.c.status == "published").order_by(briefings.c.id.desc()).limit(1)
+        ).first()
+    if not row:
+        return None
+    return {
+        "created_at": _utc(row.created_at), "fingerprint": row.fingerprint,
+        "body": json.loads(row.body), "meta": json.loads(row.meta or "{}"),
+    }
+
+
+def briefing_calls_since(when: datetime) -> int:
+    """API calls attempted since `when`, whatever their outcome (the spend cap counts all of them)."""
+    with engine().connect() as conn:
+        return conn.execute(
+            select(func.count()).select_from(briefings).where(briefings.c.created_at >= when)
+        ).scalar_one()

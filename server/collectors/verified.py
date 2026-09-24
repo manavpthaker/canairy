@@ -159,7 +159,8 @@ class FREDSeriesCollector(BaseCollector):
     SERIES = ""
     LABEL = ""
     MODE = "latest"
-    LAG = 1
+    LAG = 1  # observations back (weekly series)
+    LAG_MONTHS = 0  # calendar months back (monthly series); takes precedence over LAG
     ANNUALIZE: Optional[int] = None  # periods per year
     URL = "https://api.stlouisfed.org/fred/series/observations"
 
@@ -174,19 +175,38 @@ class FREDSeriesCollector(BaseCollector):
         resp.raise_for_status()
         return [o for o in resp.json().get("observations", []) if o.get("value") not in (None, "", ".")]
 
+    def _prior_index(self, obs: List[Dict[str, str]], i: int) -> Optional[int]:
+        """Index of the observation to compare obs[i] against.
+
+        LAG_MONTHS matches by calendar date, so a missing month (e.g. October
+        2025, lost to the government shutdown) gives no value instead of a
+        comparison against the wrong month.
+        """
+        if self.LAG_MONTHS:
+            y, m, d = (int(x) for x in obs[i]["date"].split("-"))
+            m -= self.LAG_MONTHS
+            while m <= 0:
+                m += 12
+                y -= 1
+            target = f"{y:04d}-{m:02d}-{d:02d}"
+            return next((j for j in range(i + 1, len(obs)) if obs[j]["date"] == target), None)
+        return i + self.LAG if i + self.LAG < len(obs) else None
+
     def _value_at(self, obs: List[Dict[str, str]], i: int) -> Optional[float]:
         latest = float(obs[i]["value"])
         if self.MODE == "latest":
             return latest
-        if i + self.LAG >= len(obs):
+        j = self._prior_index(obs, i)
+        if j is None:
             return None
-        ratio = latest / float(obs[i + self.LAG]["value"])
+        ratio = latest / float(obs[j]["value"])
         if self.ANNUALIZE:
-            ratio = ratio ** (self.ANNUALIZE / self.LAG)
+            periods = self.LAG_MONTHS or self.LAG
+            ratio = ratio ** (self.ANNUALIZE / periods)
         return round((ratio - 1) * 100, 3)
 
     def collect(self) -> Optional[Dict[str, Any]]:
-        obs = self._observations(20)
+        obs = self._observations(30)
         if not obs:
             return None
         value = self._value_at(obs, 0)
@@ -194,7 +214,7 @@ class FREDSeriesCollector(BaseCollector):
             return None
         meta = {"data_source": f"FRED {self.SERIES}", "observation_date": obs[0]["date"], "series": self.LABEL}
         if self.MODE == "change":
-            meta["compared_to"] = obs[self.LAG]["date"]
+            meta["compared_to"] = obs[self._prior_index(obs, 0)]["date"]
         return self._create_reading(value, meta)
 
     def backfill(self, days: int) -> List[Tuple[datetime, float]]:
@@ -228,7 +248,7 @@ class GroceryInflationCollector(FREDSeriesCollector):
     SERIES = "CUSR0000SAF11"
     LABEL = "CPI food at home, seasonally adjusted — 3-month change, annualized"
     MODE = "change"
-    LAG = 3
+    LAG_MONTHS = 3
     ANNUALIZE = 12
 
 
@@ -457,6 +477,189 @@ class WHOOutbreakNewsCollector(BaseCollector):
         return self._create_reading(len(recent), {
             "data_source": "WHO Disease Outbreak News",
             "titles": [p["Title"] for p in recent[:10]],
+        })
+
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        return isinstance(data.get("value"), int)
+
+
+# ─── Added indicators (verified 2026-09-24) ───
+
+class ContinuingClaimsCollector(FREDSeriesCollector):
+    SERIES = "CCSA"
+    LABEL = "Continued unemployment claims, weekly (seasonally adjusted)"
+
+
+class RentInflationCollector(FREDSeriesCollector):
+    SERIES = "CUSR0000SEHA"
+    LABEL = "CPI rent of primary residence — change from a year earlier"
+    MODE = "change"
+    LAG_MONTHS = 12
+
+
+class ElectricityInflationCollector(FREDSeriesCollector):
+    SERIES = "CUSR0000SEHF01"
+    LABEL = "CPI electricity — change from a year earlier"
+    MODE = "change"
+    LAG_MONTHS = 12
+
+
+class SahmRuleCollector(FREDSeriesCollector):
+    SERIES = "SAHMREALTIME"
+    LABEL = "Sahm rule recession indicator (real-time), percentage points"
+
+
+class CardDelinquencyCollector(FREDSeriesCollector):
+    SERIES = "DRCCLACBS"
+    LABEL = "Delinquency rate on credit card loans at commercial banks, quarterly"
+
+
+class SavingRateCollector(FREDSeriesCollector):
+    SERIES = "PSAVERT"
+    LABEL = "Personal saving rate, monthly"
+
+
+class BeefPriceCollector(FREDSeriesCollector):
+    SERIES = "APU0000703112"
+    LABEL = "Average price of ground beef (100% beef), per lb — change from a year earlier"
+    MODE = "change"
+    LAG_MONTHS = 12
+
+
+class RealWagesCollector(BaseCollector):
+    """Hourly pay for production/non-supervisory workers vs consumer prices, % change from a year earlier."""
+
+    def collect(self) -> Optional[Dict[str, Any]]:
+        wages = _FREDSeries("AHETPI")
+        prices = _FREDSeries("CPIAUCSL")
+        w_obs, p_obs = wages._observations(30), prices._observations(30)
+        if not w_obs or not p_obs:
+            return None
+        date = w_obs[0]["date"]
+        p_i = next((i for i, o in enumerate(p_obs) if o["date"] == date), None)
+        if p_i is None:
+            return None
+        w_change, p_change = wages._value_at(w_obs, 0), prices._value_at(p_obs, p_i)
+        if w_change is None or p_change is None:
+            return None
+        real = ((1 + w_change / 100) / (1 + p_change / 100) - 1) * 100
+        return self._create_reading(round(real, 2), {
+            "data_source": "FRED AHETPI / CPIAUCSL",
+            "observation_date": date,
+            "wage_change": w_change, "price_change": p_change,
+        })
+
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        return isinstance(data.get("value"), float)
+
+
+class _FREDSeries(FREDSeriesCollector):
+    """Year-over-year helper for an arbitrary monthly FRED series."""
+
+    MODE = "change"
+    LAG_MONTHS = 12
+
+    def __init__(self, series: str):
+        super().__init__({})
+        self.SERIES = series
+
+
+class BLSInflationCollector(BaseCollector):
+    """Year-over-year change for a BLS CPI series not carried by FRED. Subclasses set SERIES.
+
+    The keyless BLS API allows 25 requests a day, so the catalog limits this to a few runs a day.
+    """
+
+    SERIES = ""
+    URL = "https://api.bls.gov/publicAPI/v2/timeseries/data/"
+
+    def collect(self) -> Optional[Dict[str, Any]]:
+        key = os.environ.get("BLS_API_KEY")
+        url = self.URL + self.SERIES + (f"?registrationkey={key}" if key else "")
+        resp = requests.get(url, headers=HEADERS, timeout=30)
+        resp.raise_for_status()
+        body = resp.json()
+        if body.get("status") != "REQUEST_SUCCEEDED":
+            return None
+        rows = [r for r in body["Results"]["series"][0]["data"] if r["period"].startswith("M") and r["value"] not in ("-", "")]
+        if not rows:
+            return None
+        latest = rows[0]
+        prior = next((r for r in rows if r["period"] == latest["period"] and int(r["year"]) == int(latest["year"]) - 1), None)
+        if prior is None:
+            return None
+        change = (float(latest["value"]) / float(prior["value"]) - 1) * 100
+        return self._create_reading(round(change, 2), {
+            "data_source": f"BLS {self.SERIES}",
+            "observation_date": f"{latest['year']}-{latest['period'][1:]}",
+        })
+
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        return isinstance(data.get("value"), float)
+
+
+class AutoInsuranceInflationCollector(BLSInflationCollector):
+    SERIES = "CUSR0000SETE"
+
+
+class ChildcareInflationCollector(BLSInflationCollector):
+    SERIES = "CUUR0000SEEB03"
+
+
+class WastewaterCollector(BaseCollector):
+    """Share of the monitored population in sewersheds rated High or Very High, worst of COVID / flu A / RSV (CDC NWSS)."""
+
+    URL = "https://data.cdc.gov/resource/atcp-73re.json"
+    PATHOGENS = {"SARS-CoV-2": "COVID", "Influenza A virus": "Flu A", "RSV": "RSV"}
+
+    def collect(self) -> Optional[Dict[str, Any]]:
+        since = (datetime.utcnow() - timedelta(days=21)).strftime("%Y-%m-%d")
+        resp = requests.get(self.URL, headers=HEADERS, timeout=60, params={
+            "$select": "week_end,pathogen_target,site_wval_category,sum(population_served) as pop",
+            "$group": "week_end,pathogen_target,site_wval_category",
+            "$where": f"week_end >= '{since}'",
+            "$limit": 500,
+        })
+        resp.raise_for_status()
+        rows = resp.json()
+        if not rows:
+            return None
+        latest_week = max(r["week_end"][:10] for r in rows)
+        shares = {}
+        for pathogen, label in self.PATHOGENS.items():
+            week = [r for r in rows if r["week_end"][:10] == latest_week and r["pathogen_target"] == pathogen]
+            total = sum(float(r.get("pop") or 0) for r in week)
+            high = sum(float(r.get("pop") or 0) for r in week if r.get("site_wval_category") in ("High", "Very High"))
+            if total:
+                shares[label] = round(100 * high / total, 1)
+        if not shares:
+            return None
+        worst = max(shares, key=shares.get)
+        return self._create_reading(shares[worst], {
+            "data_source": "CDC National Wastewater Surveillance",
+            "week_end": latest_week, "by_pathogen": shares, "worst": worst,
+        })
+
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        return isinstance(data.get("value"), float)
+
+
+class MeaslesCollector(BaseCollector):
+    """US measles cases reported in the last 4 complete weeks (CDC weekly case counts)."""
+
+    URL = "https://www.cdc.gov/wcms/vizdata/measles/MeaslesCasesWeekly.json"
+
+    def collect(self) -> Optional[Dict[str, Any]]:
+        resp = requests.get(self.URL, headers=HEADERS, timeout=30)
+        resp.raise_for_status()
+        weeks = sorted(resp.json(), key=lambda w: w["week_end"])
+        # The newest week is still being reported; leave it out.
+        complete = weeks[-5:-1]
+        if len(complete) < 4:
+            return None
+        return self._create_reading(sum(int(w["cases"]) for w in complete), {
+            "data_source": "CDC measles cases",
+            "through_week_ending": complete[-1]["week_end"],
         })
 
     def validate_data(self, data: Dict[str, Any]) -> bool:
