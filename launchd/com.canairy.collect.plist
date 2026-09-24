@@ -8,7 +8,7 @@
   <array>
     <string>/bin/bash</string>
     <string>-c</string>
-    <string>cd /Users/brownmanbrain/GitHub/canairy &amp;&amp; set -a &amp;&amp; source .env &amp;&amp; set +a &amp;&amp; exec .venv/bin/python -m api.collect</string>
+    <string>cd /Users/brownmanbrain/GitHub/canairy/server &amp;&amp; set -a &amp;&amp; source ../.env &amp;&amp; set +a &amp;&amp; exec ../.venv/bin/python -m api.collect</string>
   </array>
   <!-- Once an hour, plus once at login. -->
   <key>StartInterval</key>

@@ -22,14 +22,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Install Python dependencies
-COPY requirements.txt .
-COPY api/requirements.txt ./api/
-RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -r api/requirements.txt
+COPY server/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend code
-COPY src/ ./src/
-COPY api/ ./api/
+COPY server/ ./
 COPY config/ ./config/
 COPY scripts/ ./scripts/
 COPY *.py ./
