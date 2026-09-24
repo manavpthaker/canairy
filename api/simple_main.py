@@ -1,33 +1,35 @@
 """
-Canairy API — serves indicator data with live collection where available.
+Canairy API — read-only view of the readings the collector job stored.
 
-Live collectors (no API key needed):
-  - CISA KEV (cyber threats)
-  - WHO Disease Outbreaks (RSS)
-  - Grocery CPI (BLS — limited free tier)
-
-Live collectors (need FRED_API_KEY env var):
-  - Treasury yield volatility
-  - Jobless claims
-  - GDP growth
-
-All other indicators served from curated mock data matching the frontend schema.
+Nothing here calls an outside data source. Collection happens on a schedule
+in api/collect.py; this app only reads the database, so traffic can't cause
+upstream requests or cost.
 """
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from typing import Dict, Any, List
-from datetime import datetime
+from __future__ import annotations
+
 import logging
 import os
+import time
+from collections import defaultdict
+from datetime import datetime, timedelta, timezone
+from typing import Any, Callable, Dict, List, Optional
+
+import hmac
+
+from fastapi import FastAPI, Header, HTTPException, Query, Response
+from fastapi.middleware.cors import CORSMiddleware
+
+from api import store
+from api.catalog import BY_ID, CATALOG, IndicatorDef
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Canairy",
-    version="2.2.0",
-    description="Household Resilience Monitoring — Live + Mock Data API",
+    version="3.0.0",
+    description="Household resilience indicators, collected on a schedule from public sources.",
 )
 
 app.add_middleware(
@@ -35,487 +37,278 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:3003",
-        "http://localhost:3004",
-        "http://localhost:3005",
         "http://localhost:5173",
-        "https://canairy.onrender.com",
         "https://canairy.news",
         "https://www.canairy.news",
-        "https://canairy.xyz",
-        "https://www.canairy.xyz",
     ],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET"],
     allow_headers=["*"],
 )
 
-# ─── Try to initialize live data service ───
-data_service = None
-try:
-    # Try relative import first (when running as module)
-    from .data_service import get_data_service
-    data_service = get_data_service()
-    logger.info(f"Live data service initialized with collectors: {list(data_service._collectors.keys())}")
-except ImportError:
-    try:
-        # Fallback for direct execution
-        from data_service import get_data_service
-        data_service = get_data_service()
-        logger.info(f"Live data service initialized with collectors: {list(data_service._collectors.keys())}")
-    except Exception as e:
-        logger.warning(f"Live data service unavailable, using mock only: {e}")
-except Exception as e:
-    logger.warning(f"Live data service unavailable, using mock only: {e}")
+# If the scheduler hasn't finished a run in this long, the whole feed is stale.
+FEED_STALE_AFTER = timedelta(hours=3)
+TREND_LOOKBACK = timedelta(days=7)
+TREND_TOLERANCE = 0.02  # changes under 2% count as stable
+
+PHASE_NAMES = {
+    0: "Foundations", 1: "72-Hour Bin", 2: "Digital & Comms",
+    3: "Air, Health, Mobile", 4: "Dry-Basement / Perimeter",
+    5: "Oil-Tank → Generator Prep", 6: "Shelter Nook Build",
+    7: "Harden + Genset Live", 8: "Water & Circuits", 9: "Optional Safe-Room",
+}
+PHASE_COLORS = {
+    0: "#10B981", 1: "#10B981", 2: "#10B981", 3: "#F59E0B", 4: "#F59E0B",
+    5: "#F97316", 6: "#F97316", 7: "#EF4444", 8: "#EF4444", 9: "#991B1B",
+}
+LEVEL_SCORES = {"green": 0.0, "amber": 0.5, "red": 1.0}
 
 
-# ─── Mock data for all 34 indicators (matches frontend mockData.ts IDs) ───
+# ─── Short in-process cache so bursts of traffic hit the DB once ───
 
-def _now() -> str:
-    return datetime.utcnow().isoformat()
+_cache: Dict[str, Any] = {}
 
 
-def _ind(id: str, name: str, domain: str, desc: str, unit: str,
-         value: Any, level: str, trend: str, source: str,
-         threshold_amber: float, threshold_red: float,
-         critical: bool = False, green_flag: bool = False,
-         enabled: bool = True, unavailable: bool = False) -> Dict[str, Any]:
-    """Build an indicator dict matching the frontend IndicatorData shape."""
-    # If unavailable, show blank values
-    if unavailable:
-        status_value = None
-        status_level = "unknown"
-        status_trend = "unknown"
-        data_source = "UNAVAILABLE"
-    else:
-        status_value = value
-        status_level = level
-        status_trend = trend
-        data_source = "MOCK"
+def _cached(key: str, ttl: float, fn: Callable[[], Any]) -> Any:
+    hit = _cache.get(key)
+    if hit and time.monotonic() - hit[0] < ttl:
+        return hit[1]
+    value = fn()
+    _cache[key] = (time.monotonic(), value)
+    return value
+
+
+def _iso(dt: Optional[datetime]) -> Optional[str]:
+    return dt.isoformat() if dt else None
+
+
+def _trend(defn: IndicatorDef, reading: store.Reading) -> str:
+    before = store.value_near(defn.id, reading.collected_at - TREND_LOOKBACK)
+    if before is None or reading.value is None:
+        return "unknown"
+    base = abs(before) if before else 1.0
+    change = (reading.value - before) / base
+    if abs(change) < TREND_TOLERANCE:
+        return "stable"
+    return "up" if change > 0 else "down"
+
+
+def _indicator(defn: IndicatorDef, live: store.Reading,
+               attempt: Optional[store.Reading], now: datetime) -> Dict[str, Any]:
+    age = now - live.collected_at
+    stale = age > timedelta(hours=defn.max_age_hours)
+    status: Dict[str, Any] = {
+        # A stale reading is shown for context but never drives an alert.
+        "level": "unknown" if stale else live.level,
+        "value": live.value,
+        "trend": _trend(defn, live),
+        "lastUpdate": _iso(live.collected_at),
+        "dataSource": "STALE" if stale else "LIVE",
+    }
+    if stale:
+        status["note"] = f"Last real reading {age.days}d {age.seconds // 3600}h ago"
+    elif defn.tier == "experimental":
+        # Real data, but too loose a proxy to raise an alert: show it grey.
+        status["signalLevel"] = live.level
+        status["level"] = "unknown"
+        status["note"] = "For context only. This doesn't change your alert level."
+    if attempt is not None:
+        status["lastAttempt"] = _iso(attempt.collected_at)
 
     return {
-        "id": id,
-        "name": name,
-        "domain": domain,
-        "description": desc,
-        "unit": unit,
-        "thresholds": {
-            "green": {"max": threshold_amber},
-            "amber": {"min": threshold_amber, "max": threshold_red},
-            "red": {"min": threshold_red},
-            "threshold_amber": threshold_amber,
-            "threshold_red": threshold_red,
-        },
-        "critical": critical,
-        "greenFlag": green_flag,
-        "enabled": enabled,
-        "unavailable": unavailable,
-        "dataSource": source,
-        "updateFrequency": "60m",
-        "status": {
-            "level": status_level,
-            "value": status_value,
-            "trend": status_trend,
-            "lastUpdate": _now(),
-            "dataSource": data_source,
-        },
+        "id": defn.id,
+        "name": defn.name,
+        "domain": defn.domain,
+        "description": defn.description,
+        "unit": defn.unit,
+        "thresholds": defn.thresholds(),
+        "critical": defn.critical,
+        "greenFlag": defn.green_flag,
+        "enabled": True,
+        "unavailable": False,
+        "tier": defn.tier,
+        "dataSource": defn.source_name,
+        "sourceUrl": defn.source_url,
+        "updateFrequency": defn.update_frequency,
+        "status": status,
     }
 
 
-def get_all_mock_indicators() -> List[Dict[str, Any]]:
-    """Return indicators - only those with live collectors + unavailable placeholders."""
-    return [
-        # ── Economy ──
-        _ind("econ_01_treasury_tail", "10Y Auction Tail", "economy",
-             "10-year Treasury auction tail in basis points", "bps",
-             2.1, "green", "stable", "US Treasury API", 3, 7),
-        _ind("econ_02_grocery_cpi", "Grocery CPI", "economy",
-             "Grocery CPI 3-month annualized", "%",
-             5.4, "amber", "up", "BLS API", 4, 8),
-        _ind("market_01_intraday_swing", "10Y Intraday Swing", "economy",
-             "10-year Treasury intraday swing in basis points", "bps",
-             24.3, "amber", "up", "Yahoo Finance", 20, 30, critical=True),
-        _ind("green_g1_gdp_rates", "GDP Green Flag", "economy",
-             "US real GDP growth rate", "condition",
-             0, "amber", "stable", "BEA / FRED", 1, 0, green_flag=True),
-        _ind("bank_01_failures", "Bank Failures", "economy",
-             "FDIC bank failures year-to-date", "banks",
-             2, "green", "stable", "FDIC", 3, 10),
-        _ind("bank_02_discount_window", "Fed Discount Window", "economy",
-             "Federal Reserve discount window borrowing", "B USD",
-             5.2, "green", "stable", "Federal Reserve", 10, 50),
-        _ind("bank_03_deposit_flow", "Bank Deposit Flows", "economy",
-             "Weekly change in commercial bank deposits", "B USD",
-             -12, "amber", "down", "Federal Reserve H.8", -20, -50),
-        _ind("housing_01_delinquency", "Mortgage Delinquency", "economy",
-             "Mortgage delinquency rate (30+ days)", "%",
-             3.8, "amber", "up", "Freddie Mac PMMS", 3.5, 6.0),
-        _ind("luxury_01_collapse", "Luxury Market", "economy",
-             "Luxury goods index vs S&P 500", "ratio",
-             0.92, "amber", "down", "Yahoo Finance", 0.95, 0.85),
-        _ind("housing_03_rate_shock", "Mortgage Rate Shock", "economy",
-             "30-year fixed mortgage rate", "%",
-             7.1, "red", "up", "Freddie Mac PMMS", 6.5, 7.0),
-
-        # ── Jobs & Labor ──
-        _ind("job_01_jobless_claims", "Initial Jobless Claims", "jobs_labor",
-             "Weekly initial unemployment claims", "K claims",
-             228, "green", "stable", "DOL / FRED", 250, 350),
-        _ind("job_01_strike_days", "US Strike Days", "jobs_labor",
-             "US strike worker-days per month", "worker-days",
-             78000, "green", "stable", "Cornell ILR", 100000, 500000),
-
-        # ── Rights & Governance ──
-        _ind("civil_01_acled_protests", "US Protests (7d avg)", "rights_governance",
-             "ACLED US protests 7-day average", "protests/day",
-             18, "green", "stable", "News RSS", 25, 75),
-        _ind("power_01_ai_surveillance", "AI Surveillance Bills", "rights_governance",
-             "AI/surveillance bills advancing in state legislatures", "bills",
-             6, "amber", "up", "OpenStates", 3, 10),
-        _ind("liberty_litigation_count", "Liberty Cases Active", "rights_governance",
-             "Major civil liberty cases in federal courts", "cases",
-             8, "amber", "up", "CourtListener", 5, 20),
-
-        # ── Security & Infrastructure ──
-        _ind("cyber_01_cisa_kev", "CISA KEV + ICS", "security_infrastructure",
-             "CISA Known Exploited Vulnerabilities (90-day count)", "vulns",
-             4, "amber", "up", "CISA JSON Feed", 2, 5),
-        _ind("grid_01_pjm_outages", "NWS Severe Alerts", "security_infrastructure",
-             "NWS extreme+severe weather alerts active", "alerts",
-             1, "green", "stable", "NWS API", 3, 8),
-        _ind("bio_01_h2h_countries", "Novel H2H Pathogen", "security_infrastructure",
-             "Countries with novel human-to-human transmission (14-day)", "countries",
-             0, "green", "stable", "WHO DON RSS", 1, 3),
-        _ind("cdc_health_alerts", "CDC Health Alerts", "security_infrastructure",
-             "CDC health alert network notices (30-day)", "alerts",
-             2, "green", "stable", "CDC RSS", 5, 15),
-        _ind("fema_disaster_declarations", "FEMA Disasters", "security_infrastructure",
-             "FEMA disaster declarations (30-day)", "declarations",
-             5, "green", "stable", "FEMA API", 10, 25),
-        _ind("fda_drug_shortages", "FDA Drug Shortages", "security_infrastructure",
-             "Active FDA drug shortage listings", "shortages",
-             45, "amber", "stable", "FDA", 50, 100),
-        _ind("supply_01_port_congestion", "Port Congestion", "security_infrastructure",
-             "Ships waiting at major US ports", "ships",
-             28, "amber", "up", "Marine Exchange", 20, 50),
-        _ind("supply_02_freight_index", "Freight Index", "security_infrastructure",
-             "Freightos Baltic Index", "index",
-             1850, "green", "stable", "Freightos", 2500, 5000),
-        _ind("supply_03_chip_lead_time", "Chip Lead Times", "security_infrastructure",
-             "Semiconductor lead times (weeks)", "weeks",
-             14, "amber", "up", "News RSS", 12, 20),
-        _ind("supply_pharmacy_shortage", "Pharmacy Shortages", "security_infrastructure",
-             "FDA drug shortage list additions (30-day)", "drugs",
-             8, "amber", "up", "FDA", 5, 15),
-        _ind("energy_02_nat_gas_storage", "Natural Gas Storage", "energy",
-             "Natural gas storage vs 5-year average", "%",
-             -5, "green", "stable", "EIA", -10, -20),
-        _ind("energy_03_grid_emergency", "Grid Emergencies", "security_infrastructure",
-             "NERC grid emergency declarations (30-day)", "emergencies",
-             1, "green", "stable", "EIA", 2, 5),
-        _ind("telecom_01_bgp_anomalies", "BGP Anomalies", "security_infrastructure",
-             "BGP routing anomalies (24h)", "anomalies",
-             45, "green", "stable", "BGPStream", 100, 500),
-        _ind("telecom_02_cell_outages", "Cell Network Outages", "security_infrastructure",
-             "Major cell network outages (7-day)", "outages",
-             2, "green", "stable", "Downdetector", 5, 15, unavailable=True),
-        _ind("telecom_03_undersea_cable", "Undersea Cable Events", "security_infrastructure",
-             "Undersea cable damage/repair events (90-day)", "events",
-             3, "amber", "up", "TeleGeography", 2, 5),
-        _ind("water_01_reservoir_level", "Reservoir Levels", "water_infrastructure",
-             "Major reservoir levels vs capacity", "%",
-             68, "green", "stable", "USBR", 50, 30, unavailable=True),
-        _ind("water_02_treatment_alerts", "Water Treatment Alerts", "water_infrastructure",
-             "EPA water treatment violations (30-day)", "violations",
-             15, "amber", "up", "EPA SDWIS", 10, 30),
-        _ind("flight_01_ground_stops", "FAA Ground Stops", "security_infrastructure",
-             "FAA ground stop events (7-day)", "events",
-             3, "green", "stable", "FAA", 5, 15),
-        _ind("flight_02_delay_pct", "Flight Delays", "security_infrastructure",
-             "Flights delayed >15 min (%)", "%",
-             18, "green", "stable", "FAA", 25, 40),
-        _ind("flight_03_tfr_count", "Temporary Flight Restrictions", "security_infrastructure",
-             "Active TFRs (non-standard)", "TFRs",
-             12, "green", "stable", "FAA", 20, 40),
-        _ind("travel_03_tsa_throughput", "TSA Throughput", "security_infrastructure",
-             "TSA checkpoint throughput vs 2019", "%",
-             95, "green", "stable", "TSA", 80, 60),
-
-        # ── Oil & Energy ──
-        _ind("oil_03_ofac_designations", "OFAC Designations", "oil_axis",
-             "OFAC sanctions designations (30-day count)", "designations",
-             0, "green", "stable", "Treasury OFAC", 1, 5),
-        _ind("spr_01_level", "Strategic Petroleum Reserve", "oil_axis",
-             "SPR level vs 10-year average", "%",
-             -42, "red", "down", "EIA", -20, -35),
-
-        # ── AI Window ──
-        _ind("labor_ai_01_layoffs", "AI-Linked Layoffs", "ai_window",
-             "Monthly workers laid off citing AI/automation", "workers",
-             3200, "green", "stable", "Layoffs.fyi RSS", 5000, 25000),
-        _ind("cult_media_01_trends", "AI Religion Trends", "ai_window",
-             "Google Trends score for 'AI religion' (US weekly)", "score",
-             8, "green", "stable", "Google Trends", 15, 40),
-
-        # ── Global Conflict ──
-        _ind("global_conflict_intensity", "Global Battle Intensity", "global_conflict",
-             "ACLED global battle-related events 90-day average", "events/day",
-             720, "amber", "up", "News RSS", 500, 2000),
-        _ind("taiwan_pla_activity", "Taiwan PLA Incursions", "global_conflict",
-             "PLA aircraft incursions into Taiwan ADIZ (14-day avg)", "aircraft/day",
-             28, "amber", "up", "Taiwan MND", 20, 100),
-        _ind("nato_high_readiness", "NATO High Readiness", "global_conflict",
-             "NATO high-readiness force activations", "activations",
-             0, "green", "stable", "NATO News RSS", 1, 2, critical=True),
-        _ind("nuclear_test_activity", "Nuclear/Missile Tests", "global_conflict",
-             "Nuclear detonation or ICBM tests (90-day count)", "tests",
-             1, "green", "stable", "News RSS", 2, 10),
-        _ind("defense_spending_growth", "Defense Spending Growth", "global_conflict",
-             "Global defense spending year-over-year growth", "%",
-             6.2, "amber", "up", "SIPRI RSS", 5, 15),
-        _ind("travel_01_advisories", "Travel Advisories", "global_conflict",
-             "Countries with Level 3-4 travel advisories", "countries",
-             18, "green", "stable", "State Dept", 25, 40),
-        _ind("hormuz_war_risk", "Hormuz War Risk", "global_conflict",
-             "Lloyd's war risk insurance premium", "%",
-             0.8, "amber", "up", "News RSS", 0.5, 1.5),
-
-        # ── Domestic Control ──
-        _ind("travel_02_border_wait", "Border Wait Times", "domestic_control",
-             "Average US border crossing wait time", "minutes",
-             45, "green", "stable", "CBP", 60, 120),
-        _ind("ice_detention_surge", "ICE Detention Population", "domestic_control",
-             "ICE detention population", "detainees",
-             62000, "amber", "up", "ICE Statistics", 50000, 150000, unavailable=True),
-        _ind("federal_regulations", "Federal Regulations", "domestic_control",
-             "Significant federal regulations (7-day)", "regulations",
-             5, "green", "stable", "Federal Register", 10, 25),
-        _ind("congress_activity", "Congressional Activity", "domestic_control",
-             "Congressional votes and actions (7-day)", "actions",
-             15, "green", "stable", "GovTrack", 20, 50),
-    ]
-
-
-def get_indicators_with_live_data() -> Dict[str, Any]:
-    """
-    Merge live-collected data into the full indicator set.
-    Live data overrides mock for matching IDs.
-    """
-    mock_indicators = get_all_mock_indicators()
-    live_count = 0
-
-    if data_service:
-        try:
-            live_data = data_service.collect_all()
-            live_by_id = {ind['id']: ind for ind in live_data}
-
-            for i, mock in enumerate(mock_indicators):
-                if mock['id'] in live_by_id:
-                    mock_indicators[i] = live_by_id[mock['id']]
-                    live_count += 1
-        except Exception as e:
-            logger.error(f"Live collection error, serving mock: {e}")
-
-    logger.info(f"Serving {len(mock_indicators)} indicators ({live_count} live, {len(mock_indicators) - live_count} mock)")
-
+def _build_indicators() -> Dict[str, Any]:
+    now = datetime.now(timezone.utc)
+    live = store.latest_live()
+    attempts = store.latest_attempts()
+    # An indicator that has never produced a real reading (e.g. its API key isn't
+    # configured) is left out rather than shown as a permanent blank.
+    indicators = [_indicator(d, live[d.id], attempts.get(d.id), now) for d in CATALOG if d.id in live]
+    run = store.last_run()
     return {
-        "indicators": mock_indicators,
-        "timestamp": _now(),
-        "live_count": live_count,
-        "total_count": len(mock_indicators),
+        "indicators": indicators,
+        "timestamp": _iso(run["finished_at"]) if run else None,
+        "live_count": sum(1 for i in indicators if i["status"]["dataSource"] == "LIVE"),
+        "total_count": len(indicators),
     }
 
 
-# ─── Compute HOPI score from current indicators ───
+def get_indicators_data() -> Dict[str, Any]:
+    return _cached("indicators", 60, _build_indicators)
+
+
+def _alerting(indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Indicators allowed to drive the phase: core tier with a fresh, real reading."""
+    return [i for i in indicators if i["tier"] == "core" and i["status"]["dataSource"] == "LIVE"]
+
 
 def compute_hopi(indicators: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Compute HOPI score from current indicator states."""
-    from collections import defaultdict
-
-    DOMAIN_WEIGHTS = {
-        'economy': 1.0, 'jobs_labor': 1.0, 'rights_governance': 1.0,
-        'security_infrastructure': 1.25, 'oil_axis': 1.0, 'ai_window': 1.0,
-        'global_conflict': 1.5, 'domestic_control': 1.25, 'cult': 0.75,
-    }
-    LEVEL_SCORES = {'green': 0.0, 'amber': 0.5, 'red': 1.0, 'unknown': 0.3}
-
-    domain_indicators: Dict[str, List] = defaultdict(list)
-    domain_critical: Dict[str, List] = defaultdict(list)
-
-    for ind in indicators:
-        domain = ind.get('domain', 'economy')
-        level = ind.get('status', {}).get('level', 'unknown')
-        domain_indicators[domain].append(ind)
-        if ind.get('critical') and level == 'red':
-            domain_critical[domain].append(ind['id'])
+    counted = _alerting(indicators)
+    by_domain: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    for ind in counted:
+        by_domain[ind["domain"]].append(ind)
 
     domains = {}
-    weighted_sum = 0.0
-    total_weight = 0.0
-
-    for domain, weight in DOMAIN_WEIGHTS.items():
-        inds = domain_indicators.get(domain, [])
-        if not inds:
-            domains[domain] = {"score": 0, "weight": weight, "indicators": [], "criticalAlerts": []}
-            continue
-
-        scores = [LEVEL_SCORES.get(i['status']['level'], 0.3) for i in inds]
-        avg = sum(scores) / len(scores)
+    for domain, inds in by_domain.items():
+        scores = [LEVEL_SCORES[i["status"]["level"]] for i in inds]
         domains[domain] = {
-            "score": round(avg, 2),
-            "weight": weight,
-            "indicators": [i['id'] for i in inds],
-            "criticalAlerts": domain_critical.get(domain, []),
+            "score": round(sum(scores) / len(scores), 2),
+            "weight": 1.0,
+            "indicators": [i["id"] for i in inds],
+            "criticalAlerts": [i["id"] for i in inds if i["critical"] and i["status"]["level"] == "red"],
         }
-        weighted_sum += avg * weight
-        total_weight += weight
+    score = round(sum(d["score"] for d in domains.values()) / len(domains), 2) if domains else 0
 
-    hopi = round(weighted_sum / total_weight, 2) if total_weight > 0 else 0
-
-    # Determine phase from HOPI score
-    red_count = sum(1 for i in indicators if i['status']['level'] == 'red')
-    amber_count = sum(1 for i in indicators if i['status']['level'] == 'amber')
-
-    if red_count >= 3:
+    red = sum(1 for i in counted if i["status"]["level"] == "red")
+    amber = sum(1 for i in counted if i["status"]["level"] == "amber")
+    if red >= 3:
         phase = 6
-    elif red_count >= 2:
+    elif red >= 2:
         phase = 4
-    elif red_count >= 1 or amber_count >= 2:
+    elif red >= 1 or amber >= 2:
         phase = 3
-    elif amber_count >= 1:
+    elif amber >= 1:
         phase = 2
     else:
         phase = 1
 
+    core_total = sum(1 for d in CATALOG if d.tier == "core")
     return {
-        "score": hopi,
-        "confidence": 88,
+        "score": score,
+        # Share of core indicators with fresh real data.
+        "confidence": round(100 * len(counted) / core_total) if core_total else 0,
         "phase": phase,
         "targetPhase": phase,
         "domains": domains,
-        "timestamp": _now(),
+        "counted": len(counted),
+        "red": red,
+        "amber": amber,
+        "timestamp": _iso(datetime.now(timezone.utc)),
     }
 
 
+def _set_cache_headers(response: Response, data: Dict[str, Any]) -> None:
+    # Let browsers and CDNs reuse responses briefly; the data only changes hourly.
+    response.headers["Cache-Control"] = "public, max-age=60" if data.get("timestamp") else "no-store"
+
+
 # ═══════════════════════════════════════════════
-# Routes — match frontend API paths exactly
+# Routes (served under both /api and /api/v1)
 # ═══════════════════════════════════════════════
 
 @app.get("/")
-async def root():
-    return {
-        "name": "Canairy",
-        "version": "2.2.0",
-        "status": "operational",
-        "docs": "/docs",
-        "live_collectors": list(data_service._collectors.keys()) if data_service else [],
-    }
+def root():
+    return {"name": "Canairy", "version": app.version, "docs": "/docs"}
 
 
-@app.get("/api/indicators")
-async def get_indicators():
-    """All indicators — live where available, mock elsewhere."""
-    return get_indicators_with_live_data()
+@app.get("/health")
+def health():
+    run = store.last_run()
+    fresh = bool(run and datetime.now(timezone.utc) - run["finished_at"] < FEED_STALE_AFTER)
+    return {"ok": True, "lastRun": _iso(run["finished_at"]) if run else None, "feedFresh": fresh}
 
 
-# Also serve on /api/v1/ paths for backwards compatibility
-@app.get("/api/v1/indicators/")
-async def get_indicators_v1():
-    return get_indicators_with_live_data()
+@app.get("/api/cron/collect", include_in_schema=False)
+def cron_collect(authorization: Optional[str] = Header(None)):
+    """Run one collection. For schedulers that call a URL (e.g. Vercel Cron),
+    which send `Authorization: Bearer $CRON_SECRET`. Disabled unless CRON_SECRET is set."""
+    secret = os.environ.get("CRON_SECRET")
+    if not secret:
+        raise HTTPException(status_code=404)
+    if not authorization or not hmac.compare_digest(authorization, f"Bearer {secret}"):
+        raise HTTPException(status_code=401)
+    from api.collect import run_once
+    result = run_once()
+    _cache.clear()
+    return {"run_id": result["run_id"], "live": result["live"], "total": result["total"]}
 
 
-@app.get("/api/indicators/{indicator_id}")
-async def get_indicator(indicator_id: str):
-    """Single indicator by ID."""
-    data = get_indicators_with_live_data()
-    for ind in data["indicators"]:
-        if ind["id"] == indicator_id:
-            return ind
-    return {"error": "Not found", "id": indicator_id}
+def _routes(prefix: str) -> None:
+    @app.get(f"{prefix}/indicators")
+    @app.get(f"{prefix}/indicators/", include_in_schema=False)
+    def indicators(response: Response):
+        data = get_indicators_data()
+        _set_cache_headers(response, data)
+        return data
+
+    @app.get(f"{prefix}/indicators/{{indicator_id}}")
+    def indicator(indicator_id: str):
+        for ind in get_indicators_data()["indicators"]:
+            if ind["id"] == indicator_id:
+                return ind
+        raise HTTPException(status_code=404, detail=f"Unknown indicator {indicator_id}")
+
+    @app.get(f"{prefix}/indicators/{{indicator_id}}/history")
+    def indicator_history(indicator_id: str, range_: str = Query("30d", alias="range", pattern=r"^\d{1,3}d$")):
+        if indicator_id not in BY_ID:
+            raise HTTPException(status_code=404, detail=f"Unknown indicator {indicator_id}")
+        days = min(int(range_[:-1]), 365)
+        points = _cached(f"history:{indicator_id}:{days}", 300, lambda: [
+            {"timestamp": _iso(r.collected_at), "value": r.value, "level": r.level}
+            for r in store.history(indicator_id, days)
+        ])
+        return {"id": indicator_id, "range": f"{days}d", "points": points}
+
+    @app.get(f"{prefix}/hopi")
+    def hopi():
+        return compute_hopi(get_indicators_data()["indicators"])
+
+    @app.get(f"{prefix}/status")
+    def status():
+        data = get_indicators_data()
+        run = store.last_run()
+        now = datetime.now(timezone.utc)
+        fresh = bool(run and now - run["finished_at"] < FEED_STALE_AFTER)
+        core_total = sum(1 for d in CATALOG if d.tier == "core")
+        counted = _alerting(data["indicators"])
+        return {
+            "operational": fresh,
+            "lastUpdate": _iso(run["finished_at"]) if run else None,
+            "activeAlerts": sum(1 for i in counted if i["status"]["level"] == "red"),
+            "dataQuality": round(100 * len(counted) / core_total) if core_total else 0,
+            "message": (
+                f"{len(counted)} of {core_total} core indicators have fresh data."
+                if fresh else "Data collection is behind schedule; readings may be out of date."
+            ),
+        }
+
+    @app.get(f"{prefix}/phase")
+    def phase():
+        hopi_data = compute_hopi(get_indicators_data()["indicators"])
+        n = hopi_data["phase"]
+        return {
+            "number": n,
+            "name": PHASE_NAMES[n],
+            "description": (
+                f"Based on {hopi_data['counted']} indicators with fresh data: "
+                f"{hopi_data['red']} red, {hopi_data['amber']} amber."
+            ),
+            "triggers": [],
+            "actions": [],
+            "color": PHASE_COLORS[n],
+        }
 
 
-@app.get("/api/hopi")
-async def get_hopi():
-    """HOPI score computed from current indicators."""
-    data = get_indicators_with_live_data()
-    return compute_hopi(data["indicators"])
-
-
-@app.get("/api/v1/hopi")
-async def get_hopi_v1():
-    return await get_hopi()
-
-
-@app.get("/api/status")
-async def get_status():
-    """System status."""
-    data = get_indicators_with_live_data()
-    red_count = sum(1 for i in data["indicators"] if i["status"]["level"] == "red")
-    return {
-        "operational": True,
-        "lastUpdate": _now(),
-        "activeAlerts": red_count,
-        "dataQuality": round(data["live_count"] / max(data["total_count"], 1) * 100) if data["live_count"] > 0 else 88,
-        "message": f"Monitoring {data['total_count']} indicators ({data['live_count']} live).",
-    }
-
-
-@app.get("/api/v1/status")
-async def get_status_v1():
-    return await get_status()
-
-
-@app.get("/api/phase")
-async def get_phase():
-    """Current recommended phase."""
-    data = get_indicators_with_live_data()
-    hopi = compute_hopi(data["indicators"])
-    phase_num = hopi["phase"]
-
-    PHASE_NAMES = {
-        0: "Foundations", 1: "72-Hour Bin", 2: "Digital & Comms",
-        3: "Air, Health, Mobile", 4: "Dry-Basement / Perimeter",
-        5: "Oil-Tank → Generator Prep", 6: "Shelter Nook Build",
-        7: "Harden + Genset Live", 8: "Water & Circuits",
-        9: "Optional Safe-Room",
-    }
-    PHASE_COLORS = {
-        0: "#10B981", 1: "#10B981", 2: "#10B981", 3: "#F59E0B",
-        4: "#F59E0B", 5: "#F97316", 6: "#F97316", 7: "#EF4444",
-        8: "#EF4444", 9: "#991B1B",
-    }
-
-    return {
-        "number": phase_num,
-        "name": PHASE_NAMES.get(phase_num, "Unknown"),
-        "description": f"Phase {phase_num} activated based on current indicator readings.",
-        "triggers": [f"Based on {hopi['score']:.0%} HOPI score"],
-        "actions": [],
-        "color": PHASE_COLORS.get(phase_num, "#6B7280"),
-    }
-
-
-@app.get("/api/v1/phase")
-async def get_phase_v1():
-    return await get_phase()
-
-
-@app.post("/api/indicators/refresh-all")
-async def refresh_all():
-    """Invalidate cache and re-collect."""
-    if data_service:
-        data_service.invalidate_cache()
-    return {"status": "ok", "message": "Cache invalidated, next request will re-collect."}
-
-
-@app.post("/api/indicators/{indicator_id}/refresh")
-async def refresh_indicator(indicator_id: str):
-    """Refresh a single indicator."""
-    if data_service:
-        data_service.invalidate_cache()
-    return await get_indicator(indicator_id)
+_routes("/api")
+_routes("/api/v1")
 
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.environ.get("PORT", 5555))
-    uvicorn.run("simple_main:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run("api.simple_main:app", host="127.0.0.1", port=int(os.environ.get("PORT", 5555)), reload=True)

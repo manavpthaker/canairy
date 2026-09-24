@@ -1,17 +1,20 @@
 /**
- * DataSourceBanner - Shows warning when using fallback/mock data
- *
- * Displays an amber banner informing users that live data is unavailable
- * and they're seeing cached/fallback values.
+ * DataSourceBanner - says plainly when the page isn't showing current data:
+ * either the API is unreachable (we show the last real data this browser
+ * loaded, with its age) or the app is running on demo data.
  */
 
 import React from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatDistanceToNow } from 'date-fns';
 import { cn } from '../../utils/cn';
+
+const IS_DEMO = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
 interface DataSourceBannerProps {
   isUsingFallback: boolean;
+  lastSuccessfulFetch?: Date | null;
   onRetry?: () => void;
   isRetrying?: boolean;
   className?: string;
@@ -19,6 +22,7 @@ interface DataSourceBannerProps {
 
 export const DataSourceBanner: React.FC<DataSourceBannerProps> = ({
   isUsingFallback,
+  lastSuccessfulFetch,
   onRetry,
   isRetrying = false,
   className,
@@ -43,12 +47,25 @@ export const DataSourceBanner: React.FC<DataSourceBannerProps> = ({
 
         <div className="flex-1 min-w-0">
           <p className="text-sm text-amber-200">
-            <span className="font-medium">Live data unavailable</span>
-            <span className="text-amber-200/70"> — showing cached values</span>
+            {IS_DEMO ? (
+              <>
+                <span className="font-medium">Demo data</span>
+                <span className="text-amber-200/70"> — these are sample values, not real readings</span>
+              </>
+            ) : (
+              <>
+                <span className="font-medium">Can't reach Canairy right now</span>
+                <span className="text-amber-200/70">
+                  {lastSuccessfulFetch
+                    ? ` — showing the data you last loaded ${formatDistanceToNow(lastSuccessfulFetch, { addSuffix: true })}`
+                    : ' — try again in a minute'}
+                </span>
+              </>
+            )}
           </p>
         </div>
 
-        {onRetry && (
+        {onRetry && !IS_DEMO && (
           <button
             onClick={onRetry}
             disabled={isRetrying}

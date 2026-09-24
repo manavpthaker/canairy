@@ -5,7 +5,7 @@
  * Cards are previews — this panel is where the full story lives.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -24,7 +24,6 @@ import { IndicatorData } from '../../types';
 import { cn } from '../../utils/cn';
 import { ThresholdBar, ThresholdLabels } from './ThresholdBar';
 import { IndicatorChart } from '../charts/IndicatorChart';
-import { generateHistoricalData } from '../../utils/historicalDataGenerator';
 import {
   formatValue,
   formatDomain,
@@ -57,7 +56,8 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('7d');
 
   const { status, domain, unit, sourceUrl } = indicator;
-  const currentValue = typeof status.value === 'number' ? status.value : 0;
+  const hasValue = typeof status.value === 'number';
+  const currentValue = hasValue ? (status.value as number) : 0;
   const isCritical = isCriticalIndicator(indicator.id);
 
   // Get enriched data
@@ -68,11 +68,6 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
   const phases = getPhaseRelevance(indicator.id);
   const sourceInfo = getSourceInfo(indicator.id);
   const impactLine = getCardImpactLine(indicator.id, status.level as 'green' | 'amber' | 'red');
-
-  // Ensure history exists
-  const history = useMemo(() => {
-    return indicator.history || generateHistoricalData(indicator, timeRange);
-  }, [indicator, timeRange]);
 
   // Status styling
   const statusColor = {
@@ -97,13 +92,14 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
   }[status.level] || 'bg-olive-muted';
 
   // Trend
-  const TrendIcon = !status.trend
+  const hasTrend = status.trend === 'up' || status.trend === 'down';
+  const TrendIcon = !hasTrend
     ? Minus
     : status.trend === 'up'
     ? TrendingUp
     : TrendingDown;
 
-  const trendColor = !status.trend
+  const trendColor = !hasTrend
     ? 'text-olive-muted'
     : indicator.greenFlag
     ? status.trend === 'up'
@@ -113,8 +109,8 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
     ? 'text-red-400'
     : 'text-emerald-400';
 
-  const trendLabel = !status.trend
-    ? 'Stable'
+  const trendLabel = !hasTrend
+    ? status.trend === 'stable' ? 'Stable' : 'Not enough history'
     : indicator.greenFlag
     ? status.trend === 'up'
       ? 'Improving'
@@ -139,7 +135,7 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
             <div className="flex items-center gap-2 mb-1">
               <div className={cn('w-2.5 h-2.5 rounded-full', statusDotColor)} />
               <h2 className="text-lg font-display font-semibold text-olive-primary truncate">
-                {getDisplayName(indicator.id) || indicator.name}
+                {indicator.name || getDisplayName(indicator.id)}
               </h2>
             </div>
             {/* Domain + Source */}
@@ -185,22 +181,27 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
           <section>
             <div className="flex items-baseline gap-3 mb-3">
               <span className={cn('text-4xl font-mono font-bold', statusColor)}>
-                {formatValue(currentValue, unit)}
+                {hasValue ? formatValue(currentValue, unit) : '—'}
               </span>
-              <div className={cn('flex items-center gap-1', trendColor)}>
-                <TrendIcon className="w-5 h-5" />
-                <span className="text-sm font-medium">{trendLabel}</span>
-              </div>
+              {hasValue && (
+                <div className={cn('flex items-center gap-1', trendColor)}>
+                  <TrendIcon className="w-5 h-5" />
+                  <span className="text-sm font-medium">{trendLabel}</span>
+                </div>
+              )}
             </div>
+            {status.note && (
+              <p className="text-xs text-olive-muted mb-3">{status.note}</p>
+            )}
 
             {/* Threshold Bar with Labels */}
-            {indicator.thresholds && (
+            {hasValue && indicator.thresholds && (
               <div className="space-y-1">
                 <ThresholdBar
                   value={currentValue}
                   amberThreshold={indicator.thresholds.threshold_amber}
                   redThreshold={indicator.thresholds.threshold_red}
-                  inverted={indicator.greenFlag}
+                  inverted={(indicator.thresholds.threshold_red ?? 0) < (indicator.thresholds.threshold_amber ?? 0)}
                   height={8}
                 />
                 <ThresholdLabels
@@ -212,7 +213,7 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
           </section>
 
           {/* Current Status Summary */}
-          {impactLine && (
+          {impactLine && status.level !== 'unknown' && (
             <section className={cn(
               "p-4 rounded-xl border",
               status.level === 'red' ? "bg-red-500/10 border-red-500/20" :
@@ -392,7 +393,7 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
             </div>
             <div className="bg-white/[0.02] rounded-xl p-3 border border-white/5">
               <IndicatorChart
-                indicator={{ ...indicator, history }}
+                indicator={indicator}
                 timeRange={timeRange}
                 height={120}
                 className="w-full"
@@ -445,14 +446,14 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
               <div className="flex items-center justify-between">
                 <span className="text-xs text-olive-muted">Source</span>
                 <span className="text-sm text-olive-primary">
-                  {getSourceFull(indicator.id)}
+                  {indicator.dataSource || getSourceFull(indicator.id)}
                 </span>
               </div>
-              {sourceInfo?.updateFrequency && (
+              {(indicator.updateFrequency || sourceInfo?.updateFrequency) && (
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-olive-muted">Updates</span>
                   <span className="text-sm text-olive-secondary capitalize">
-                    {sourceInfo.updateFrequency}
+                    {indicator.updateFrequency || sourceInfo?.updateFrequency}
                   </span>
                 </div>
               )}
@@ -462,7 +463,7 @@ export const IndicatorDetailPanel: React.FC<IndicatorDetailPanelProps> = ({
                   {formatTimeAgo(status.lastUpdate)}
                 </span>
               </div>
-              {sourceInfo?.description && (
+              {!indicator.tier && sourceInfo?.description && (
                 <p className="text-xs text-olive-muted mt-2 pt-2 border-t border-white/5">
                   {sourceInfo.description}
                 </p>

@@ -7,6 +7,8 @@
  * coffee and have it make sense, it's wrong.
  */
 
+import { CORE_INDICATOR_CONTEXT } from '../services/synthesis/coreIndicatorContext';
+
 export interface IndicatorTranslation {
   // System fields (never rendered directly)
   id: string;
@@ -467,6 +469,8 @@ export function getTranslation(indicatorId: string): IndicatorTranslation | null
 export function getDisplayName(indicatorId: string): string {
   const translation = INDICATOR_TRANSLATIONS[indicatorId];
   if (translation) return translation.displayName;
+  const context = CORE_INDICATOR_CONTEXT[indicatorId];
+  if (context) return context.dataPointLabel;
 
   // Fallback: Convert ID to readable name
   return indicatorId
@@ -491,6 +495,9 @@ export function getSignalHeadline(indicatorId: string, status: 'amber' | 'red'):
  * Get impact description for an indicator at a given status
  */
 export function getImpact(indicatorId: string, status: 'amber' | 'red'): string {
+  // Core indicators' guidance matches what the live number measures; prefer it.
+  const context = CORE_INDICATOR_CONTEXT[indicatorId];
+  if (context) return context.familyImpact[status];
   const translation = INDICATOR_TRANSLATIONS[indicatorId];
   if (!translation) {
     return `${getDisplayName(indicatorId)} showing elevated activity`;
@@ -502,6 +509,8 @@ export function getImpact(indicatorId: string, status: 'amber' | 'red'): string 
  * Get action recommendation for an indicator at a given status
  */
 export function getAction(indicatorId: string, status: 'amber' | 'red'): string {
+  const context = CORE_INDICATOR_CONTEXT[indicatorId];
+  if (context) return context.whatToDo[status];
   const translation = INDICATOR_TRANSLATIONS[indicatorId];
   if (!translation) {
     return 'Monitor the situation and review your preparedness';
