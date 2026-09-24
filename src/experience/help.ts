@@ -114,6 +114,7 @@ const HELP_FOR: Record<string, string[]> = {
   job_02_continuing_claims: ['ui', 'snap', 'help211'],
   job_04_sahm_rule: ['ui', 'snap'],
   job_03_real_wages: ['eitc', 'snap', 'lifeline'],
+  benefits_01_snap: ['snap', 'help211'],
   green_g1_gdp_rates: ['eitc', 'ui'],
   econ_02_grocery_cpi: ['snap', 'wic'],
   cost_beef: ['snap', 'wic'],

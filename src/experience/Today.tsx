@@ -9,7 +9,7 @@ import { Action, buildActions, composeHeadline } from './guidance';
 import { openHousehold, useDone, useHousehold } from './household';
 import { useBriefing } from './useBriefing';
 import {
-  AREA_NAME, LEVEL_WORD, SEVERITY, byArea, formatReading, isAlerting, levelOf, timeAgo, todayLabel,
+  AREA_NAME, LEVEL_WORD, SEVERITY, byArea, formatReading, isAlerting, levelOf, perspectiveLine, timeAgo, todayLabel,
 } from './format';
 
 export function Today() {
@@ -186,7 +186,8 @@ function WatchRow({ ind, note }: { ind: IndicatorData; note?: string }) {
           {formatReading(ind.status.value, ind.unit)}
         </span>
         <span className="why">
-          <span className={`lvl lvl-${level}`}>{LEVEL_WORD[level]}.</span> {note ?? `${ind.description.split('. ')[0]}.`}
+          <span className={`lvl lvl-${level}`}>{LEVEL_WORD[level]}.</span> {perspectiveLine(ind) ?? ''}{' '}
+          {note ?? `${ind.description.split('. ')[0]}.`}
         </span>
         {!flat && (
           <span className="spark">

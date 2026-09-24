@@ -26,6 +26,10 @@ export function About() {
         can judge for yourself.
       </p>
       <p>
+        Each signal page also puts today’s number in perspective: its usual range, the record high and low, and how today
+        compares, all worked out from up to ten years of the same official source.
+      </p>
+      <p>
         A few signals are shown for context only. They’re real data but loose proxies for household risk, so they never
         raise an alert on their own.
       </p>

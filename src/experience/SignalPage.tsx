@@ -4,6 +4,7 @@ import { useStore } from '../store';
 import { useIndicatorHistory } from '../hooks/useIndicatorHistory';
 import { getAdvice } from './advice';
 import { Chart } from './Chart';
+import { Perspective } from './Perspective';
 import { helpFor } from './help';
 import { useHousehold } from './household';
 import { AREA_NAME, LEVEL_WORD, byArea, formatReading, levelOf, timeAgo } from './format';
@@ -48,6 +49,7 @@ export function SignalPage() {
         {t && <span style={{ color: 'var(--ink-2)' }}>{t}</span>}
       </div>
       {ind.status.note && <p className="cn-note">{ind.status.note}</p>}
+      <div style={{ maxWidth: '40rem' }}><Perspective ind={ind} /></div>
 
       <div className="cn-grid-2" style={{ marginTop: '1.5rem' }}>
         <section aria-labelledby="history">

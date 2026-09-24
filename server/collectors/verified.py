@@ -49,8 +49,51 @@ class FEMADeclarationsCollector(BaseCollector):
             "states": sorted({d.get("state", "") for d in counted}),
         })
 
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        return _fema_history(years)
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), int)
+
+
+def _rolling_counts(events: List[datetime], window_days: int, years: int, step_days: int = 7) -> List[Tuple[datetime, float]]:
+    """Count of events in the trailing window, sampled every `step_days` over the last `years`."""
+    events = sorted(events)
+    out: List[Tuple[datetime, float]] = []
+    end = datetime.utcnow()
+    t = end - timedelta(days=365 * years)
+    lo = hi = 0
+    while t <= end:
+        while hi < len(events) and events[hi] <= t:
+            hi += 1
+        while lo < hi and events[lo] <= t - timedelta(days=window_days):
+            lo += 1
+        out.append((t, float(hi - lo)))
+        t += timedelta(days=step_days)
+    return out
+
+
+def _fema_history(years: int) -> List[Tuple[datetime, float]]:
+    since = (datetime.utcnow() - timedelta(days=365 * years + 90)).strftime("%Y-%m-%d")
+    rows: List[Dict[str, Any]] = []
+    skip = 0
+    while True:
+        resp = requests.get(FEMADeclarationsCollector.URL, headers=HEADERS, timeout=60, params={
+            "$filter": f"declarationDate ge '{since}' and (declarationType eq 'DR' or declarationType eq 'EM')",
+            "$select": "disasterNumber,declarationDate",
+            "$top": 10000, "$skip": skip,
+        })
+        resp.raise_for_status()
+        page = resp.json().get("DisasterDeclarationsSummaries", [])
+        rows += page
+        if len(page) < 10000:
+            break
+        skip += 10000
+    first: Dict[int, datetime] = {}
+    for r in rows:
+        d = datetime.strptime(r["declarationDate"][:10], "%Y-%m-%d")
+        first[r["disasterNumber"]] = min(d, first.get(r["disasterNumber"], d))
+    return _rolling_counts(list(first.values()), 90, years)
 
 
 class FDADrugShortagesCollector(BaseCollector):
@@ -119,8 +162,21 @@ class TreasuryVolatilityCollector(BaseCollector):
             "market_time": datetime.utcfromtimestamp(meta.get("regularMarketTime", 0)).isoformat(),
         })
 
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        return _tnx_history(years)
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), float)
+
+
+def _tnx_history(years: int) -> List[Tuple[datetime, float]]:
+    chart = _yahoo_chart("^TNX", f"{years}y", "1d")
+    q = chart["indicators"]["quote"][0]
+    out = []
+    for ts, hi, lo in zip(chart["timestamp"], q["high"], q["low"]):
+        if hi is not None and lo is not None and hi >= lo:
+            out.append((datetime.utcfromtimestamp(ts), round((hi - lo) * 100, 2)))
+    return out
 
 
 class LuxuryDrawdownCollector(BaseCollector):
@@ -220,7 +276,7 @@ class FREDSeriesCollector(BaseCollector):
     def backfill(self, days: int) -> List[Tuple[datetime, float]]:
         """Past values as (observation date, value), oldest first."""
         cutoff = (datetime.utcnow() - timedelta(days=days)).strftime("%Y-%m-%d")
-        obs = self._observations(2000)
+        obs = self._observations(20000 if days > 400 else 2000)
         points = []
         for i, o in enumerate(obs):
             if o["date"] < cutoff:
@@ -232,6 +288,10 @@ class FREDSeriesCollector(BaseCollector):
 
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), float)
+
+
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        return self.backfill(365 * years + 400)
 
 
 class BrentCrudeCollector(FREDSeriesCollector):
@@ -310,6 +370,19 @@ class TreasuryAuctionDemandCollector(BaseCollector):
                 })
         return None
 
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        since = (datetime.utcnow() - timedelta(days=365 * years)).strftime("%Y-%m-%d")
+        resp = requests.get(self.URL, headers=HEADERS, timeout=60, params={
+            "filter": f"security_term:eq:10-Year,security_type:eq:Note,inflation_index_security:eq:No,auction_date:gte:{since}",
+            "sort": "auction_date", "page[size]": 1000,
+        })
+        resp.raise_for_status()
+        return [
+            (datetime.strptime(r["auction_date"], "%Y-%m-%d"), float(r["bid_to_cover_ratio"]))
+            for r in resp.json().get("data", [])
+            if r.get("bid_to_cover_ratio") not in (None, "", "null")
+        ]
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), float)
 
@@ -333,6 +406,15 @@ class FDICFailuresCollector(BaseCollector):
             "data_source": "FDIC BankFind",
             "banks": [b.get("NAME") for b in banks],
         })
+
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        since = (datetime.utcnow() - timedelta(days=365 * (years + 1))).strftime("%Y-%m-%d")
+        resp = requests.get(self.URL, headers=HEADERS, timeout=60, params={
+            "filters": f"FAILDATE:[{since} TO *]", "fields": "FAILDATE", "limit": 10000,
+        })
+        resp.raise_for_status()
+        dates = [datetime.strptime(r["data"]["FAILDATE"], "%m/%d/%Y") for r in resp.json().get("data", [])]
+        return _rolling_counts(dates, 365, years, step_days=30)
 
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), int)
@@ -390,6 +472,18 @@ class SPRLevelCollector(BaseCollector):
             "period": rows[0].get("period"),
         })
 
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        resp = requests.get(self.URL, headers=HEADERS, timeout=60, params={
+            "api_key": os.environ.get("EIA_API_KEY", "DEMO_KEY"), "frequency": "weekly",
+            "data[0]": "value", "facets[series][]": "WCSSTUS1",
+            "sort[0][column]": "period", "sort[0][direction]": "desc", "length": 53 * years,
+        })
+        resp.raise_for_status()
+        return sorted(
+            (datetime.strptime(r["period"], "%Y-%m-%d"), round(float(r["value"]) / 1000, 1))
+            for r in resp.json().get("response", {}).get("data", [])
+        )
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), float)
 
@@ -412,6 +506,14 @@ class CISAKEVWeeklyCollector(BaseCollector):
             "added_last_28_days": len(recent),
             "ransomware_linked": sum(1 for v in recent if v.get("knownRansomwareCampaignUse") == "Known"),
         })
+
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        resp = requests.get(self.URL, headers=HEADERS, timeout=60)
+        resp.raise_for_status()
+        dates = [datetime.strptime(v["dateAdded"], "%Y-%m-%d") for v in resp.json().get("vulnerabilities", [])]
+        # The catalog's first weeks (Nov 2021) loaded its backlog in bulk; start after that.
+        start = datetime(2022, 6, 1)
+        return [(t, n / 4) for t, n in _rolling_counts(dates, 28, years) if t >= start]
 
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), float)
@@ -549,6 +651,14 @@ class RealWagesCollector(BaseCollector):
             "wage_change": w_change, "price_change": p_change,
         })
 
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        wages = dict(_FREDSeries("AHETPI").history(years))
+        prices = dict(_FREDSeries("CPIAUCSL").history(years))
+        return [
+            (d, round(((1 + wages[d] / 100) / (1 + prices[d] / 100) - 1) * 100, 2))
+            for d in sorted(wages) if d in prices
+        ]
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), float)
 
@@ -593,6 +703,28 @@ class BLSInflationCollector(BaseCollector):
             "data_source": f"BLS {self.SERIES}",
             "observation_date": f"{latest['year']}-{latest['period'][1:]}",
         })
+
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        now = datetime.utcnow().year
+        payload: Dict[str, Any] = {"seriesid": [self.SERIES], "startyear": str(now - years - 1), "endyear": str(now)}
+        if os.environ.get("BLS_API_KEY"):
+            payload["registrationkey"] = os.environ["BLS_API_KEY"]
+        resp = requests.post("https://api.bls.gov/publicAPI/v2/timeseries/data/", json=payload, headers=HEADERS, timeout=60)
+        resp.raise_for_status()
+        body = resp.json()
+        if body.get("status") != "REQUEST_SUCCEEDED":
+            return []
+        values = {
+            (int(r["year"]), r["period"]): float(r["value"])
+            for r in body["Results"]["series"][0]["data"]
+            if r["period"].startswith("M") and r["period"] != "M13" and r["value"] not in ("-", "")
+        }
+        out = []
+        for (y, per), v in sorted(values.items()):
+            prior = values.get((y - 1, per))
+            if prior:
+                out.append((datetime(y, int(per[1:]), 1), round((v / prior - 1) * 100, 2)))
+        return out
 
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), float)
@@ -640,6 +772,29 @@ class WastewaterCollector(BaseCollector):
             "week_end": latest_week, "by_pathogen": shares, "worst": worst,
         })
 
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        since = (datetime.utcnow() - timedelta(days=365 * years)).strftime("%Y-%m-%d")
+        resp = requests.get(self.URL, headers=HEADERS, timeout=120, params={
+            "$select": "week_end,pathogen_target,site_wval_category,sum(population_served) as pop",
+            "$group": "week_end,pathogen_target,site_wval_category",
+            "$where": f"week_end >= '{since}'",
+            "$limit": 50000,
+        })
+        resp.raise_for_status()
+        totals: Dict[Tuple[str, str], float] = {}
+        high: Dict[Tuple[str, str], float] = {}
+        for r in resp.json():
+            key = (r["week_end"][:10], r["pathogen_target"])
+            pop = float(r.get("pop") or 0)
+            totals[key] = totals.get(key, 0) + pop
+            if r.get("site_wval_category") in ("High", "Very High"):
+                high[key] = high.get(key, 0) + pop
+        worst: Dict[str, float] = {}
+        for (week, pathogen), total in totals.items():
+            if pathogen in self.PATHOGENS and total:
+                worst[week] = max(worst.get(week, 0), 100 * high.get((week, pathogen), 0) / total)
+        return [(datetime.strptime(w, "%Y-%m-%d"), round(v, 1)) for w, v in sorted(worst.items())]
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), float)
 
@@ -662,5 +817,57 @@ class MeaslesCollector(BaseCollector):
             "through_week_ending": complete[-1]["week_end"],
         })
 
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        resp = requests.get(self.URL, headers=HEADERS, timeout=30)
+        resp.raise_for_status()
+        weeks = sorted(resp.json(), key=lambda w: w["week_end"])[:-1]
+        out = []
+        for i in range(3, len(weeks)):
+            window = weeks[i - 3:i + 1]
+            out.append((datetime.strptime(weeks[i]["week_end"], "%Y-%m-%d"), float(sum(int(w["cases"]) for w in window))))
+        return out
+
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), int)
+
+
+class SNAPParticipationCollector(BaseCollector):
+    """People receiving SNAP nationally, in millions (USDA FNS monthly data, ~3 months behind)."""
+
+    URL = "https://www.fna.usda.gov/sites/default/files/resource-files/snap-4fymonthly-9.xlsx"
+
+    def _months(self) -> List[Tuple[datetime, float]]:
+        import io
+
+        import openpyxl
+
+        resp = requests.get(self.URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
+        resp.raise_for_status()
+        sheet = openpyxl.load_workbook(io.BytesIO(resp.content), read_only=True, data_only=True).worksheets[0]
+        months = []
+        for row in sheet.iter_rows(values_only=True):
+            label, persons = row[0], row[1] if len(row) > 1 else None
+            if isinstance(label, str) and isinstance(persons, (int, float)):
+                try:
+                    months.append((datetime.strptime(label.strip(), "%b %Y"), round(persons / 1e6, 2)))
+                except ValueError:
+                    continue  # annual summary rows ("FY 2026")
+        return sorted(months)
+
+    def collect(self) -> Optional[Dict[str, Any]]:
+        months = self._months()
+        if not months:
+            return None
+        when, value = months[-1]
+        year_ago = dict(months).get(when.replace(year=when.year - 1))
+        return self._create_reading(value, {
+            "data_source": "USDA FNS SNAP data tables",
+            "month": when.strftime("%Y-%m"),
+            "change_from_year_ago_pct": round((value / year_ago - 1) * 100, 1) if year_ago else None,
+        })
+
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        return self._months()
+
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        return isinstance(data.get("value"), float)

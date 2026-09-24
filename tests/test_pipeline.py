@@ -263,3 +263,36 @@ def test_reads_are_cdn_cacheable_but_cron_is_not(client, monkeypatch):
     assert "s-maxage=300" in client.get("/api/v1/indicators").headers["cache-control"]
     monkeypatch.setenv("CRON_SECRET", "s")
     assert "cache-control" not in client.get("/api/cron/collect").headers
+
+
+def test_briefing_refreshes_when_quoted_values_move():
+    b, data = _brief_data()
+    fp = b.fingerprint(data)
+    data["indicators"][1]["value"] = 199.0  # 197 → 199: still "200" at 2 sig figs
+    assert b.fingerprint(data) == fp
+    data["indicators"][0]["value"] = 131.0  # oil 115 → 131: quoted number would be wrong
+    assert b.fingerprint(data) != fp
+
+
+# ─── Baselines ───
+
+def test_summarize_and_percentile():
+    from api import baselines
+    start = datetime(2020, 1, 1)
+    points = [(start + timedelta(days=i), float(i)) for i in range(101)]  # 0..100
+    stats = baselines.summarize(points)
+    assert (stats["p25"], stats["p50"], stats["p75"]) == (25, 50, 75)
+    assert (stats["min"], stats["max"], stats["maxDate"]) == (0, 100, "2020-04-10")
+    assert baselines.percentile(90, stats["quantiles"]) == 90
+    assert baselines.percentile(-5, stats["quantiles"]) == 0
+    assert baselines.percentile(500, stats["quantiles"]) == 100
+    assert baselines.summarize(points[:5]) is None  # too little history to say what's normal
+
+
+def test_api_includes_baseline(client):
+    from api import baselines
+    _save(_r("energy_gas_price", 4.5, "amber"))
+    pts = [(datetime(2016, 1, 1) + timedelta(weeks=i), 2.0 + i / 100) for i in range(200)]
+    store.save_baseline("energy_gas_price", baselines.summarize(pts))
+    b = client.get("/api/v1/indicators/energy_gas_price").json()["baseline"]
+    assert b["since"] == "2016-01-01" and b["percentile"] == 100 and "quantiles" not in b

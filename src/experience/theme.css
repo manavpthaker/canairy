@@ -339,3 +339,6 @@ html.cn body {
   .cn-nav a.hide-sm { display: none; }
   .cn-brand span { display: none; }
 }
+
+.cn-perspective svg { display: block; overflow: visible; }
+.cn-perspective .axis { font-size: 12px; font-family: var(--font-body); fill: var(--ink-3); }

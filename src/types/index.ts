@@ -16,12 +16,6 @@ export type IndicatorStatus = {
   signalLevel?: AlertLevel;  // Experimental indicators: level before being excluded from alerts
 };
 
-// Baseline data for comparison
-export interface IndicatorBaseline {
-  value: number;
-  period: string;  // e.g., "Jan 2026" or "12-month avg"
-}
-
 export type Domain =
   | 'economy'
   | 'jobs_labor'
@@ -88,15 +82,22 @@ export interface Indicator {
   metadata?: Record<string, unknown>;
 }
 
+export interface Baseline {
+  since: string;
+  p25: number;
+  p50: number;
+  p75: number;
+  min: number;
+  minDate: string;
+  max: number;
+  maxDate: string;
+  percentile?: number; // share of past readings below today's (0–100)
+}
+
 export interface IndicatorData extends Indicator {
   status: IndicatorStatus;
+  baseline?: Baseline | null;
   history?: DataPoint[];
-
-  // Extended context for AI analysis
-  baseline?: IndicatorBaseline;
-  previousStatus?: AlertLevel;
-  statusChangedDate?: string;  // ISO date string
-  source?: string;  // Human-readable source name (e.g., "BLS", "NERC")
 }
 
 export interface DataPoint {

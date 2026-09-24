@@ -74,3 +74,16 @@ export function byArea(indicators: IndicatorData[]): [string, IndicatorData[]][]
 }
 
 export const SEVERITY: Record<Level, number> = { red: 0, amber: 1, green: 2, unknown: 3 };
+
+/** "Higher than 91% of readings since 2016", or the record wording at the extremes. */
+export function perspectiveLine(ind: IndicatorData): string | null {
+  const b = ind.baseline;
+  const v = typeof ind.status.value === 'number' ? ind.status.value : null;
+  if (!b || v === null || b.percentile === undefined) return null;
+  const since = b.since.slice(0, 4);
+  if (v >= b.max) return `The highest reading since at least ${since}.`;
+  if (v <= b.min) return `The lowest reading since at least ${since}.`;
+  if (b.percentile >= 50) return `Higher than ${b.percentile}% of readings since ${since}.`;
+  return `Lower than ${100 - b.percentile}% of readings since ${since}.`;
+}
+
