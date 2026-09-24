@@ -18,7 +18,7 @@ import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { IndicatorData } from '../../types';
 import { format } from 'date-fns';
 import 'chartjs-adapter-date-fns';
-import { generateHistoricalData as generateSeededHistoricalData } from '../../utils/historicalDataGenerator';
+import { useIndicatorHistory } from '../../hooks/useIndicatorHistory';
 import { formatUnit } from '../../data/indicatorDisplay';
 
 // Register Chart.js components
@@ -60,8 +60,9 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
     }
   };
 
-  // Use seeded historical data generator for deterministic results
-  const historicalData = indicator.history || generateSeededHistoricalData(indicator, timeRange);
+  // Real stored readings only. Charts stay empty until there is history to show.
+  const { points, loading } = useIndicatorHistory(indicator.id, timeRange);
+  const historicalData = indicator.history ?? points;
 
   // Get chart type based on indicator
   const getChartType = () => {
@@ -88,6 +89,21 @@ export const IndicatorChart: React.FC<IndicatorChartProps> = ({
   };
 
   const chartType = getChartType();
+
+  if (chartType !== 'gauge' && historicalData.length < 2) {
+    return (
+      <div
+        className={`flex items-center justify-center text-xs text-olive-muted text-center px-4 ${className ?? ''}`}
+        style={{ height }}
+      >
+        {loading
+          ? 'Loading history…'
+          : historicalData.length === 1
+            ? 'One reading so far. The trend line appears after the next update.'
+            : 'No history yet. Readings are saved each hour and will build a trend here.'}
+      </div>
+    );
+  }
 
   // Common chart options
   const commonOptions = {

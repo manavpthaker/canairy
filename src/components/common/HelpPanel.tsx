@@ -145,7 +145,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ className }) => {
                 <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
                   <h3 className="text-sm font-medium text-amber-300 mb-2">How Canairy works</h3>
                   <p className="text-xs text-white/40 leading-relaxed">
-                    We monitor 35+ public data sources — government APIs, financial data, infrastructure reports — and translate them into simple recommendations for your family. All data is sourced from official channels and updated automatically.
+                    We monitor about two dozen public data sources — government APIs, financial data, infrastructure reports — and translate them into simple recommendations for your family. All data is sourced from official channels and updated automatically.
                   </p>
                   <Link
                     to="/action-plan#how-it-works"

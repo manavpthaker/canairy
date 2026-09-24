@@ -465,7 +465,7 @@ export const Settings: React.FC = () => {
         <Section title="About Canairy" icon={Info} defaultOpen={false}>
           <div className="space-y-4">
             <p className="text-sm text-white/50 leading-relaxed">
-              Canairy is a free, open-source household resilience monitor. We track 35+ public data sources —
+              Canairy is a free, open-source household resilience monitor. We track about two dozen public data sources —
               government APIs, financial data, infrastructure reports — and translate them into simple,
               actionable recommendations for your family.
             </p>

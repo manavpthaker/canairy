@@ -1,7 +1,6 @@
 import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useStore } from './store';
-import { wsService } from './services/api';
 import { PageSkeleton } from './components/LoadingSkeleton';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AppShell } from './components/layout/AppShell';
@@ -12,7 +11,6 @@ const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m
 const Indicators = lazy(() => import('./pages/Indicators').then(m => ({ default: m.Indicators })));
 const IndicatorDetails = lazy(() => import('./pages/IndicatorDetails').then(m => ({ default: m.IndicatorDetails })));
 const FamilyActionPlan = lazy(() => import('./pages/FamilyActionPlan').then(m => ({ default: m.FamilyActionPlan })));
-const News = lazy(() => import('./pages/News').then(m => ({ default: m.News })));
 const Analytics = lazy(() => import('./pages/Analytics').then(m => ({ default: m.Analytics })));
 const Alerts = lazy(() => import('./pages/Alerts').then(m => ({ default: m.Alerts })));
 const Reports = lazy(() => import('./pages/Reports').then(m => ({ default: m.Reports })));
@@ -20,34 +18,18 @@ const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.S
 const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 function App() {
-  const { refreshAll, updateIndicator } = useStore();
+  const refreshAll = useStore((s) => s.refreshAll);
 
   useEffect(() => {
     // Initial data fetch (includes synthesis)
     refreshAll();
 
-    // Set up WebSocket connection
-    wsService.connect();
-
-    // Subscribe to WebSocket events
-    wsService.on('indicator:update', (data: unknown) => {
-      const payload = data as { id: string };
-      updateIndicator(payload.id, payload);
-    });
-
-    wsService.on('hopi:update', () => {
-      refreshAll();
-    });
-
-    // Set up polling interval - refresh all data including synthesis
+    // Data is collected hourly, so a 5-minute check is plenty. Skip hidden tabs.
     const interval = setInterval(() => {
-      refreshAll();
-    }, 60000);
+      if (!document.hidden) refreshAll();
+    }, 5 * 60 * 1000);
 
-    return () => {
-      clearInterval(interval);
-      wsService.disconnect();
-    };
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -64,7 +46,6 @@ function App() {
               <Route path="/indicators" element={<Indicators />} />
               <Route path="/indicator/:id" element={<IndicatorDetails />} />
               <Route path="/action-plan" element={<FamilyActionPlan />} />
-              <Route path="/news" element={<News />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/reports" element={<Reports />} />

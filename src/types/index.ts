@@ -7,8 +7,13 @@ export type IndicatorStatus = {
   value: number | string | null;
   trend?: 'up' | 'down' | 'stable' | 'unknown';
   lastUpdate: string;
-  dataSource: 'LIVE' | 'MANUAL' | 'MOCK' | 'UNAVAILABLE';
+  // LIVE: fresh real reading. STALE: real but older than the source's normal
+  // update cycle (shown, never alerts). UNAVAILABLE: no real reading.
+  dataSource: 'LIVE' | 'STALE' | 'MANUAL' | 'MOCK' | 'UNAVAILABLE';
   daysSustained?: number;  // How many days at current level
+  note?: string;  // Why a reading is stale/unavailable, or how an experimental one is derived
+  lastAttempt?: string;  // When collection was last tried
+  signalLevel?: AlertLevel;  // Experimental indicators: level before being excluded from alerts
 };
 
 // Baseline data for comparison
@@ -73,6 +78,9 @@ export interface Indicator {
   greenFlag?: boolean;
   enabled?: boolean;
   unavailable?: boolean; // Data source temporarily unavailable - gray out in UI
+  // core: structured data from an official source, drives alerts.
+  // experimental: derived from news headlines, shown for context only.
+  tier?: 'core' | 'experimental';
   dataSource: string;
   sourceUrl?: string; // Link to the official data source for transparency
   updateFrequency: string;

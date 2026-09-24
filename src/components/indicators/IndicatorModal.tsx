@@ -15,7 +15,6 @@ import { Badge, StatusBadge } from '../core/Badge';
 import { cn } from '../../utils/cn';
 import { IndicatorData } from '../../types';
 import { getIndicatorDescription } from '../../data/indicatorDescriptions';
-import { NewsFeed } from '../news/NewsFeed';
 import { formatDistanceToNow } from 'date-fns';
 
 interface IndicatorModalProps {
@@ -222,15 +221,6 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({
                 </div>
               </div>
             )}
-
-            {/* Related News */}
-            <div>
-              <NewsFeed 
-                indicatorId={indicator.id} 
-                limit={5}
-                showGlobal={false}
-              />
-            </div>
           </>
         )}
 

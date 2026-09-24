@@ -13,7 +13,6 @@ import {
   sortIndicators,
   formatDomain,
   formatTimeAgo,
-  hasValidSource,
 } from '../data/indicatorDisplay';
 
 type FilterStatus = 'all' | 'green' | 'amber' | 'red';
@@ -22,7 +21,7 @@ type FilterDomain = 'all' | 'economy' | 'jobs_labor' | 'rights_governance' | 'se
 const VALID_DOMAINS: FilterDomain[] = ['all', 'economy', 'jobs_labor', 'rights_governance', 'security_infrastructure', 'oil_axis', 'ai_window', 'global_conflict', 'domestic_control', 'social_cohesion'];
 
 export const Indicators: React.FC = () => {
-  const { indicators, loading, usingFallbackData, refreshAll } = useStore();
+  const { indicators, loading, usingFallbackData, lastSuccessfulFetch, refreshAll } = useStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
   const [selectedIndicator, setSelectedIndicator] = useState<IndicatorData | null>(null);
@@ -62,13 +61,10 @@ export const Indicators: React.FC = () => {
   };
 
   // Deduplicate indicators first, then apply filters and sort
-  // Also filter out indicators without valid sources (data integration pending)
   const processedIndicators = useMemo(() => {
     const deduped = deduplicateIndicators(indicators);
     const searchLower = searchQuery.toLowerCase().trim();
     const filtered = deduped.filter(indicator => {
-      // Hide indicators without valid sources
-      if (!hasValidSource(indicator.id)) return false;
       if (statusFilter !== 'all' && indicator.status.level !== statusFilter) return false;
       if (domainFilter !== 'all' && indicator.domain !== domainFilter) return false;
       // Search by name or description
@@ -80,11 +76,7 @@ export const Indicators: React.FC = () => {
   }, [indicators, statusFilter, domainFilter, searchQuery]);
 
   const filteredIndicators = processedIndicators;
-  // Only count indicators with valid sources
-  const dedupedIndicators = useMemo(() =>
-    deduplicateIndicators(indicators).filter(i => hasValidSource(i.id)),
-    [indicators]
-  );
+  const dedupedIndicators = useMemo(() => deduplicateIndicators(indicators), [indicators]);
 
   const statusCounts = useMemo(() => ({
     all: dedupedIndicators.length,
@@ -305,6 +297,7 @@ export const Indicators: React.FC = () => {
         <div className="px-4 pt-4">
           <DataSourceBanner
             isUsingFallback={usingFallbackData}
+            lastSuccessfulFetch={lastSuccessfulFetch}
             onRetry={handleRetry}
             isRetrying={isRetrying}
           />
