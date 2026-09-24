@@ -241,7 +241,8 @@ def cron_collect(authorization: Optional[str] = Header(None)):
     from api.collect import run_once
     result = run_once()
     _cache.clear()
-    return {"run_id": result["run_id"], "live": result["live"], "total": result["total"], "briefing": result["briefing"]}
+    return {"run_id": result["run_id"], "live": result["live"], "total": result["total"], "briefing": result["briefing"],
+            "local": result.get("local")}
 
 
 def _routes(prefix: str) -> None:

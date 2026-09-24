@@ -170,7 +170,7 @@ def run_once(only: Optional[List[str]] = None) -> Dict[str, Any]:
 
     # Daily: county, state and regional signals for every place at once,
     # and federal rule changes that affect family benefits.
-    local.refresh()
+    local_status = local.refresh()
     from api import rules
     rules.refresh()
 
@@ -178,7 +178,8 @@ def run_once(only: Optional[List[str]] = None) -> Dict[str, Any]:
     from api import briefing
     from api.simple_main import build_indicators
     briefing_status = briefing.maybe_generate(build_indicators()["indicators"])
-    return {"run_id": run_id, "live": live, "total": len(items), "items": items, "briefing": briefing_status}
+    return {"run_id": run_id, "live": live, "total": len(items), "items": items, "briefing": briefing_status,
+            "local": local_status}
 
 
 def backfill(days: int, quiet: bool = False) -> List[store.Reading]:
