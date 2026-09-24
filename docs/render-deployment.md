@@ -9,17 +9,17 @@ To enable live data collection, add these environment variables in your Render d
 ### Required API Keys
 
 1. **FRED_API_KEY**
-   - Value: `REDACTED_KEY`
+   - Value: `your_fred_api_key`
    - Used for: Treasury volatility, Jobless claims, Labor displacement data
    - Source: Federal Reserve Economic Data
 
 2. **NEWS_API_KEY**
-   - Value: `REDACTED_KEY`
+   - Value: `your_newsapi_key`
    - Used for: Taiwan zone and Hormuz risk monitoring
    - Source: News API for geopolitical events
 
 3. **ALPHA_VANTAGE_API_KEY**
-   - Value: `REDACTED_KEY`
+   - Value: `your_alpha_vantage_key`
    - Used for: Luxury goods collapse index
    - Source: Alpha Vantage financial data
 
@@ -31,7 +31,7 @@ To enable live data collection, add these environment variables in your Render d
 4. Click **Add Environment Variable**
 5. Add each key-value pair:
    - Key: `FRED_API_KEY`
-   - Value: `REDACTED_KEY`
+   - Value: `your_fred_api_key`
 6. Repeat for all three API keys
 7. Click **Save Changes**
 8. Render will automatically redeploy with the new configuration

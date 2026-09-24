@@ -30,50 +30,44 @@ services:
       # AI synthesis is disabled to stop Anthropic token usage.
       # To re-enable: set VITE_CANAIRY_AI_ENABLED=true and re-add VITE_ANTHROPIC_API_KEY in the Render dashboard.
   
-  # Backend FastAPI
+  # Backend FastAPI (read-only: serves what the collector stored)
   - type: web
     name: canairy-api
     env: python
-    plan: free
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r api/requirements.txt
-    startCommand: uvicorn api.simple_main:app --host 0.0.0.0 --port $PORT
+    plan: starter  # free instances sleep, so the first visitor waits ~30s
+    buildCommand: pip install --upgrade pip && pip install -r server/requirements.txt
+    startCommand: cd server && uvicorn api.simple_main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
-      - key: ENVIRONMENT
-        value: production
-      - key: SECRET_KEY
-        generateValue: true
-      # API Keys (should be set in Render dashboard)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: canairy-db
+          property: connectionString
+
+  # Collector: runs every collector once an hour and saves the readings.
+  # This is the only thing that calls outside data sources.
+  - type: cron
+    name: canairy-collect
+    env: python
+    schedule: "7 * * * *"
+    buildCommand: pip install --upgrade pip && pip install -r server/requirements.txt
+    startCommand: cd server && python -m api.collect
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: canairy-db
+          property: connectionString
       - key: FRED_API_KEY
         sync: false
-      - key: LEGISCAN_API_KEY
+      - key: EIA_API_KEY
         sync: false
-      - key: CONGRESS_API_KEY
-        sync: false
-      - key: BLS_API_KEY
-        sync: false
-      - key: NEWS_API_KEY
-        sync: false
-      - key: ALPHA_VANTAGE_API_KEY
-        sync: false
-      - key: ACLED_API_KEY
-        sync: false
-      - key: ACLED_EMAIL
-        sync: false
-      - key: OPENAI_API_KEY
-        sync: false
-  
-  # Redis Cache (if available on your plan)
-  - type: redis
-    name: canairy-redis
-    plan: free
-    ipAllowList: []
 
 databases:
   - name: canairy-db
-    plan: free
+    plan: basic-256mb
     databaseName: canairy
-    postgresMajorVersion: 15
+    postgresMajorVersion: "16"

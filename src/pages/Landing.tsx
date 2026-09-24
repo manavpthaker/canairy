@@ -1,6 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useStore } from '../store';
+import { IndicatorData } from '../types';
+import { formatValue } from '../data/indicatorDisplay';
+import { getIndicatorContext } from '../services/synthesis/indicatorContext';
 import {
   ArrowRight,
   Shield,
@@ -11,15 +15,27 @@ import {
   ShoppingCart,
   Database,
   Clock,
-  CheckCircle,
   AlertTriangle,
   Bird,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'canairy_seen_landing';
+const LEVEL_RANK = { red: 0, amber: 1 } as const;
 
 export const Landing: React.FC = () => {
   const navigate = useNavigate();
+  const indicators = useStore((s) => s.indicators);
+
+  // Real elevated readings with written guidance; red first.
+  const topActions = indicators
+    .filter(
+      (i): i is IndicatorData & { status: { level: 'red' | 'amber' } } =>
+        i.status.dataSource === 'LIVE' && (i.status.level === 'red' || i.status.level === 'amber')
+    )
+    .sort((a, b) => LEVEL_RANK[a.status.level] - LEVEL_RANK[b.status.level])
+    .map((indicator) => ({ indicator, action: getIndicatorContext(indicator.id)?.whatToDo[indicator.status.level] }))
+    .filter((item): item is { indicator: typeof item.indicator; action: string } => Boolean(item.action))
+    .slice(0, 3);
 
   const handleEnter = () => {
     localStorage.setItem(STORAGE_KEY, 'true');
@@ -72,7 +88,7 @@ export const Landing: React.FC = () => {
             className="text-lg sm:text-xl text-white/60 leading-relaxed max-w-lg mx-auto"
           >
             Your family's early warning system.
-            <span className="block mt-2 text-white/40">We watch 35+ economic and safety signals so you don't have to — and tell you exactly what to do about them.</span>
+            <span className="block mt-2 text-white/40">We check two dozen official economic and safety signals every hour so you don't have to, and tell you what to do about them.</span>
           </motion.p>
         </div>
 
@@ -120,41 +136,43 @@ export const Landing: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Sample Dashboard Preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 mb-5"
-        >
-          <h2 className="text-sm font-medium text-white/40 uppercase tracking-wider mb-3">
-            Here's What Families Are Doing This Week
-          </h2>
+        {/* This week's top actions, from today's real readings */}
+        {topActions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 mb-5"
+          >
+            <h2 className="text-sm font-medium text-white/40 uppercase tracking-wider mb-3">
+              This Week's Top Actions
+            </h2>
 
-          <div className="space-y-2">
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-              <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-white text-sm">Stock 2 weeks of shelf-stable essentials at current prices</p>
-                <p className="text-white/30 text-xs mt-0.5">Grocery prices up 4% this quarter</p>
-              </div>
+            <div className="space-y-2">
+              {topActions.map(({ indicator, action }) => (
+                <div
+                  key={indicator.id}
+                  className={
+                    indicator.status.level === 'red'
+                      ? 'flex items-start gap-3 p-3 rounded-lg bg-red-500/5 border border-red-500/10'
+                      : 'flex items-start gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10'
+                  }
+                >
+                  <AlertTriangle
+                    className={`w-4 h-4 mt-0.5 flex-shrink-0 ${indicator.status.level === 'red' ? 'text-red-400' : 'text-amber-400'}`}
+                    aria-hidden="true"
+                  />
+                  <div>
+                    <p className="text-white text-sm">{action}</p>
+                    <p className="text-white/40 text-xs mt-0.5">
+                      {indicator.name}: {formatValue(indicator.status.value, indicator.unit)} · {indicator.dataSource}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-              <CheckCircle className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-white text-sm">Update passwords on banking and email — enable 2FA</p>
-                <p className="text-white/30 text-xs mt-0.5">Elevated cyber activity detected</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
-              <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-white text-sm">Check your 401k allocation — history shows staying the course wins</p>
-                <p className="text-white/30 text-xs mt-0.5">Market volatility elevated but within normal range</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
         {/* What You'll Find */}
         <motion.div
@@ -171,7 +189,7 @@ export const Landing: React.FC = () => {
             <div className="flex items-center gap-3 text-sm">
               <Activity className="w-4 h-4 text-green-400 flex-shrink-0" />
               <span className="text-white/70">
-                <span className="text-white font-medium">35+ live indicators</span> — pulled from official government and financial sources
+                <span className="text-white font-medium">Two dozen live indicators</span> — from official government and market data, checked hourly
               </span>
             </div>
 

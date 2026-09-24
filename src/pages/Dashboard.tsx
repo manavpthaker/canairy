@@ -35,6 +35,7 @@ export const Dashboard: React.FC = () => {
     indicators,
     loading,
     usingFallbackData,
+    lastSuccessfulFetch,
     refreshAll,
     runSynthesis,
   } = useStore();
@@ -226,10 +227,10 @@ export const Dashboard: React.FC = () => {
               <Eye className="w-8 h-8 text-olive-tertiary" />
             </div>
             <h3 className="text-xl font-display font-semibold text-olive-primary mb-2">
-              Setting things up...
+              Can't load the latest readings
             </h3>
             <p className="text-olive-secondary mb-6 max-w-md mx-auto">
-              Canairy is connecting to data sources. This usually takes just a moment.
+              Canairy's data service isn't responding. Nothing is shown rather than guessing.
             </p>
             <button onClick={refreshAll} className="btn btn-primary">
               <RefreshCw className="w-4 h-4" />
@@ -248,6 +249,7 @@ export const Dashboard: React.FC = () => {
             {/* ──── DATA SOURCE WARNING (when using fallback data) ──── */}
             <DataSourceBanner
               isUsingFallback={usingFallbackData}
+              lastSuccessfulFetch={lastSuccessfulFetch}
               onRetry={handleRetry}
               isRetrying={isRetrying}
             />
@@ -258,7 +260,7 @@ export const Dashboard: React.FC = () => {
                 <Clock className="w-3 h-3" />
                 <span>
                   Last updated: {formatDistanceToNow(new Date(lastUpdate), { addSuffix: true })}
-                  {usingFallbackData && <span className="text-amber-400 ml-1">· Using cached data</span>}
+                  {usingFallbackData && <span className="text-amber-400 ml-1">· Offline copy</span>}
                 </span>
               </div>
             )}

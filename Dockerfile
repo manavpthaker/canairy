@@ -22,14 +22,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Install Python dependencies
-COPY requirements.txt .
-COPY api/requirements.txt ./api/
-RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -r api/requirements.txt
+COPY server/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend code
-COPY src/ ./src/
-COPY api/ ./api/
+COPY server/ ./
 COPY config/ ./config/
 COPY scripts/ ./scripts/
 COPY *.py ./
@@ -56,4 +53,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 EXPOSE ${PORT}
 
 # Start application
-CMD ["python", "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "api.simple_main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -18,7 +18,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'US Treasury API',
     sourceUrl: 'https://www.treasurydirect.gov/auctions/auction-query/',
     updateFrequency: 'Per auction',
-    status: { level: 'green', value: 2.1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 2.1, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'econ_02_grocery_cpi',
@@ -31,7 +31,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'FRED API',
     sourceUrl: 'https://fred.stlouisfed.org/series/CPIUFDSL',
     updateFrequency: 'Monthly',
-    status: { level: 'amber', value: 5.4, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 5.4, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'market_01_intraday_swing',
@@ -45,7 +45,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Yahoo Finance',
     sourceUrl: 'https://finance.yahoo.com/quote/%5ETNX/',
     updateFrequency: 'Real-time',
-    status: { level: 'amber', value: 24.3, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 24.3, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'green_g1_gdp_rates',
@@ -59,7 +59,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'BEA / FRED',
     sourceUrl: 'https://www.bea.gov/data/gdp/gross-domestic-product',
     updateFrequency: 'Quarterly',
-    status: { level: 'amber', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'luxury_01_collapse',
@@ -73,7 +73,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Bloomberg / S&P',
     sourceUrl: 'https://www.spglobal.com/spdji/en/indices/',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 3.2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 3.2, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -90,7 +90,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'DOL',
     sourceUrl: 'https://www.dol.gov/ui/data.pdf',
     updateFrequency: 'Weekly',
-    status: { level: 'green', value: 218, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 218, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'supply_pharmacy_shortage',
@@ -103,7 +103,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'FDA',
     sourceUrl: 'https://www.accessdata.fda.gov/scripts/drugshortages',
     updateFrequency: 'Daily',
-    status: { level: 'amber', value: 142, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 142, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'job_01_strike_days',
@@ -116,7 +116,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Cornell ILR',
     sourceUrl: 'https://striketracker.ilr.cornell.edu/',
     updateFrequency: 'Monthly',
-    status: { level: 'green', value: 78000, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 78000, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -133,7 +133,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'LegiScan API',
     sourceUrl: 'https://legiscan.com/gaits/search?state=ALL&keyword=surveillance',
     updateFrequency: 'Weekly',
-    status: { level: 'amber', value: 6, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 6, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'civil_01_acled_protests',
@@ -146,7 +146,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'ACLED API',
     sourceUrl: 'https://acleddata.com/data-export-tool/',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 18, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 18, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -163,7 +163,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'CISA JSON Feed',
     sourceUrl: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
     updateFrequency: 'Daily',
-    status: { level: 'amber', value: 4, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 4, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'grid_01_pjm_outages',
@@ -176,7 +176,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'DOE OE-417',
     sourceUrl: 'https://www.oe.energy.gov/oe417.htm',
     updateFrequency: 'Quarterly',
-    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'bio_01_h2h_countries',
@@ -189,7 +189,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'WHO DON RSS',
     sourceUrl: 'https://www.who.int/emergencies/disease-outbreak-news',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'cdc_health_alerts',
@@ -202,7 +202,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'CDC RSS',
     sourceUrl: 'https://www.cdc.gov/rss/',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 2, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'fema_disaster_declarations',
@@ -215,7 +215,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'FEMA API',
     sourceUrl: 'https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 5, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 5, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'fda_drug_shortages',
@@ -228,7 +228,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'FDA',
     sourceUrl: 'https://www.accessdata.fda.gov/scripts/drugshortages/',
     updateFrequency: 'Daily',
-    status: { level: 'amber', value: 45, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 45, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -246,7 +246,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'EIA',
     sourceUrl: 'https://www.eia.gov/petroleum/supply/weekly/',
     updateFrequency: 'Weekly',
-    status: { level: 'amber', value: 370, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 370, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'oil_03_ofac_designations',
@@ -259,7 +259,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Treasury OFAC',
     sourceUrl: 'https://ofac.treasury.gov/recent-actions',
     updateFrequency: 'Weekly',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -276,7 +276,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Layoffs.fyi RSS',
     sourceUrl: 'https://layoffs.fyi/',
     updateFrequency: 'Monthly',
-    status: { level: 'green', value: 3200, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 3200, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'cult_media_01_trends',
@@ -289,7 +289,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Google Trends',
     sourceUrl: 'https://trends.google.com/trends/explore?q=AI%20religion&geo=US',
     updateFrequency: 'Weekly',
-    status: { level: 'green', value: 8, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 8, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -319,7 +319,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Taiwan MND',
     sourceUrl: 'https://www.mnd.gov.tw/english/',
     updateFrequency: 'Daily',
-    status: { level: 'amber', value: 28, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 28, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'nato_high_readiness',
@@ -333,7 +333,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'NATO / News',
     sourceUrl: 'https://www.nato.int/cps/en/natohq/news.htm',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'nuclear_test_activity',
@@ -346,7 +346,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'News RSS',
     sourceUrl: 'https://www.ctbto.org/specials/testing-times/',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'hormuz_war_risk',
@@ -359,7 +359,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: "Lloyd's",
     sourceUrl: 'https://www.lloyds.com/market-resources/marine',
     updateFrequency: 'Weekly',
-    status: { level: 'green', value: 0.3, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 0.3, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'defense_spending_growth',
@@ -403,7 +403,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'CourtListener',
     sourceUrl: 'https://www.courtlistener.com/',
     updateFrequency: 'Weekly',
-    status: { level: 'amber', value: 8, trend: 'up', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 8, trend: 'up', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'federal_regulations',
@@ -416,7 +416,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Federal Register',
     sourceUrl: 'https://www.federalregister.gov/',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 5, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 5, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'congress_activity',
@@ -429,7 +429,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'GovTrack',
     sourceUrl: 'https://www.govtrack.us/',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 15, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 15, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -446,7 +446,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Port of LA / Marine Traffic',
     sourceUrl: 'https://www.portoflosangeles.org/',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 12, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 12, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'supply_02_freight_index',
@@ -459,7 +459,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Freightos Baltic Index',
     sourceUrl: 'https://fbx.freightos.com/',
     updateFrequency: 'Weekly',
-    status: { level: 'green', value: 2500, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 2500, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'supply_03_chip_lead_time',
@@ -472,7 +472,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Industry Reports',
     sourceUrl: 'https://www.semiconductors.org/',
     updateFrequency: 'Monthly',
-    status: { level: 'amber', value: 18, trend: 'down', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 18, trend: 'down', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -489,7 +489,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'EIA Natural Gas Storage',
     sourceUrl: 'https://www.eia.gov/naturalgas/storage/',
     updateFrequency: 'Weekly',
-    status: { level: 'green', value: 2650, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 2650, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'energy_03_grid_emergency',
@@ -503,7 +503,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'DOE OE-417 Reports',
     sourceUrl: 'https://www.oe.energy.gov/oe417.htm',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -521,7 +521,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'FDIC Failed Bank List',
     sourceUrl: 'https://www.fdic.gov/resources/resolutions/bank-failures/failed-bank-list/',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'bank_02_discount_window',
@@ -534,7 +534,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Federal Reserve H.4.1',
     sourceUrl: 'https://www.federalreserve.gov/releases/h41/',
     updateFrequency: 'Weekly',
-    status: { level: 'green', value: 2.1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 2.1, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'bank_03_deposit_flow',
@@ -548,7 +548,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'Federal Reserve H.8',
     sourceUrl: 'https://www.federalreserve.gov/releases/h8/',
     updateFrequency: 'Weekly',
-    status: { level: 'green', value: 5.2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 5.2, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -566,7 +566,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'FAA NAS Status',
     sourceUrl: 'https://nasstatus.faa.gov/',
     updateFrequency: 'Real-time',
-    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 1, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'flight_02_delay_pct',
@@ -579,7 +579,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'FAA NAS Status',
     sourceUrl: 'https://nasstatus.faa.gov/',
     updateFrequency: 'Real-time',
-    status: { level: 'green', value: 8, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 8, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'flight_03_tfr_count',
@@ -592,7 +592,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'FAA TFR System',
     sourceUrl: 'https://tfr.faa.gov/',
     updateFrequency: 'Real-time',
-    status: { level: 'green', value: 15, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 15, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -609,7 +609,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'State Department',
     sourceUrl: 'https://travel.state.gov/content/travel/en/traveladvisories.html',
     updateFrequency: 'Daily',
-    status: { level: 'amber', value: 19, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'amber', value: 19, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'travel_02_border_wait',
@@ -622,7 +622,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'CBP Border Wait Times',
     sourceUrl: 'https://bwt.cbp.gov/',
     updateFrequency: 'Real-time',
-    status: { level: 'green', value: 22, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 22, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'travel_03_tsa_throughput',
@@ -635,7 +635,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'TSA Passenger Volumes',
     sourceUrl: 'https://www.tsa.gov/travel/passenger-volumes',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 97, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 97, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -666,7 +666,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'EPA SDWIS',
     sourceUrl: 'https://www.epa.gov/ground-water-and-drinking-water',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 3, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 3, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   // REMOVED: water_03_drought_monitor - USDM API no longer accessible, no alternative source
 
@@ -684,7 +684,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'BGPStream / CAIDA',
     sourceUrl: 'https://bgpstream.caida.org/',
     updateFrequency: 'Real-time',
-    status: { level: 'green', value: 2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 2, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'telecom_02_cell_outages',
@@ -711,7 +711,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'TeleGeography',
     sourceUrl: 'https://www.submarinecablemap.com/',
     updateFrequency: 'Daily',
-    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 0, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // ═══════════════════════════════════════════
@@ -728,7 +728,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'MBA / FRED',
     sourceUrl: 'https://fred.stlouisfed.org/series/DRSFRMACBS',
     updateFrequency: 'Quarterly',
-    status: { level: 'green', value: 1.2, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 1.2, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
   {
     id: 'housing_03_rate_shock',
@@ -741,7 +741,7 @@ export const mockIndicators: IndicatorData[] = [
     dataSource: 'MBA',
     sourceUrl: 'https://www.mba.org/news-and-research',
     updateFrequency: 'Quarterly',
-    status: { level: 'green', value: 2.1, trend: 'stable', lastUpdate: now, dataSource: 'LIVE' }
+    status: { level: 'green', value: 2.1, trend: 'stable', lastUpdate: now, dataSource: 'MOCK' }
   },
 
   // REMOVED: FOOD PRODUCTION domain (4 indicators)

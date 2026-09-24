@@ -42,35 +42,43 @@ Unlike doomscrolling the news, Canairy:
 ## Quick Start
 
 ```bash
-# Clone and install
 git clone https://github.com/manavpthaker/canairy.git
 cd canairy
 npm install
+python3.12 -m venv .venv && .venv/bin/pip install -r server/requirements.txt
+cp .env.example .env          # add FRED_API_KEY and EIA_API_KEY (both free)
 
-# Start the backend (Python 3.10+)
-cd dashboard && python app.py
+# Collect once, and load a year of history for the FRED-backed indicators
+cd server && set -a && source ../.env && set +a
+../.venv/bin/python -m api.collect
+../.venv/bin/python -m api.collect --backfill 365
 
-# Start the frontend
-npm run dev
-
-# Open http://localhost:3005
+# Serve the API (reads the database only), then the site from the repo root
+../.venv/bin/python -m uvicorn api.simple_main:app --port 5555
+npm run dev                   # http://localhost:3003
 ```
 
-### Prerequisites
-- Node.js 18+
-- Python 3.10+
-- API keys for full functionality (FRED, News API, Alpha Vantage)
+Tests: `.venv/bin/python -m pytest` (backend, from the repo root) and `npx vitest run` (frontend).
 
 ## Architecture
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   React + TS    │────▶│  Python Flask   │────▶│  35+ Collectors │
-│   Dashboard     │     │   Backend API   │     │  (Live + Cache) │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
+ hourly (Vercel Cron)                 every page view
+┌──────────────────┐   ┌──────────┐   ┌──────────────┐   ┌───────────────┐
+│ server/api/      │──▶│ Postgres │◀──│ FastAPI      │◀──│ React site    │
+│ collect.py runs  │   │ (SQLite  │   │ read-only,   │   │               │
+│ each collector   │   │  locally)│   │ no outbound  │   │               │
+└──────────────────┘   └──────────┘   └──────────────┘   └───────────────┘
 ```
 
-**Data Sources:** Federal Reserve (FRED), Treasury Direct, News API, ACLED, and government endpoints. Falls back gracefully to cached data when APIs are unavailable.
+- **What's tracked** is defined in one place: `server/api/catalog.py`. Each entry names its
+  source, units, thresholds, and how old a reading can be before it stops counting.
+- **Only real readings are shown.** A collector result labelled fallback, estimated or
+  mock is stored as a failure and never displayed. Stale readings are shown greyed and
+  never raise an alert. Indicators marked *experimental* are shown for context only.
+- **Page views never call outside services**, so traffic can't create upstream load or cost.
+- **Sources:** FRED (BLS, BEA, EIA, Fed, Freddie Mac, DOL), CISA, FEMA, FDA, NWS, TSA,
+  FDIC, US Treasury, State Department, WHO, Freightos, Yahoo Finance.
 
 ## Privacy
 

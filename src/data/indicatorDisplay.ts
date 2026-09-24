@@ -99,12 +99,11 @@ export const INDICATOR_SOURCES: Record<string, { name: string; abbrev: string }>
 };
 
 export function getSourceDisplay(indicatorId: string, rawSource?: string): string {
-  const mapped = INDICATOR_SOURCES[indicatorId];
-  if (mapped) return mapped.abbrev;
+  // The API names the real source for each reading; the local table is a legacy fallback.
   if (rawSource && rawSource !== 'mock_data' && rawSource !== 'Unknown' && rawSource !== 'MOCK') {
     return rawSource;
   }
-  return 'Pending';
+  return INDICATOR_SOURCES[indicatorId]?.abbrev ?? 'Pending';
 }
 
 export function getSourceFull(indicatorId: string): string {
@@ -131,6 +130,10 @@ const UNIT_DISPLAY: Record<string, string> = {
   '%': '%',
   'thousands': 'K',
   'index': '',
+  '% vs avg': '% vs avg',
+  '% from peak': '% from peak',
+  'K/week': 'K/week',
+  'K/day': 'K/day',
   'systems': ' systems',
   'daily_incursions': '/day',
   'milestone_score': '',
@@ -161,16 +164,29 @@ export function formatValue(value: number | string | null | undefined, unit?: st
   const numValue = typeof value === 'number' ? value : parseFloat(value);
   if (isNaN(numValue)) return String(value);
 
-  const displayUnit = unit ? (UNIT_DISPLAY[unit] || ` ${unit.replace(/_/g, ' ')}`) : '';
+  // Money: "$4.48/gal", "$115/bbl", "$3,407/FEU", "$6.61B"
+  if (unit?.startsWith('$')) {
+    const amount = Math.abs(numValue) < 100
+      ? numValue.toFixed(2)
+      : Math.round(numValue).toLocaleString('en-US');
+    return `$${amount}${unit.slice(1)}`;
+  }
 
-  // Smart number formatting
-  if (Math.abs(numValue) >= 1000000) {
+  const displayUnit = unit ? (UNIT_DISPLAY[unit] ?? ` ${unit.replace(/_/g, ' ')}`) : '';
+
+  // Units already in thousands/millions ("K/day", "M bbl") must not be abbreviated again.
+  const preScaled = unit ? /^[KM]([/ ]|$)/.test(unit) : false;
+
+  if (!preScaled && Math.abs(numValue) >= 1000000) {
     return `${(numValue / 1000000).toFixed(1)}M${displayUnit}`;
   }
-  if (Math.abs(numValue) >= 1000) {
+  if (!preScaled && Math.abs(numValue) >= 10000) {
     return `${(numValue / 1000).toFixed(1)}K${displayUnit}`;
   }
-  if (numValue < 1 && numValue > 0) {
+  if (Math.abs(numValue) >= 1000) {
+    return `${Math.round(numValue).toLocaleString('en-US')}${displayUnit}`;
+  }
+  if (numValue < 1 && numValue > -1 && numValue !== 0) {
     return `${numValue.toFixed(2)}${displayUnit}`;
   }
   if (Number.isInteger(numValue)) {
@@ -280,8 +296,9 @@ export const INDICATOR_DESCRIPTIONS: Record<string, string> = {
   'education_01_closures': "Non-weather school closures. A canary indicator — when schools close for non-obvious reasons, something systemic is usually wrong.",
 };
 
-export function getDescription(indicatorId: string, fallback?: string): string {
-  return INDICATOR_DESCRIPTIONS[indicatorId] || fallback || 'Monitoring this indicator for changes.';
+export function getDescription(indicatorId: string, apiDescription?: string): string {
+  // Prefer the API's description: it's written against what the live number measures.
+  return apiDescription || INDICATOR_DESCRIPTIONS[indicatorId] || 'Monitoring this indicator for changes.';
 }
 
 // ============================================================================

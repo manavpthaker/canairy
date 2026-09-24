@@ -69,20 +69,18 @@ export const IndicatorCard: React.FC<IndicatorCardProps> = ({
   }[status.level] || 'text-olive-secondary';
 
   // Trend arrow
-  const TrendIcon = !status.trend
+  const hasTrend = status.trend === 'up' || status.trend === 'down';
+  const TrendIcon = !hasTrend
     ? Minus
     : status.trend === 'up'
     ? TrendingUp
     : TrendingDown;
 
-  // For most indicators, up = worse. For greenFlag, up = better.
-  const trendColor = !status.trend
+  // Up is worse when the red threshold sits above amber; otherwise down is worse.
+  const upIsWorse = (indicator.thresholds?.threshold_red ?? 1) >= (indicator.thresholds?.threshold_amber ?? 0);
+  const trendColor = !hasTrend
     ? 'text-olive-muted'
-    : indicator.greenFlag
-    ? status.trend === 'up'
-      ? 'text-emerald-400'
-      : 'text-red-400'
-    : status.trend === 'up'
+    : (status.trend === 'up') === upIsWorse
     ? 'text-red-400'
     : 'text-emerald-400';
 
@@ -141,7 +139,7 @@ export const IndicatorCard: React.FC<IndicatorCardProps> = ({
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <div className={cn('w-2 h-2 rounded-full shrink-0', statusDotColor)} />
           <h3 className="text-sm font-display font-medium text-olive-primary truncate">
-            {getDisplayName(indicator.id) || indicator.name}
+            {indicator.name || getDisplayName(indicator.id)}
           </h3>
         </div>
         <span
@@ -172,7 +170,8 @@ export const IndicatorCard: React.FC<IndicatorCardProps> = ({
 
       {/* Row 5: Preview description - why this matters to your family */}
       <p className="text-[11px] text-olive-secondary mt-2 line-clamp-2 leading-relaxed">
-        {getHouseholdRelevance(indicator.id)?.impact ||
+        {status.note ||
+         (indicator.tier ? indicator.description : getHouseholdRelevance(indicator.id)?.impact) ||
          getDescription(indicator.id, indicator.description)}
       </p>
 
