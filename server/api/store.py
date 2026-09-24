@@ -4,9 +4,9 @@ Persistent storage for indicator readings.
 The collector job (api/collect.py) writes one row per indicator per run.
 The API only reads from here, so page views never trigger outbound requests.
 
-DATABASE_URL selects the backend:
+DATABASE_URL (or POSTGRES_URL) selects the backend:
   - unset                → SQLite file at data/canairy.db (local dev)
-  - postgres://...       → Postgres (production)
+  - postgres://...       → Postgres (production, e.g. Supabase via Vercel)
 """
 
 from __future__ import annotations
@@ -23,6 +23,8 @@ from sqlalchemy import (
     create_engine, func, select, and_,
 )
 from sqlalchemy.engine import Engine
+from sqlalchemy.pool import NullPool
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 metadata = MetaData()
 
@@ -49,20 +51,26 @@ readings = Table(
 )
 
 
+# libpq rejects query parameters it doesn't know (Supabase adds e.g. `supa=`).
+_LIBPQ_PARAMS = {"sslmode", "sslrootcert", "connect_timeout", "application_name", "options", "target_session_attrs"}
+
+
 def _database_url() -> str:
-    url = os.environ.get("DATABASE_URL")
+    # DATABASE_URL wins; POSTGRES_URL is what Vercel's Supabase/Postgres integrations set.
+    url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
     if not url and os.environ.get("VERCEL"):
-        raise RuntimeError("DATABASE_URL is not set; the deployed API needs a Postgres database.")
+        raise RuntimeError("DATABASE_URL / POSTGRES_URL is not set; the deployed API needs a Postgres database.")
     if not url:
         path = Path(__file__).resolve().parents[2] / "data" / "canairy.db"
         path.parent.mkdir(parents=True, exist_ok=True)
         return f"sqlite:///{path}"
-    # Render/Heroku hand out postgres:// URLs; SQLAlchemy wants an explicit driver.
-    if url.startswith("postgres://"):
-        url = "postgresql+psycopg://" + url[len("postgres://"):]
-    elif url.startswith("postgresql://"):
-        url = "postgresql+psycopg://" + url[len("postgresql://"):]
-    return url
+
+    parts = urlsplit(url)
+    if parts.scheme not in ("postgres", "postgresql", "postgresql+psycopg"):
+        return url
+    query = urlencode([(k, v) for k, v in parse_qsl(parts.query) if k in _LIBPQ_PARAMS])
+    scheme = "postgresql+psycopg"  # SQLAlchemy needs the driver named; providers hand out postgres://
+    return urlunsplit((scheme, parts.netloc, parts.path, query, parts.fragment))
 
 
 _engine: Optional[Engine] = None
@@ -71,7 +79,16 @@ _engine: Optional[Engine] = None
 def engine() -> Engine:
     global _engine
     if _engine is None:
-        _engine = create_engine(_database_url(), pool_pre_ping=True, future=True)
+        url = _database_url()
+        if url.startswith("sqlite"):
+            _engine = create_engine(url, future=True)
+        else:
+            # Serverless: no long-lived pool, and no server-side prepared statements so
+            # transaction-mode poolers (Supabase/PgBouncer) work.
+            _engine = create_engine(
+                url, future=True, poolclass=NullPool,
+                connect_args={"prepare_threshold": None},
+            )
         metadata.create_all(_engine)
     return _engine
 
