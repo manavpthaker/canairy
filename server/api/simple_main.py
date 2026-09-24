@@ -20,7 +20,7 @@ import hmac
 from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import store
+from api import baselines, store
 from api.catalog import BY_ID, CATALOG, IndicatorDef
 
 logging.basicConfig(level=logging.INFO)
@@ -94,8 +94,8 @@ def _trend(reading: store.Reading, before: Optional[float]) -> str:
     return "up" if change > 0 else "down"
 
 
-def _indicator(defn: IndicatorDef, live: store.Reading,
-               attempt: Optional[store.Reading], now: datetime, week_ago: Optional[float]) -> Dict[str, Any]:
+def _indicator(defn: IndicatorDef, live: store.Reading, attempt: Optional[store.Reading],
+               now: datetime, week_ago: Optional[float], baseline: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     age = now - live.collected_at
     stale = age > timedelta(hours=defn.max_age_hours)
     status: Dict[str, Any] = {
@@ -132,6 +132,7 @@ def _indicator(defn: IndicatorDef, live: store.Reading,
         "dataSource": defn.source_name,
         "sourceUrl": defn.source_url,
         "updateFrequency": defn.update_frequency,
+        "baseline": baselines.describe(baseline, live.value) if baseline else None,
         "status": status,
     }
 
@@ -143,8 +144,9 @@ def build_indicators() -> Dict[str, Any]:
     # An indicator that has never produced a real reading (e.g. its API key isn't
     # configured) is left out rather than shown as a permanent blank.
     week_ago = store.values_at(now - TREND_LOOKBACK)
+    context = store.all_baselines()
     indicators = [
-        _indicator(d, live[d.id], attempts.get(d.id), now, week_ago.get(d.id))
+        _indicator(d, live[d.id], attempts.get(d.id), now, week_ago.get(d.id), context.get(d.id))
         for d in CATALOG if d.id in live
     ]
     run = store.last_run()

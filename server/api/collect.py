@@ -164,6 +164,10 @@ def run_once(only: Optional[List[str]] = None) -> Dict[str, Any]:
         store.save_readings(history_run, past)
         store.finish_run(history_run, 0, 0)
 
+    # Weekly: refresh "what's normal" from each source's long history.
+    from api import baselines
+    baselines.refresh()
+
     # Briefing reads the same view the API serves; imported here to avoid an import cycle.
     from api import briefing
     from api.simple_main import build_indicators
@@ -172,7 +176,7 @@ def run_once(only: Optional[List[str]] = None) -> Dict[str, Any]:
 
 
 def backfill(days: int, quiet: bool = False) -> List[store.Reading]:
-    """Past readings for collectors whose source keeps history (FRED series).
+    """Past readings for collectors whose source keeps history (FRED, FEMA, CISA, …).
 
     Skips any indicator that already has readings older than two days, so running
     it twice doesn't duplicate history.
@@ -182,10 +186,14 @@ def backfill(days: int, quiet: bool = False) -> List[store.Reading]:
     items: List[store.Reading] = []
     for d in CATALOG:
         cls = _load_class(d.collector_file, d.collector_class)
-        if not hasattr(cls, "backfill") or store.has_readings_before(d.id, cutoff):
+        if not (hasattr(cls, "backfill") or hasattr(cls, "history")) or store.has_readings_before(d.id, cutoff):
             continue
         try:
-            points = cls(config).backfill(days)
+            if hasattr(cls, "backfill"):
+                points = cls(config).backfill(days)
+            else:
+                since = datetime.utcnow() - timedelta(days=days)
+                points = [(w, v) for w, v in cls(config).history(max(1, -(-days // 365))) if w >= since]
         except Exception as e:
             logger.warning(f"backfill {d.id} failed: {e}")
             continue

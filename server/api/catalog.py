@@ -78,7 +78,7 @@ AREA_OF = {
     "housing_04_rent_cpi": "costs", "energy_03_electricity_cpi": "costs", "cost_auto_insurance": "costs",
     "cost_childcare": "costs", "cost_beef": "costs",
     "job_02_continuing_claims": "jobs", "job_03_real_wages": "jobs", "job_04_sahm_rule": "jobs",
-    "debt_01_card_delinquency": "jobs", "econ_03_saving_rate": "jobs",
+    "debt_01_card_delinquency": "jobs", "econ_03_saving_rate": "jobs", "benefits_01_snap": "jobs",
     "bio_02_wastewater": "health", "bio_03_measles": "health",
     "cyber_01_cisa_kev": "safety", "grid_01_pjm_outages": "safety", "fema_disaster_declarations": "safety",
     "travel_01_advisories": "safety", "travel_03_tsa_throughput": "safety", "bio_01_h2h_countries": "health",
@@ -353,7 +353,7 @@ CATALOG: List[IndicatorDef] = [
     IndicatorDef(
         "bio_02_wastewater", "Illness in Wastewater", "security_infrastructure",
         "Share of people living where CDC sewage testing shows High or Very High virus levels (worst of COVID, flu and RSV).",
-        "% of people", 40, 60,  # past two years: COVID median 12%, top 10% of weeks >44%
+        "% of people", 75, 85,  # worst-of-three since 2022: median 37%; >=75% in 14% of weeks, >=85% in 7%
         V, "WastewaterCollector", "CDC",
         "https://www.cdc.gov/nwss/rv/index.html", "Weekly", 14 * DAY,
         valid_range=(0, 100),
@@ -373,6 +373,14 @@ CATALOG: List[IndicatorDef] = [
         V, "BeefPriceCollector", "BLS (via FRED)",
         "https://fred.stlouisfed.org/series/APU0000703112", "Monthly", 45 * DAY,
         tier="experimental", valid_range=(-60, 100),
+    ),
+    IndicatorDef(
+        "benefits_01_snap", "People on SNAP", "economy",
+        "People getting SNAP food benefits nationwide, about three months behind. A sharp drop can mean families losing access, not less need.",
+        "M people", 45, 50,  # context only; FY2023 averaged 48M, FY2025 42M
+        V, "SNAPParticipationCollector", "USDA Food and Nutrition Service",
+        "https://www.fna.usda.gov/pd/supplemental-nutrition-assistance-program-snap", "Monthly", 120 * DAY,
+        tier="experimental", valid_range=(10, 80), min_interval_hours=12,
     ),
     IndicatorDef(
         "bio_03_measles", "Measles Cases", "security_infrastructure",

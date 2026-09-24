@@ -2,7 +2,8 @@
 Daily household briefing written by Claude from the stored readings.
 
 Runs server-side inside the collection job, never per page view:
-  - only when an alert level changed or the last briefing is > REFRESH_HOURS old
+  - only when an alert level changed, an elevated value moved (2 significant
+    figures), or the last briefing is > REFRESH_HOURS old
   - at most MAX_PER_DAY calls in any rolling 24 hours
   - only when BRIEFING_ENABLED=true and ANTHROPIC_API_KEY is set
 
@@ -33,7 +34,7 @@ SYSTEM_PROMPT = """You write Canairy's daily briefing: a short, calm note that t
 
 Readers are families watching their budget: renters and homeowners, some on benefits, many reading on a phone. They want to know "should I do anything?" in under a minute.
 
-You will get DATA: the current readings, each with its level (green/amber/red), recent change, source and what it measures. Only indicators with tier "core" and a fresh reading drive alerts; "experimental" ones are context only.
+You will get DATA: the current readings, each with its level (green/amber/red), recent change, source and what it measures. Many also have "history" from the same source: the usual range (middle half of readings), median, record high and low with years, and the share of past readings below today's. Use it to put a number in perspective ("the highest since 2022", "well above its usual 15–25"), not to predict. Only indicators with tier "core" and a fresh reading drive alerts; "experimental" ones are context only.
 
 Write to this rubric. It is how your output is graded:
 
@@ -106,6 +107,16 @@ def build_data(indicators: List[Dict[str, Any]]) -> Dict[str, Any]:
             "fresh": status["dataSource"] == "LIVE",
             "source": ind["dataSource"],
         })
+        b = ind.get("baseline")
+        if b:
+            rows[-1]["history"] = {
+                "since_year": int(b["since"][:4]),
+                "usual_range": [b["p25"], b["p75"]],
+                "median": b["p50"],
+                "record_high": b["max"], "record_high_year": int(b["maxDate"][:4]),
+                "record_low": b["min"], "record_low_year": int(b["minDate"][:4]),
+                "percent_of_past_readings_below_today": b.get("percentile"),
+            }
     counted = [r for r in rows if r["tier"] == "core" and r["fresh"]]
     return {
         "counts": {
@@ -117,9 +128,25 @@ def build_data(indicators: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
+def _bucket(value: Any) -> str:
+    """Value at two significant figures: a move big enough that quoted numbers would read as wrong."""
+    if not isinstance(value, (int, float)) or value == 0:
+        return str(value)
+    return f"{float(f'{value:.2g}'):g}"
+
+
 def fingerprint(data: Dict[str, Any]) -> str:
-    """Changes only when an alerting level changes, so small value moves don't trigger a rewrite."""
-    return "|".join(f"{r['id']}:{r['level']}" for r in data["indicators"] if r["tier"] == "core" and r["fresh"])
+    """Changes when an alerting level changes, or when an elevated signal's value moves
+    enough that the briefing's quoted numbers would be out of date."""
+    parts = []
+    for r in data["indicators"]:
+        if r["tier"] != "core" or not r["fresh"]:
+            continue
+        part = f"{r['id']}:{r['level']}"
+        if r["level"] in ("amber", "red"):
+            part += f"@{_bucket(r['value'])}"
+        parts.append(part)
+    return "|".join(parts)
 
 
 # ─── Validation ───
@@ -137,6 +164,10 @@ def _allowed_numbers(data: Dict[str, Any]) -> List[float]:
             if isinstance(v, (int, float)):
                 allowed.append(float(v))
         allowed.extend(_numbers_in(r["measures"]))
+        for v in (r.get("history") or {}).values():
+            for x in (v if isinstance(v, list) else [v]):
+                if isinstance(x, (int, float)):
+                    allowed.append(float(x))
     return allowed
 
 

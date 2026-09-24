@@ -60,6 +60,13 @@ briefings = Table(
     Column("meta", Text),  # JSON: model, token usage, validation problems
 )
 
+baselines = Table(
+    "baselines", metadata,
+    Column("indicator_id", String(64), primary_key=True),
+    Column("computed_at", DateTime(timezone=True), nullable=False),
+    Column("stats", Text, nullable=False),  # JSON, see api.baselines.summarize
+)
+
 
 # libpq rejects query parameters it doesn't know (Supabase adds e.g. `supa=`).
 _LIBPQ_PARAMS = {"sslmode", "sslrootcert", "connect_timeout", "application_name", "options", "target_session_attrs"}
@@ -284,3 +291,17 @@ def values_at(when: datetime) -> Dict[str, float]:
             .where(readings.c.quality == "live")
         ).all()
     return {r.indicator_id: r.value for r in rows}
+
+
+def save_baseline(indicator_id: str, stats: Dict[str, Any]) -> None:
+    with engine().begin() as conn:
+        conn.execute(baselines.delete().where(baselines.c.indicator_id == indicator_id))
+        conn.execute(baselines.insert().values(
+            indicator_id=indicator_id, computed_at=datetime.now(timezone.utc), stats=json.dumps(stats),
+        ))
+
+
+def all_baselines() -> Dict[str, Dict[str, Any]]:
+    with engine().connect() as conn:
+        rows = conn.execute(select(baselines)).all()
+    return {r.indicator_id: {**json.loads(r.stats), "computed_at": _utc(r.computed_at)} for r in rows}
