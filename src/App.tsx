@@ -9,6 +9,7 @@ const SignalPage = lazy(() => import('./experience/SignalPage').then((m) => ({ d
 const AllSignals = lazy(() => import('./experience/SignalPage').then((m) => ({ default: m.AllSignals })));
 const Plan = lazy(() => import('./experience/Plan').then((m) => ({ default: m.Plan })));
 const About = lazy(() => import('./experience/About').then((m) => ({ default: m.About })));
+import { Changes } from './experience/Changes';
 const Developers = lazy(() => import('./experience/Developers').then((m) => ({ default: m.Developers })));
 
 function LegacySignal() {
@@ -47,6 +48,7 @@ function App() {
               <Route path="/signal/:id" element={<SignalPage />} />
               <Route path="/signals" element={<AllSignals />} />
               <Route path="/plan" element={<Plan />} />
+              <Route path="/changes" element={<Changes />} />
               <Route path="/about" element={<About />} />
               <Route path="/developers" element={<Developers />} />
 

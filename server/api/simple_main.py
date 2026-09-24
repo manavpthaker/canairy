@@ -16,11 +16,12 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Dict, List, Optional
 
 import hmac
+import re
 
 from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import baselines, store
+from api import baselines, local, rules, store
 from api.catalog import BY_ID, CATALOG, IndicatorDef
 
 logging.basicConfig(level=logging.INFO)
@@ -277,6 +278,21 @@ def _routes(prefix: str) -> None:
             "createdAt": _iso(latest["created_at"]),
             "model": latest["meta"].get("model"),
         }
+
+    @app.get(f"{prefix}/local/{{county_fips}}")
+    def local_signals(county_fips: str):
+        """Signals for one county, its state and region. Takes a county, never a ZIP or address."""
+        if not re.fullmatch(r"\d{5}", county_fips):
+            raise HTTPException(status_code=422, detail="County must be a 5-digit FIPS code")
+        data = _cached(f"local:{county_fips}", 300, lambda: local.for_county(county_fips))
+        if data is None:
+            raise HTTPException(status_code=404, detail=f"Unknown county {county_fips}")
+        return data
+
+    @app.get(f"{prefix}/rules")
+    def rule_changes(days: int = Query(120, ge=1, le=180)):
+        """Recent federal rules that name a family benefit program."""
+        return {"rules": _cached(f"rules:{days}", 300, lambda: rules.recent(days))}
 
     @app.get(f"{prefix}/hopi")
     def hopi():

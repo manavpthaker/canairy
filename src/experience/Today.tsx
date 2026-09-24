@@ -4,10 +4,12 @@ import { IndicatorData } from '../types';
 import { useIndicatorHistory } from '../hooks/useIndicatorHistory';
 import { CanaryLine } from './CanaryLine';
 import { Chart } from './Chart';
-import { LocalAlerts } from './LocalAlerts';
-import { Action, buildActions, composeHeadline } from './guidance';
+import { ChangesPreview } from './Changes';
+import { LocalSection } from './LocalSection';
+import { Action, buildActions, composeHeadline, localActions } from './guidance';
 import { openHousehold, useDone, useHousehold } from './household';
 import { useBriefing } from './useBriefing';
+import { useLocal } from './useLocal';
 import {
   AREA_NAME, LEVEL_WORD, SEVERITY, byArea, formatReading, isAlerting, levelOf, perspectiveLine, timeAgo, todayLabel,
 } from './format';
@@ -19,6 +21,7 @@ export function Today() {
   const lastFetch = useStore((s) => s.lastSuccessfulFetch);
   const { briefing, createdAt } = useBriefing();
   const household = useHousehold();
+  const local = useLocal(household.zip || undefined);
 
   if (indicators.length === 0) {
     return loading || !offline ? <TodaySkeleton /> : <Unreachable />;
@@ -27,7 +30,8 @@ export function Today() {
   const composed = composeHeadline(indicators);
   const headline = briefing?.headline ?? composed.headline;
   const summary = briefing?.summary ?? composed.summary;
-  const actions = buildActions(indicators, household, briefing);
+  // Something happening in your own county comes before national signals.
+  const actions = [...localActions(local.data), ...buildActions(indicators, household, briefing)];
   const watching = indicators.filter(isAlerting).sort((a, b) => SEVERITY[levelOf(a)] - SEVERITY[levelOf(b)]);
   const steady = indicators.filter((i) => !isAlerting(i));
   const lastUpdate = indicators.reduce<string | null>(
@@ -76,13 +80,23 @@ export function Today() {
       </p>
       <ActionList actions={actions} />
 
-      {household.zip && (
+      {household.zip ? (
         <>
-          <h2 className="cn-h2">Near {household.zip}</h2>
-          <p className="cn-sub">Active National Weather Service alerts for your area.</p>
-          <LocalAlerts zip={household.zip} />
+          <h2 className="cn-h2">Where you live{local.data ? `: ${local.data.place}` : ''}</h2>
+          <p className="cn-sub">Readings for your county, state and region. Only your county code is sent to Canairy.</p>
+          <LocalSection zip={household.zip} local={local} />
+        </>
+      ) : (
+        <>
+          <h2 className="cn-h2">Where you live</h2>
+          <p className="cn-sub">
+            <button className="cn-link-button" onClick={openHousehold}>Add your ZIP code</button> to see disasters,
+            unemployment, gas, power and grocery prices, drought and illness where you are. It stays on this device.
+          </p>
         </>
       )}
+
+      <ChangesPreview />
 
       {watching.length > 0 && (
         <>

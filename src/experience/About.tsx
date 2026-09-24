@@ -18,6 +18,17 @@ export function About() {
         National Weather Service, CISA, the FDIC, the Treasury and the State Department, among others.{' '}
         <Link to="/signals">See the full list</Link>.
       </p>
+      <p>
+        If you add your ZIP code, we also show readings for where you live: FEMA disaster declarations and CDC wastewater
+        levels for your county, drought from the U.S. Drought Monitor, unemployment and electricity prices for your
+        state, gas prices for your state or region, and grocery inflation for your part of the country.
+      </p>
+      <p>
+        Once a day we also check the Federal Register for new rules from the agencies that run SNAP, WIC, school meals,
+        Medicaid, marketplace coverage, unemployment, disability, housing, energy help, phone discounts, tax credits and
+        student loans. Claude summarizes each one in plain words, checked against the rule’s own text.{' '}
+        <Link to="/changes">See recent changes</Link>.
+      </p>
 
       <h2 className="cn-h2">How a signal turns amber or red</h2>
       <p>
@@ -40,9 +51,10 @@ export function About() {
         with its age, and it stops counting toward alerts once it’s out of date.
       </p>
       <p>
-        We don’t collect anything about you. Your household answers stay in your browser. Your ZIP code is turned into
-        map coordinates using a file on this site, and only those coordinates are sent to the National Weather Service to
-        look up local alerts.
+        We don’t collect anything about you. Your household answers stay in your browser. Your ZIP code is turned into a
+        county and map coordinates using a file on this site. Only the county code is sent to Canairy, and only the
+        coordinates are sent to the National Weather Service to look up local alerts. Your ZIP itself never leaves your
+        device.
       </p>
 
       <h2 className="cn-h2">The daily briefing</h2>
