@@ -37,9 +37,9 @@ You will get DATA: the current readings, each with its level (green/amber/red), 
 
 Write to this rubric. It is how your output is graded:
 
-1. Grounded. Every fact comes from DATA. Any number you write must appear in DATA (you may round it). Do not add forecasts with numbers, historical comparisons, prices, or statistics that are not in DATA. If DATA doesn't support a claim, leave it out.
+1. Grounded. Every fact comes from DATA. Any number you write must appear in DATA (you may round it; units like "K" mean thousands). Do not add forecasts with numbers, historical comparisons, prices, or statistics that are not in DATA. Never estimate savings or costs in dollars unless that exact figure is in DATA. If DATA doesn't support a claim, leave it out.
 2. Proportionate. Match the tone to the levels. Amber means a small, prudent step; red means act this week. When most readings are green, say so plainly. Never catastrophize or use fear words ("crisis", "collapse", "panic") unless DATA shows several reds in the same area.
-3. Useful. Each action is something a typical family can do this week, cheapest and easiest first, and says why in terms of their money, health or safety. Protecting cash flow comes before stockpiling. No advice to buy or sell specific investments, and no medical advice beyond "talk to your pharmacist or doctor".
+3. Useful. Base every action on at least one core indicator that is fresh and amber or red; context-only (experimental) indicators may appear in watch notes but never drive an action. Each action is something a typical family can do this week, cheapest and easiest first, and says why in terms of their money, health or safety. Protecting cash flow comes before stockpiling. No advice to buy or sell specific investments, and no medical advice beyond "talk to your pharmacist or doctor".
 4. Connected. When several elevated readings point the same way (e.g. oil, gas and shipping costs), say what they add up to in one sentence rather than listing them separately.
 5. Plain. Short sentences, everyday words, about an 8th-grade reading level. If a term like "bid-to-cover" is unavoidable, explain it in a few words. No markdown.
 6. Honest. Don't overstate certainty. Don't mention indicators that aren't in DATA.
@@ -124,17 +124,8 @@ def fingerprint(data: Dict[str, Any]) -> str:
 
 # ─── Validation ───
 
-_NUMBER = re.compile(r"(?<![\w.])[-+]?\$?\d[\d,]*(?:\.\d+)?")
-
-
 def _numbers_in(text: str) -> List[float]:
-    out = []
-    for m in _NUMBER.findall(text):
-        try:
-            out.append(float(m.replace("$", "").replace(",", "").lstrip("+")))
-        except ValueError:
-            pass
-    return out
+    return [float(m.replace(",", "")) for m in re.findall(r"\d[\d,]*(?:\.\d+)?", text)]
 
 
 def _allowed_numbers(data: Dict[str, Any]) -> List[float]:
@@ -149,47 +140,83 @@ def _allowed_numbers(data: Dict[str, Any]) -> List[float]:
     return allowed
 
 
-# Small counting words and schema values that aren't claims about the data.
-_ALWAYS_OK = {0, 1, 2, 3, 4, 5, 7, 10, 30, 50, 90, 200}
+def _grounded(n: float, text_number: str, allowed: List[float]) -> bool:
+    """True when n is a DATA number, rounded to the precision it was written with,
+    or scaled by a thousand (DATA "197 K" written as "197,000")."""
+    decimals = len(text_number.split(".")[1]) if "." in text_number else 0
+    tolerance = 0.5 * 10 ** (-decimals)
+    for a in allowed:
+        for candidate in (a, a * 1000, a / 1000):
+            if abs(abs(n) - abs(candidate)) <= max(tolerance, 0.01 * abs(candidate)):
+                return True
+    return False
 
 
-def validate(briefing: Dict[str, Any], data: Dict[str, Any]) -> List[str]:
-    """Return a list of problems; empty means the briefing can be published."""
-    problems = []
-    ids = {r["id"] for r in data["indicators"]}
-    elevated = {r["id"] for r in data["indicators"] if r["level"] in ("amber", "red")}
+# Small counting words ("3 actions", "one of 2") that aren't claims about the data.
+# Never exempt when written as money or a percentage.
+_SMALL = {0, 1, 2, 3, 4, 5}
+
+
+def _ungrounded(text: str, allowed: List[float]) -> List[str]:
+    bad = []
+    for m in re.finditer(r"(?<![\w.])([-+]?)(\$?)(\d[\d,]*(?:\.\d+)?)(%?)", text):
+        sign, dollar, digits, pct = m.groups()
+        n = float(digits.replace(",", ""))
+        if not dollar and not pct and n in _SMALL:
+            continue
+        if not _grounded(n, digits.replace(",", ""), allowed):
+            bad.append(m.group(0))
+    return bad
+
+
+def validate(briefing: Dict[str, Any], data: Dict[str, Any]) -> Tuple[Optional[Dict[str, Any]], List[str]]:
+    """Clean a briefing against DATA.
+
+    Actions or watch notes with a problem are dropped (and reported). The whole
+    briefing is rejected (None) only if the headline or summary is ungrounded,
+    or no valid action is left while something is elevated.
+    """
+    problems: List[str] = []
+    rows = {r["id"]: r for r in data["indicators"]}
+    alerting = {i for i, r in rows.items() if r["tier"] == "core" and r["fresh"] and r["level"] in ("amber", "red")}
     allowed = _allowed_numbers(data)
 
-    def grounded(n: float) -> bool:
-        if n in _ALWAYS_OK:
-            return True
-        # Allow rounding: within 1% or 0.05 absolute of a DATA number (sign-insensitive, % or raw).
-        return any(abs(abs(n) - abs(a)) <= max(0.05, 0.01 * abs(a)) for a in allowed)
-
-    texts = [briefing["headline"], briefing["summary"]]
-    texts += [a["title"] + " " + a["why"] for a in briefing["actions"]]
-    texts += [w["note"] for w in briefing["watch"]]
-    for text in texts:
-        for n in _numbers_in(text):
-            if not grounded(n):
-                problems.append(f"ungrounded number {n:g} in: {text[:80]}")
-
+    for field in ("headline", "summary"):
+        bad = _ungrounded(briefing[field], allowed)
+        if bad:
+            problems.append(f"{field}: ungrounded {bad}")
     if len(briefing["headline"]) > 90:
         problems.append("headline over 90 characters")
-    if not 1 <= len(briefing["actions"]) <= 3:
-        problems.append("need 1-3 actions")
+    alarm = re.search(r"\b(crisis|collapse|panic|catastroph)", briefing["headline"] + " " + briefing["summary"], re.I)
+    if alarm and data["counts"]["red"] < 3:
+        problems.append(f"alarmist wording '{alarm.group(0)}' with fewer than 3 reds")
+    if problems:
+        return None, problems
+
+    actions = []
     for a in briefing["actions"]:
-        unknown = [i for i in a["indicator_ids"] if i not in ids]
-        if unknown:
-            problems.append(f"action cites unknown indicators {unknown}")
-        if a["indicator_ids"] and not set(a["indicator_ids"]) & elevated:
-            problems.append(f"action cites no elevated indicator: {a['title'][:60]}")
+        bad = _ungrounded(a["title"] + " " + a["why"], allowed)
+        unknown = [i for i in a["indicator_ids"] if i not in rows]
+        if bad:
+            problems.append(f"dropped action (ungrounded {bad}): {a['title'][:50]}")
+        elif unknown:
+            problems.append(f"dropped action (unknown indicators {unknown}): {a['title'][:50]}")
+        elif not set(a["indicator_ids"]) & alerting:
+            problems.append(f"dropped action (no elevated core indicator): {a['title'][:50]}")
+        else:
+            actions.append(a)
+    watch = []
     for w in briefing["watch"]:
-        if w["indicator_id"] not in ids:
-            problems.append(f"watch item cites unknown indicator {w['indicator_id']}")
-    if re.search(r"\b(crisis|collapse|panic|catastroph)", " ".join(texts), re.I) and data["counts"]["red"] < 3:
-        problems.append("alarmist wording with fewer than 3 reds")
-    return problems
+        bad = _ungrounded(w["note"], allowed)
+        if w["indicator_id"] not in rows or bad:
+            problems.append(f"dropped watch note for {w['indicator_id']} ({bad or 'unknown indicator'})")
+        else:
+            watch.append(w)
+
+    if alerting and not actions:
+        problems.append("no valid actions left")
+        return None, problems
+    return {**briefing, "actions": actions[:3], "watch": watch[:3]}, problems
 
 
 # ─── Generation ───
@@ -254,8 +281,10 @@ def maybe_generate(indicators: List[Dict[str, Any]], force: bool = False) -> Opt
         store.save_briefing(fp, None, "error", meta)
         return f"no briefing ({meta.get('stop_reason')})"
 
-    problems = validate(briefing, data)
-    status = "published" if not problems else "rejected"
-    store.save_briefing(fp, briefing, status, {**meta, "problems": problems})
-    return status if not problems else f"rejected: {problems[:3]}"
+    cleaned, problems = validate(briefing, data)
+    if cleaned is None:
+        store.save_briefing(fp, briefing, "rejected", {**meta, "problems": problems})
+        return f"rejected: {problems[:3]}"
+    store.save_briefing(fp, cleaned, "published", {**meta, "problems": problems, "original": briefing})
+    return "published" + (f" ({len(problems)} items dropped)" if problems else "")
 

@@ -17,7 +17,7 @@ export function Today() {
   const loading = useStore((s) => s.loading);
   const offline = useStore((s) => s.usingFallbackData);
   const lastFetch = useStore((s) => s.lastSuccessfulFetch);
-  const { briefing } = useBriefing();
+  const { briefing, createdAt } = useBriefing();
   const household = useHousehold();
 
   if (indicators.length === 0) {
@@ -54,6 +54,12 @@ export function Today() {
 
       <h1 className="cn-headline">{headline}</h1>
       <p className="cn-lede">{summary}</p>
+      {briefing && (
+        <p className="cn-note" style={{ marginTop: '-1rem', marginBottom: '1.5rem' }}>
+          Written {timeAgo(createdAt)} by Claude, an AI model, from the readings below. Every number was checked
+          against the data before publishing. <Link to="/about">How this works</Link>.
+        </p>
+      )}
 
       <CanaryLine indicators={indicators} />
       <p className="cn-line-caption">
@@ -83,7 +89,9 @@ export function Today() {
           <h2 className="cn-h2">Worth watching</h2>
           <p className="cn-sub">Signals past their normal range, with their recent history.</p>
           <ul className="cn-rows">
-            {watching.map((ind) => <WatchRow key={ind.id} ind={ind} />)}
+            {watching.map((ind) => (
+              <WatchRow key={ind.id} ind={ind} note={briefing?.watch.find((w) => w.indicator_id === ind.id)?.note} />
+            ))}
           </ul>
         </>
       )}
@@ -164,7 +172,7 @@ function ActionList({ actions }: { actions: Action[] }) {
   );
 }
 
-function WatchRow({ ind }: { ind: IndicatorData }) {
+function WatchRow({ ind, note }: { ind: IndicatorData; note?: string }) {
   const level = levelOf(ind);
   // Slow-moving series need a longer window to show any shape.
   const range = /Monthly|Quarterly/.test(ind.updateFrequency) ? '365d' : '90d';
@@ -178,7 +186,7 @@ function WatchRow({ ind }: { ind: IndicatorData }) {
           {formatReading(ind.status.value, ind.unit)}
         </span>
         <span className="why">
-          <span className={`lvl lvl-${level}`}>{LEVEL_WORD[level]}.</span> {ind.description.split('. ')[0]}.
+          <span className={`lvl lvl-${level}`}>{LEVEL_WORD[level]}.</span> {note ?? `${ind.description.split('. ')[0]}.`}
         </span>
         {!flat && (
           <span className="spark">
