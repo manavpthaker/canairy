@@ -14,3 +14,4 @@ pyyaml>=6.0
 
 # Tests (fastapi.testclient)
 httpx>=0.25.0
+anthropic>=1.8

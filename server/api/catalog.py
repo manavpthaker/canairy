@@ -11,7 +11,7 @@ Thresholds: when `red` > `amber`, higher is worse; otherwise lower is worse.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Callable, Dict, List, Optional, Tuple
 
 
@@ -35,6 +35,10 @@ class IndicatorDef:
     green_flag: bool = False
     transform: Optional[Callable[[float], float]] = None
     valid_range: Optional[Tuple[float, float]] = None
+    area: str = ""  # reader-facing group, see AREAS
+    # Skip collection while the last real reading is younger than this (rate-limited sources).
+    min_interval_hours: float = 0
+
 
     @property
     def higher_is_worse(self) -> bool:
@@ -53,6 +57,32 @@ def determine_level(value: float, defn: IndicatorDef) -> str:
         return "red" if value >= defn.red else "amber" if value >= defn.amber else "green"
     return "red" if value <= defn.red else "amber" if value <= defn.amber else "green"
 
+
+# Reader-facing groups, in display order.
+AREAS: Dict[str, str] = {
+    "costs": "Household costs",
+    "jobs": "Jobs, income and debt",
+    "banks": "Banks and markets",
+    "energy": "Energy",
+    "health": "Health",
+    "safety": "Safety",
+}
+
+AREA_OF = {
+    "econ_02_grocery_cpi": "costs", "energy_gas_price": "costs", "housing_03_rate_shock": "costs",
+    "housing_01_delinquency": "jobs", "job_01_jobless_claims": "jobs", "green_g1_gdp_rates": "jobs",
+    "market_01_intraday_swing": "banks", "econ_01_treasury_tail": "banks", "bank_01_failures": "banks",
+    "bank_02_discount_window": "banks", "bank_03_deposit_flow": "banks", "luxury_01_collapse": "banks",
+    "oil_brent_price": "energy", "spr_01_level": "energy", "energy_02_nat_gas_storage": "energy",
+    "supply_02_freight_index": "costs", "supply_pharmacy_shortage": "health",
+    "housing_04_rent_cpi": "costs", "energy_03_electricity_cpi": "costs", "cost_auto_insurance": "costs",
+    "cost_childcare": "costs", "cost_beef": "costs",
+    "job_02_continuing_claims": "jobs", "job_03_real_wages": "jobs", "job_04_sahm_rule": "jobs",
+    "debt_01_card_delinquency": "jobs", "econ_03_saving_rate": "jobs",
+    "bio_02_wastewater": "health", "bio_03_measles": "health",
+    "cyber_01_cisa_kev": "safety", "grid_01_pjm_outages": "safety", "fema_disaster_declarations": "safety",
+    "travel_01_advisories": "safety", "travel_03_tsa_throughput": "safety", "bio_01_h2h_countries": "health",
+}
 
 DAY = 24
 WEEK = 7 * DAY
@@ -254,7 +284,106 @@ CATALOG: List[IndicatorDef] = [
         "https://finance.yahoo.com/quote/MC.PA/", "Daily", 4 * DAY,
         tier="experimental", valid_range=(-100, 5),
     ),
+
+    # ── Added 2026-09-24 (verified against live sources) ──
+    IndicatorDef(
+        "housing_04_rent_cpi", "Rent", "economy",
+        "Rent prices compared with a year ago. Rent is the biggest bill for most renters.",
+        "% y/y", 5, 7,  # median since 2000 ~3.5%; 2023 peak 8.8%
+        V, "RentInflationCollector", "BLS CPI (via FRED)",
+        "https://fred.stlouisfed.org/series/CUSR0000SEHA", "Monthly", 45 * DAY,
+        valid_range=(-20, 40),
+    ),
+    IndicatorDef(
+        "energy_03_electricity_cpi", "Electric Bills", "energy",
+        "Electricity prices compared with a year ago. Utility bills can't be put off.",
+        "% y/y", 6, 10,  # median since 2000 ~2.7%; 2022 peak 15.8%
+        V, "ElectricityInflationCollector", "BLS CPI (via FRED)",
+        "https://fred.stlouisfed.org/series/CUSR0000SEHF01", "Monthly", 45 * DAY,
+        valid_range=(-40, 60),
+    ),
+    IndicatorDef(
+        "cost_auto_insurance", "Car Insurance", "economy",
+        "Car insurance prices compared with a year ago. A required cost for anyone who drives to work.",
+        "% y/y", 10, 18,  # 2016–25 median ~7%; April 2024 peak 22.6%
+        V, "AutoInsuranceInflationCollector", "BLS CPI",
+        "https://data.bls.gov/timeseries/CUSR0000SETE", "Monthly", 45 * DAY,
+        valid_range=(-40, 60), min_interval_hours=8,
+    ),
+    IndicatorDef(
+        "cost_childcare", "Childcare", "economy",
+        "Day care and preschool prices compared with a year ago. Decides whether a parent can keep working.",
+        "% y/y", 6, 8,  # 2016–25 median ~3.2%; peak 7%
+        V, "ChildcareInflationCollector", "BLS CPI",
+        "https://data.bls.gov/timeseries/CUUR0000SEEB03", "Monthly", 45 * DAY,
+        valid_range=(-40, 60), min_interval_hours=8,
+    ),
+    IndicatorDef(
+        "job_02_continuing_claims", "People Still on Unemployment", "jobs_labor",
+        "People still collecting unemployment benefits each week. Rising means it's taking longer to find work.",
+        "K", 2000, 2500,  # 2019 range 1,561–1,843K; 2025 peak 1,963K
+        V, "ContinuingClaimsCollector", "Dept. of Labor (via FRED)",
+        "https://fred.stlouisfed.org/series/CCSA", "Weekly", 14 * DAY,
+        transform=lambda v: v / 1000, valid_range=(200, 30000),
+    ),
+    IndicatorDef(
+        "job_03_real_wages", "Paychecks vs Prices", "jobs_labor",
+        "Hourly pay for typical workers compared with a year ago, after rising prices. Below zero means paychecks buy less.",
+        "% y/y", -0.5, -1.5,  # median since 2000 +0.65%
+        V, "RealWagesCollector", "BLS (via FRED)",
+        "https://fred.stlouisfed.org/series/AHETPI", "Monthly", 45 * DAY,
+        valid_range=(-20, 20),
+    ),
+    IndicatorDef(
+        "job_04_sahm_rule", "Recession Warning", "jobs_labor",
+        "The Sahm rule: how far unemployment has risen above its recent low. At 0.5 a recession has usually started.",
+        "pts", 0.3, 0.5,
+        V, "SahmRuleCollector", "Federal Reserve (via FRED)",
+        "https://fred.stlouisfed.org/series/SAHMREALTIME", "Monthly", 45 * DAY,
+        valid_range=(-5, 10),
+    ),
+    IndicatorDef(
+        "debt_01_card_delinquency", "Credit Card Late Payments", "economy",
+        "Credit card balances 30+ days past due at banks. Rising means families are covering shortfalls with high-interest debt.",
+        "%", 3.5, 4.5,  # 2012–2025 ~2.1–3.2%; 2009 peak 6.77%
+        V, "CardDelinquencyCollector", "Federal Reserve (via FRED)",
+        "https://fred.stlouisfed.org/series/DRCCLACBS", "Quarterly", 200 * DAY,
+        valid_range=(0, 20),
+    ),
+    IndicatorDef(
+        "bio_02_wastewater", "Illness in Wastewater", "security_infrastructure",
+        "Share of people living where CDC sewage testing shows High or Very High virus levels (worst of COVID, flu and RSV).",
+        "% of people", 40, 60,  # past two years: COVID median 12%, top 10% of weeks >44%
+        V, "WastewaterCollector", "CDC",
+        "https://www.cdc.gov/nwss/rv/index.html", "Weekly", 14 * DAY,
+        valid_range=(0, 100),
+    ),
+    IndicatorDef(
+        "econ_03_saving_rate", "Household Savings", "economy",
+        "Share of after-tax income Americans are saving. A thin cushion means less room for surprises.",
+        "%", 4, 2.5,  # median since 1959 8.3%; 2005 low 1.4%
+        V, "SavingRateCollector", "BEA (via FRED)",
+        "https://fred.stlouisfed.org/series/PSAVERT", "Monthly", 60 * DAY,
+        tier="experimental", valid_range=(-10, 40),
+    ),
+    IndicatorDef(
+        "cost_beef", "Ground Beef Price", "economy",
+        "Average price of ground beef compared with a year ago. A price you'll see on your own receipt.",
+        "% y/y", 10, 20,
+        V, "BeefPriceCollector", "BLS (via FRED)",
+        "https://fred.stlouisfed.org/series/APU0000703112", "Monthly", 45 * DAY,
+        tier="experimental", valid_range=(-60, 100),
+    ),
+    IndicatorDef(
+        "bio_03_measles", "Measles Cases", "security_infrastructure",
+        "US measles cases reported in the last four complete weeks. Outbreaks close schools and daycares.",
+        "cases", 100, 400,  # all of 2023: 59 cases
+        V, "MeaslesCollector", "CDC",
+        "https://www.cdc.gov/measles/data-research/index.html", "Weekly", 14 * DAY,
+        tier="experimental", valid_range=(0, 20000),
+    ),
 ]
 
+CATALOG = [replace(d, area=AREA_OF[d.id]) for d in CATALOG]
 BY_ID: Dict[str, IndicatorDef] = {d.id: d for d in CATALOG}
 assert len(BY_ID) == len(CATALOG), "duplicate indicator id in catalog"
