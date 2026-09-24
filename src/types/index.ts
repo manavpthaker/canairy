@@ -81,10 +81,11 @@ export interface Indicator {
   // core: structured data from an official source, drives alerts.
   // experimental: derived from news headlines, shown for context only.
   tier?: 'core' | 'experimental';
+  area?: string;  // reader-facing group: costs, jobs, banks, energy, health, safety
   dataSource: string;
   sourceUrl?: string; // Link to the official data source for transparency
   updateFrequency: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface IndicatorData extends Indicator {

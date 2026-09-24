@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { IndicatorData, HOPIScore, SystemStatus, Phase } from '../types';
-import { mockIndicators, mockHOPIScore, mockSystemStatus } from '../mock/mockData';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5555/api/v1';
-const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true' || false;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -62,10 +60,6 @@ function loadLastKnown(): { savedAt: Date; indicators: IndicatorData[] } | null 
 export const apiService = {
   // Indicators
   async getIndicators(): Promise<ApiResponse<IndicatorData[]>> {
-    if (USE_MOCK_DATA) {
-      return { data: mockIndicators, isUsingFallback: true };
-    }
-
     try {
       const { data } = await api.get('/indicators/');
       const indicators: IndicatorData[] = Array.isArray(data) ? data : data.indicators;
@@ -87,7 +81,6 @@ export const apiService = {
   },
 
   async getIndicatorHistory(id: string, range: string = '30d'): Promise<HistoryPoint[]> {
-    if (USE_MOCK_DATA) return [];
     const { data } = await api.get(`/indicators/${id}/history`, {
       params: { range }
     });
@@ -96,10 +89,6 @@ export const apiService = {
 
   // HOPI Score and Phases
   async getHOPIScore(): Promise<ApiResponse<HOPIScore>> {
-    if (USE_MOCK_DATA) {
-      return { data: mockHOPIScore, isUsingFallback: true };
-    }
-
     const { data } = await api.get('/hopi');
     return { data, isUsingFallback: false, lastSuccessfulFetch: new Date() };
   },
@@ -109,45 +98,9 @@ export const apiService = {
     return data;
   },
 
-  async getPhases(): Promise<Phase[]> {
-    const { data } = await api.get('/phases');
-    return data.phases;
-  },
-
   // System Status
   async getSystemStatus(): Promise<SystemStatus> {
-    if (USE_MOCK_DATA) {
-      return mockSystemStatus;
-    }
-    
     const { data } = await api.get('/status');
-    return data;
-  },
-
-  // Alerts
-  async getAlerts(): Promise<any[]> {
-    const { data } = await api.get('/alerts');
-    return data.alerts;
-  },
-
-  async acknowledgeAlert(id: string): Promise<void> {
-    await api.post(`/alerts/${id}/acknowledge`);
-  },
-
-  // Emergency Procedures
-  async getEmergencyProcedures(phase?: number): Promise<any[]> {
-    const { data } = await api.get('/emergency/procedures', {
-      params: phase ? { phase } : undefined
-    });
-    return data.procedures;
-  },
-
-  // Export
-  async exportReport(format: 'pdf' | 'csv' = 'pdf'): Promise<Blob> {
-    const { data } = await api.get('/export/report', {
-      params: { format },
-      responseType: 'blob'
-    });
     return data;
   },
 };

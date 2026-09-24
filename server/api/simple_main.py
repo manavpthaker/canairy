@@ -28,22 +28,15 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Canairy",
-    version="3.0.0",
-    description="Household resilience indicators, collected on a schedule from public sources.",
+    version="3.1.0",
+    description="Household early-warning signals from public data, collected hourly. Free to use; read-only.",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+    redoc_url=None,
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3003",
-        "http://localhost:5173",
-        "https://canairy.news",
-        "https://www.canairy.news",
-    ],
-    allow_methods=["GET"],
-    allow_headers=["*"],
-)
+# An open, read-only feed: any site may read it (no cookies or credentials are involved).
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"], allow_headers=["*"])
 
 # If the scheduler hasn't finished a run in this long, the whole feed is stale.
 FEED_STALE_AFTER = timedelta(hours=3)

@@ -1,57 +1,66 @@
 import { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { useStore } from './store';
-import { PageSkeleton } from './components/LoadingSkeleton';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { AppShell } from './components/layout/AppShell';
+import { Shell } from './experience/Shell';
+import { Today } from './experience/Today';
 
-// Lazy-loaded pages for code splitting
-const Landing = lazy(() => import('./pages/Landing').then(m => ({ default: m.Landing })));
-const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
-const Indicators = lazy(() => import('./pages/Indicators').then(m => ({ default: m.Indicators })));
-const IndicatorDetails = lazy(() => import('./pages/IndicatorDetails').then(m => ({ default: m.IndicatorDetails })));
-const FamilyActionPlan = lazy(() => import('./pages/FamilyActionPlan').then(m => ({ default: m.FamilyActionPlan })));
-const Analytics = lazy(() => import('./pages/Analytics').then(m => ({ default: m.Analytics })));
-const Alerts = lazy(() => import('./pages/Alerts').then(m => ({ default: m.Alerts })));
-const Reports = lazy(() => import('./pages/Reports').then(m => ({ default: m.Reports })));
-const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
-const NotFound = lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
+const SignalPage = lazy(() => import('./experience/SignalPage').then((m) => ({ default: m.SignalPage })));
+const AllSignals = lazy(() => import('./experience/SignalPage').then((m) => ({ default: m.AllSignals })));
+const Plan = lazy(() => import('./experience/Plan').then((m) => ({ default: m.Plan })));
+const About = lazy(() => import('./experience/About').then((m) => ({ default: m.About })));
+const Developers = lazy(() => import('./experience/Developers').then((m) => ({ default: m.Developers })));
+
+function LegacySignal() {
+  const { id } = useParams();
+  return <Navigate to={`/signal/${id}`} replace />;
+}
+
+function NotFound() {
+  return (
+    <div className="cn-column">
+      <h1 className="cn-headline">There’s no page here.</h1>
+      <p className="cn-lede"><a href="/">Go to today’s signals</a>.</p>
+    </div>
+  );
+}
 
 function App() {
   const refreshAll = useStore((s) => s.refreshAll);
 
   useEffect(() => {
-    // Initial data fetch (includes synthesis)
     refreshAll();
-
     // Data is collected hourly, so a 5-minute check is plenty. Skip hidden tabs.
     const interval = setInterval(() => {
       if (!document.hidden) refreshAll();
     }, 5 * 60 * 1000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshAll]);
 
   return (
     <ErrorBoundary>
       <Router>
-        <Suspense fallback={<PageSkeleton />}>
+        <Suspense fallback={null}>
           <Routes>
-            {/* Landing page - standalone, no shell */}
-            <Route path="/" element={<Landing />} />
+            <Route element={<Shell />}>
+              <Route path="/" element={<Today />} />
+              <Route path="/signal/:id" element={<SignalPage />} />
+              <Route path="/signals" element={<AllSignals />} />
+              <Route path="/plan" element={<Plan />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/developers" element={<Developers />} />
 
-            {/* All pages inside the shared shell with sidebar + header */}
-            <Route element={<AppShell />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/indicators" element={<Indicators />} />
-              <Route path="/indicator/:id" element={<IndicatorDetails />} />
-              <Route path="/action-plan" element={<FamilyActionPlan />} />
-              <Route path="/analytics" element={<Analytics />} />
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/settings" element={<Settings />} />
+              {/* Old addresses */}
+              <Route path="/dashboard" element={<Navigate to="/" replace />} />
+              <Route path="/indicators" element={<Navigate to="/signals" replace />} />
+              <Route path="/indicator/:id" element={<LegacySignal />} />
+              <Route path="/action-plan" element={<Navigate to="/plan" replace />} />
+              <Route path="/alerts" element={<Navigate to="/" replace />} />
+              <Route path="/analytics" element={<Navigate to="/signals" replace />} />
+              <Route path="/reports" element={<Navigate to="/signals" replace />} />
+              <Route path="/settings" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
-            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </Router>
