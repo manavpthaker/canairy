@@ -56,3 +56,5 @@ portfolio-assets/videos/
 .env*
 !.env.example
 uv.lock
+server/pyproject.toml
+server/uv.lock
