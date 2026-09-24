@@ -24,9 +24,9 @@ Railway is modern, simple, and has a generous free tier.
 
 4. **Add Environment Variables**:
    ```bash
-   railway variables set FRED_API_KEY=REDACTED_KEY
-   railway variables set NEWS_API_KEY=REDACTED_KEY
-   railway variables set ALPHA_VANTAGE_KEY=REDACTED_KEY
+   railway variables set FRED_API_KEY=your_fred_api_key
+   railway variables set NEWS_API_KEY=your_newsapi_key
+   railway variables set ALPHA_VANTAGE_KEY=your_alpha_vantage_key
    ```
 
 5. **Your app will be live at**: `https://your-app.railway.app`

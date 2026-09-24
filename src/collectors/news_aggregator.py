@@ -35,7 +35,7 @@ class NewsAggregatorCollector(BaseCollector):
         """
         try:
             # Try News API first if we have a key
-            if self.news_api_key and self.news_api_key != 'REDACTED_KEY':
+            if self.news_api_key and self.news_api_key != 'your_newsapi_key':
                 count = self._search_news_api()
                 if count is not None:
                     return self._format_result(count, 'news_api')
