@@ -14,6 +14,8 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
+import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -85,10 +87,15 @@ def gas_area(state: str) -> str:
 # ─── Collection ───
 
 def _fred(series: str, limit: int = 30) -> List[Dict[str, str]]:
-    resp = requests.get("https://api.stlouisfed.org/fred/series/observations", headers=HEADERS, timeout=30, params={
-        "series_id": series, "api_key": os.environ["FRED_API_KEY"], "file_type": "json",
-        "sort_order": "desc", "limit": limit,
-    })
+    for attempt in range(4):
+        resp = requests.get("https://api.stlouisfed.org/fred/series/observations", headers=HEADERS, timeout=30, params={
+            "series_id": series, "api_key": os.environ["FRED_API_KEY"], "file_type": "json",
+            "sort_order": "desc", "limit": limit,
+        })
+        # FRED allows 120 requests a minute per key, shared with the hourly collection.
+        if resp.status_code != 429 or attempt == 3:
+            break
+        time.sleep(5 * (attempt + 1))
     resp.raise_for_status()
     return [o for o in resp.json().get("observations", []) if o.get("value") not in ("", ".")]
 
@@ -117,8 +124,19 @@ def _unemployment() -> List[Tuple[str, str, Dict[str, Any]]]:
         }
 
     states = [s for s in STATE_NAME if s != "PR"]
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        rows = [r for r in pool.map(lambda s: _safe(one, s), states) if r]
+    errors: List[str] = []
+
+    def attempt(state: str):
+        try:
+            return one(state)
+        except Exception as e:
+            errors.append(f"{state}: {_error(e)}")
+            return None
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        rows = [r for r in pool.map(attempt, states) if r]
+    if not rows:
+        raise RuntimeError(errors[0] if errors else "no state series")
     national = _fred("UNRATE", 2)
     if national:
         rows.append(("national", "unemployment", {"value": float(national[0]["value"]), "level": "none", "as_of": national[0]["date"][:7]}))
@@ -304,11 +322,16 @@ def _drought() -> List[Tuple[str, str, Dict[str, Any]]]:
     return rows
 
 
+def _error(e: Exception) -> str:
+    # Request errors echo the URL, which carries the API key.
+    return re.sub(r"(api_key)=[^&\s]+", r"\1=***", str(e))[:300]
+
+
 def _safe(fn, *args):
     try:
         return fn(*args)
     except Exception as e:
-        logger.warning(f"local {fn.__name__}{args} failed: {e}")
+        logger.warning(f"local {fn.__name__}{args} failed: {_error(e)}")
         return None
 
 
@@ -318,19 +341,27 @@ SOURCES = {
 }
 
 
-def refresh(force: bool = False) -> Dict[str, int]:
-    """Collect every local metric that's more than REFRESH old. Returns rows saved per metric."""
+def refresh(force: bool = False) -> Dict[str, Any]:
+    """Collect every local metric that's more than REFRESH old. Returns rows saved, and why any failed."""
     ages = store.local_ages()
     now = datetime.now(timezone.utc)
-    saved = {}
+    saved: Dict[str, int] = {}
+    failed: Dict[str, str] = {}
     for metric, fn in SOURCES.items():
         if not force and metric in ages and now - ages[metric] < REFRESH:
             continue
-        rows = _safe(fn)
+        try:
+            rows = fn()
+        except Exception as e:
+            failed[metric] = _error(e)
+            logger.warning(f"local {metric} failed: {failed[metric]}")
+            continue
         if rows:
             store.replace_local(metric, rows)
             saved[metric] = len(rows)
-    return saved
+        else:
+            failed[metric] = "no rows"
+    return {"saved": saved, "failed": failed}
 
 
 # ─── Serving ───
