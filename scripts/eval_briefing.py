@@ -85,9 +85,10 @@ def main(names: list) -> None:
         if result is None:
             print("NO RESULT")
             continue
-        problems = briefing.validate(result, data)
+        cleaned, problems = briefing.validate(result, data)
         prose = " ".join([result["summary"]] + [a["why"] for a in result["actions"]])
-        print(f"checks: {'PASS' if not problems else problems}   grade≈{grade_level(prose):.1f}   "
+        verdict = "REJECTED" if cleaned is None else ("PASS" if not problems else "PUBLISHED with drops")
+        print(f"checks: {verdict} {problems or ''}   grade≈{grade_level(prose):.1f}   "
               f"actions={len(result['actions'])} watch={len(result['watch'])}")
         print(json.dumps(result, indent=2))
     cost = total_in / 1e6 * 5 + total_out / 1e6 * 25
