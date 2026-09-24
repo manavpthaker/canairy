@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional
 
 from sqlalchemy import (
     Column, DateTime, Float, Integer, MetaData, String, Table, Text,
-    create_engine, func, select, and_,
+    create_engine, func, select, and_, text,
 )
 from sqlalchemy.engine import Engine
 from sqlalchemy.pool import NullPool
@@ -73,6 +73,8 @@ def _database_url() -> str:
     return urlunsplit((scheme, parts.netloc, parts.path, query, parts.fragment))
 
 
+PG_SCHEMA = "canairy"
+
 _engine: Optional[Engine] = None
 
 
@@ -85,10 +87,14 @@ def engine() -> Engine:
         else:
             # Serverless: no long-lived pool, and no server-side prepared statements so
             # transaction-mode poolers (Supabase/PgBouncer) work.
+            # Tables live in their own schema: Supabase exposes `public` through its REST API.
             _engine = create_engine(
                 url, future=True, poolclass=NullPool,
                 connect_args={"prepare_threshold": None},
+                execution_options={"schema_translate_map": {None: PG_SCHEMA}},
             )
+            with _engine.begin() as conn:
+                conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {PG_SCHEMA}"))
         metadata.create_all(_engine)
     return _engine
 
