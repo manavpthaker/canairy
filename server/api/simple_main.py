@@ -17,7 +17,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 import hmac
 
-from fastapi import FastAPI, Header, HTTPException, Query, Response
+from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import store
@@ -37,6 +37,16 @@ app = FastAPI(
 
 # An open, read-only feed: any site may read it (no cookies or credentials are involved).
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET"], allow_headers=["*"])
+
+
+@app.middleware("http")
+async def cache_headers(request, call_next):
+    """Data changes hourly: let the CDN serve reads for 5 minutes (stale up to an hour while refreshing)."""
+    response = await call_next(request)
+    path = request.url.path
+    if request.method == "GET" and path.startswith("/api/") and "/cron/" not in path and response.status_code == 200:
+        response.headers["Cache-Control"] = "public, max-age=60, s-maxage=300, stale-while-revalidate=3600"
+    return response
 
 # If the scheduler hasn't finished a run in this long, the whole feed is stale.
 FEED_STALE_AFTER = timedelta(hours=3)
@@ -74,8 +84,7 @@ def _iso(dt: Optional[datetime]) -> Optional[str]:
     return dt.isoformat() if dt else None
 
 
-def _trend(defn: IndicatorDef, reading: store.Reading) -> str:
-    before = store.value_near(defn.id, reading.collected_at - TREND_LOOKBACK)
+def _trend(reading: store.Reading, before: Optional[float]) -> str:
     if before is None or reading.value is None:
         return "unknown"
     base = abs(before) if before else 1.0
@@ -86,14 +95,14 @@ def _trend(defn: IndicatorDef, reading: store.Reading) -> str:
 
 
 def _indicator(defn: IndicatorDef, live: store.Reading,
-               attempt: Optional[store.Reading], now: datetime) -> Dict[str, Any]:
+               attempt: Optional[store.Reading], now: datetime, week_ago: Optional[float]) -> Dict[str, Any]:
     age = now - live.collected_at
     stale = age > timedelta(hours=defn.max_age_hours)
     status: Dict[str, Any] = {
         # A stale reading is shown for context but never drives an alert.
         "level": "unknown" if stale else live.level,
         "value": live.value,
-        "trend": _trend(defn, live),
+        "trend": _trend(live, week_ago),
         "lastUpdate": _iso(live.collected_at),
         "dataSource": "STALE" if stale else "LIVE",
     }
@@ -133,7 +142,11 @@ def build_indicators() -> Dict[str, Any]:
     attempts = store.latest_attempts()
     # An indicator that has never produced a real reading (e.g. its API key isn't
     # configured) is left out rather than shown as a permanent blank.
-    indicators = [_indicator(d, live[d.id], attempts.get(d.id), now) for d in CATALOG if d.id in live]
+    week_ago = store.values_at(now - TREND_LOOKBACK)
+    indicators = [
+        _indicator(d, live[d.id], attempts.get(d.id), now, week_ago.get(d.id))
+        for d in CATALOG if d.id in live
+    ]
     run = store.last_run()
     return {
         "indicators": indicators,
@@ -197,11 +210,6 @@ def compute_hopi(indicators: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
-def _set_cache_headers(response: Response, data: Dict[str, Any]) -> None:
-    # Let browsers and CDNs reuse responses briefly; the data only changes hourly.
-    response.headers["Cache-Control"] = "public, max-age=60" if data.get("timestamp") else "no-store"
-
-
 # ═══════════════════════════════════════════════
 # Routes (served under both /api and /api/v1)
 # ═══════════════════════════════════════════════
@@ -236,10 +244,8 @@ def cron_collect(authorization: Optional[str] = Header(None)):
 def _routes(prefix: str) -> None:
     @app.get(f"{prefix}/indicators")
     @app.get(f"{prefix}/indicators/", include_in_schema=False)
-    def indicators(response: Response):
-        data = get_indicators_data()
-        _set_cache_headers(response, data)
-        return data
+    def indicators():
+        return get_indicators_data()
 
     @app.get(f"{prefix}/indicators/{{indicator_id}}")
     def indicator(indicator_id: str):
@@ -260,9 +266,8 @@ def _routes(prefix: str) -> None:
         return {"id": indicator_id, "range": f"{days}d", "points": points}
 
     @app.get(f"{prefix}/briefing")
-    def briefing(response: Response):
+    def briefing():
         latest = _cached("briefing", 60, store.latest_briefing)
-        response.headers["Cache-Control"] = "public, max-age=60"
         if not latest:
             return {"briefing": None}
         return {
