@@ -45,33 +45,33 @@ Unlike doomscrolling the news, Canairy:
 git clone https://github.com/manavpthaker/canairy.git
 cd canairy
 npm install
-python3.11 -m venv .venv && .venv/bin/pip install -r api/requirements.txt
-cp .env.example .env          # add FRED_API_KEY (free); EIA_API_KEY optional
+python3.12 -m venv .venv && .venv/bin/pip install -r server/requirements.txt
+cp .env.example .env          # add FRED_API_KEY and EIA_API_KEY (both free)
 
 # Collect once, and load a year of history for the FRED-backed indicators
-set -a && source .env && set +a
-.venv/bin/python -m api.collect
-.venv/bin/python -m api.collect --backfill 365
+cd server && set -a && source ../.env && set +a
+../.venv/bin/python -m api.collect
+../.venv/bin/python -m api.collect --backfill 365
 
-# Serve the API (reads the database only) and the site
-.venv/bin/python -m uvicorn api.simple_main:app --port 5555
+# Serve the API (reads the database only), then the site from the repo root
+../.venv/bin/python -m uvicorn api.simple_main:app --port 5555
 npm run dev                   # http://localhost:3003
 ```
 
-Tests: `.venv/bin/python -m pytest` (backend) and `npx vitest run` (frontend).
+Tests: `.venv/bin/python -m pytest` (backend, from the repo root) and `npx vitest run` (frontend).
 
 ## Architecture
 
 ```
- hourly schedule                      every page view
+ hourly (Vercel Cron)                 every page view
 ┌──────────────────┐   ┌──────────┐   ┌──────────────┐   ┌───────────────┐
-│ api/collect.py   │──▶│ Postgres │◀──│ FastAPI      │◀──│ React site    │
-│ runs collectors, │   │ (SQLite  │   │ read-only,   │   │               │
-│ checks each value│   │  locally)│   │ no outbound  │   │               │
+│ server/api/      │──▶│ Postgres │◀──│ FastAPI      │◀──│ React site    │
+│ collect.py runs  │   │ (SQLite  │   │ read-only,   │   │               │
+│ each collector   │   │  locally)│   │ no outbound  │   │               │
 └──────────────────┘   └──────────┘   └──────────────┘   └───────────────┘
 ```
 
-- **What's tracked** is defined in one place: `api/catalog.py`. Each entry names its
+- **What's tracked** is defined in one place: `server/api/catalog.py`. Each entry names its
   source, units, thresholds, and how old a reading can be before it stops counting.
 - **Only real readings are shown.** A collector result labelled fallback, estimated or
   mock is stored as a failure and never displayed. Stale readings are shown greyed and

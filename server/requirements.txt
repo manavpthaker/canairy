@@ -1,0 +1,16 @@
+# Canairy API + collector (Python 3.11+). Vercel installs from this file.
+
+# Web API
+fastapi>=0.110
+uvicorn>=0.24.0
+
+# Storage
+sqlalchemy>=2.0
+psycopg[binary]>=3.1
+
+# Collectors
+requests>=2.31.0
+pyyaml>=6.0
+
+# Tests (fastapi.testclient)
+httpx>=0.25.0

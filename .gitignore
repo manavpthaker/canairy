@@ -52,3 +52,6 @@ playwright-report/
 test-results/
 portfolio-assets/videos/
 .venv/
+.vercel
+.env*
+!.env.example

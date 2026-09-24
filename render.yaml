@@ -35,8 +35,8 @@ services:
     name: canairy-api
     env: python
     plan: starter  # free instances sleep, so the first visitor waits ~30s
-    buildCommand: pip install --upgrade pip && pip install -r api/requirements.txt
-    startCommand: uvicorn api.simple_main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install --upgrade pip && pip install -r server/requirements.txt
+    startCommand: cd server && uvicorn api.simple_main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
@@ -52,8 +52,8 @@ services:
     name: canairy-collect
     env: python
     schedule: "7 * * * *"
-    buildCommand: pip install --upgrade pip && pip install -r api/requirements.txt
-    startCommand: python -m api.collect
+    buildCommand: pip install --upgrade pip && pip install -r server/requirements.txt
+    startCommand: cd server && python -m api.collect
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
