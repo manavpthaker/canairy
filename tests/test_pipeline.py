@@ -256,3 +256,10 @@ def test_briefing_rejected_when_summary_invents_numbers():
              "actions": [_action("Trim trips", "Oil is high.", ["oil"])], "watch": []}
     cleaned, _ = b.validate(brief, data)
     assert cleaned is None
+
+
+def test_reads_are_cdn_cacheable_but_cron_is_not(client, monkeypatch):
+    _save(_r("energy_gas_price", 4.5, "amber"))
+    assert "s-maxage=300" in client.get("/api/v1/indicators").headers["cache-control"]
+    monkeypatch.setenv("CRON_SECRET", "s")
+    assert "cache-control" not in client.get("/api/cron/collect").headers
