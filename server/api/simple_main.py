@@ -126,6 +126,7 @@ def _indicator(defn: IndicatorDef, live: store.Reading,
         "enabled": True,
         "unavailable": False,
         "tier": defn.tier,
+        "area": defn.area,
         "dataSource": defn.source_name,
         "sourceUrl": defn.source_url,
         "updateFrequency": defn.update_frequency,
@@ -133,7 +134,7 @@ def _indicator(defn: IndicatorDef, live: store.Reading,
     }
 
 
-def _build_indicators() -> Dict[str, Any]:
+def build_indicators() -> Dict[str, Any]:
     now = datetime.now(timezone.utc)
     live = store.latest_live()
     attempts = store.latest_attempts()
@@ -150,7 +151,7 @@ def _build_indicators() -> Dict[str, Any]:
 
 
 def get_indicators_data() -> Dict[str, Any]:
-    return _cached("indicators", 60, _build_indicators)
+    return _cached("indicators", 60, build_indicators)
 
 
 def _alerting(indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -236,7 +237,7 @@ def cron_collect(authorization: Optional[str] = Header(None)):
     from api.collect import run_once
     result = run_once()
     _cache.clear()
-    return {"run_id": result["run_id"], "live": result["live"], "total": result["total"]}
+    return {"run_id": result["run_id"], "live": result["live"], "total": result["total"], "briefing": result["briefing"]}
 
 
 def _routes(prefix: str) -> None:
@@ -264,6 +265,18 @@ def _routes(prefix: str) -> None:
             for r in store.history(indicator_id, days)
         ])
         return {"id": indicator_id, "range": f"{days}d", "points": points}
+
+    @app.get(f"{prefix}/briefing")
+    def briefing(response: Response):
+        latest = _cached("briefing", 60, store.latest_briefing)
+        response.headers["Cache-Control"] = "public, max-age=60"
+        if not latest:
+            return {"briefing": None}
+        return {
+            "briefing": latest["body"],
+            "createdAt": _iso(latest["created_at"]),
+            "model": latest["meta"].get("model"),
+        }
 
     @app.get(f"{prefix}/hopi")
     def hopi():

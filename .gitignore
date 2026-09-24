@@ -55,3 +55,4 @@ portfolio-assets/videos/
 .vercel
 .env*
 !.env.example
+uv.lock

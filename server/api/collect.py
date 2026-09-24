@@ -115,6 +115,17 @@ def collect_all(only: Optional[List[str]] = None) -> List[store.Reading]:
     defs = [d for d in CATALOG if only is None or d.id in only]
     results: Dict[str, store.Reading] = {}
 
+    # Rate-limited sources: skip while the last real reading is recent enough.
+    throttled = [d for d in defs if d.min_interval_hours]
+    if throttled:
+        latest = store.latest_live()
+        now = datetime.now(timezone.utc)
+        defs = [
+            d for d in defs
+            if not d.min_interval_hours or d.id not in latest
+            or now - latest[d.id].collected_at >= timedelta(hours=d.min_interval_hours)
+        ]
+
     # Import collector modules up front; importing from several threads at once races.
     classes = {}
     for d in defs:
@@ -135,7 +146,7 @@ def collect_all(only: Optional[List[str]] = None) -> List[store.Reading]:
         results[d.id] = store.Reading(d.id, datetime.now(timezone.utc), "failed", None,
                                       "unknown", {"error": "timed out"})
     pool.shutdown(wait=False, cancel_futures=True)
-    return [results[d.id] for d in defs]
+    return [results[d.id] for d in defs if d.id in results]
 
 
 def run_once(only: Optional[List[str]] = None) -> Dict[str, Any]:
@@ -145,10 +156,22 @@ def run_once(only: Optional[List[str]] = None) -> Dict[str, Any]:
     run_id = store.start_run()
     store.save_readings(run_id, items)
     store.finish_run(run_id, live, len(items) - live)
-    return {"run_id": run_id, "live": live, "total": len(items), "items": items}
+
+    # New indicators get a year of history on their first run (no-op once they have it).
+    past = backfill(365, quiet=True)
+    if past:
+        history_run = store.start_run()
+        store.save_readings(history_run, past)
+        store.finish_run(history_run, 0, 0)
+
+    # Briefing reads the same view the API serves; imported here to avoid an import cycle.
+    from api import briefing
+    from api.simple_main import build_indicators
+    briefing_status = briefing.maybe_generate(build_indicators()["indicators"])
+    return {"run_id": run_id, "live": live, "total": len(items), "items": items, "briefing": briefing_status}
 
 
-def backfill(days: int) -> List[store.Reading]:
+def backfill(days: int, quiet: bool = False) -> List[store.Reading]:
     """Past readings for collectors whose source keeps history (FRED series).
 
     Skips any indicator that already has readings older than two days, so running
@@ -175,7 +198,8 @@ def backfill(days: int) -> List[store.Reading]:
                 d.id, when.replace(tzinfo=timezone.utc), "live", round(value, 4),
                 determine_level(value, d), {"source_label": "backfill"},
             ))
-        print(f"{d.id:32} {len(points)} points")
+        if not quiet:
+            print(f"{d.id:32} {len(points)} points")
     return items
 
 
@@ -213,6 +237,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         note = r.detail.get("error") or r.detail.get("source_label", "")
         print(f"{r.quality:8} {r.level:7} {r.indicator_id:32} {value!s:>12}  {note}")
     print(f"\n{live}/{len(items)} live in {time.time() - t0:.1f}s" + ("" if args.dry_run else f", saved run {result['run_id']}"))
+    if not args.dry_run:
+        print(f"briefing: {result['briefing']}")
 
     # Stuck collector threads would otherwise keep the process alive.
     sys.stdout.flush()
