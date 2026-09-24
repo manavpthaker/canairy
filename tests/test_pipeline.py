@@ -207,3 +207,52 @@ def test_postgres_url_used_when_database_url_missing(monkeypatch):
     monkeypatch.delenv("DATABASE_URL", raising=False)
     monkeypatch.setenv("POSTGRES_URL", "postgres://u:p@h:5432/db")
     assert store._database_url() == "postgresql+psycopg://u:p@h:5432/db"
+
+
+# ─── Briefing validation (no API calls) ───
+
+def _brief_data():
+    from api import briefing
+    return briefing, {
+        "counts": {"red": 1, "amber": 1, "green": 1},
+        "indicators": [
+            {"id": "oil", "name": "Oil", "measures": "Crude.", "value": 114.89, "unit": "$/bbl", "level": "red",
+             "thresholds": {"amber": 90, "red": 110}, "trend_7d": "up", "tier": "core", "fresh": True, "source": "x"},
+            {"id": "claims", "name": "Claims", "measures": "Claims.", "value": 197.0, "unit": "K/week", "level": "amber",
+             "thresholds": {"amber": 250, "red": 350}, "trend_7d": "stable", "tier": "core", "fresh": True, "source": "x"},
+            {"id": "measles", "name": "Measles", "measures": "Cases.", "value": 669, "unit": "cases", "level": "red",
+             "thresholds": {"amber": 100, "red": 400}, "trend_7d": None, "tier": "experimental", "fresh": True, "source": "x"},
+        ],
+    }
+
+
+def _action(title, why, ids):
+    return {"title": title, "why": why, "urgency": "this week", "effort": "5 minutes", "cost": "free", "indicator_ids": ids}
+
+
+def test_briefing_accepts_rounding_and_thousands():
+    b, data = _brief_data()
+    brief = {"headline": "Oil near $115", "summary": "Claims at 197,000 a week.",
+             "actions": [_action("Trim trips", "Oil is $114.9 a barrel.", ["oil"])], "watch": []}
+    cleaned, problems = b.validate(brief, data)
+    assert cleaned is not None and problems == []
+
+
+def test_briefing_drops_invented_dollars_and_context_only_actions():
+    b, data = _brief_data()
+    brief = {"headline": "Oil is high", "summary": "Fuel is the pressure.",
+             "actions": [_action("Save $20", "Saves $20 a week.", ["oil"]),
+                         _action("Check shots", "669 cases.", ["measles"]),
+                         _action("Trim trips", "Oil is high.", ["oil"])],
+             "watch": [{"indicator_id": "claims", "note": "Up 12% soon."}]}
+    cleaned, problems = b.validate(brief, data)
+    assert [a["title"] for a in cleaned["actions"]] == ["Trim trips"]
+    assert cleaned["watch"] == [] and len(problems) == 3
+
+
+def test_briefing_rejected_when_summary_invents_numbers():
+    b, data = _brief_data()
+    brief = {"headline": "Oil is high", "summary": "Prices will rise 30% by March.",
+             "actions": [_action("Trim trips", "Oil is high.", ["oil"])], "watch": []}
+    cleaned, _ = b.validate(brief, data)
+    assert cleaned is None
