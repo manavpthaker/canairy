@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IndicatorData, HOPIScore, SystemStatus, Phase } from '../types';
+import { IndicatorData } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5555/api/v1';
 
@@ -85,22 +85,5 @@ export const apiService = {
       params: { range }
     });
     return data.points ?? [];
-  },
-
-  // HOPI Score and Phases
-  async getHOPIScore(): Promise<ApiResponse<HOPIScore>> {
-    const { data } = await api.get('/hopi');
-    return { data, isUsingFallback: false, lastSuccessfulFetch: new Date() };
-  },
-
-  async getCurrentPhase(): Promise<Phase> {
-    const { data } = await api.get('/phase');
-    return data;
-  },
-
-  // System Status
-  async getSystemStatus(): Promise<SystemStatus> {
-    const { data } = await api.get('/status');
-    return data;
   },
 };

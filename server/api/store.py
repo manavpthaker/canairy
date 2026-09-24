@@ -23,7 +23,6 @@ from sqlalchemy import (
     create_engine, func, select, and_, text,
 )
 from sqlalchemy.engine import Engine
-from sqlalchemy.pool import NullPool
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 metadata = MetaData()
@@ -96,11 +95,11 @@ def engine() -> Engine:
         if url.startswith("sqlite"):
             _engine = create_engine(url, future=True)
         else:
-            # Serverless: no long-lived pool, and no server-side prepared statements so
-            # transaction-mode poolers (Supabase/PgBouncer) work.
+            # Fluid Compute reuses instances, so a small pool saves a TLS handshake per query.
+            # No server-side prepared statements, so transaction-mode poolers (Supabase) work.
             # Tables live in their own schema: Supabase exposes `public` through its REST API.
             _engine = create_engine(
-                url, future=True, poolclass=NullPool,
+                url, future=True, pool_size=2, max_overflow=3, pool_recycle=300, pool_pre_ping=True,
                 connect_args={"prepare_threshold": None},
                 execution_options={"schema_translate_map": {None: PG_SCHEMA}},
             )
@@ -230,22 +229,6 @@ def history(indicator_id: str, days: int) -> List[Reading]:
     return [_row_to_reading(r) for r in rows]
 
 
-def value_near(indicator_id: str, when: datetime) -> Optional[float]:
-    """Latest live value recorded at or before `when` (used for trend)."""
-    with engine().connect() as conn:
-        row = conn.execute(
-            select(readings.c.value)
-            .where(and_(
-                readings.c.indicator_id == indicator_id,
-                readings.c.quality == "live",
-                readings.c.collected_at <= when,
-            ))
-            .order_by(readings.c.collected_at.desc())
-            .limit(1)
-        ).first()
-    return row.value if row else None
-
-
 def has_readings_before(indicator_id: str, when: datetime) -> bool:
     with engine().connect() as conn:
         row = conn.execute(
@@ -284,3 +267,20 @@ def briefing_calls_since(when: datetime) -> int:
         return conn.execute(
             select(func.count()).select_from(briefings).where(briefings.c.created_at >= when)
         ).scalar_one()
+
+
+def values_at(when: datetime) -> Dict[str, float]:
+    """Latest live value per indicator recorded at or before `when`, in one query (for trends)."""
+    with engine().connect() as conn:
+        sub = (
+            select(readings.c.indicator_id, func.max(readings.c.collected_at).label("latest"))
+            .where(and_(readings.c.quality == "live", readings.c.collected_at <= when))
+            .group_by(readings.c.indicator_id)
+            .subquery()
+        )
+        rows = conn.execute(
+            select(readings.c.indicator_id, readings.c.value)
+            .join(sub, and_(readings.c.indicator_id == sub.c.indicator_id, readings.c.collected_at == sub.c.latest))
+            .where(readings.c.quality == "live")
+        ).all()
+    return {r.indicator_id: r.value for r in rows}
