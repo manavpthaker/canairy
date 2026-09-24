@@ -38,6 +38,16 @@ export function Developers() {
         <dd>Stored readings for one signal, up to 365 days.</dd>
         <dt><code>GET /api/v1/briefing</code></dt>
         <dd>The latest published plain-language briefing, with actions and the signals each one is based on.</dd>
+        <dt><code>GET /api/v1/local/&#123;county_fips&#125;</code></dt>
+        <dd>
+          Readings for one county by its 5-digit FIPS code: FEMA declarations, wastewater, drought, state unemployment,
+          gas and electricity prices, and regional grocery inflation, each with the national figure to compare.
+        </dd>
+        <dt><code>GET /api/v1/rules?days=120</code></dt>
+        <dd>
+          Federal Register rules that name a family benefit program, with the programs affected, a plain-language summary,
+          whether it changes what families get, and comment deadlines.
+        </dd>
         <dt><code>GET /api/v1/status</code></dt>
         <dd>When data was last collected and how many signals are fresh.</dd>
       </dl>

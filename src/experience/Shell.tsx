@@ -38,6 +38,7 @@ export function Shell() {
         <nav className="cn-nav" aria-label="Main">
           <NavLink to="/" end>Today</NavLink>
           <NavLink to="/plan">Plan</NavLink>
+          <NavLink to="/changes" className="hide-sm">Benefits</NavLink>
           <NavLink to="/about" className="hide-sm">How it works</NavLink>
           <button type="button" className="cn-household" onClick={() => setOpen(true)}>
             {hasProfile(household) ? 'Your household' : 'Personalize'}
@@ -50,10 +51,11 @@ export function Shell() {
       </main>
 
       <footer className="cn-footer">
-        <span>Canairy is free and open source. Public data only; nothing about you leaves your device.</span>
+        <span>Canairy is free and open source. Public data only; your household details stay on your device.</span>
         <nav aria-label="Footer">
           <Link to="/about">How it works</Link>
           <Link to="/signals">All signals</Link>
+          <Link to="/changes">Changes to benefits</Link>
           <Link to="/developers">Open data feed</Link>
           <a href="https://github.com/manavpthaker/canairy">Source code</a>
         </nav>

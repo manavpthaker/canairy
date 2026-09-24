@@ -296,3 +296,44 @@ def test_api_includes_baseline(client):
     store.save_baseline("energy_gas_price", baselines.summarize(pts))
     b = client.get("/api/v1/indicators/energy_gas_price").json()["baseline"]
     assert b["since"] == "2016-01-01" and b["percentile"] == 100 and "quantiles" not in b
+
+
+# ─── Local and rules ───
+
+def test_local_for_county_joins_scopes(client):
+    from api import local
+    store.replace_local("fema", [("county:34017", "fema", {"value": 1, "level": "red", "individual_assistance": True, "as_of": "2026-09-01"})])
+    store.replace_local("unemployment", [
+        ("state:NJ", "unemployment", {"value": 4.9, "level": "amber", "as_of": "2026-08", "rise_from_12mo_low": 0.4}),
+        ("national", "unemployment", {"value": 4.3, "level": "none", "as_of": "2026-08"}),
+    ])
+    out = local.for_county("34017")
+    assert out["place"].endswith("NJ")
+    by = {s["metric"]: s for s in out["signals"]}
+    assert by["fema"]["where"] == out["county"] and by["fema"]["level"] == "red"
+    assert by["unemployment"]["where"] == "New Jersey" and by["unemployment"]["national"]["value"] == 4.3
+    assert local.for_county("99999") is None
+
+
+def test_local_route_validates_fips(client):
+    assert client.get("/api/v1/local/abc").status_code in (404, 422)
+    assert client.get("/api/v1/local/99999").status_code == 404
+
+
+@pytest.mark.parametrize("text,expected", [
+    ("Supplemental Nutrition Assistance Program: Work Requirements", ["SNAP"]),
+    ("Amendments to Section 898 reporting", []),
+    ("Section 8 Housing Choice Voucher Program", ["Housing assistance"]),
+    ("Medicaid and CHIP eligibility", ["Medicaid and CHIP"]),
+    ("Chipset export controls", []),
+])
+def test_rule_program_matching_is_whole_word(text, expected):
+    from api import rules
+    assert rules._programs(text) == expected
+
+
+def test_rule_summary_numbers_must_come_from_rule():
+    from api import rules
+    source = "This rule raises the asset limit to $3,000 effective October 1, 2026."
+    assert rules._grounded("The asset limit rises to $3,000 on October 1, 2026.", source)
+    assert not rules._grounded("The asset limit rises to $4,500.", source)

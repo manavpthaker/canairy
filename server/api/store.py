@@ -67,6 +67,25 @@ baselines = Table(
     Column("stats", Text, nullable=False),  # JSON, see api.baselines.summarize
 )
 
+local_latest = Table(
+    "local_latest", metadata,
+    Column("scope", String(32), primary_key=True),   # county:34017, state:NJ, region:northeast, gas:R1Y, national
+    Column("metric", String(32), primary_key=True),  # fema, wastewater, drought, unemployment, gas, electricity, grocery
+    Column("collected_at", DateTime(timezone=True), nullable=False),
+    Column("data", Text, nullable=False),
+)
+
+rule_changes = Table(
+    "rule_changes", metadata,
+    Column("id", String(32), primary_key=True),  # Federal Register document number
+    Column("published", String(10), nullable=False, index=True),
+    Column("fetched_at", DateTime(timezone=True), nullable=False),
+    Column("data", Text, nullable=False),        # JSON: title, type, dates, url, agency, programs, abstract
+    Column("summary_status", String(16), nullable=False, default="pending"),  # pending | done | failed
+    Column("summarized_at", DateTime(timezone=True)),
+    Column("summary", Text),                     # JSON: summary, affects_families
+)
+
 
 # libpq rejects query parameters it doesn't know (Supabase adds e.g. `supa=`).
 _LIBPQ_PARAMS = {"sslmode", "sslrootcert", "connect_timeout", "application_name", "options", "target_session_attrs"}
@@ -305,3 +324,88 @@ def all_baselines() -> Dict[str, Dict[str, Any]]:
     with engine().connect() as conn:
         rows = conn.execute(select(baselines)).all()
     return {r.indicator_id: {**json.loads(r.stats), "computed_at": _utc(r.computed_at)} for r in rows}
+
+
+def replace_local(metric: str, rows: List[Any]) -> None:
+    """Replace every scope's latest value for one metric in a single transaction."""
+    now = datetime.now(timezone.utc)
+    with engine().begin() as conn:
+        conn.execute(local_latest.delete().where(local_latest.c.metric == metric))
+        conn.execute(local_latest.insert(), [
+            {"scope": scope, "metric": m, "collected_at": now, "data": json.dumps(data, default=str)}
+            for scope, m, data in rows
+        ])
+
+
+def local_ages() -> Dict[str, datetime]:
+    with engine().connect() as conn:
+        rows = conn.execute(
+            select(local_latest.c.metric, func.max(local_latest.c.collected_at)).group_by(local_latest.c.metric)
+        ).all()
+    return {m: _utc(t) for m, t in rows}
+
+
+def local_for(scopes: List[str]) -> Dict[Any, Dict[str, Any]]:
+    with engine().connect() as conn:
+        rows = conn.execute(select(local_latest).where(local_latest.c.scope.in_(scopes))).all()
+    return {(r.scope, r.metric): json.loads(r.data) for r in rows}
+
+
+def rules_last_fetched() -> Optional[datetime]:
+    with engine().connect() as conn:
+        t = conn.execute(select(func.max(rule_changes.c.fetched_at))).scalar()
+    return _utc(t) if t else None
+
+
+def rule_ids() -> set:
+    with engine().connect() as conn:
+        return {r[0] for r in conn.execute(select(rule_changes.c.id)).all()}
+
+
+def upsert_rules(items: List[Dict[str, Any]]) -> None:
+    now = datetime.now(timezone.utc)
+    known = rule_ids()
+    with engine().begin() as conn:
+        for item in items:
+            values = {"published": item["published"], "fetched_at": now, "data": json.dumps(item)}
+            if item["id"] in known:
+                conn.execute(rule_changes.update().where(rule_changes.c.id == item["id"]).values(**values))
+            else:
+                conn.execute(rule_changes.insert().values(id=item["id"], summary_status="pending", **values))
+        if not items:  # still record that we checked
+            conn.execute(rule_changes.update().where(rule_changes.c.id == "__none__").values(fetched_at=now))
+
+
+def rule_summaries_since(when: datetime) -> int:
+    with engine().connect() as conn:
+        return conn.execute(
+            select(func.count()).select_from(rule_changes).where(rule_changes.c.summarized_at >= when)
+        ).scalar_one()
+
+
+def rules_needing_summary() -> List[Dict[str, Any]]:
+    with engine().connect() as conn:
+        rows = conn.execute(select(rule_changes).where(rule_changes.c.summary_status == "pending")).all()
+    return [json.loads(r.data) for r in rows]
+
+
+def save_rule_summary(rule_id: str, result: Optional[Dict[str, Any]]) -> None:
+    with engine().begin() as conn:
+        conn.execute(rule_changes.update().where(rule_changes.c.id == rule_id).values(
+            summary_status="done" if result else "failed",
+            summarized_at=datetime.now(timezone.utc),
+            summary=json.dumps(result) if result else None,
+        ))
+
+
+def rules_since(published_from: str) -> List[Dict[str, Any]]:
+    with engine().connect() as conn:
+        rows = conn.execute(select(rule_changes).where(rule_changes.c.published >= published_from)).all()
+    out = []
+    for r in rows:
+        item = json.loads(r.data)
+        summary = json.loads(r.summary) if r.summary else None
+        item["summary"] = summary["summary"] if summary else None
+        item["affects_families"] = summary["affects_families"] if summary else None
+        out.append(item)
+    return out

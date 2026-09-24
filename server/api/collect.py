@@ -165,8 +165,14 @@ def run_once(only: Optional[List[str]] = None) -> Dict[str, Any]:
         store.finish_run(history_run, 0, 0)
 
     # Weekly: refresh "what's normal" from each source's long history.
-    from api import baselines
+    from api import baselines, local
     baselines.refresh()
+
+    # Daily: county, state and regional signals for every place at once,
+    # and federal rule changes that affect family benefits.
+    local.refresh()
+    from api import rules
+    rules.refresh()
 
     # Briefing reads the same view the API serves; imported here to avoid an import cycle.
     from api import briefing

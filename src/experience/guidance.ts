@@ -2,7 +2,8 @@ import { IndicatorData } from '../types';
 import { getAdvice } from './advice';
 import { Briefing } from './useBriefing';
 import { Household } from './household';
-import { HelpResource, helpFor, relevance } from './help';
+import { HELP, HelpResource, helpFor, relevance } from './help';
+import { LocalData } from './useLocal';
 import { SEVERITY, isAlerting, levelOf } from './format';
 
 export interface Action {
@@ -113,4 +114,49 @@ export function buildActions(indicators: IndicatorData[], household: Household, 
 function dedupe(list: HelpResource[]): HelpResource[] {
   const seen = new Set<string>();
   return list.filter((h) => (seen.has(h.id) ? false : (seen.add(h.id), true)));
+}
+
+/** Things to do because of what's happening in the household's own county, state or region. Only red readings. */
+export function localActions(local: LocalData | null): Action[] {
+  if (!local) return [];
+  const actions: Action[] = [];
+  for (const s of local.signals) {
+    if (s.level !== 'red') continue;
+    const base = { id: `l-${s.metric}`, urgent: true, indicators: [] as IndicatorData[] };
+    if (s.metric === 'fema' && s.individual_assistance) {
+      actions.push({
+        ...base,
+        title: `Apply for FEMA disaster aid if you were affected in ${s.where}`,
+        why: `A federal disaster declaration here includes help for individuals: money for repairs, rent and lost essentials. ${
+          s.disasters?.find((d) => d.individual_assistance)?.title ?? ''}`.trim(),
+        meta: 'Takes about 20 minutes online. Free. Keep photos of damage and receipts.',
+        help: [HELP.fema, HELP.help211],
+      });
+    } else if (s.metric === 'unemployment') {
+      actions.push({
+        ...base,
+        title: 'Know how to file for unemployment in your state',
+        why: `Unemployment in ${s.where} is up ${(s.rise_from_12mo_low ?? 0).toFixed(1)} points from its low this past year, a rise that has come before past downturns.`,
+        meta: 'Takes 10 minutes to find your state’s claim page. Free.',
+        help: [HELP.ui],
+      });
+    } else if (s.metric === 'electricity') {
+      actions.push({
+        ...base,
+        title: 'Check if you qualify for help with power bills',
+        why: `Home electricity in ${s.where} costs ${(s.change_pct ?? 0).toFixed(0)}% more than a year ago.`,
+        meta: 'Takes 15 minutes. Free.',
+        help: [HELP.liheap, HELP.wap],
+      });
+    } else if (s.metric === 'grocery') {
+      actions.push({
+        ...base,
+        title: 'Check if you qualify for food help',
+        why: `Grocery prices in ${s.where} are ${s.value.toFixed(1)}% higher than a year ago.`,
+        meta: 'Takes 10 minutes to check. Free.',
+        help: [HELP.snap, HELP.wic],
+      });
+    }
+  }
+  return actions;
 }
