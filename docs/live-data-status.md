@@ -78,9 +78,9 @@ This document shows which indicators are pulling live data vs mock data.
 
 Add these in Render dashboard:
 ```
-FRED_API_KEY=91c1cb50df4e3f061389ac2ecc335ead
-NEWS_API_KEY=88dd145bb61d4aa0b9655edec04309f8
-ALPHA_VANTAGE_API_KEY=H1UKYU1N148IZ94W
+FRED_API_KEY=your_fred_api_key
+NEWS_API_KEY=your_newsapi_key
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key
 ```
 
 ## Troubleshooting

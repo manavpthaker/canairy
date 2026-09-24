@@ -676,7 +676,7 @@ export const INDICATOR_CONTEXT: Record<string, IndicatorContextEntry> = {
  * Falls back to a generic entry if not found
  */
 export function getIndicatorContext(indicatorId: string): IndicatorContextEntry | null {
-  return INDICATOR_CONTEXT[indicatorId] || null;
+  return CORE_INDICATOR_CONTEXT[indicatorId] || INDICATOR_CONTEXT[indicatorId] || null;
 }
 
 /**
@@ -730,6 +730,7 @@ export interface EnrichedIndicator {
  * Import types needed for enrichment
  */
 import { IndicatorData, AlertLevel } from '../../types';
+import { CORE_INDICATOR_CONTEXT } from './coreIndicatorContext';
 import { getIndicatorDescription } from '../../data/indicatorDescriptions';
 
 /**

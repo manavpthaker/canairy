@@ -1,10 +1,11 @@
 /// <reference types="vite/client" />
 
+// Everything here ships to every visitor's browser. Never put a secret key in a VITE_ variable.
 interface ImportMetaEnv {
-  readonly VITE_NEWS_API_KEY: string
-  readonly VITE_ALPHA_VANTAGE_API_KEY: string
-  readonly VITE_OPENAI_API_KEY: string
-  readonly VITE_API_BASE_URL: string
+  readonly VITE_API_URL?: string
+  readonly VITE_USE_MOCK_DATA?: string
+  readonly VITE_CANAIRY_AI_ENABLED?: string
+  readonly VITE_ANTHROPIC_API_KEY?: string
 }
 
 interface ImportMeta {

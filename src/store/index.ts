@@ -9,6 +9,10 @@ import { analyzeIndicators, generateFallbackInsights, AIAnalysisResult, AIInsigh
 // Track if we've logged the fallback message
 let hasLoggedFallbackMessage = false;
 
+// Devtools only in development: zustand's devtools reads the whole
+// import.meta.env object, which makes Vite embed every VITE_ variable in the bundle.
+const withDevtools = (import.meta.env.DEV ? devtools : (fn: unknown) => fn) as typeof devtools;
+
 interface ChecklistProgress {
   completedPhase: number;
   currentPhaseProgress: number;
@@ -63,7 +67,7 @@ interface AppState {
 }
 
 export const useStore = create<AppState>()(
-  devtools(
+  withDevtools(
     subscribeWithSelector((set, get) => ({
       // Initial state
       indicators: [],
