@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "canairy-web-local-api",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "VITE_API_URL=http://localhost:5599/api/v1 npx vite --port 5173 --strictPort"],
+      "port": 5173
+    }
+  ]
+}
