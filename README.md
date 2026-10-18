@@ -2,7 +2,7 @@
 
 **Your family's early warning system.**
 
-We watch 35+ economic and safety signals so you don't have to — and tell you exactly what to do about them.
+We watch about 40 economic and safety signals so you don't have to — and tell you exactly what to do about them.
 
 [![Live Demo](https://img.shields.io/badge/Live-canairy.news-amber.svg)](https://canairy.news)
 [![React](https://img.shields.io/badge/React-18.2-blue.svg)](https://reactjs.org/)
