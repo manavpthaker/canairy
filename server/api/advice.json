@@ -671,5 +671,104 @@
     "dataPointLabel": "Consumer sentiment index",
     "source": "University of Michigan via FRED",
     "peripheralImpacts": []
+  },
+  "job_06_hires_rate": {
+    "whatItMeans": {
+      "amber": "Employers are hiring at one of the slowest rates in a decade, even though layoffs are low.",
+      "red": "Hiring has nearly frozen, close to the 2009 low."
+    },
+    "familyImpact": {
+      "amber": "If someone in the house loses a job, the next one may take months to find.",
+      "red": "A job search could take much longer than usual, especially for entry-level and office roles."
+    },
+    "whatToDo": {
+      "amber": "Keep your résumé current and stay in touch with people in your field. Aim for six months of expenses saved if one income is at risk.",
+      "red": "Build savings toward nine to twelve months of essential costs, and cut fixed bills where you can."
+    },
+    "dataPointLabel": "Hires as a share of jobs",
+    "source": "BLS JOLTS via FRED",
+    "peripheralImpacts": [
+      "Longer job searches",
+      "Fewer raises and promotions"
+    ]
+  },
+  "market_02_nasdaq_drawdown": {
+    "whatItMeans": {
+      "amber": "Big tech stocks are down 20% or more from their high, a bear market for the companies that dominate index funds.",
+      "red": "Tech stocks have fallen 35% or more, the size of the 2022 drop and the line for an AI-linked bust."
+    },
+    "familyImpact": {
+      "amber": "Retirement and index-fund balances drop, because a handful of tech companies make up a large share of the S&P 500.",
+      "red": "401(k) balances fall sharply, and tech-sector layoffs usually follow."
+    },
+    "whatToDo": {
+      "amber": "Don't sell in a panic. Check how much of your savings rides on a few tech stocks, and keep money you need soon in cash or Treasury bills.",
+      "red": "Don't sell in a panic; past drops recovered, sometimes over years. Keep 6 to 12 months of expenses outside stocks."
+    },
+    "dataPointLabel": "Nasdaq-100 below its 1-year high",
+    "source": "Nasdaq via FRED",
+    "peripheralImpacts": [
+      "Tech layoffs",
+      "Startup funding dries up"
+    ]
+  },
+  "world_01_china_advisory": {
+    "whatItMeans": {
+      "amber": "The State Department now says to reconsider travel to China.",
+      "red": "The State Department says do not travel to China. At 5 it has ordered US staff or families out."
+    },
+    "familyImpact": {
+      "amber": "Tension with China raises the chance of trade cutoffs, electronics shortages and cyberattacks on US utilities.",
+      "red": "Expect supply shocks in electronics and generic medicines within weeks to months."
+    },
+    "whatToDo": {
+      "amber": "Check passport dates for everyone, and buy any electronics you were already planning to buy.",
+      "red": "Refill key prescriptions to 90 days where allowed, keep 2 to 4 weeks of cash at home, and confirm your backups work."
+    },
+    "dataPointLabel": "China travel advisory level",
+    "source": "US State Department",
+    "peripheralImpacts": [
+      "Electronics prices",
+      "Generic drug supply"
+    ]
+  },
+  "world_02_taiwan_advisory": {
+    "whatItMeans": {
+      "amber": "The State Department raised Taiwan's travel advisory above normal, which is rare.",
+      "red": "The State Department says to reconsider travel to Taiwan or worse. At 5 it has ordered US staff or families out."
+    },
+    "familyImpact": {
+      "amber": "Taiwan makes most of the world's advanced chips. Pressure on it shows up first in electronics prices and the stock market.",
+      "red": "A blockade would hit electronics, medicines and shipping within weeks, and could bring cyberattacks on US utilities."
+    },
+    "whatToDo": {
+      "amber": "Check passport dates, and buy planned electronics sooner rather than later.",
+      "red": "Refill key prescriptions to 90 days where allowed, build food staples toward 30 days, keep 2 to 4 weeks of cash, and charge backup batteries."
+    },
+    "dataPointLabel": "Taiwan travel advisory level",
+    "source": "US State Department",
+    "peripheralImpacts": [
+      "Chip and electronics shortages",
+      "Shipping delays"
+    ]
+  },
+  "energy_04_power_vs_inflation": {
+    "whatItMeans": {
+      "amber": "Electricity prices are rising at least 2 points faster than prices overall.",
+      "red": "Electric bills are outpacing inflation by 4 points or more."
+    },
+    "familyImpact": {
+      "amber": "Power takes a bigger bite each month, and summer and winter bills hit hardest.",
+      "red": "Utility bills are becoming a real budget problem, and rate increases tend to stick."
+    },
+    "whatToDo": {
+      "amber": "Ask your utility about budget billing, and check your state utility commission for pending rate increases.",
+      "red": "Look at efficiency upgrades that pay back quickly (thermostat, insulation, LED lighting) and any state bill-assistance programs."
+    },
+    "dataPointLabel": "Electricity vs all prices (pts)",
+    "source": "BLS CPI via FRED",
+    "peripheralImpacts": [
+      "Rate-case increases"
+    ]
   }
 }

@@ -12,7 +12,6 @@ import json
 import logging
 import os
 import time
-from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
@@ -23,7 +22,7 @@ import re
 from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import baselines, local, rules, store
+from api import baselines, local, rules, stages, store
 from api.catalog import BY_ID, CATALOG, IndicatorDef
 
 logging.basicConfig(level=logging.INFO)
@@ -60,20 +59,11 @@ BRIEFING_MAX_AGE = timedelta(hours=48)
 ADVICE: Dict[str, Dict[str, Any]] = json.loads(Path(__file__).with_name("advice.json").read_text())
 # Dated tests, calendar and slow clocks from the October 2026 research (served at /outlook).
 OUTLOOK: Dict[str, Any] = json.loads(Path(__file__).with_name("outlook.json").read_text())
+# The stage ladder and steps by area (served at /plan; the site's Plan page).
+PLAN: Dict[str, Any] = json.loads(Path(__file__).with_name("plan.json").read_text())
 TREND_LOOKBACK = timedelta(days=7)
 TREND_TOLERANCE = 0.02  # changes under 2% count as stable
 
-PHASE_NAMES = {
-    0: "Foundations", 1: "72-Hour Bin", 2: "Digital & Comms",
-    3: "Air, Health, Mobile", 4: "Dry-Basement / Perimeter",
-    5: "Oil-Tank → Generator Prep", 6: "Shelter Nook Build",
-    7: "Harden + Genset Live", 8: "Water & Circuits", 9: "Optional Safe-Room",
-}
-PHASE_COLORS = {
-    0: "#10B981", 1: "#10B981", 2: "#10B981", 3: "#F59E0B", 4: "#F59E0B",
-    5: "#F97316", 6: "#F97316", 7: "#EF4444", 8: "#EF4444", 9: "#991B1B",
-}
-LEVEL_SCORES = {"green": 0.0, "amber": 0.5, "red": 1.0}
 
 
 # ─── Short in-process cache so bursts of traffic hit the DB once ───
@@ -206,53 +196,8 @@ def get_indicators_data() -> Dict[str, Any]:
 
 
 def _alerting(indicators: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Indicators allowed to drive the phase: core tier with a fresh, real reading."""
+    """Indicators allowed to raise an alert: core tier with a fresh, real reading."""
     return [i for i in indicators if i["tier"] == "core" and i["status"]["dataSource"] == "LIVE"]
-
-
-def compute_hopi(indicators: List[Dict[str, Any]]) -> Dict[str, Any]:
-    counted = _alerting(indicators)
-    by_domain: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
-    for ind in counted:
-        by_domain[ind["domain"]].append(ind)
-
-    domains = {}
-    for domain, inds in by_domain.items():
-        scores = [LEVEL_SCORES[i["status"]["level"]] for i in inds]
-        domains[domain] = {
-            "score": round(sum(scores) / len(scores), 2),
-            "weight": 1.0,
-            "indicators": [i["id"] for i in inds],
-            "criticalAlerts": [i["id"] for i in inds if i["critical"] and i["status"]["level"] == "red"],
-        }
-    score = round(sum(d["score"] for d in domains.values()) / len(domains), 2) if domains else 0
-
-    red = sum(1 for i in counted if i["status"]["level"] == "red")
-    amber = sum(1 for i in counted if i["status"]["level"] == "amber")
-    if red >= 3:
-        phase = 6
-    elif red >= 2:
-        phase = 4
-    elif red >= 1 or amber >= 2:
-        phase = 3
-    elif amber >= 1:
-        phase = 2
-    else:
-        phase = 1
-
-    core_total = sum(1 for d in CATALOG if d.tier == "core")
-    return {
-        "score": score,
-        # Share of core indicators with fresh real data.
-        "confidence": round(100 * len(counted) / core_total) if core_total else 0,
-        "phase": phase,
-        "targetPhase": phase,
-        "domains": domains,
-        "counted": len(counted),
-        "red": red,
-        "amber": amber,
-        "timestamp": _iso(datetime.now(timezone.utc)),
-    }
 
 
 # ═══════════════════════════════════════════════
@@ -344,9 +289,15 @@ def _routes(prefix: str) -> None:
         """Dated tests, a calendar and slow clocks from the October 2026 research. Estimates, not data."""
         return build_outlook()
 
-    @app.get(f"{prefix}/hopi")
-    def hopi():
-        return compute_hopi(get_indicators_data()["indicators"])
+    @app.get(f"{prefix}/stages")
+    def household_stages():
+        """Where a household stands, area by area (0 Baseline, 1 Watch, 2 Prepare, 3 Brace), from the readings' recent history."""
+        return _cached("stages", 300, lambda: stages.compute(build_outlook()))
+
+    @app.get(f"{prefix}/plan")
+    def household_plan():
+        """The stage ladder and what to do at each stage, by area. Static; pair it with /stages."""
+        return PLAN
 
     @app.get(f"{prefix}/status")
     def status():
@@ -365,22 +316,6 @@ def _routes(prefix: str) -> None:
                 f"{len(counted)} of {core_total} core indicators have fresh data."
                 if fresh else "Data collection is behind schedule; readings may be out of date."
             ),
-        }
-
-    @app.get(f"{prefix}/phase")
-    def phase():
-        hopi_data = compute_hopi(get_indicators_data()["indicators"])
-        n = hopi_data["phase"]
-        return {
-            "number": n,
-            "name": PHASE_NAMES[n],
-            "description": (
-                f"Based on {hopi_data['counted']} indicators with fresh data: "
-                f"{hopi_data['red']} red, {hopi_data['amber']} amber."
-            ),
-            "triggers": [],
-            "actions": [],
-            "color": PHASE_COLORS[n],
         }
 
 

@@ -1,0 +1,282 @@
+{
+  "asOf": "2026-10-18",
+  "source": "Canairy's October 2026 family preparedness research. General information, not financial, legal or medical advice.",
+  "principles": [
+    "Decide in calm times what moves you up a stage and what moves you down, then follow the rule even when the news feels louder than the numbers.",
+    "Areas can sit at different stages. Your whole household moves to Prepare only when two areas are there at once.",
+    "A stage you can't name a number for drops back on its own. Most alarms never become catastrophes.",
+    "Make leaving cheap and fast, but don't leave on rumors. People who did well in past crises acted early on signals they chose ahead of time."
+  ],
+  "ladder": [
+    {
+      "stage": 0,
+      "name": "Baseline",
+      "meaning": "Normal life, prepared house.",
+      "up": "A reading past its watch line, or a dated tripwire within 30 days.",
+      "down": null,
+      "today": "Know where documents, cash, water and lights are.",
+      "week": "Two weeks of water, food and medicine; a documents kit; a written family plan.",
+      "month": "Passports, a will, backups and an outage kit.",
+      "cost": "$3,000 to $8,000 once, then about $300 a year"
+    },
+    {
+      "stage": 1,
+      "name": "Watch",
+      "meaning": "Something is off. Look closer, spend little.",
+      "up": "A reading past its act line for 2 weeks, or a trigger for that area.",
+      "down": "Every reading back inside its watch line for 30 days.",
+      "today": "Check readings once a day, not every hour. Keep the tank above half.",
+      "week": "Top up supplies, check passport dates, confirm the school's emergency plan.",
+      "month": "Rehearse the plan; test the battery and the radio.",
+      "cost": "$0 to $500"
+    },
+    {
+      "stage": 2,
+      "name": "Prepare",
+      "meaning": "Disruption is plausible in weeks to months.",
+      "up": "A reading past its brace line, or an event trigger for that area.",
+      "down": "Act lines clear for 4 weeks.",
+      "today": "Fill the cars, refill prescriptions early, bring home cash for 2 to 4 weeks of spending.",
+      "week": "Supplies to 30 days; deposits spread across banks under FDIC limits; service the battery or generator.",
+      "month": "Staples toward 90 days; review job risk; refresh the plan for a second place to stay.",
+      "cost": "$1,000 to $5,000"
+    },
+    {
+      "stage": 3,
+      "name": "Brace",
+      "meaning": "An event is under way; local effects are likely within days. Both adults agree on the trigger, not the mood.",
+      "up": "Officials order an evacuation, or home becomes unsafe.",
+      "down": "An all-clear, and services normal for 7 days.",
+      "today": "Cancel non-essential travel; keep an adult within 30 minutes of each child; go-bags in the car.",
+      "week": "Start the family plan: who stays where.",
+      "month": "Decide whether to move to the second place ahead of time.",
+      "cost": "$500 to $3,000"
+    },
+    {
+      "stage": 4,
+      "name": "Shelter or relocate",
+      "meaning": "Home is unsafe or untenable. Set by officials or by you, never by readings.",
+      "up": null,
+      "down": "Officials say it's safe and utilities have been back 72 hours.",
+      "today": "Shelter in the basement, or leave by your first or second route.",
+      "week": "Settle at the second place and keep income going.",
+      "month": "Return, stay, or move further.",
+      "cost": "$0 to $5,000+"
+    },
+    {
+      "stage": 5,
+      "name": "Emergency",
+      "meaning": "Act in minutes. Set by officials.",
+      "up": null,
+      "down": "Officials say it's safe.",
+      "today": "Get inside, stay inside, stay tuned. Call 911.",
+      "week": "Follow official instructions.",
+      "month": "Insurance, FEMA and records.",
+      "cost": "n/a"
+    }
+  ],
+  "noRegret": [
+    {
+      "id": "nr-family-plan",
+      "title": "A written family plan, a family safe word, an out-of-area contact, and local alerts",
+      "why": "Helps in every scenario. The safe word stops AI voice-clone scams: any urgent money request needs the word or a call back to a known number.",
+      "cost": "Free"
+    },
+    {
+      "id": "nr-ties",
+      "title": "A pact with nearby family or friends: a rally house, who picks up which child, shared supplies; plus a list of five neighbors",
+      "why": "Social ties predict who gets through a disaster better than gear does.",
+      "cost": "Free"
+    },
+    {
+      "id": "nr-freezes",
+      "title": "Credit freezes for everyone, children included, and two hardware security keys per adult",
+      "why": "Blocks most identity theft and account takeovers, in good times and bad.",
+      "cost": "$0 to $200"
+    },
+    {
+      "id": "nr-two-weeks",
+      "title": "Two weeks of water (a gallon per person per day), food you already eat, and medicine; 90-day prescriptions where allowed",
+      "why": "Covers storms, outages, illness waves, supply shocks and the first weeks of a blockade.",
+      "cost": "$400 to $900"
+    },
+    {
+      "id": "nr-passports",
+      "title": "Current passports for everyone, children included",
+      "why": "The longest lead time of any exit option: about 8 to 10 weeks. Children under 16 apply in person, usually with both parents.",
+      "cost": "About $130 to $165 per person"
+    },
+    {
+      "id": "nr-will",
+      "title": "A will naming a guardian for your children, powers of attorney and health care proxies",
+      "why": "Helps in every scenario and costs the most to skip.",
+      "cost": "$1,500 to $4,000 with an attorney"
+    },
+    {
+      "id": "nr-money",
+      "title": "An emergency fund (3 months; 6 to 9 if a job is exposed to AI), $1,000 to $2,000 in small bills, deposits under FDIC limits at two or more banks",
+      "why": "Card networks fail in outages, and bank freezes reward people who acted before they hit. FDIC covers $250,000 per depositor, per bank, per ownership category.",
+      "cost": "Money moved, not spent"
+    },
+    {
+      "id": "nr-alarms",
+      "title": "Carbon monoxide alarms on every floor, smoke alarms, a first aid kit, and Stop the Bleed and CPR classes",
+      "why": "Portable generators kill nearly 100 people a year in the US through carbon monoxide.",
+      "cost": "$200 to $500"
+    },
+    {
+      "id": "nr-outage",
+      "title": "A 1 to 3 kWh battery power station and, with a basement, a battery backup sump pump",
+      "why": "Runs a fridge in cycles, the router, phones and lights with no carbon monoxide, and keeps the basement dry when the power is out.",
+      "cost": "$1,100 to $3,700"
+    },
+    {
+      "id": "nr-safe-backups",
+      "title": "A fire-rated safe for originals, plus 3-2-1 backups: a local copy, a cloud copy and a drive kept somewhere else",
+      "why": "Protects records and income in fire, flood, ransomware and outages.",
+      "cost": "$450 to $1,300"
+    }
+  ],
+  "skip": "Skip the $25,000 to $300,000 bunker, bulk gold and fear-driven buying. A basement corner with water, lights, a radio and two days of food gives most of the same protection, and solar plus a battery pays off every year.",
+  "areas": {
+    "energy": {
+      "1": [
+        "Keep the tank above half and give the fuel budget some room."
+      ],
+      "2": [
+        "Keep tanks three-quarters full.",
+        "Lock in heating fuel if you can, and charge the power station.",
+        "Ask about remote-work days."
+      ],
+      "3": [
+        "Fill every tank and approved spare can; expect station lines.",
+        "Cut non-essential driving."
+      ]
+    },
+    "money": {
+      "1": [
+        "Confirm deposits are under FDIC limits, and avoid borrowing to invest."
+      ],
+      "2": [
+        "Hold 2 to 4 weeks of cash at home.",
+        "Open a second bank account.",
+        "Keep 6 to 12 months of expenses outside stocks, and don't panic-sell."
+      ],
+      "3": [
+        "Live on cash. Insured US deposits have historically been paid within days."
+      ]
+    },
+    "jobs": {
+      "1": [
+        "Keep your résumé and portfolio current, renew licenses, and stay in touch with 20 people in your field."
+      ],
+      "2": [
+        "Build the emergency fund toward 9 to 12 months.",
+        "Cut fixed costs and start one side income.",
+        "Learn to direct and check AI tools in your work."
+      ],
+      "3": [
+        "File for unemployment in the first week.",
+        "Arrange health coverage (COBRA or your state marketplace).",
+        "Switch to the emergency budget."
+      ]
+    },
+    "costs": {
+      "1": [
+        "Buy an extra week of the staples you already eat while prices are lower."
+      ],
+      "2": [
+        "Build staples toward 90 days, eating the oldest first.",
+        "Check SNAP and WIC eligibility if money is tight."
+      ],
+      "3": [
+        "Use the pantry first; panic-buying makes shortages worse."
+      ]
+    },
+    "health": {
+      "1": [
+        "Check that vaccines, including measles (MMR), are current, and keep masks on hand."
+      ],
+      "2": [
+        "Get 90 days of key medicines and masks for everyone.",
+        "Build food to 30 days.",
+        "Plan remote work and a childcare bubble with family."
+      ],
+      "3": [
+        "Limit contact, keep children home if schools close, and follow public health guidance."
+      ]
+    },
+    "weather": {
+      "1": [
+        "Check supplies, charge devices, clear the sump pit, and know your flood zone."
+      ],
+      "2": [
+        "Gas, cash, water and prescriptions; charge everything.",
+        "Photograph the house for insurance."
+      ],
+      "3": [
+        "Fill a bathtub liner and set the freezer to its coldest.",
+        "Park away from trees and low ground.",
+        "If told to evacuate, go."
+      ]
+    },
+    "cyber": {
+      "1": [
+        "Install pending updates on phones, computers and the router, and turn on two-step login."
+      ],
+      "2": [
+        "Keep some cash and paper copies of key account numbers.",
+        "Download recent bank statements and check card activity weekly."
+      ],
+      "3": [
+        "Expect outages of payments or power: use cash and watch for fraud."
+      ]
+    },
+    "world": {
+      "1": [
+        "Check passport dates, and buy electronics you were already planning to buy."
+      ],
+      "2": [
+        "Get 90 days of prescriptions, staples toward 90 days, and 4 weeks of cash.",
+        "Review how much of your savings sits in chip and AI stocks.",
+        "Confirm your backups work."
+      ],
+      "3": [
+        "Expect cyber disruption: charge batteries and fill fuel.",
+        "Stay close to the children, and choose which family house is the hub."
+      ]
+    },
+    "politics": {
+      "1": [
+        "Passports for everyone, documents organized, and data-broker listings cleaned up."
+      ],
+      "2": [
+        "Passports with 2+ years left.",
+        "Some Treasury bills held directly at TreasuryDirect, and an away fund on a card with no foreign fees.",
+        "Use end-to-end encrypted messaging, and don't post plans publicly."
+      ],
+      "3": [
+        "Refundable travel options, records in encrypted storage you control, tight school pickup plans.",
+        "Avoid confrontations."
+      ]
+    }
+  },
+  "maintenance": [
+    {
+      "when": "Monthly, 30 minutes",
+      "what": "Test alarms; charge the power station and radios; check the car kit; note each area's stage."
+    },
+    {
+      "when": "Quarterly",
+      "what": "Rotate water and food; test the sump backup; restore one file from backup; check medicine dates; step down any stage you can't justify with a number."
+    },
+    {
+      "when": "Twice a year, at the clock changes",
+      "what": "A lights-off evening on battery; a basement drill played as a game; resize the children's go-bag clothes."
+    },
+    {
+      "when": "Every October",
+      "what": "Review insurance (flood, sewer backup rider), documents, passports (renew at 2 years left), the will and guardian, and the emergency fund's size."
+    }
+  ]
+}

@@ -149,9 +149,8 @@ def test_api_reports_only_real_fresh_core_data(client):
     lux = by_id["luxury_01_collapse"]["status"]
     assert lux["level"] == "unknown" and lux["signalLevel"] == "red"
 
-    hopi = client.get("/api/v1/hopi").json()
-    assert (hopi["red"], hopi["amber"], hopi["counted"]) == (1, 1, 2)
-    assert hopi["phase"] == 3
+    status = client.get("/api/v1/status").json()
+    assert status["activeAlerts"] == 1
 
 
 def test_latest_reading_is_by_time_not_insert_order(client):
@@ -410,3 +409,141 @@ def test_bond_swing_skips_sessions_without_a_range():
     day, hi, lo = _latest_session_range(chart)
     assert (hi, lo) == (4.15, 4.05) and day == "2025-10-18"
     assert _latest_session_range({"timestamp": [1], "indicators": {"quote": [{"high": [None], "low": [None]}]}}) is None
+
+
+# ─── Household stages (2026-10-18) ───
+
+NO_DATES = {"dates": []}
+
+
+def _series(ind, points):
+    """Readings at (days_ago, value) points."""
+    when = datetime.now(timezone.utc)
+    return [store.Reading(ind, when - timedelta(days=d), "live", v, "unknown", {}) for d, v in points]
+
+
+def _area(out, area_id):
+    return next(a for a in out["areas"] if a["id"] == area_id)
+
+
+def test_stage_needs_the_act_line_held_two_weeks(client):
+    from api import stages
+    _save(*_series("oil_brent_price", [(20, 115), (10, 120), (0, 126)]))
+    out = stages.compute(NO_DATES)
+    energy = _area(out, "energy")
+    assert energy["stage"] == 2 and "act line ($110 a barrel)" in energy["why"][0]
+    assert energy["down"].startswith("Back to Watch 4 weeks after Crude Oil Price")
+    assert out["overall"]["stage"] == 1, "one area at Prepare keeps the household at Watch"
+
+
+def test_new_red_is_watch_until_it_holds(client):
+    from api import stages
+    _save(*_series("energy_gas_price", [(30, 3.9), (5, 4.8), (0, 4.9)]))
+    energy = _area(stages.compute(NO_DATES), "energy")
+    assert energy["stage"] == 1
+    assert energy["next"][0].startswith("Prepare on ") and "Gas Prices stays above $4.75 a gallon" in energy["next"][0]
+
+
+def test_two_areas_at_prepare_move_the_household(client):
+    from api import stages
+    _save(*_series("oil_brent_price", [(20, 115), (0, 126)]), *_series("bank_02_discount_window", [(20, 60), (0, 70)]))
+    out = stages.compute(NO_DATES)
+    assert out["overall"]["stage"] == 2 and "Energy" in out["overall"]["why"] and "Banks and markets" in out["overall"]["why"]
+
+
+def test_prepare_cools_off_for_four_weeks(client):
+    from api import stages
+    _save(*_series("oil_brent_price", [(40, 115), (20, 116), (10, 80), (0, 80)]))
+    energy = _area(stages.compute(NO_DATES), "energy")
+    assert energy["stage"] == 2 and "until" in energy["why"][0]
+    assert energy["down"].startswith("Back to Watch on ")
+
+
+def test_watch_cools_off_for_thirty_days(client):
+    from api import stages
+    _save(*_series("energy_gas_price", [(40, 4.2), (20, 4.1), (10, 3.5), (0, 3.4)]))
+    energy = _area(stages.compute(NO_DATES), "energy")
+    assert energy["stage"] == 1 and energy["down"].startswith("Back to Baseline on ")
+
+
+def test_watch_ends_after_thirty_clear_days(client):
+    from api import stages
+    _save(*_series("energy_gas_price", [(60, 4.2), (40, 3.5), (0, 3.4)]))
+    assert _area(stages.compute(NO_DATES), "energy")["stage"] == 0
+
+
+def test_brace_line_is_immediate(client):
+    from api import stages
+    _save(*_series("oil_brent_price", [(1, 120), (0, 152)]))
+    out = stages.compute(NO_DATES)
+    assert _area(out, "energy")["stage"] == 3 and out["overall"]["stage"] == 3
+
+
+def test_travel_advisories_count_at_once(client):
+    from api import stages
+    _save(*_series("world_02_taiwan_advisory", [(30, 1), (0, 3)]))
+    assert _area(stages.compute(NO_DATES), "world")["stage"] == 2
+
+
+def test_context_readings_raise_watch_only(client):
+    from api import stages
+    _save(*_series("bio_03_measles", [(60, 700), (0, 900)]))
+    health = _area(stages.compute(NO_DATES), "health")
+    assert health["stage"] == 1 and "context only" in health["why"][0]
+
+
+def test_stale_readings_do_not_count(client):
+    from api import stages
+    _save(*_series("job_04_sahm_rule", [(90, 0.7), (60, 0.8)]))
+    assert _area(stages.compute(NO_DATES), "jobs")["stage"] == 0
+
+
+def test_dated_tripwire_raises_watch(client):
+    from datetime import date
+    from api import stages
+    soon = (datetime.now(timezone.utc).date() + timedelta(days=10)).isoformat()
+    far = (datetime.now(timezone.utc).date() + timedelta(days=60)).isoformat()
+    outlook = {"dates": [{"date": soon, "title": "Election", "stageAreas": ["politics"]},
+                         {"date": far, "title": "Later", "stageAreas": ["world"]}]}
+    out = stages.compute(outlook)
+    assert _area(out, "politics")["stage"] == 1 and "in 10 days" in _area(out, "politics")["why"][0]
+    assert _area(out, "world")["stage"] == 0
+    assert stages.tripwires({"dates": [{"date": "2026-11-01", "until": "2026-12-31", "title": "Drills", "stageAreas": ["world"]}]}, date(2026, 11, 20)) == {"world": ["Drills under way until Dec 31"]}
+
+
+def test_stages_and_plan_routes(client):
+    from api import stages
+    from api.simple_main import PLAN
+    _save(*_series("oil_brent_price", [(20, 115), (0, 126)]))
+    body = client.get("/api/v1/stages").json()
+    assert body["overall"]["stage"] == 1 and {a["id"] for a in body["areas"]} == {a.id for a in stages.AREAS}
+    assert client.get("/api/v1/plan").json()["ladder"][2]["name"] == "Prepare"
+    assert set(PLAN["areas"]) == {a.id for a in stages.AREAS}
+    for area in stages.AREAS:
+        for rid in area.readings + area.watch_only:
+            assert rid in BY_ID, rid
+        assert all(rid in stages.AREA_BY_ID for rid in [area.id])
+    for rid in stages.BRACE:
+        assert rid in BY_ID, rid
+    assert client.get("/api/v1/hopi").status_code == 404
+
+
+def test_stage_wording():
+    from api.stages import fmt
+    assert fmt(BY_ID["oil_brent_price"], 110) == "$110 a barrel"
+    assert fmt(BY_ID["job_01_jobless_claims"], 199) == "199,000 a week"
+    assert fmt(BY_ID["world_02_taiwan_advisory"], 3) == "Level 3"
+    assert fmt(BY_ID["housing_04_rent_cpi"], 2.78) == "+2.8% from a year ago"
+
+
+def test_advisory_parsing():
+    import xml.etree.ElementTree as ET
+    from collectors.verified import ChinaAdvisoryCollector, TaiwanAdvisoryCollector, advisory_reading
+    rss = ET.fromstring("""<rss><channel>
+      <item><title>Macau - Level 3: Reconsider Travel</title><description>x</description></item>
+      <item><title>China - Level 2: Exercise Increased Caution</title><pubDate>Fri, 04 Sep 2026 00:00:00 -0500</pubDate><description>Arbitrary enforcement of local laws.</description></item>
+      <item><title>Taiwan - Level 4: Do Not Travel</title><description>On May 1 the Department ordered the departure of non-emergency U.S. government employees.</description></item>
+    </channel></rss>""")
+    china = advisory_reading(ChinaAdvisoryCollector({}), rss)
+    assert china["value"] == 2.0 and china["metadata"]["observation_date"] == "2026-09-04"
+    assert advisory_reading(TaiwanAdvisoryCollector({}), rss)["value"] == 5.0

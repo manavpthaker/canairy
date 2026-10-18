@@ -255,6 +255,28 @@ def history(indicator_id: str, days: int) -> List[Reading]:
     return [_row_to_reading(r) for r in rows]
 
 
+def history_many(indicator_ids: List[str], days: int) -> Dict[str, List[Reading]]:
+    """Live readings for several indicators over the last `days`, oldest first, in one query."""
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    out: Dict[str, List[Reading]] = {i: [] for i in indicator_ids}
+    if not indicator_ids:
+        return out
+    # Only the columns the stage rules need: the detail JSON would make this many times heavier.
+    with engine().connect() as conn:
+        rows = conn.execute(
+            select(readings.c.indicator_id, readings.c.collected_at, readings.c.value, readings.c.level)
+            .where(and_(
+                readings.c.indicator_id.in_(indicator_ids),
+                readings.c.quality == "live",
+                readings.c.collected_at >= since,
+            ))
+            .order_by(readings.c.collected_at)
+        ).all()
+    for r in rows:
+        out[r.indicator_id].append(Reading(r.indicator_id, _utc(r.collected_at), "live", r.value, r.level, {}))
+    return out
+
+
 def has_readings_before(indicator_id: str, when: datetime) -> bool:
     with engine().connect() as conn:
         row = conn.execute(

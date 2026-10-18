@@ -60,6 +60,12 @@ export function Developers() {
           Dates to watch, slow-moving clocks (federal debt, Social Security) and dated yes/no tests from Canairy’s October
           2026 research, with each date’s distance from today. These are estimates, not readings.
         </dd>
+        <dt><code>GET /api/v1/stages</code></dt>
+        <dd>
+          Where a household stands, area by area: 0 Baseline, 1 Watch, 2 Prepare or 3 Brace, with the readings behind
+          each stage, what would move it up, and when it can step down. Pair it with <code>GET /api/v1/plan</code> for
+          what to do at each stage.
+        </dd>
         <dt><code>GET /api/v1/status</code></dt>
         <dd>When data was last collected and how many signals are fresh.</dd>
       </dl>
