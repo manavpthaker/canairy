@@ -2,7 +2,7 @@
 
 Household early-warning signals from public data, at https://canairy.news. An hourly job collects 36+ readings from official and market sources, grades each green/amber/red against fixed lines, and serves them as an open, read-only JSON feed plus a React site. Milo (brownbot) reads the feed to text alerts and fill the morning standup.
 
-The June 2025 trip-wire system (H1-H6, TIGHTEN-UP email, phases 0-9) is dead code. See docs/AUDIT-2026-10-17.md for what is live and what is leftover.
+The June 2025 trip-wire system (H1-H6 collectors, TIGHTEN-UP email, Flask dashboards, Render/Docker hosting) was removed on 2026-10-18; it is in git history before that date. docs/AUDIT-2026-10-17.md has the audit. The phases in `/phase` and `/hopi` and the Plan checklist in `src/data/phaseTasks.ts` are still from that era.
 
 ## Live code
 

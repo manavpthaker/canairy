@@ -58,3 +58,7 @@ portfolio-assets/videos/
 uv.lock
 server/pyproject.toml
 server/uv.lock
+
+# Local `vercel build` output; Vercel installs server/requirements.txt itself
+.vercel_python_packages/
+_uv/
