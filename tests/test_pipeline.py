@@ -337,3 +337,76 @@ def test_rule_summary_numbers_must_come_from_rule():
     source = "This rule raises the asset limit to $3,000 effective October 1, 2026."
     assert rules._grounded("The asset limit rises to $3,000 on October 1, 2026.", source)
     assert not rules._grounded("The asset limit rises to $4,500.", source)
+
+
+# ─── Guidance, as-of dates and the outlook (2026-10-17) ───
+
+def test_every_core_indicator_has_written_advice():
+    from api.simple_main import ADVICE
+    for d in CATALOG:
+        if d.tier == "core":
+            entry = ADVICE.get(d.id)
+            assert entry, d.id
+            for part in ("whatItMeans", "familyImpact", "whatToDo"):
+                assert entry[part]["amber"] and entry[part]["red"], (d.id, part)
+
+
+def test_feed_carries_guidance_for_elevated_readings_only(client):
+    when = datetime.now(timezone.utc)
+    _save(
+        _r("oil_brent_price", 126, "red"),
+        _r("job_01_jobless_claims", 199, "green"),
+        _r("bio_03_measles", 733, "red"),  # experimental: guidance from its real level
+        _r("job_04_sahm_rule", 0.6, "red", hours_ago=60 * 24),  # stale: no guidance
+        store.Reading("energy_gas_price", when, "live", 4.4, "amber", {"observation_date": "2026-10-12"}),
+    )
+    by_id = {i["id"]: i for i in client.get("/api/v1/indicators").json()["indicators"]}
+    oil = by_id["oil_brent_price"]["guidance"]
+    assert oil["level"] == "red" and oil["whatToDo"]
+    assert by_id["job_01_jobless_claims"]["guidance"] is None
+    assert by_id["bio_03_measles"]["guidance"]["level"] == "red"
+    assert by_id["job_04_sahm_rule"]["guidance"] is None
+    gas = by_id["energy_gas_price"]
+    assert gas["guidance"]["level"] == "amber"
+    assert gas["status"]["asOf"] == "2026-10-12"
+    assert "asOf" not in by_id["oil_brent_price"]["status"]
+
+
+def test_old_briefing_is_not_served(client):
+    from sqlalchemy import update
+    store.save_briefing("fp", {"headline": "h", "summary": "s", "actions": [], "watch": []}, "published", {"model": "m"})
+    assert client.get("/api/v1/briefing").json()["briefing"]["headline"] == "h"
+    with store.engine().begin() as conn:
+        conn.execute(update(store.briefings).values(created_at=datetime.now(timezone.utc) - timedelta(hours=72)))
+    from api import simple_main
+    simple_main._cache.clear()
+    body = client.get("/api/v1/briefing").json()
+    assert body["briefing"] is None and body["lastCreatedAt"]
+
+
+def test_outlook_lists_upcoming_dates_in_order(client):
+    from datetime import date
+    from api.simple_main import build_outlook
+    out = build_outlook(date(2026, 10, 17))
+    assert [d["daysAway"] for d in out["upcoming"]] == sorted(d["daysAway"] for d in out["upcoming"])
+    assert out["upcoming"][0]["date"] == "2026-11-01" and out["upcoming"][0]["daysAway"] == 15
+    assert all(d["daysAway"] >= 0 for d in out["upcoming"])
+    assert {t["id"] for t in out["tests"]} >= {"H1", "H4a", "H7"}
+    assert client.get("/api/v1/outlook").status_code == 200
+    for item in out["dates"]:
+        for ind in item.get("indicators", []):
+            assert ind in BY_ID, ind
+
+
+def test_classify_keeps_the_observation_date():
+    quality, _, detail = collect.classify({"value": 3.1, "metadata": {"data_source": "FRED X", "observation_date": "2026-09-01", "other": "x"}})
+    assert quality == "live" and detail == {"source_label": "FRED X", "observation_date": "2026-09-01"}
+
+
+def test_bond_swing_skips_sessions_without_a_range():
+    from collectors.verified import _latest_session_range
+    chart = {"timestamp": [1760659200, 1760745600, 1760832000],
+             "indicators": {"quote": [{"high": [4.10, 4.15, 4.12], "low": [4.02, 4.05, 4.12]}]}}
+    day, hi, lo = _latest_session_range(chart)
+    assert (hi, lo) == (4.15, 4.05) and day == "2025-10-18"
+    assert _latest_session_range({"timestamp": [1], "indicators": {"quote": [{"high": [None], "low": [None]}]}}) is None
