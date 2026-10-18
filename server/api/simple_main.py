@@ -8,11 +8,13 @@ upstream requests or cost.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import time
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 import hmac
@@ -51,6 +53,13 @@ async def cache_headers(request, call_next):
 
 # If the scheduler hasn't finished a run in this long, the whole feed is stale.
 FEED_STALE_AFTER = timedelta(hours=3)
+# A briefing older than this describes readings that have moved; the page falls back to written advice.
+BRIEFING_MAX_AGE = timedelta(hours=48)
+
+# What each elevated reading means and what to do (also read by the site: src/experience/advice.ts).
+ADVICE: Dict[str, Dict[str, Any]] = json.loads(Path(__file__).with_name("advice.json").read_text())
+# Dated tests, calendar and slow clocks from the October 2026 research (served at /outlook).
+OUTLOOK: Dict[str, Any] = json.loads(Path(__file__).with_name("outlook.json").read_text())
 TREND_LOOKBACK = timedelta(days=7)
 TREND_TOLERANCE = 0.02  # changes under 2% count as stable
 
@@ -116,6 +125,11 @@ def _indicator(defn: IndicatorDef, live: store.Reading, attempt: Optional[store.
         status["note"] = "For context only. This doesn't change your alert level."
     if attempt is not None:
         status["lastAttempt"] = _iso(attempt.collected_at)
+    # The period the number describes (a monthly CPI reading collected today is
+    # still last month's). lastUpdate is only when it was fetched.
+    as_of = live.detail.get("observation_date") or live.detail.get("through_week_ending")
+    if as_of:
+        status["asOf"] = str(as_of)
 
     return {
         "id": defn.id,
@@ -135,7 +149,35 @@ def _indicator(defn: IndicatorDef, live: store.Reading, attempt: Optional[store.
         "updateFrequency": defn.update_frequency,
         "baseline": baselines.describe(baseline, live.value) if baseline else None,
         "status": status,
+        "guidance": _guidance(defn.id, status),
     }
+
+
+def _guidance(indicator_id: str, status: Dict[str, Any]) -> Optional[Dict[str, str]]:
+    """The written advice for the reading's current level; None when green, stale or unwritten."""
+    if status["dataSource"] != "LIVE":
+        return None
+    level = status.get("signalLevel") or status["level"]
+    entry = ADVICE.get(indicator_id)
+    if level not in ("amber", "red") or not entry:
+        return None
+    return {
+        "level": level,
+        "whatItMeans": entry["whatItMeans"][level],
+        "familyImpact": entry["familyImpact"][level],
+        "whatToDo": entry["whatToDo"][level],
+    }
+
+
+def build_outlook(today: Optional[date] = None) -> Dict[str, Any]:
+    """The research outlook plus each dated item's distance from today."""
+    today = today or datetime.now(timezone.utc).date()
+    dates = []
+    for item in OUTLOOK["dates"]:
+        when = date.fromisoformat(item["date"])
+        dates.append({**item, "daysAway": (when - today).days})
+    upcoming = [d for d in dates if d["daysAway"] >= 0]
+    return {**OUTLOOK, "dates": dates, "upcoming": sorted(upcoming, key=lambda d: d["daysAway"])}
 
 
 def build_indicators() -> Dict[str, Any]:
@@ -274,6 +316,8 @@ def _routes(prefix: str) -> None:
         latest = _cached("briefing", 60, store.latest_briefing)
         if not latest:
             return {"briefing": None}
+        if datetime.now(timezone.utc) - latest["created_at"] > BRIEFING_MAX_AGE:
+            return {"briefing": None, "lastCreatedAt": _iso(latest["created_at"])}
         return {
             "briefing": latest["body"],
             "createdAt": _iso(latest["created_at"]),
@@ -294,6 +338,11 @@ def _routes(prefix: str) -> None:
     def rule_changes(days: int = Query(120, ge=1, le=180)):
         """Recent federal rules that name a family benefit program."""
         return {"rules": _cached(f"rules:{days}", 300, lambda: rules.recent(days))}
+
+    @app.get(f"{prefix}/outlook")
+    def outlook():
+        """Dated tests, a calendar and slow clocks from the October 2026 research. Estimates, not data."""
+        return build_outlook()
 
     @app.get(f"{prefix}/hopi")
     def hopi():

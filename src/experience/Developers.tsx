@@ -16,7 +16,14 @@ const EXAMPLE = `{
     "level": "amber",
     "trend": "up",
     "dataSource": "LIVE",
-    "lastUpdate": "2026-09-24T16:07:43Z"
+    "lastUpdate": "2026-09-24T16:07:43Z",
+    "asOf": "2026-09-22"
+  },
+  "guidance": {
+    "level": "amber",
+    "whatItMeans": "Gas is above $4 a gallon on average nationwide.",
+    "familyImpact": "Commuting and errands cost more each week, and delivery fees tend to follow.",
+    "whatToDo": "Keep the tank above half and combine trips. Check if your card or grocer offers fuel discounts."
   }
 }`;
 
@@ -48,6 +55,11 @@ export function Developers() {
           Federal Register rules that name a family benefit program, with the programs affected, a plain-language summary,
           whether it changes what families get, and comment deadlines.
         </dd>
+        <dt><code>GET /api/v1/outlook</code></dt>
+        <dd>
+          Dates to watch, slow-moving clocks (federal debt, Social Security) and dated yes/no tests from Canairy’s October
+          2026 research, with each date’s distance from today. These are estimates, not readings.
+        </dd>
         <dt><code>GET /api/v1/status</code></dt>
         <dd>When data was last collected and how many signals are fresh.</dd>
       </dl>
@@ -62,6 +74,11 @@ export function Developers() {
         <code>status.dataSource</code> is <code>LIVE</code> only for a fresh, real reading. <code>STALE</code> means the
         last real reading is older than the source’s normal schedule; its level is <code>unknown</code> and it shouldn’t
         drive alerts. Signals with <code>tier: "experimental"</code> are context only.
+      </p>
+      <p>
+        <code>status.asOf</code> is the period the number describes (a monthly price index collected today is still last
+        month’s); <code>lastUpdate</code> is only when it was fetched. <code>guidance</code> is the written advice for the
+        current amber or red level, and is <code>null</code> when the reading is green or stale.
       </p>
       <p>
         Readings update hourly, and responses may be cached for up to a minute. The underlying data comes from US

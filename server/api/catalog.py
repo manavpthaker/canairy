@@ -82,6 +82,8 @@ AREA_OF = {
     "bio_02_wastewater": "health", "bio_03_measles": "health",
     "cyber_01_cisa_kev": "safety", "grid_01_pjm_outages": "safety", "fema_disaster_declarations": "safety",
     "travel_01_advisories": "safety", "travel_03_tsa_throughput": "safety", "bio_01_h2h_countries": "health",
+    "job_05_youth_unemployment": "jobs", "cost_medical": "costs", "bond_01_term_premium": "banks",
+    "mood_01_sentiment": "jobs",
 }
 
 DAY = 24
@@ -389,6 +391,40 @@ CATALOG: List[IndicatorDef] = [
         V, "MeaslesCollector", "CDC",
         "https://www.cdc.gov/measles/data-research/index.html", "Weekly", 14 * DAY,
         tier="experimental", valid_range=(0, 20000),
+    ),
+
+    # ── Added 2026-10-17: gaps found by "The Fourth Turning, Tested" (Oct 2026) ──
+    IndicatorDef(
+        "job_05_youth_unemployment", "Jobless Rate, Ages 20-24", "jobs_labor",
+        "Unemployment for 20- to 24-year-olds. New grads who never qualified for benefits don't show up in jobless claims, so an entry-level hiring freeze shows here first.",
+        "%", 9, 11,  # since 2015: median 7.4%, 95th pct 11.0% (2020 peak 25.5%)
+        V, "YouthUnemploymentCollector", "BLS (via FRED)",
+        "https://fred.stlouisfed.org/series/LNS14000036", "Monthly", 45 * DAY,
+        valid_range=(0, 40),
+    ),
+    IndicatorDef(
+        "cost_medical", "Medical Care Prices", "economy",
+        "Doctor, hospital, health insurance and drug prices compared with a year ago.",
+        "% y/y", 4.5, 6,  # since 2000: median 3.4%, 90th pct 4.6%, max 6.0%
+        V, "MedicalCareInflationCollector", "BLS CPI (via FRED)",
+        "https://fred.stlouisfed.org/series/CPIMEDSL", "Monthly", 45 * DAY,
+        valid_range=(-20, 40),
+    ),
+    IndicatorDef(
+        "bond_01_term_premium", "Bond Market Risk Premium", "economy",
+        "Extra yield investors demand to hold 10-year US debt (NY Fed model). Rising means the market prices in more risk on US debt, which keeps mortgage rates up.",
+        "%", 1.0, 1.5,  # since 2000: median 0.49, 95th pct 1.33, max 1.81
+        V, "TermPremiumCollector", "NY Fed (via FRED)",
+        "https://fred.stlouisfed.org/series/THREEFYTP10", "Daily", 5 * DAY,
+        tier="experimental", valid_range=(-3, 6),
+    ),
+    IndicatorDef(
+        "mood_01_sentiment", "National Mood", "economy",
+        "University of Michigan consumer sentiment. Mood, not money: since 2022 it reads worse than the hard data and moves with politics. FRED posts it about a month late.",
+        "index", 60, 50,  # since 2000: median 82.6, 10th pct 59.8; record low 44.8 (May 2026)
+        V, "ConsumerSentimentCollector", "University of Michigan (via FRED)",
+        "https://fred.stlouisfed.org/series/UMCSENT", "Monthly", 45 * DAY,
+        tier="experimental", valid_range=(20, 130),
     ),
 ]
 

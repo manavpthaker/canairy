@@ -149,17 +149,23 @@ def _yahoo_chart(symbol: str, range_: str, interval: str) -> Dict[str, Any]:
 
 
 class TreasuryVolatilityCollector(BaseCollector):
-    """Today's high-low range of the 10-year Treasury yield (^TNX), in basis points."""
+    """High-low range of the 10-year Treasury yield (^TNX) in its latest trading session, in basis points.
+
+    Uses daily bars, not the live quote: before the open, on weekends and on
+    holidays the live day high equals the low, which read as a calm 0 bps half
+    the time. A session whose bar has no range yet is skipped for the one before.
+    """
 
     def collect(self) -> Optional[Dict[str, Any]]:
-        meta = _yahoo_chart("^TNX", "1d", "5m")["meta"]
-        high, low = meta.get("regularMarketDayHigh"), meta.get("regularMarketDayLow")
-        if high is None or low is None:
+        chart = _yahoo_chart("^TNX", "5d", "1d")
+        session = _latest_session_range(chart)
+        if session is None:
             return None
+        day, high, low = session
         return self._create_reading(round((high - low) * 100, 2), {
             "data_source": "Yahoo Finance ^TNX",
             "yield_high": high, "yield_low": low,
-            "market_time": datetime.utcfromtimestamp(meta.get("regularMarketTime", 0)).isoformat(),
+            "observation_date": day,
         })
 
     def history(self, years: int) -> List[Tuple[datetime, float]]:
@@ -167,6 +173,16 @@ class TreasuryVolatilityCollector(BaseCollector):
 
     def validate_data(self, data: Dict[str, Any]) -> bool:
         return isinstance(data.get("value"), float)
+
+
+def _latest_session_range(chart: Dict[str, Any]) -> Optional[Tuple[str, float, float]]:
+    """(date, high, low) of the newest daily bar with a real range."""
+    q = chart["indicators"]["quote"][0]
+    bars = zip(chart.get("timestamp") or [], q.get("high") or [], q.get("low") or [])
+    for ts, hi, lo in reversed(list(bars)):
+        if hi is not None and lo is not None and hi > lo:
+            return datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d"), hi, lo
+    return None
 
 
 def _tnx_history(years: int) -> List[Tuple[datetime, float]]:
@@ -626,6 +642,28 @@ class BeefPriceCollector(FREDSeriesCollector):
     LABEL = "Average price of ground beef (100% beef), per lb — change from a year earlier"
     MODE = "change"
     LAG_MONTHS = 12
+
+
+class YouthUnemploymentCollector(FREDSeriesCollector):
+    SERIES = "LNS14000036"
+    LABEL = "Unemployment rate, ages 20-24 (seasonally adjusted)"
+
+
+class MedicalCareInflationCollector(FREDSeriesCollector):
+    SERIES = "CPIMEDSL"
+    LABEL = "CPI medical care — change from a year earlier"
+    MODE = "change"
+    LAG_MONTHS = 12
+
+
+class TermPremiumCollector(FREDSeriesCollector):
+    SERIES = "THREEFYTP10"
+    LABEL = "10-year Treasury term premium, ACM model (daily)"
+
+
+class ConsumerSentimentCollector(FREDSeriesCollector):
+    SERIES = "UMCSENT"
+    LABEL = "University of Michigan consumer sentiment index (monthly)"
 
 
 class RealWagesCollector(BaseCollector):

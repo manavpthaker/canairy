@@ -106,6 +106,7 @@ def build_data(indicators: List[Dict[str, Any]]) -> Dict[str, Any]:
             "tier": ind["tier"],
             "fresh": status["dataSource"] == "LIVE",
             "source": ind["dataSource"],
+            "period": status.get("asOf"),
         })
         b = ind.get("baseline")
         if b:

@@ -1,0 +1,64 @@
+{
+  "asOf": "2026-10-17",
+  "source": {
+    "title": "The Fourth Turning, Tested: Master Report",
+    "date": "2026-10-17",
+    "note": "Probabilities are one analysis's estimates, not data or market prices. Use them as a checklist of what to watch, not a schedule."
+  },
+  "bottomLine": "The most likely decade is chronic stress with no single decisive climax. Watch your own costs, income and credit, not the national mood.",
+  "scenarios": [
+    { "id": "A", "name": "Chronic stress, no climax", "probability": 50, "what": "Checks and balances erode, violence stays elevated but sporadic, the Iran conflict freezes, debt passes the 1946 record. Closer to the 1970s than to 1861 or 1941.", "signals": "Crises that each fade; narrow alternating elections; national mood stays below the hard data." },
+    { "id": "B", "name": "Crisis with a national rally", "probability": 20, "what": "A war or a crash forces national mobilization; a new coalition forms, debt is inflated down, the state expands.", "signals": "A clear rally in polls; bipartisan emergency laws; a 2028 landslide; trust rising after 2030." },
+    { "id": "C", "name": "Crisis without a rally (rupture)", "probability": 22, "what": "A shock splits the country instead of uniting it: a disputed election, defiance of courts, state-federal standoffs, prolonged unrest. Not civil war.", "signals": "Governors refusing federal orders; the executive defying a final court ruling; money leaving Treasuries." },
+    { "id": "D", "name": "Early calm", "probability": 8, "what": "AI productivity gains, an Iran settlement and a 2028 realignment lower stress without a crisis.", "signals": "National mood rises to meet the hard data; violence falls." }
+  ],
+  "shocksTogether": "Every true US crisis paired deep division with a war or a financial collapse at the same time. Watch bank, bond and war signals alongside unrest: two areas turning red together matters more than any one reading.",
+  "dates": [
+    { "date": "2026-11-01", "title": "ACA open enrollment begins", "why": "Compare health plans on total yearly cost. An IRS proposed rule on the premium tax credit is open for comment until Nov 30.", "kind": "household" },
+    { "date": "2026-11-03", "title": "Midterm elections", "why": "The pledge of no Iran strikes runs to this date, so oil and gas risk may rise after it.", "kind": "election", "indicators": ["oil_brent_price", "energy_gas_price"] },
+    { "date": "2026-11-30", "title": "Comments close on the premium tax credit rule", "why": "Last day to comment on the IRS proposed rule published Oct 15.", "kind": "household" },
+    { "date": "2027-01-10", "title": "US-China trade truce lapses unless renewed", "why": "A lapse with no renewal is an early Taiwan-crisis signal (H6). Watch electronics prices and chip-related layoffs.", "kind": "test", "test": "H6" },
+    { "date": "2027-03-15", "approx": true, "title": "Next V-Dem democracy report", "why": "Shows whether checks on the president kept falling (H3).", "kind": "slow-clock", "test": "H3" },
+    { "date": "2027-06-30", "title": "Iran frozen-settlement test resolves", "why": "Did a ceasefire hold 90+ days with Hormuz open? Drives gas and airfare (H7).", "kind": "test", "test": "H7", "indicators": ["oil_brent_price"] },
+    { "date": "2028-11-07", "title": "Presidential election", "why": "The new-coalition test (H2) and the date one cycle model picks for a reset.", "kind": "election", "test": "H2" },
+    { "date": "2030-09-30", "title": "End of FY2030: projected debt record", "why": "CBO projects debt held by the public passes the 1946 record of 106.1% of GDP this year (H4a).", "kind": "slow-clock", "test": "H4a" },
+    { "date": "2032-01-01", "approx": true, "title": "Social Security retirement trust fund runs out (CBO)", "why": "Without a new law, benefits drop to what incoming payroll taxes cover.", "kind": "slow-clock" }
+  ],
+  "slowClocks": [
+    { "name": "Federal debt held by the public", "now": "101% of GDP", "next": "Passes the 1946 record of 106.1% in FY2030 (CBO)", "source": "CBO, Feb 2026" },
+    { "name": "Interest on the debt", "now": "3.3% of GDP", "next": "4.6% by 2036", "source": "CBO" },
+    { "name": "Social Security retirement trust fund", "now": "Paying full benefits", "next": "Runs out in 2032 (CBO)", "source": "CBO" },
+    { "name": "Checks on the president", "now": "Legislative constraints lost a third of their value in 2025", "next": "Next V-Dem report, March 2027", "source": "V-Dem 2026" },
+    { "name": "Trust in the federal government", "now": "17%", "next": "Pew's next reading", "source": "Pew, Sept 2025" },
+    { "name": "Social trust", "now": "26% say most people can be trusted", "next": "Next GSS wave", "source": "GSS 2022" }
+  ],
+  "tests": [
+    { "id": "H1", "name": "A climax event", "resolvesYesIf": "1,000+ US military deaths in one war in a year; US and Chinese forces exchange fire; Insurrection Act troops kept in a state 30+ days over its governor's objection; or the Treasury misses a debt payment", "by": "2031-12-31", "probability": 25, "verdict": "Weakened", "householdSignal": "Gas prices and deployment notices; local National Guard call-ups" },
+    { "id": "H2", "name": "A durable new coalition", "resolvesYesIf": "One party wins the 2028 presidency by 7+ points and holds the White House, House and Senate after the 2030 midterms", "by": "2030-12-31", "probability": 8, "verdict": "Weakened", "householdSignal": "Whether local politics stops flipping" },
+    { "id": "H3", "name": "Executive power keeps growing", "resolvesYesIf": "V-Dem's legislative-constraints score for the US in the 2029 report is lower than in the 2026 report", "by": "2029-03-31", "probability": 65, "verdict": "Survives", "householdSignal": "Benefits or programs changed by executive order without a law; staff cuts at Social Security field offices" },
+    { "id": "H4a", "name": "Debt passes the 1946 record", "resolvesYesIf": "Debt held by the public exceeds 106.1% of GDP at the end of any fiscal year", "by": "2030-09-30", "probability": 70, "verdict": "Survives", "householdSignal": "Rising mortgage and car-loan rates; savings paying well below inflation", "indicators": ["bond_01_term_premium", "econ_01_treasury_tail", "housing_03_rate_shock"] },
+    { "id": "H4b", "name": "Debt inflated away", "resolvesYesIf": "After its peak, debt/GDP falls 10+ points by 2036 with average CPI above 4%", "by": "2036-12-31", "probability": 12, "verdict": "Weakened", "householdSignal": "Savings paying well below inflation" },
+    { "id": "H5", "name": "Inequality falls", "resolvesYesIf": "Top 1% share of household net worth below 30% in the Fed's Distributional Financial Accounts", "by": "2035-12-31", "probability": 25, "verdict": "Weakened", "householdSignal": "A market drop that hits 401(k)s; new top-wealth tax laws" },
+    { "id": "H6a", "name": "Taiwan blockade", "resolvesYesIf": "China blockades or quarantines Taiwan, stopping commercial shipping 7+ days in a row", "by": "2030-12-31", "probability": 25, "verdict": "Likeliest Taiwan path", "householdSignal": "Electronics prices and shortages; chip-related layoffs", "indicators": ["supply_02_freight_index"] },
+    { "id": "H6b", "name": "Taiwan invasion", "resolvesYesIf": "China launches an amphibious invasion of Taiwan", "by": "2030-12-31", "probability": 15, "verdict": "Long shot", "householdSignal": "A market crash; electronics shortages" },
+    { "id": "H6c", "name": "US-China exchange of fire", "resolvesYesIf": "US and Chinese forces exchange fire", "by": "2030-12-31", "probability": 10, "verdict": "Long shot", "householdSignal": "Market and shipping shock" },
+    { "id": "H7", "name": "Iran frozen", "resolvesYesIf": "A US-Iran ceasefire holds 90+ days in a row with Hormuz open, without a signed nuclear deal", "by": "2027-06-30", "probability": 40, "verdict": "Unsure", "householdSignal": "Gasoline prices; airline fares", "indicators": ["oil_brent_price", "energy_gas_price", "spr_01_level"] },
+    { "id": "H8", "name": "An AI Manhattan Project", "resolvesYesIf": "Congress appropriates $50B+ in one year to a federally directed AI program, or the Defense Production Act is used to direct frontier labs", "by": "2030-12-31", "probability": 20, "verdict": "Long shot (loose version likely)", "householdSignal": "Data-center electricity costs on utility bills", "indicators": ["energy_03_electricity_cpi"] },
+    { "id": "H9", "name": "AI stock bust", "resolvesYesIf": "The Nasdaq-100 falls 35%+ from a peak within any 12 months", "by": "2030-12-31", "probability": 30, "verdict": "Unsure", "householdSignal": "401(k) balances; tech layoffs in your area", "indicators": ["job_05_youth_unemployment"] },
+    { "id": "H10", "name": "Political violence stays elevated", "resolvesYesIf": "An assassination or attempt on a federal official, governor or presidential candidate in 2027-28, and fewer such incidents in 2029-31 than 2025-27", "by": "2031-12-31", "probability": 30, "verdict": "Elevated part likely", "householdSignal": "Threats to school boards and election offices; polling-place security" },
+    { "id": "H11", "name": "Youth turn toward duty", "resolvesYesIf": "Every service meets recruiting goals in FY2027-29 and young adults' trust in the military is higher in 2029 than 2026", "by": "2029-12-31", "probability": 25, "verdict": "Weakened", "householdSignal": "Recruiter activity in local schools" },
+    { "id": "H12", "name": "A Millennial president", "resolvesYesIf": "A president born in 1982 or later is inaugurated", "by": "2033-01-20", "probability": 35, "verdict": "Unsure (low confidence)", "householdSignal": "None directly" }
+  ],
+  "baseRates": [
+    { "name": "US civil war (1,000+ battle deaths) by 2031", "probability": 2, "source": "Metaculus; this report agrees" },
+    { "name": "Major constitutional rupture by 2030", "probability": "10-15", "source": "Report estimate" },
+    { "name": "US recession in 2026", "probability": 5, "source": "Polymarket 8%, Kalshi about 3.5%" }
+  ],
+  "standingPrep": [
+    "Keep about six months of essential expenses in cash or savings you can reach quickly.",
+    "Know how much of your retirement savings rides on a handful of large tech stocks.",
+    "Review insurance coverage and deductibles before each renewal.",
+    "Keep bank deposits within FDIC insurance: $250,000 per depositor, per insured bank, per ownership category.",
+    "Save your state's unemployment and benefits links, and 211.org for local help, before you need them."
+  ]
+}

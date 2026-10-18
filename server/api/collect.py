@@ -58,6 +58,10 @@ def classify(raw: Optional[Dict[str, Any]]) -> Tuple[str, Optional[float], Dict[
     md = raw.get("metadata") or {}
     label = str(md.get("data_source") or md.get("source") or "")
     detail = {"source_label": label}
+    # The period the number describes, served as status.asOf.
+    for key in ("observation_date", "through_week_ending"):
+        if md.get(key):
+            detail[key] = str(md[key])[:20]
     if md.get("error"):
         detail["error"] = str(md["error"])[:300]
 
