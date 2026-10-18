@@ -547,3 +547,10 @@ def test_advisory_parsing():
     china = advisory_reading(ChinaAdvisoryCollector({}), rss)
     assert china["value"] == 2.0 and china["metadata"]["observation_date"] == "2026-09-04"
     assert advisory_reading(TaiwanAdvisoryCollector({}), rss)["value"] == 5.0
+
+
+def test_reading_on_its_line_is_at_it(client):
+    from api import stages
+    _save(*_series("job_06_hires_rate", [(1, 3.4), (0, 3.3)]))
+    jobs = _area(stages.compute(NO_DATES), "jobs")
+    assert jobs["stage"] == 1 and jobs["why"][0] == "Hiring Rate: 3.3%, at its watch line (3.3%)"

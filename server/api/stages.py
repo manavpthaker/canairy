@@ -188,6 +188,8 @@ def assess(defn: IndicatorDef, history: List[store.Reading], now: datetime, watc
     shown = f"{defn.name}: {fmt(defn, value)}"
     act, watch = fmt(defn, defn.red), fmt(defn, defn.amber)
     side = "above" if defn.higher_is_worse else "below"
+    # A reading exactly on a line is "at" it, not above or below.
+    on = lambda line: "at" if value == line else side
     levels = [(r.collected_at, determine_level(r.value, defn)) for r in history if r.value is not None]
 
     if watch_only:
@@ -218,9 +220,9 @@ def assess(defn: IndicatorDef, history: List[store.Reading], now: datetime, watc
         since = runs[-1][0]
         if now - since >= hold:
             days = (now - since).days
-            return Finding(2, f"{shown}, {side} its act line ({act}) since {_day(since)}" + (f" ({days} days)" if days >= 2 else ""),
+            return Finding(2, f"{shown}, {on(defn.red)} its act line ({act}) since {_day(since)}" + (f" ({days} days)" if days >= 2 else ""),
                            up=f"Brace if {defn.name} passes {fmt(defn, brace)}" if brace is not None else None, name=defn.name)
-        return Finding(1, f"{shown}, {side} its act line ({act}) since {_day(since)}",
+        return Finding(1, f"{shown}, {on(defn.red)} its act line ({act}) since {_day(since)}",
                        up=f"Prepare on {_day(since + hold)} if {defn.name} stays {side} {act}", name=defn.name)
 
     held = [r for r in runs if r[1] - r[0] >= hold or defn.id in NO_HOLD]
@@ -230,7 +232,7 @@ def assess(defn: IndicatorDef, history: List[store.Reading], now: datetime, watc
                        cooling_until=end + PREPARE_COOL, name=defn.name)
 
     if level == "amber":
-        return Finding(1, f"{shown}, {side} its watch line ({watch})",
+        return Finding(1, f"{shown}, {on(defn.amber)} its watch line ({watch})",
                        up=f"Prepare if {defn.name} stays {side} {act}" + ("" if defn.id in NO_HOLD else " for 2 weeks"), name=defn.name)
 
     last_watch = next((at for at, lv in reversed(levels) if lv in ("amber", "red")), None)
