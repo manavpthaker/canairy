@@ -118,3 +118,14 @@ describe('byArea', () => {
     expect(groups.map(([area]) => area)).toEqual(['costs', 'safety']);
   });
 });
+
+describe('household stages', () => {
+  it('lists steps for areas at Watch or above, highest stage first', async () => {
+    const { stepsFor } = await import('../experience/useStages');
+    const area = (id: string, stage: number) => ({ id, name: id, about: '', stage, stageName: '', why: [], alsoWatching: [], next: [], down: null, manualTriggers: [] });
+    const stages = { asOf: '', overall: { stage: 1, name: 'Watch', why: '' }, rules: {}, areas: [area('cyber', 1), area('jobs', 0), area('energy', 2)] };
+    const plan = { principles: [], ladder: [], noRegret: [], skip: '', maintenance: [], source: '',
+      areas: { energy: { '1': ['e1'], '2': ['e2'] }, cyber: { '1': ['c1'] }, jobs: { '1': ['j1'] } } };
+    expect(stepsFor(stages, plan).map((x) => [x.area.id, x.steps])).toEqual([['energy', ['e2']], ['cyber', ['c1']]]);
+  });
+});

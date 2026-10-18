@@ -342,3 +342,21 @@ html.cn body {
 
 .cn-perspective svg { display: block; overflow: visible; }
 .cn-perspective .axis { font-size: 12px; font-family: var(--font-body); fill: var(--ink-3); }
+
+/* Household stages (Plan page) */
+.cn-stage { display: inline-block; font-weight: 700; font-size: var(--step--1); padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+.cn-stage.s0 { background: var(--steady-bg); color: var(--steady); }
+.cn-stage.s1 { background: var(--watch-bg); color: var(--watch); }
+.cn-stage.s2, .cn-stage.s3, .cn-stage.s4, .cn-stage.s5 { background: var(--act-bg); color: var(--act); }
+.cn-stage-now { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; margin: 0 0 0.5rem; }
+.cn-stage-now .big { font-family: var(--font-display); font-size: var(--step-2); font-weight: 700; line-height: 1.1; }
+.cn-area { padding: 0.85rem 0; border-bottom: 1px solid var(--line-soft); display: grid; gap: 0.25rem; }
+.cn-area:last-child { border-bottom: 0; }
+.cn-area .head { display: flex; justify-content: space-between; gap: 0.75rem; align-items: baseline; }
+.cn-area .name { font-weight: 700; }
+.cn-area p { margin: 0; color: var(--ink-2); font-size: var(--step--1); }
+.cn-area .next { color: var(--ink-3); }
+.cn-steps { margin: 0.25rem 0 0; padding-left: 1.1rem; display: grid; gap: 0.3rem; }
+.cn-ladder { display: grid; gap: 0.75rem; margin: 0.75rem 0 0; }
+.cn-ladder > div { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.75rem; align-items: baseline; }
+.cn-ladder p { margin: 0; color: var(--ink-2); font-size: var(--step--1); grid-column: 2; }

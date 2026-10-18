@@ -84,6 +84,8 @@ AREA_OF = {
     "travel_01_advisories": "safety", "travel_03_tsa_throughput": "safety", "bio_01_h2h_countries": "health",
     "job_05_youth_unemployment": "jobs", "cost_medical": "costs", "bond_01_term_premium": "banks",
     "mood_01_sentiment": "jobs",
+    "job_06_hires_rate": "jobs", "market_02_nasdaq_drawdown": "banks", "energy_04_power_vs_inflation": "costs",
+    "world_01_china_advisory": "safety", "world_02_taiwan_advisory": "safety",
 }
 
 DAY = 24
@@ -425,6 +427,48 @@ CATALOG: List[IndicatorDef] = [
         V, "ConsumerSentimentCollector", "University of Michigan (via FRED)",
         "https://fred.stlouisfed.org/series/UMCSENT", "Monthly", 45 * DAY,
         tier="experimental", valid_range=(20, 130),
+    ),
+
+    # ── Added 2026-10-18: from "How AI Changes the Fourth Turning" and the family preparedness plan ──
+    IndicatorDef(
+        "job_06_hires_rate", "Hiring Rate", "jobs_labor",
+        "New hires as a share of all jobs each month. Low hiring means a lost job takes longer to replace, even when layoffs are low.",
+        "%", 3.3, 3.0,  # since 2000: median 3.7%, 10th pct 3.2%; 2019 average 3.9%; 2009 low 2.8%
+        V, "HiresRateCollector", "BLS JOLTS (via FRED)",
+        "https://fred.stlouisfed.org/series/JTSHIR", "Monthly", 60 * DAY,
+        valid_range=(0, 15),
+    ),
+    IndicatorDef(
+        "market_02_nasdaq_drawdown", "Tech Stocks (Nasdaq-100)", "economy",
+        "How far the Nasdaq-100 sits below its high of the past year. Retirement funds lean heavily on these few companies; a 35% drop is the AI-bust line.",
+        "% from peak", -20, -35,  # since 2015: median -2.7%, 5th pct -25.9%; 2022 low -35.5%; 2000-02 about -80%
+        V, "NasdaqDrawdownCollector", "Nasdaq (via FRED)",
+        "https://fred.stlouisfed.org/series/NASDAQ100", "Daily", 5 * DAY,
+        valid_range=(-95, 0.01),
+    ),
+    IndicatorDef(
+        "energy_04_power_vs_inflation", "Power Bills vs Inflation", "energy",
+        "How much faster electricity prices are rising than prices overall, in percentage points. Data-center demand is one reason bills outpace inflation.",
+        "pts", 2, 4,  # since 2018: median 0.3, 75th pct 2.1, 90th pct 4.2
+        V, "PowerVsInflationCollector", "BLS CPI (via FRED)",
+        "https://fred.stlouisfed.org/series/CUSR0000SEHF01", "Monthly", 45 * DAY,
+        tier="experimental", valid_range=(-30, 40),
+    ),
+    IndicatorDef(
+        "world_01_china_advisory", "China Travel Warning", "security_infrastructure",
+        "The State Department's travel advisory level for China, 1 (normal) to 4 (do not travel). 5 means US staff or families were ordered to leave.",
+        "level", 3, 4,
+        V, "ChinaAdvisoryCollector", "US State Department",
+        "https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories.html", "As issued", 3 * DAY,
+        valid_range=(1, 5),
+    ),
+    IndicatorDef(
+        "world_02_taiwan_advisory", "Taiwan Travel Warning", "security_infrastructure",
+        "The State Department's travel advisory level for Taiwan, 1 (normal) to 4 (do not travel). 5 means US staff or families were ordered to leave.",
+        "level", 2, 3,
+        V, "TaiwanAdvisoryCollector", "US State Department",
+        "https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories.html", "As issued", 3 * DAY,
+        valid_range=(1, 5),
     ),
 ]
 

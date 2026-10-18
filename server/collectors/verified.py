@@ -666,6 +666,118 @@ class ConsumerSentimentCollector(FREDSeriesCollector):
     LABEL = "University of Michigan consumer sentiment index (monthly)"
 
 
+class HiresRateCollector(FREDSeriesCollector):
+    SERIES = "JTSHIR"
+    LABEL = "Hires as a share of employment, JOLTS (monthly)"
+
+
+class NasdaqDrawdownCollector(FREDSeriesCollector):
+    """How far the Nasdaq-100 sits below its highest close of the past year (trading days), in %."""
+
+    SERIES = "NASDAQ100"
+    LABEL = "Nasdaq-100 — % below its high of the past year"
+    WINDOW = 252  # about a year of trading days
+
+    def _drawdowns(self, obs_newest_first: List[Dict[str, str]]) -> List[Tuple[str, float]]:
+        vals = [(o["date"], float(o["value"])) for o in reversed(obs_newest_first)]
+        out: List[Tuple[str, float]] = []
+        for i in range(self.WINDOW - 1, len(vals)):
+            high = max(v for _, v in vals[i - self.WINDOW + 1:i + 1])
+            out.append((vals[i][0], round((vals[i][1] / high - 1) * 100, 2)))
+        return out
+
+    def collect(self) -> Optional[Dict[str, Any]]:
+        dd = self._drawdowns(self._observations(self.WINDOW + 20))
+        if not dd:
+            return None
+        day, value = dd[-1]
+        return self._create_reading(value, {"data_source": f"FRED {self.SERIES}", "observation_date": day, "series": self.LABEL})
+
+    def backfill(self, days: int) -> List[Tuple[datetime, float]]:
+        cutoff = (datetime.utcnow() - timedelta(days=days)).strftime("%Y-%m-%d")
+        dd = self._drawdowns(self._observations(20000 if days > 400 else 2000))
+        return [(datetime.strptime(d, "%Y-%m-%d"), v) for d, v in dd if d >= cutoff]
+
+
+class PowerVsInflationCollector(BaseCollector):
+    """Electricity prices' change from a year earlier minus all consumer prices', in percentage points."""
+
+    def collect(self) -> Optional[Dict[str, Any]]:
+        power, prices = _FREDSeries("CUSR0000SEHF01"), _FREDSeries("CPIAUCSL")
+        p_obs, c_obs = power._observations(30), prices._observations(30)
+        if not p_obs or not c_obs:
+            return None
+        date = p_obs[0]["date"]
+        c_i = next((i for i, o in enumerate(c_obs) if o["date"] == date), None)
+        if c_i is None:
+            return None
+        p_change, c_change = power._value_at(p_obs, 0), prices._value_at(c_obs, c_i)
+        if p_change is None or c_change is None:
+            return None
+        return self._create_reading(round(p_change - c_change, 2), {
+            "data_source": "FRED CUSR0000SEHF01 / CPIAUCSL",
+            "observation_date": date,
+            "electricity_change": p_change, "all_items_change": c_change,
+        })
+
+    def history(self, years: int) -> List[Tuple[datetime, float]]:
+        power = dict(_FREDSeries("CUSR0000SEHF01").history(years))
+        prices = dict(_FREDSeries("CPIAUCSL").history(years))
+        return [(d, round(power[d] - prices[d], 2)) for d in sorted(power) if d in prices]
+
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        return isinstance(data.get("value"), float)
+
+
+class CountryAdvisoryCollector(BaseCollector):
+    """State Department travel advisory level (1 to 4) for one country, from the official RSS feed.
+
+    5 means the Department has ordered US government staff or families to leave,
+    the strongest official signal that a country is about to become dangerous.
+    """
+
+    URL = "https://travel.state.gov/_res/rss/TAsTWs.xml"
+    COUNTRY = ""
+    ORDERED = re.compile(r"ordered (the )?departure", re.I)
+    LIFTED = re.compile(r"(lift|end|terminat)\w*\s+(the\s+)?ordered departure", re.I)
+
+    def collect(self) -> Optional[Dict[str, Any]]:
+        import xml.etree.ElementTree as ET
+        resp = requests.get(self.URL, headers=HEADERS, timeout=30)
+        resp.raise_for_status()
+        return advisory_reading(self, ET.fromstring(resp.content))
+
+    def validate_data(self, data: Dict[str, Any]) -> bool:
+        return isinstance(data.get("value"), float)
+
+
+def advisory_reading(collector: "CountryAdvisoryCollector", root) -> Optional[Dict[str, Any]]:
+    pattern = re.compile(rf"^{re.escape(collector.COUNTRY)}\s*-\s*Level\s*([1-4])\b")
+    for item in root.iter("item"):
+        match = pattern.match((item.findtext("title") or "").strip())
+        if not match:
+            continue
+        desc = item.findtext("description") or ""
+        ordered = bool(collector.ORDERED.search(desc)) and not collector.LIFTED.search(desc)
+        level = float(match.group(1))
+        meta: Dict[str, Any] = {"data_source": "State Department travel advisories", "level": int(level), "ordered_departure": ordered}
+        published = item.findtext("pubDate") or ""
+        try:
+            meta["observation_date"] = datetime.strptime(published[:16], "%a, %d %b %Y").strftime("%Y-%m-%d")
+        except ValueError:
+            pass
+        return collector._create_reading(5.0 if ordered else level, meta)
+    return None
+
+
+class ChinaAdvisoryCollector(CountryAdvisoryCollector):
+    COUNTRY = "China"
+
+
+class TaiwanAdvisoryCollector(CountryAdvisoryCollector):
+    COUNTRY = "Taiwan"
+
+
 class RealWagesCollector(BaseCollector):
     """Hourly pay for production/non-supervisory workers vs consumer prices, % change from a year earlier."""
 
